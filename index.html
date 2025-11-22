@@ -44,7 +44,7 @@
         
         .main-header {
             padding: 12px 0;
-            display: none; /* Hide main header, only show uses bar */
+            display: none;
         }
         
         /* Uses Top Bar - Always Visible */
@@ -85,7 +85,7 @@
             border-bottom: 3px solid #fff;
         }
         
-        /* Mega Menu - Images Only */
+        /* Mega Menu - Fixed Outside Click Issue */
         .mega-menu {
             position: absolute;
             top: 100%;
@@ -98,15 +98,14 @@
             visibility: hidden;
             transform: translateY(-10px);
             transition: all 0.3s ease;
-            display: none;
             padding: 30px 0;
         }
         
+        /* Hover effect - Yeh always work karega */
         .use-item:hover .mega-menu {
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
-            display: block;
         }
         
         .patterns-grid {
@@ -819,23 +818,9 @@
             lastScrollTop = scrollTop;
         });
 
-        // Close mega menu when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.use-item')) {
-                document.querySelectorAll('.mega-menu').forEach(menu => {
-                    menu.style.display = 'none';
-                    menu.style.opacity = '0';
-                    menu.style.visibility = 'hidden';
-                });
-            }
-        });
-
-        // Prevent click on use links
-        document.querySelectorAll('.use-link').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-            });
-        });
+        // Fixed: Outside click par bhi properly work karega
+        // Ab hum JavaScript me display property change nahi kar rahe
+        // Sirf CSS hover effect ka use kar rahe hai
     </script>
 </body>
 </html>
