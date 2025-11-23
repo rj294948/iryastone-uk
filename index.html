@@ -105,6 +105,47 @@
             color: #b8860b;
         }
         
+        /* Search Bar */
+        .search-container {
+            display: flex;
+            margin: 10px 0;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: 20px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px 0 0 4px;
+            font-size: 14px;
+        }
+        
+        .search-button {
+            background: #b8860b;
+            color: white;
+            border: none;
+            padding: 0 15px;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .search-button:hover {
+            background: #a3780a;
+        }
+        
+        /* Site Details Banner in Header */
+        .site-details-banner {
+            background: linear-gradient(135deg, #b8860b, #a3780a);
+            color: white;
+            padding: 8px 0;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
         /* Uses Top Bar - Always Visible */
         .uses-top-bar {
             background: #333;
@@ -255,94 +296,15 @@
             margin-bottom: 15px;
         }
         
-        /* Uses Images Section */
-        .uses-images {
-            padding: 60px 0;
+        /* Categories & Products Section */
+        .categories-products {
+            padding: 40px 0;
+            background: white;
         }
         
-        .uses-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-        }
-        
-        .use-image-item {
-            text-align: center;
-        }
-        
-        .use-image-link {
-            display: block;
-            text-decoration: none;
-            color: #333;
-        }
-        
-        .use-image {
-            height: 200px;
-            background-size: cover;
-            background-position: center;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            transition: transform 0.3s;
-        }
-        
-        .use-image-link:hover .use-image {
-            transform: scale(1.05);
-        }
-        
-        .use-image-name {
-            font-size: 16px;
-            font-weight: 500;
-        }
-        
-        /* Main Content */
-        .main-content {
-            margin-top: 180px;
-        }
-        
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80');
-            background-size: cover;
-            background-position: center;
-            color: white;
-            padding: 80px 0;
-            text-align: center;
-        }
-        
-        .hero h1 {
-            font-size: 36px;
-            margin-bottom: 20px;
-            line-height: 1.3;
-        }
-        
-        .hero p {
-            font-size: 18px;
-            max-width: 600px;
-            margin: 0 auto 30px;
-        }
-        
-        .btn {
-            display: inline-block;
-            background: #b8860b;
-            color: white;
-            padding: 14px 30px;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-            text-decoration: none;
-            transition: background 0.3s;
-            font-weight: 600;
-        }
-        
-        .btn:hover {
-            background: #a3780a;
-        }
-        
-        /* Categories Section */
         .section-title {
             text-align: center;
-            margin: 60px 0 40px;
+            margin: 0 0 40px;
             font-size: 32px;
             color: #333;
             position: relative;
@@ -446,6 +408,90 @@
             color: #b8860b;
             font-size: 18px;
             margin-bottom: 15px;
+        }
+        
+        /* Uses Images Section */
+        .uses-images {
+            padding: 60px 0;
+        }
+        
+        .uses-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+        
+        .use-image-item {
+            text-align: center;
+        }
+        
+        .use-image-link {
+            display: block;
+            text-decoration: none;
+            color: #333;
+        }
+        
+        .use-image {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            transition: transform 0.3s;
+        }
+        
+        .use-image-link:hover .use-image {
+            transform: scale(1.05);
+        }
+        
+        .use-image-name {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-top: 180px;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+        
+        .hero p {
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: #b8860b;
+            color: white;
+            padding: 14px 30px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.3s;
+            font-weight: 600;
+        }
+        
+        .btn:hover {
+            background: #a3780a;
         }
         
         /* Features Section */
@@ -613,6 +659,13 @@
                 padding: 0;
             }
             
+            .search-container {
+                order: 4;
+                flex-basis: 100%;
+                margin: 10px 0 0;
+                max-width: 100%;
+            }
+            
             .category-img, .product-img {
                 height: 200px;
             }
@@ -689,6 +742,11 @@
                     <p>Free UK Delivery Over £500 | Rated 4.8/5 by UK Customers | British Stone Federation Member</p>
                 </div>
                 
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Search for stone types, products...">
+                    <button class="search-button"><i class="fas fa-search"></i></button>
+                </div>
+                
                 <div class="user-actions">
                     <a href="#" class="user-action">
                         <i class="fas fa-map-marker-alt"></i>
@@ -703,6 +761,13 @@
                         <span>Cart (0)</span>
                     </a>
                 </div>
+            </div>
+        </div>
+
+        <!-- Site Details Banner in Header -->
+        <div class="site-details-banner">
+            <div class="container">
+                Premium Sandstone, Marble, Limestone & Granite Collections - Natural Stone for UK Homes
             </div>
         </div>
 
@@ -872,13 +937,6 @@
         </div>
     </header>
 
-    <!-- Stone Type Banner -->
-    <div class="stone-banner">
-        <div class="container">
-            Premium Sandstone, Marble, Limestone & Granite Collections - Natural Stone for UK Homes
-        </div>
-    </div>
-
     <!-- Main Content -->
     <div class="main-content">
         <!-- Product Banners -->
@@ -909,6 +967,73 @@
                             <h3>Outdoor Paving</h3>
                             <p>Weather-resistant stone for patios, pathways and driveways</p>
                             <a href="#" class="btn">Explore Paving</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Categories & Products Section -->
+        <section class="categories-products">
+            <div class="container">
+                <h2 class="section-title">Stone Categories & Products</h2>
+                
+                <div class="categories-grid">
+                    <div class="category-card">
+                        <div class="category-img" style="background-image: url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80');"></div>
+                        <div class="category-content">
+                            <h3>Sandstone</h3>
+                            <p>Durable and elegant sandstone flooring perfect for UK homes and commercial spaces</p>
+                            <a href="#" class="btn">View Sandstone</a>
+                        </div>
+                    </div>
+                    
+                    <div class="category-card">
+                        <div class="category-img" style="background-image: url('https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80');"></div>
+                        <div class="category-content">
+                            <h3>Marble & Limestone</h3>
+                            <p>Luxurious marble and limestone for sophisticated interiors and feature walls</p>
+                            <a href="#" class="btn">View Marble</a>
+                        </div>
+                    </div>
+                    
+                    <div class="category-card">
+                        <div class="category-img" style="background-image: url('https://images.unsplash.com/photo-1600585154340-2e5db6e509e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80');"></div>
+                        <div class="category-content">
+                            <h3>Granite</h3>
+                            <p>Hard-wearing granite perfect for kitchen countertops and high-traffic areas</p>
+                            <a href="#" class="btn">View Granite</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <h2 class="section-title">Popular Products</h2>
+                
+                <div class="products-grid">
+                    <div class="product-card">
+                        <div class="product-img" style="background-image: url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80');"></div>
+                        <div class="product-content">
+                            <h3>Kota Blue Stone</h3>
+                            <p class="product-price">£18.99 / sq. m.</p>
+                            <a href="#" class="btn">Add to Cart</a>
+                        </div>
+                    </div>
+                    
+                    <div class="product-card">
+                        <div class="product-img" style="background-image: url('https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80');"></div>
+                        <div class="product-content">
+                            <h3>Natural Sandstone</h3>
+                            <p class="product-price">£22.50 / sq. m.</p>
+                            <a href="#" class="btn">Add to Cart</a>
+                        </div>
+                    </div>
+                    
+                    <div class="product-card">
+                        <div class="product-img" style="background-image: url('https://images.unsplash.com/photo-1600585154340-2e5db6e509e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80');"></div>
+                        <div class="product-content">
+                            <h3>Outdoor Paving Stone</h3>
+                            <p class="product-price">£16.75 / sq. m.</p>
+                            <a href="#" class="btn">Add to Cart</a>
                         </div>
                     </div>
                 </div>
@@ -949,72 +1074,6 @@
                 <h1>Premium Natural Stone for UK Homes & Gardens</h1>
                 <p>Discover our extensive collection of high-quality sandstone, marble, limestone and granite products for every application</p>
                 <a href="#" class="btn">Explore UK Stone Collection</a>
-            </div>
-        </section>
-
-        <!-- Categories Section -->
-        <section class="container">
-            <h2 class="section-title">Our UK Stone Collections</h2>
-            <div class="categories-grid">
-                <div class="category-card">
-                    <div class="category-img" style="background-image: url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80');"></div>
-                    <div class="category-content">
-                        <h3>Sandstone Flooring</h3>
-                        <p>Durable and elegant sandstone flooring perfect for UK homes and commercial spaces</p>
-                        <a href="#" class="btn">View Sandstone</a>
-                    </div>
-                </div>
-                
-                <div class="category-card">
-                    <div class="category-img" style="background-image: url('https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80');"></div>
-                    <div class="category-content">
-                        <h3>Marble & Limestone</h3>
-                        <p>Luxurious marble and limestone for sophisticated interiors and feature walls</p>
-                        <a href="#" class="btn">View Marble</a>
-                    </div>
-                </div>
-                
-                <div class="category-card">
-                    <div class="category-img" style="background-image: url('https://images.unsplash.com/photo-1600585154340-2e5db6e509e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80');"></div>
-                    <div class="category-content">
-                        <h3>Outdoor Paving</h3>
-                        <p>Weather-resistant stone for UK patios, pathways, driveways and pool decks</p>
-                        <a href="#" class="btn">View Paving</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Products Section -->
-        <section class="container">
-            <h2 class="section-title">UK Best Sellers</h2>
-            <div class="products-grid">
-                <div class="product-card">
-                    <div class="product-img" style="background-image: url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80');"></div>
-                    <div class="product-content">
-                        <h3>Kota Blue Stone</h3>
-                        <p class="product-price">£18.99 / sq. m.</p>
-                        <a href="#" class="btn">Add to Cart</a>
-                    </div>
-                </div>
-                
-                <div class="product-card">
-                    <div class="product-img" style="background-image: url('https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80');"></div>
-                    <div class="product-content">
-                        <h3>Natural Sandstone</h3>
-                        <p class="product-price">£22.50 / sq. m.</p>
-                        <a href="#" class="btn">Add to Cart</a>
-                    </div>
-                </div>
-                
-                <div class="product-card">
-                    <div class="product-img" style="background-image: url('https://images.unsplash.com/photo-1600585154340-2e5db6e509e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80');"></div>
-                    <div class="product-content">
-                        <h3>Outdoor Paving Stone</h3>
-                        <p class="product-price">£16.75 / sq. m.</p>
-                        <a href="#" class="btn">Add to Cart</a>
-                    </div>
-                </div>
             </div>
         </section>
 
@@ -1085,7 +1144,7 @@
                         <li><i class="fas fa-map-marker-alt"></i> StoneCraft House, 123 Stone Street, London, UK</li>
                         <li><i class="fas fa-phone"></i> 020 7123 4567</li>
                         <li><i class="fas fa-envelope"></i> info@stonecraft.co.uk</li>
-                        <li><i class="fas fa-clock"></i> Mon-Fri: 9am-6pm</li>
+                        <li><i class="fas fa-clock"></i> Mon-Fri: 9am-6pm, Sat: 10am-4pm, Sun: Closed</li>
                     </ul>
                 </div>
             </div>
