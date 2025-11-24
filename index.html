@@ -621,27 +621,21 @@
 /* ======================================================= */
 /* 📱 MOBILE VIEW FIXES (768px से नीचे की स्क्रीन के लिए) */
 /* ======================================================= */
-@media (max-width: 767px) {
+@media (max-width: 768px) {
     .uses-categories {
         padding: 30px 0; /* मोबाइल पर पैडिंग कम की */
     }
 
     /* 2. मोबाइल पर 4 कॉलम को 2 कॉलम में बदलना */
     .uses-categories-grid {
-        grid-template-columns: repeat(4, 1fr); 
-        gap: 5px;
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 15px;
     }
 
     /* 3. मोबाइल पर इमेज को स्क्वायर (1:1) बनाना */
     .use-category-image {
-        / width: 100%;
-    height: 0; /* निश्चित height हटाई */
-    padding-bottom: 60%; /* Aspect Ratio बनाए रखने के लिए */
-    
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    transition: transform 0.3s ease;
+        padding-bottom: 100%; /* मोबाइल पर इमेज को पूरी तरह दिखाने के लिए 1:1 Aspect Ratio */
+        margin-bottom: 10px;
     }
     
     .use-category-name {
