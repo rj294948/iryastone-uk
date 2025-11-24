@@ -45,7 +45,7 @@
         
         /* Main Header */
         .main-header {
-            padding: 20px 0;
+            padding: 15px 0;
         }
         
         .header-content {
@@ -124,15 +124,15 @@
         /* Search Bar */
         .search-container {
             display: flex;
-            margin: 10px 0;
+            margin: 0px 0;
             max-width: 400px;
-            margin-left: auto;
+            margin-left: center;
             margin-right: 20px;
         }
         
         .search-input {
             flex: 1;
-            padding: 10px 15px;
+            padding: 10px 20px;
             border: 1px solid #ddd;
             border-radius: 4px 0 0 4px;
             font-size: 14px;
@@ -156,7 +156,7 @@
         .banner-text {
             background: linear-gradient(135deg, #b8860b, #a3780a);
             color: white;
-            padding: 12px 0;
+            padding: 10x 0;
             text-align: center;
             font-size: 16px;
             font-weight: 500;
@@ -185,7 +185,7 @@
             display: block;
             color: white;
             text-decoration: none;
-            padding: 15px 10px;
+            padding: 8px 10px;
             font-size: 14px;
             font-weight: 500;
             text-align: center;
@@ -409,12 +409,12 @@
             color: white;
             padding: 60px 0;
             text-align: center;
-            margin-top: 20px;
+            margin-top: none;
         }
         
         .trending-banner h2 {
             font-size: 36px;
-            margin-bottom: 50px;
+            margin-bottom: 20px;
         }
         
         .trending-banner p {
@@ -431,13 +431,13 @@
 
 .products-banner-content {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
 }
 
 .products-banner-content h2 {
     font-size: 32px;
     color: #333;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .products-banner-content p {
@@ -469,7 +469,7 @@
 
 .product-banner-image {
     width: 100%;
-    height: 400px; /* Increased height for full display */
+    height: 300px; /* Increased height for full display */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -1377,17 +1377,23 @@
                 <!-- ... -->
             </div>
         </div>
+        <div class="trust-info"style=>
+                    <div class="trust-info-content">
+                        <div class="trust-item">
+                            <i class="fas fa-truck"></i>
+                            <span>Free UK Delivery</span>
+                        </div>
+                        <div class="trust-item">
+                            <i class="fas fa-star"></i>
+                            <span>Rated 4.8/5</span>
+                        </div>
+                        <div class="trust-item">
+                            <i class="fas fa-award"></i>
+                            <span>BSF Member</span>
+                        </div>
+                    </div>
+                </div>
     </header>
-        <!-- Mobile Search Overlay -->
-    <div class="mobile-search-container">
-        <div class="mobile-search-box">
-            <button class="mobile-search-close">
-                <i class="fas fa-times"></i>
-            </button>
-            <input type="text" class="mobile-search-input" placeholder="Search for stone types, products...">
-            <button class="btn" style="width: 100%;">Search</button>
-        </div>
-    </div>
 
     <!-- Mobile Navigation Overlay -->
     <div class="mobile-nav-overlay"></div>
@@ -1463,22 +1469,6 @@
                 <a href="#" class="btn">Explore Trending Stones</a>
             </div>
         </section>
-        <div class="trust-info"style=>
-                    <div class="trust-info-content">
-                        <div class="trust-item">
-                            <i class="fas fa-truck"></i>
-                            <span>Free UK Delivery</span>
-                        </div>
-                        <div class="trust-item">
-                            <i class="fas fa-star"></i>
-                            <span>Rated 4.8/5</span>
-                        </div>
-                        <div class="trust-item">
-                            <i class="fas fa-award"></i>
-                            <span>BSF Member</span>
-                        </div>
-                    </div>
-                </div>
 
         <!-- Products Banner -->
         <!-- Products Banner -->
@@ -1708,10 +1698,6 @@
                 });
             });
         });
-     // Mobile Search Functionality
-            const mobileSearchToggle = document.querySelector('.mobile-search-toggle');
-            const mobileSearchClose = document.querySelector('.mobile-search-close');
-            const mobileSearchContainer = document.querySelector('.mobile-search-container');
     </script>
 </body>
 </html>
