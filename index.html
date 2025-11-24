@@ -628,13 +628,16 @@
 
     /* 2. मोबाइल पर 4 कॉलम को 2 कॉलम में बदलना */
     .uses-categories-grid {
-        grid-template-columns: repeat(4, 1fr); 
+        grid-template-columns: repeat(2, 1fr); 
         gap: 15px;
     }
 
     /* 3. मोबाइल पर इमेज को स्क्वायर (1:1) बनाना */
     .use-category-image {
-        padding-bottom: 100%; /* मोबाइल पर इमेज को पूरी तरह दिखाने के लिए 1:1 Aspect Ratio */
+        /* पुराने 1:1 Aspect Ratio (100%) को 16:9 के लिए बदलें */
+        padding-bottom: 56.25%; /* 9/16 * 100 = 56.25% */
+        /* height: 0; यह सुनिश्चित करना कि height 0 है। */
+        height: 0;
         margin-bottom: 10px;
     }
     
