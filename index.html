@@ -6,10 +6,75 @@
     <title>StoneCraft UK - Premium Natural Stone & Marble Suppliers</title>
     <meta name="description" content="UK's leading supplier of premium natural stone, marble, sandstone & limestone. Free UK delivery. Trusted by homeowners & professionals.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            getDocs, 
+            query, 
+            orderBy, 
+            doc, 
+            deleteDoc, 
+            updateDoc, 
+            where, 
+            serverTimestamp 
+        } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+        import { 
+            getAuth, 
+            createUserWithEmailAndPassword, 
+            signInWithEmailAndPassword, 
+            signOut, 
+            GoogleAuthProvider, 
+            signInWithPopup, 
+            onAuthStateChanged, 
+            updateProfile 
+        } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+        import { 
+            getStorage, 
+            ref, 
+            uploadBytes, 
+            uploadBytesResumable, 
+            getDownloadURL 
+        } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-storage.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDxNMhU09mINvq_aDLtylBg3FucCK-MzYE",
+            authDomain: "sandstonebijoliya-293d2.firebaseapp.com",
+            projectId: "sandstonebijoliya-293d2",
+            storageBucket: "sandstonebijoliya-293d2.appspot.com",
+            messagingSenderId: "133756247845",
+            appId: "1:133756247845:web:8e769ce2af3db1765484cc",
+            measurementId: "G-H7JMX9VNYF"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const storage = getStorage(app);
+        const googleProvider = new GoogleAuthProvider();
+
+        // Make them globally available
+        window.firebaseApp = app;
+        window.firebaseDb = db;
+        window.firebaseAuth = auth;
+        window.firebaseStorage = storage;
+        window.firebaseGoogleProvider = googleProvider;
+        window.firebaseFunctions = {
+            collection, addDoc, getDocs, query, orderBy, doc, deleteDoc, updateDoc, where, serverTimestamp,
+            createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, signInWithPopup, onAuthStateChanged, updateProfile,
+            ref, uploadBytes, uploadBytesResumable, getDownloadURL
+        };
+
+        console.log("Firebase initialized successfully");
+    </script>
+    
     <style>
         * {
             margin: 0;
@@ -367,11 +432,10 @@
         
         /* Uses Top Bar with Mega Menu */
         .uses-top-bar {
-    /* Make sure .uses-top-bar is the one with position: relative */
-    position: relative; 
-    background: #333;
-    padding: 0;
-}
+            position: relative; 
+            background: #333;
+            padding: 0;
+        }
         
         .uses-container {
             display: flex;
@@ -379,12 +443,11 @@
             flex-wrap: wrap;
         }
         
-       .use-item {
-    flex: 1;
-    min-width: 120px;
-    /* KEEP position: relative; so hover works on this area, but rely on JS for mega-menu positioning */
-    position: relative; 
-}
+        .use-item {
+            flex: 1;
+            min-width: 120px;
+            position: relative; 
+        }
         
         .use-link {
             display: block;
@@ -403,18 +466,16 @@
         
         /* Mega Menu Styles */
         .mega-menu {
-    position: absolute;
-    top: 100%;
-    /* We'll set left: and width: using JavaScript */
-    left: 0; 
-    width: 100%; 
-    background: white;
-    z-index: 1000;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-    /* Initially hide it, JS will show it on hover */
-    display: none; 
-    padding: 30px 0;
-}
+            position: absolute;
+            top: 100%;
+            left: 0; 
+            width: 100%; 
+            background: white;
+            z-index: 1000;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            display: none; 
+            padding: 30px 0;
+        }
         
         .use-item:hover .mega-menu {
             display: block;
@@ -1137,494 +1198,448 @@
             </div>
         </div>
     </footer>
+
     <script>
+        // Mega Menu Functionality
         document.addEventListener('DOMContentLoaded', () => {
             const usesTopBar = document.querySelector('.uses-top-bar');
             const useItems = document.querySelectorAll('.use-item');
             const container = document.querySelector('.uses-top-bar .container');
             
-            // Get the bounding rectangle of the main container to align the mega menu
-            const containerRect = container.getBoundingClientRect();
-            
-            useItems.forEach(item => {
-                const megaMenu = item.querySelector('.mega-menu');
+            if (container) {
+                const containerRect = container.getBoundingClientRect();
+                
+                useItems.forEach(item => {
+                    const megaMenu = item.querySelector('.mega-menu');
 
-                if (megaMenu) {
-                    // Set the menu's width and position relative to the main container
-                    megaMenu.style.width = containerRect.width + 'px';
-                    // Calculate the left offset to align with the container's left edge
-                    megaMenu.style.left = -(item.getBoundingClientRect().left - containerRect.left) + 'px';
+                    if (megaMenu) {
+                        megaMenu.style.width = containerRect.width + 'px';
+                        megaMenu.style.left = -(item.getBoundingClientRect().left - containerRect.left) + 'px';
 
-                    // Use a more controlled hover effect instead of pure CSS to keep full width
-                    item.addEventListener('mouseenter', () => {
-                        // Close any other open menus
-                        document.querySelectorAll('.mega-menu').forEach(menu => {
-                            if (menu !== megaMenu) {
-                                menu.style.display = 'none';
-                            }
+                        item.addEventListener('mouseenter', () => {
+                            document.querySelectorAll('.mega-menu').forEach(menu => {
+                                if (menu !== megaMenu) {
+                                    menu.style.display = 'none';
+                                }
+                            });
+                            megaMenu.style.display = 'block';
                         });
-                        megaMenu.style.display = 'block';
-                    });
-                    
-                    item.addEventListener('mouseleave', () => {
-                        // Simple delay to prevent accidental closure on re-hovering
-                        setTimeout(() => {
-                            if (!item.matches(':hover')) {
-                                megaMenu.style.display = 'none';
-                            }
-                        }, 50);
-                    });
-                }
-            });
-            
-            // To close the menu when clicking outside (optional but recommended)
-            document.addEventListener('click', (event) => {
-                if (!usesTopBar.contains(event.target)) {
-                    document.querySelectorAll('.mega-menu').forEach(menu => {
-                        menu.style.display = 'none';
-                    });
-                }
-            });
+                        
+                        item.addEventListener('mouseleave', () => {
+                            setTimeout(() => {
+                                if (!item.matches(':hover')) {
+                                    megaMenu.style.display = 'none';
+                                }
+                            }, 50);
+                        });
+                    }
+                });
+                
+                document.addEventListener('click', (event) => {
+                    if (!usesTopBar.contains(event.target)) {
+                        document.querySelectorAll('.mega-menu').forEach(menu => {
+                            menu.style.display = 'none';
+                        });
+                    }
+                });
+            }
         });
-    </script>
+    </script>
 
     <script type="module">
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "your-api-key-here",
-            authDomain: "stonecraft-uk.firebaseapp.com",
-            projectId: "stonecraft-uk",
-            storageBucket: "stonecraft-uk.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "your-app-id-here"
+        // Wait for Firebase to be available
+        const initializeApp = async () => {
+            // Wait a bit for Firebase to load
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            if (!window.firebaseAuth) {
+                console.error("Firebase not initialized properly");
+                return;
+            }
+
+            console.log("Initializing application with Firebase...");
+
+            // Authentication Manager Class
+            class AuthManager {
+                constructor() {
+                    this.currentUser = null;
+                    this.userData = null;
+                    this.initAuthListener();
+                    this.setupEventListeners();
+                }
+
+                initAuthListener() {
+                    window.firebaseFunctions.onAuthStateChanged(window.firebaseAuth, (user) => {
+                        console.log("Auth state changed:", user);
+                        this.currentUser = user;
+                        this.updateUI(user);
+                    });
+                }
+
+                setupEventListeners() {
+                    const logoutBtn = document.getElementById('logoutBtn');
+                    if (logoutBtn) {
+                        logoutBtn.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            this.handleLogout();
+                        });
+                    }
+
+                    const profileToggle = document.getElementById('profileToggle');
+                    const profileDropdown = document.getElementById('profileDropdown');
+
+                    if (profileToggle && profileDropdown) {
+                        profileToggle.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            profileDropdown.classList.toggle('active');
+                        });
+
+                        document.addEventListener('click', (e) => {
+                            if (!profileToggle.contains(e.target) && !profileDropdown.contains(e.target)) {
+                                profileDropdown.classList.remove('active');
+                            }
+                        });
+                    }
+                }
+
+                async handleLogout() {
+                    try {
+                        await window.firebaseFunctions.signOut(window.firebaseAuth);
+                        console.log('User logged out successfully');
+                    } catch (error) {
+                        console.error('Error logging out:', error);
+                    }
+                }
+
+                updateUI(user) {
+                    const loginBtn = document.getElementById('loginButton');
+                    const userProfile = document.getElementById('userProfile');
+                    const profileAvatar = document.getElementById('profileAvatar');
+                    const profileName = document.getElementById('profileName');
+                    const dropdownUserName = document.getElementById('dropdownUserName');
+                    const dropdownUserEmail = document.getElementById('dropdownUserEmail');
+
+                    console.log("Updating UI for user:", user);
+                    
+                    if (user) {
+                        // User is signed in
+                        if (userProfile) userProfile.style.display = 'block';
+                        if (loginBtn) loginBtn.style.display = 'none';
+                        
+                        const displayName = user.displayName || 'User';
+                        const email = user.email || '';
+                        const initials = displayName.charAt(0).toUpperCase();
+                        
+                        if (profileAvatar) profileAvatar.textContent = initials;
+                        if (profileName) profileName.textContent = displayName;
+                        if (dropdownUserName) dropdownUserName.textContent = displayName;
+                        if (dropdownUserEmail) dropdownUserEmail.textContent = email;
+                        
+                        console.log("Profile updated for:", displayName);
+                    } else {
+                        // User is signed out
+                        if (userProfile) userProfile.style.display = 'none';
+                        if (loginBtn) loginBtn.style.display = 'flex';
+                        console.log("User logged out, showing login button");
+                    }
+                }
+
+                getCurrentUser() {
+                    return this.currentUser;
+                }
+
+                isAuthenticated() {
+                    return this.currentUser !== null;
+                }
+            }
+
+            // Advanced Search System
+            class AdvancedSearch {
+                constructor() {
+                    this.searchInput = document.getElementById('searchInput');
+                    this.searchResults = document.getElementById('searchResults');
+                    this.searchButton = document.getElementById('searchButton');
+                    this.products = [];
+                    this.categories = [];
+                    this.init();
+                }
+
+                async init() {
+                    await this.loadData();
+                    this.setupEventListeners();
+                }
+
+                async loadData() {
+                    // Mock data
+                    this.products = [
+                        {
+                            id: '1',
+                            name: 'Kota Blue Stone',
+                            category: 'flooring',
+                            price: '£45.00',
+                            image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                            description: 'Premium quality kota stone for flooring'
+                        },
+                        {
+                            id: '2',
+                            name: 'Sandstone Pavers',
+                            category: 'outdoor',
+                            price: '£35.00',
+                            image: 'https://images.unsplash.com/photo-1600585154340-2e5db6e509e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                            description: 'Natural sandstone for outdoor paving'
+                        },
+                        {
+                            id: '3',
+                            name: 'Marble Tiles',
+                            category: 'bathroom',
+                            price: '£75.00',
+                            image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                            description: 'Luxury marble tiles for bathrooms'
+                        }
+                    ];
+
+                    this.categories = [
+                        { name: 'Flooring', type: 'flooring' },
+                        { name: 'Wall Decoration', type: 'wall' },
+                        { name: 'Bathroom', type: 'bathroom' },
+                        { name: 'Outdoor', type: 'outdoor' }
+                    ];
+                }
+
+                setupEventListeners() {
+                    this.searchInput.addEventListener('input', (e) => {
+                        this.handleSearch(e.target.value);
+                    });
+
+                    this.searchInput.addEventListener('focus', () => {
+                        if (this.searchInput.value.length > 0) {
+                            this.searchResults.classList.add('active');
+                        }
+                    });
+
+                    document.addEventListener('click', (e) => {
+                        if (!e.target.closest('.search-container')) {
+                            this.searchResults.classList.remove('active');
+                        }
+                    });
+
+                    this.searchButton.addEventListener('click', () => {
+                        this.performSearch(this.searchInput.value);
+                    });
+
+                    this.searchInput.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            this.performSearch(this.searchInput.value);
+                        }
+                    });
+                }
+
+                handleSearch(query) {
+                    if (query.length === 0) {
+                        this.searchResults.classList.remove('active');
+                        return;
+                    }
+
+                    this.searchResults.classList.add('active');
+                    
+                    this.searchResults.innerHTML = `
+                        <div class="search-loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Searching...</p>
+                        </div>
+                    `;
+
+                    setTimeout(() => {
+                        this.displaySearchResults(query);
+                    }, 300);
+                }
+
+                displaySearchResults(query) {
+                    const searchTerm = query.toLowerCase().trim();
+                    
+                    if (searchTerm.length === 0) {
+                        this.searchResults.innerHTML = '';
+                        return;
+                    }
+
+                    const productResults = this.products.filter(product => 
+                        product.name.toLowerCase().includes(searchTerm) ||
+                        product.description.toLowerCase().includes(searchTerm) ||
+                        product.category.toLowerCase().includes(searchTerm)
+                    );
+
+                    const categoryResults = this.categories.filter(category =>
+                        category.name.toLowerCase().includes(searchTerm) ||
+                        category.type.toLowerCase().includes(searchTerm)
+                    );
+
+                    if (productResults.length === 0 && categoryResults.length === 0) {
+                        this.searchResults.innerHTML = `
+                            <div class="no-results">
+                                <i class="fas fa-search" style="font-size: 24px; margin-bottom: 10px;"></i>
+                                <p>No results found for "${query}"</p>
+                                <p style="font-size: 12px; margin-top: 5px;">Try different keywords or browse categories</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    let resultsHTML = '';
+
+                    categoryResults.forEach(category => {
+                        resultsHTML += `
+                            <div class="search-result-item" onclick="window.location.href='category-products.html?category=${category.type}'">
+                                <div class="search-result-image" style="background-image: url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80')"></div>
+                                <div class="search-result-content">
+                                    <div class="search-result-name">${category.name}</div>
+                                    <div class="search-result-category">Category</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    productResults.forEach(product => {
+                        resultsHTML += `
+                            <div class="search-result-item" onclick="window.location.href='product-details.html?id=${product.id}'">
+                                <div class="search-result-image" style="background-image: url('${product.image}')"></div>
+                                <div class="search-result-content">
+                                    <div class="search-result-name">${product.name}</div>
+                                    <div class="search-result-category">${this.formatCategory(product.category)}</div>
+                                    <div class="search-result-price">${product.price}</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    resultsHTML += `
+                        <div class="view-all-results">
+                            <a href="search-results.html?q=${encodeURIComponent(query)}">View all results for "${query}"</a>
+                        </div>
+                    `;
+
+                    this.searchResults.innerHTML = resultsHTML;
+                }
+
+                formatCategory(category) {
+                    const categoryMap = {
+                        'flooring': 'Flooring',
+                        'wall': 'Wall Decoration',
+                        'bathroom': 'Bathroom',
+                        'outdoor': 'Outdoor'
+                    };
+                    return categoryMap[category] || category;
+                }
+
+                performSearch(query) {
+                    if (query.trim().length > 0) {
+                        window.location.href = `search-results.html?q=${encodeURIComponent(query)}`;
+                    }
+                }
+            }
+
+            // Dynamic Categories System
+            class DynamicCategories {
+                constructor() {
+                    this.categories = [];
+                    this.products = [];
+                    this.init();
+                }
+
+                async init() {
+                    await this.loadData();
+                    this.renderCategories();
+                }
+
+                async loadData() {
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+
+                    this.categories = [
+                        {
+                            id: '1',
+                            name: 'Flooring',
+                            type: 'flooring',
+                            image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
+                            description: 'Stone flooring solutions'
+                        },
+                        {
+                            id: '2', 
+                            name: 'Wall Decoration',
+                            type: 'wall',
+                            image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
+                            description: 'Wall cladding and decoration'
+                        },
+                        {
+                            id: '3',
+                            name: 'Bathroom',
+                            type: 'bathroom', 
+                            image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
+                            description: 'Bathroom stone solutions'
+                        },
+                        {
+                            id: '4',
+                            name: 'Outdoor',
+                            type: 'outdoor',
+                            image: 'https://images.unsplash.com/photo-1600585154340-2e5db6e509e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
+                            description: 'Outdoor stone applications'
+                        }
+                    ];
+
+                    this.products = [
+                        { id: 'p1', name: 'Kota Blue Stone', category: 'flooring' },
+                        { id: 'p2', name: 'Sandstone Pavers', category: 'outdoor' },
+                        { id: 'p3', name: 'Marble Tiles', category: 'bathroom' }
+                    ];
+                }
+
+                renderCategories() {
+                    const categoriesGrid = document.getElementById('dynamicCategories');
+                    if (!categoriesGrid) return;
+
+                    categoriesGrid.innerHTML = '';
+
+                    this.categories.forEach(category => {
+                        const categoryProducts = this.products.filter(product => 
+                            product.category === category.type
+                        );
+                        
+                        const categoryElement = this.createCategoryElement(category, categoryProducts);
+                        categoriesGrid.appendChild(categoryElement);
+                    });
+                }
+
+                createCategoryElement(category, products) {
+                    const categoryItem = document.createElement('div');
+                    categoryItem.className = 'use-category-item';
+                    
+                    categoryItem.innerHTML = `
+                        <a href="category-products.html?category=${category.type}" class="use-category-link">
+                            <div class="use-category-image" style="background-image: url('${category.image}')"></div>
+                            <div class="use-category-name">${category.name}</div>
+                            ${products.length > 0 ? 
+                                `<div class="product-count">${products.length} products</div>` : 
+                                ''
+                            }
+                        </a>
+                    `;
+
+                    return categoryItem;
+                }
+            }
+
+            // Initialize all managers
+            try {
+                const authManager = new AuthManager();
+                new AdvancedSearch();
+                new DynamicCategories();
+                
+                console.log("All managers initialized successfully");
+            } catch (error) {
+                console.error("Error initializing managers:", error);
+            }
         };
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
-        // Authentication Manager
-        class AuthManager {
-            constructor() {
-                this.currentUser = null;
-                this.userData = null;
-                this.init();
-            }
-
-            init() {
-                this.setupAuthListener();
-                this.setupEventListeners();
-            }
-
-            setupAuthListener() {
-                auth.onAuthStateChanged(async (user) => {
-                    if (user) {
-                        this.currentUser = user;
-                        await this.loadUserData(user.uid);
-                        this.updateUI(user, this.userData);
-                    } else {
-                        this.currentUser = null;
-                        this.userData = null;
-                        this.updateUI(null);
-                    }
-                });
-            }
-
-            setupEventListeners() {
-                const logoutBtn = document.getElementById('logoutBtn');
-                logoutBtn?.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    this.handleLogout();
-                });
-            }
-
-            async loadUserData(uid) {
-                try {
-                    const userDoc = await db.collection('users').doc(uid).get();
-                    if (userDoc.exists) {
-                        this.userData = userDoc.data();
-                    } else {
-                        // Create user document if it doesn't exist
-                        await this.createUserDocument(uid);
-                    }
-                } catch (error) {
-                    console.error('Error loading user data:', error);
-                }
-            }
-
-            async createUserDocument(uid) {
-                try {
-                    const userData = {
-                        displayName: this.currentUser.displayName || 'User',
-                        email: this.currentUser.email,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-                    };
-                    
-                    await db.collection('users').doc(uid).set(userData);
-                    this.userData = userData;
-                } catch (error) {
-                    console.error('Error creating user document:', error);
-                }
-            }
-
-            updateUI(user, userData = null) {
-                const userProfile = document.getElementById('userProfile');
-                const loginButton = document.getElementById('loginButton');
-                
-                if (user) {
-                    // User is logged in
-                    userProfile.style.display = 'block';
-                    loginButton.style.display = 'none';
-                    
-                    // Update profile information
-                    const displayName = userData?.displayName || user.displayName || 'User';
-                    const email = user.email;
-                    const initials = displayName.split(' ').map(n => n[0]).join('').toUpperCase();
-                    
-                    document.getElementById('profileName').textContent = displayName;
-                    document.getElementById('profileAvatar').textContent = initials;
-                    document.getElementById('dropdownUserName').textContent = displayName;
-                    document.getElementById('dropdownUserEmail').textContent = email;
-                } else {
-                    // User is logged out
-                    userProfile.style.display = 'none';
-                    loginButton.style.display = 'flex';
-                }
-            }
-
-            async handleLogout() {
-                try {
-                    await auth.signOut();
-                    console.log('User logged out successfully');
-                } catch (error) {
-                    console.error('Error logging out:', error);
-                }
-            }
-
-            getCurrentUser() {
-                return this.currentUser;
-            }
-
-            getUserData() {
-                return this.userData;
-            }
-        }
-
-        // User Profile Management
-        class UserProfileManager {
-            constructor(authManager) {
-                this.authManager = authManager;
-                this.init();
-            }
-
-            init() {
-                this.setupEventListeners();
-            }
-
-            setupEventListeners() {
-                const profileToggle = document.getElementById('profileToggle');
-                const profileDropdown = document.getElementById('profileDropdown');
-
-                profileToggle?.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    profileDropdown.classList.toggle('active');
-                });
-
-                document.addEventListener('click', () => {
-                    profileDropdown?.classList.remove('active');
-                });
-            }
-        }
-
-        // Advanced Search System
-        class AdvancedSearch {
-            constructor() {
-                this.searchInput = document.getElementById('searchInput');
-                this.searchResults = document.getElementById('searchResults');
-                this.searchButton = document.getElementById('searchButton');
-                this.products = [];
-                this.categories = [];
-                this.init();
-            }
-
-            async init() {
-                await this.loadData();
-                this.setupEventListeners();
-            }
-
-            async loadData() {
-                // Mock data - replace with Firestore
-                this.products = [
-                    {
-                        id: '1',
-                        name: 'Kota Blue Stone',
-                        category: 'flooring',
-                        price: '£45.00',
-                        image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
-                        description: 'Premium quality kota stone for flooring'
-                    },
-                    {
-                        id: '2',
-                        name: 'Sandstone Pavers',
-                        category: 'outdoor',
-                        price: '£35.00',
-                        image: 'https://images.unsplash.com/photo-1600585154340-2e5db6e509e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
-                        description: 'Natural sandstone for outdoor paving'
-                    },
-                    {
-                        id: '3',
-                        name: 'Marble Tiles',
-                        category: 'bathroom',
-                        price: '£75.00',
-                        image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
-                        description: 'Luxury marble tiles for bathrooms'
-                    }
-                ];
-
-                this.categories = [
-                    { name: 'Flooring', type: 'flooring' },
-                    { name: 'Wall Decoration', type: 'wall' },
-                    { name: 'Bathroom', type: 'bathroom' },
-                    { name: 'Outdoor', type: 'outdoor' }
-                ];
-            }
-
-            setupEventListeners() {
-                this.searchInput.addEventListener('input', (e) => {
-                    this.handleSearch(e.target.value);
-                });
-
-                this.searchInput.addEventListener('focus', () => {
-                    if (this.searchInput.value.length > 0) {
-                        this.searchResults.classList.add('active');
-                    }
-                });
-
-                document.addEventListener('click', (e) => {
-                    if (!e.target.closest('.search-container')) {
-                        this.searchResults.classList.remove('active');
-                    }
-                });
-
-                this.searchButton.addEventListener('click', () => {
-                    this.performSearch(this.searchInput.value);
-                });
-
-                this.searchInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        this.performSearch(this.searchInput.value);
-                    }
-                });
-            }
-
-            handleSearch(query) {
-                if (query.length === 0) {
-                    this.searchResults.classList.remove('active');
-                    return;
-                }
-
-                this.searchResults.classList.add('active');
-                
-                // Show loading state
-                this.searchResults.innerHTML = `
-                    <div class="search-loading">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <p>Searching...</p>
-                    </div>
-                `;
-
-                // Simulate search delay
-                setTimeout(() => {
-                    this.displaySearchResults(query);
-                }, 300);
-            }
-
-            displaySearchResults(query) {
-                const searchTerm = query.toLowerCase().trim();
-                
-                if (searchTerm.length === 0) {
-                    this.searchResults.innerHTML = '';
-                    return;
-                }
-
-                // Search in products and categories
-                const productResults = this.products.filter(product => 
-                    product.name.toLowerCase().includes(searchTerm) ||
-                    product.description.toLowerCase().includes(searchTerm) ||
-                    product.category.toLowerCase().includes(searchTerm)
-                );
-
-                const categoryResults = this.categories.filter(category =>
-                    category.name.toLowerCase().includes(searchTerm) ||
-                    category.type.toLowerCase().includes(searchTerm)
-                );
-
-                if (productResults.length === 0 && categoryResults.length === 0) {
-                    this.searchResults.innerHTML = `
-                        <div class="no-results">
-                            <i class="fas fa-search" style="font-size: 24px; margin-bottom: 10px;"></i>
-                            <p>No results found for "${query}"</p>
-                            <p style="font-size: 12px; margin-top: 5px;">Try different keywords or browse categories</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                let resultsHTML = '';
-
-                // Add category results
-                categoryResults.forEach(category => {
-                    resultsHTML += `
-                        <div class="search-result-item" onclick="window.location.href='category-products.html?category=${category.type}'">
-                            <div class="search-result-image" style="background-image: url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80')"></div>
-                            <div class="search-result-content">
-                                <div class="search-result-name">${category.name}</div>
-                                <div class="search-result-category">Category</div>
-                            </div>
-                        </div>
-                    `;
-                });
-
-                // Add product results
-                productResults.forEach(product => {
-                    resultsHTML += `
-                        <div class="search-result-item" onclick="window.location.href='product-details.html?id=${product.id}'">
-                            <div class="search-result-image" style="background-image: url('${product.image}')"></div>
-                            <div class="search-result-content">
-                                <div class="search-result-name">${product.name}</div>
-                                <div class="search-result-category">${this.formatCategory(product.category)}</div>
-                                <div class="search-result-price">${product.price}</div>
-                            </div>
-                        </div>
-                    `;
-                });
-
-                resultsHTML += `
-                    <div class="view-all-results">
-                        <a href="search-results.html?q=${encodeURIComponent(query)}">View all results for "${query}"</a>
-                    </div>
-                `;
-
-                this.searchResults.innerHTML = resultsHTML;
-            }
-
-            formatCategory(category) {
-                const categoryMap = {
-                    'flooring': 'Flooring',
-                    'wall': 'Wall Decoration',
-                    'bathroom': 'Bathroom',
-                    'outdoor': 'Outdoor'
-                };
-                return categoryMap[category] || category;
-            }
-
-            performSearch(query) {
-                if (query.trim().length > 0) {
-                    window.location.href = `search-results.html?q=${encodeURIComponent(query)}`;
-                }
-            }
-        }
-
-        // Dynamic Categories System
-        class DynamicCategories {
-            constructor() {
-                this.categories = [];
-                this.products = [];
-                this.init();
-            }
-
-            async init() {
-                await this.loadData();
-                this.renderCategories();
-            }
-
-            async loadData() {
-                // Mock data - replace with Firestore
-                await new Promise(resolve => setTimeout(resolve, 1000));
-
-                this.categories = [
-                    {
-                        id: '1',
-                        name: 'Flooring',
-                        type: 'flooring',
-                        image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
-                        description: 'Stone flooring solutions'
-                    },
-                    {
-                        id: '2', 
-                        name: 'Wall Decoration',
-                        type: 'wall',
-                        image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
-                        description: 'Wall cladding and decoration'
-                    },
-                    {
-                        id: '3',
-                        name: 'Bathroom',
-                        type: 'bathroom', 
-                        image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
-                        description: 'Bathroom stone solutions'
-                    },
-                    {
-                        id: '4',
-                        name: 'Outdoor',
-                        type: 'outdoor',
-                        image: 'https://images.unsplash.com/photo-1600585154340-2e5db6e509e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
-                        description: 'Outdoor stone applications'
-                    }
-                ];
-
-                this.products = [
-                    { id: 'p1', name: 'Kota Blue Stone', category: 'flooring' },
-                    { id: 'p2', name: 'Sandstone Pavers', category: 'outdoor' },
-                    { id: 'p3', name: 'Marble Tiles', category: 'bathroom' }
-                ];
-            }
-
-            renderCategories() {
-                const categoriesGrid = document.getElementById('dynamicCategories');
-                if (!categoriesGrid) return;
-
-                categoriesGrid.innerHTML = '';
-
-                this.categories.forEach(category => {
-                    const categoryProducts = this.products.filter(product => 
-                        product.category === category.type
-                    );
-                    
-                    const categoryElement = this.createCategoryElement(category, categoryProducts);
-                    categoriesGrid.appendChild(categoryElement);
-                });
-            }
-
-            createCategoryElement(category, products) {
-                const categoryItem = document.createElement('div');
-                categoryItem.className = 'use-category-item';
-                
-                categoryItem.innerHTML = `
-                    <a href="category-products.html?category=${category.type}" class="use-category-link">
-                        <div class="use-category-image" style="background-image: url('${category.image}')"></div>
-                        <div class="use-category-name">${category.name}</div>
-                        ${products.length > 0 ? 
-                            `<div class="product-count">${products.length} products</div>` : 
-                            ''
-                        }
-                    </a>
-                `;
-
-                return categoryItem;
-            }
-        }
-
-        // Initialize everything when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            const authManager = new AuthManager();
-            new UserProfileManager(authManager);
-            new AdvancedSearch();
-            new DynamicCategories();
-        });
-
+        // Start the application
+        initializeApp();
     </script>
 </body>
 </html>
