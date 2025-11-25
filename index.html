@@ -182,6 +182,11 @@
             cursor: pointer;
             padding: 8px 12px;
             border-radius: 6px;
+            transition: background-color 0.3s;
+        }
+
+        .profile-toggle:hover {
+            background: #f8f9fa;
         }
 
         .profile-avatar {
@@ -213,6 +218,7 @@
             min-width: 200px;
             z-index: 1000;
             display: none;
+            border: 1px solid #e0e0e0;
         }
 
         .profile-dropdown.active {
@@ -222,6 +228,8 @@
         .dropdown-header {
             padding: 15px;
             border-bottom: 1px solid #eee;
+            background: #f8f9fa;
+            border-radius: 8px 8px 0 0;
         }
 
         .dropdown-header .user-email {
@@ -243,6 +251,7 @@
             color: #333;
             text-decoration: none;
             font-size: 14px;
+            transition: all 0.3s;
         }
 
         .dropdown-item:hover {
@@ -253,6 +262,7 @@
         .dropdown-item i {
             width: 16px;
             text-align: center;
+            color: #666;
         }
 
         .dropdown-divider {
@@ -274,6 +284,11 @@
             text-decoration: none;
             color: #555;
             font-size: 12px;
+            transition: color 0.3s;
+        }
+
+        .user-action:hover {
+            color: #b8860b;
         }
 
         .user-action i {
@@ -458,6 +473,7 @@
             font-weight: 500;
             text-align: center;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
         
         .use-link:hover {
@@ -554,6 +570,12 @@
             cursor: pointer;
             text-decoration: none;
             font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background: #a3780a;
+            transform: translateY(-2px);
         }
         
         /* Products Banner */
@@ -591,6 +613,11 @@
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .product-banner-item:hover {
+            transform: translateY(-5px);
         }
 
         .product-banner-image {
@@ -766,6 +793,7 @@
             color: #ddd;
             text-decoration: none;
             font-size: 15px;
+            transition: color 0.3s;
         }
         
         .footer-links a:hover {
@@ -787,6 +815,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: background 0.3s;
         }
         
         .social-links a:hover {
@@ -1250,7 +1279,7 @@
         // Wait for Firebase to be available
         const initializeApp = async () => {
             // Wait a bit for Firebase to load
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise(resolve => setTimeout(resolve, 500));
             
             if (!window.firebaseAuth) {
                 console.error("Firebase not initialized properly");
@@ -1259,11 +1288,10 @@
 
             console.log("Initializing application with Firebase...");
 
-            // Authentication Manager Class
+            // Simple Auth Manager
             class AuthManager {
                 constructor() {
                     this.currentUser = null;
-                    this.userData = null;
                     this.initAuthListener();
                     this.setupEventListeners();
                 }
@@ -1273,6 +1301,17 @@
                         console.log("Auth state changed:", user);
                         this.currentUser = user;
                         this.updateUI(user);
+                        
+                        // Store user state in localStorage for persistence
+                        if (user) {
+                            localStorage.setItem('userLoggedIn', 'true');
+                            localStorage.setItem('userEmail', user.email || '');
+                            localStorage.setItem('userDisplayName', user.displayName || 'User');
+                        } else {
+                            localStorage.removeItem('userLoggedIn');
+                            localStorage.removeItem('userEmail');
+                            localStorage.removeItem('userDisplayName');
+                        }
                     });
                 }
 
@@ -1300,12 +1339,48 @@
                             }
                         });
                     }
+                    
+                    // Check localStorage on page load
+                    this.checkLocalStorage();
+                }
+                
+                checkLocalStorage() {
+                    const isLoggedIn = localStorage.getItem('userLoggedIn');
+                    if (isLoggedIn === 'true') {
+                        const userEmail = localStorage.getItem('userEmail') || '';
+                        const userDisplayName = localStorage.getItem('userDisplayName') || 'User';
+                        this.updateUIFromStorage(userEmail, userDisplayName);
+                    }
+                }
+                
+                updateUIFromStorage(email, displayName) {
+                    const loginBtn = document.getElementById('loginButton');
+                    const userProfile = document.getElementById('userProfile');
+                    
+                    if (userProfile && loginBtn) {
+                        userProfile.style.display = 'block';
+                        loginBtn.style.display = 'none';
+                        
+                        const profileAvatar = document.getElementById('profileAvatar');
+                        const profileName = document.getElementById('profileName');
+                        const dropdownUserName = document.getElementById('dropdownUserName');
+                        const dropdownUserEmail = document.getElementById('dropdownUserEmail');
+                        
+                        if (profileAvatar) profileAvatar.textContent = displayName.charAt(0).toUpperCase();
+                        if (profileName) profileName.textContent = displayName;
+                        if (dropdownUserName) dropdownUserName.textContent = displayName;
+                        if (dropdownUserEmail) dropdownUserEmail.textContent = email;
+                    }
                 }
 
                 async handleLogout() {
                     try {
                         await window.firebaseFunctions.signOut(window.firebaseAuth);
                         console.log('User logged out successfully');
+                        // Force reload to ensure clean state
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 500);
                     } catch (error) {
                         console.error('Error logging out:', error);
                     }
