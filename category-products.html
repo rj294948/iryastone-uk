@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category Products - StoneCraft UK</title>
+    <meta name="description" content="Browse our premium stone products by category">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #ffffff;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        /* Header Styles - Same as home page */
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+        }
+        
+        .main-header {
+            padding: 15px 0;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo h1 {
+            font-size: 28px;
+            color: #333;
+            font-weight: 700;
+        }
+        
+        .logo span {
+            color: #b8860b;
+        }
+        
+        .trust-info {
+            flex: 1;
+            text-align: center;
+            padding: 0 20px;
+        }
+        
+        .trust-info-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            font-size: 15px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 12px 25px;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+        }
+        
+        .trust-item i {
+            color: #b8860b;
+            font-size: 18px;
+        }
+
+        /* User Profile Styles */
+        .user-profile {
+            position: relative;
+        }
+
+        .profile-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background 0.3s;
+        }
+
+        .profile-toggle:hover {
+            background: #f5f5f5;
+        }
+
+        .profile-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #b8860b;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .profile-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            min-width: 200px;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .profile-dropdown.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .dropdown-header .user-email {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .dropdown-menu {
+            list-style: none;
+            padding: 8px 0;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            color: #333;
+            text-decoration: none;
+            transition: background 0.3s;
+            font-size: 14px;
+        }
+
+        .dropdown-item:hover {
+            background: #f8f9fa;
+            color: #b8860b;
+        }
+
+        .dropdown-item i {
+            width: 16px;
+            text-align: center;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #eee;
+            margin: 8px 0;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #555;
+            font-size: 12px;
+        }
+
+        .user-action i {
+            font-size: 20px;
+            margin-bottom: 3px;
+        }
+
+        /* Category Banner */
+        .category-banner {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 100px 0 60px;
+            text-align: center;
+            margin-top: 180px;
+        }
+
+        .category-banner h1 {
+            font-size: 42px;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .category-banner p {
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+
+        /* Products Section */
+        .products-section {
+            padding: 60px 0;
+            background: #f9f9f9;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 32px;
+            color: #333;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .section-title:after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 3px;
+            background: #b8860b;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 250px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .product-content {
+            padding: 25px;
+        }
+
+        .product-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .product-description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .product-price {
+            font-size: 22px;
+            font-weight: 700;
+            color: #b8860b;
+            margin-bottom: 20px;
+        }
+
+        .product-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #888;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #b8860b;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #a3780a;
+            transform: translateY(-2px);
+        }
+
+        .btn-block {
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Loading State */
+        .loading-products {
+            text-align: center;
+            padding: 60px;
+            color: #666;
+            grid-column: 1 / -1;
+        }
+
+        .loading-products i {
+            font-size: 40px;
+            margin-bottom: 20px;
+        }
+
+        /* No Products State */
+        .no-products {
+            text-align: center;
+            padding: 60px;
+            color: #666;
+            grid-column: 1 / -1;
+        }
+
+        .no-products i {
+            font-size: 60px;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #222;
+            color: #ddd;
+            padding: 50px 0 20px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+
+        .footer-column h3 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 18px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #b8860b;
+            display: inline-block;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: #ddd;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 14px;
+        }
+
+        .footer-links a:hover {
+            color: #b8860b;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 25px;
+            border-top: 1px solid #444;
+            font-size: 14px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .category-banner {
+                margin-top: 220px;
+                padding: 80px 0 40px;
+            }
+
+            .category-banner h1 {
+                font-size: 32px;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .profile-name {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+
+            .category-banner h1 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header id="mainHeader">
+        <div class="trust-info">
+            <div class="trust-info-content">
+                <div class="trust-item">
+                    <i class="fas fa-truck"></i>
+                    <span>Free UK Delivery</span>
+                </div>
+                <div class="trust-item">
+                    <i class="fas fa-star"></i>
+                    <span>Rated 4.8/5</span>
+                </div>
+                <div class="trust-item">
+                    <i class="fas fa-award"></i>
+                    <span>BSF Member</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Header -->
+        <div class="main-header">
+            <div class="container header-content">
+                <div class="logo">
+                    <a href="index.html" style="text-decoration: none; color: inherit;">
+                        <h1>Stone<span>Craft</span></h1>
+                    </a>
+                </div>
+                
+                <div class="user-actions">
+                    <!-- Dynamic User Profile -->
+                    <div class="user-profile" id="userProfile" style="display: none;">
+                        <button class="profile-toggle" id="profileToggle">
+                            <div class="profile-avatar" id="profileAvatar">U</div>
+                            <span class="profile-name" id="profileName">User</span>
+                            <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
+                        </button>
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <div class="dropdown-header">
+                                <div class="profile-name" id="dropdownUserName">User Name</div>
+                                <div class="user-email" id="dropdownUserEmail">user@example.com</div>
+                            </div>
+                            <ul class="dropdown-menu">
+                                <li><a href="dashboard.html" class="dropdown-item"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                                <li><a href="edit-profile.html" class="dropdown-item"><i class="fas fa-user-edit"></i> Edit Profile</a></li>
+                                <li><a href="wishlist.html" class="dropdown-item"><i class="fas fa-heart"></i> My Wishlist</a></li>
+                                <li><a href="billing.html" class="dropdown-item"><i class="fas fa-address-card"></i> Billing/Shipping</a></li>
+                                <li><a href="orders.html" class="dropdown-item"><i class="fas fa-history"></i> Order History</a></li>
+                                <li class="dropdown-divider"></li>
+                                <li><a href="#" class="dropdown-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Login Button -->
+                    <a href="login.html" class="user-action" id="loginButton">
+                        <i class="fas fa-user"></i>
+                        <span>Sign In</span>
+                    </a>
+                    
+                    <a href="#" class="user-action">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Cart (0)</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Category Banner -->
+    <section class="category-banner" id="categoryBanner">
+        <div class="container">
+            <h1 id="categoryTitle">Loading...</h1>
+            <p id="categoryDescription">Discover our premium collection</p>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="products-section">
+        <div class="container">
+            <h2 class="section-title" id="productsTitle">Our Products</h2>
+            <div class="products-grid" id="productsGrid">
+                <div class="loading-products">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading products...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>StoneCraft</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Our Story</a></li>
+                        <li><a href="#">Careers</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Products</h3>
+                    <ul class="footer-links">
+                        <li><a href="category-products.html?category=flooring">Flooring</a></li>
+                        <li><a href="category-products.html?category=wall">Wall Decoration</a></li>
+                        <li><a href="category-products.html?category=bathroom">Bathroom</a></li>
+                        <li><a href="category-products.html?category=outdoor">Outdoor</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Delivery Info</a></li>
+                        <li><a href="#">Returns</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                        <li><a href="#">Disclaimer</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2024 StoneCraft UK. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { authManager } from './auth.js';
+
+        // User Profile Management
+        class UserProfileManager {
+            constructor() {
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.updateUserInterface();
+            }
+
+            setupEventListeners() {
+                const profileToggle = document.getElementById('profileToggle');
+                const profileDropdown = document.getElementById('profileDropdown');
+                const logoutBtn = document.getElementById('logoutBtn');
+
+                // Profile dropdown toggle
+                profileToggle?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    profileDropdown.classList.toggle('active');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', () => {
+                    profileDropdown?.classList.remove('active');
+                });
+
+                // Logout functionality
+                logoutBtn?.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    await this.handleLogout();
+                });
+            }
+
+            updateUserInterface() {
+                authManager.updateUI(authManager.getCurrentUser());
+            }
+
+            async handleLogout() {
+                const result = await authManager.logout();
+                if (result.success) {
+                    window.location.href = 'index.html';
+                }
+            }
+        }
+
+        // Category Products Manager
+        class CategoryProductsManager {
+            constructor() {
+                this.category = this.getCategoryFromURL();
+                this.products = [];
+                this.init();
+            }
+
+            getCategoryFromURL() {
+                const urlParams = new URLSearchParams(window.location.search);
+                return urlParams.get('category') || 'flooring';
+            }
+
+            async init() {
+                await this.loadCategoryData();
+                await this.loadProducts();
+                this.renderCategoryInfo();
+                this.renderProducts();
+            }
+
+            async loadCategoryData() {
+                // Mock category data - replace with Firestore
+                const categories = {
+                    flooring: {
+                        name: 'Flooring Stones',
+                        description: 'Premium stone flooring solutions for modern homes',
+                        bannerImage: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80'
+                    },
+                    wall: {
+                        name: 'Wall Decoration',
+                        description: 'Beautiful stone cladding for interior and exterior walls',
+                        bannerImage: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80'
+                    },
+                    bathroom: {
+                        name: 'Bathroom Stones',
+                        description: 'Luxury stone solutions for bathroom spaces',
+                        bannerImage: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80'
+                    },
+                    outdoor: {
+                        name: 'Outdoor Stones',
+                        description: 'Durable stone products for outdoor applications',
+                        bannerImage: 'https://images.unsplash.com/photo-1600585154340-2e5db6e509e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80'
+                    }
+                };
+
+                return categories[this.category] || categories.flooring;
+            }
+
+            async loadProducts() {
+                // Mock products data - replace with Firestore
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                const allProducts = {
+                    flooring: [
+                        {
+                            id: '1',
+                            name: 'Kota Blue Stone',
+                            description: 'Premium quality kota stone with beautiful blue-grey hue, perfect for modern flooring.',
+                            price: '£45.00',
+                            image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                            unit: 'per sqm'
+                        },
+                        {
+                            id: '2',
+                            name: 'Sandstone Tiles',
+                            description: 'Natural sandstone tiles with unique texture and color variations.',
+                            price: '£35.00',
+                            image: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                            unit: 'per sqm'
+                        },
+                        {
+                            id: '3',
+                            name: 'Limestone Flooring',
+                            description: 'Elegant limestone flooring with smooth finish and natural beauty.',
+                            price: '£55.00',
+                            image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                            unit: 'per sqm'
+                        }
+                    ],
+                    wall: [
+                        {
+                            id: '4',
+                            name: 'Marble Wall Cladding',
+                            description: 'Luxury marble slabs for elegant wall cladding and feature walls.',
+                            price: '£75.00',
+                            image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                            unit: 'per sqm'
+                        }
+                    ],
+                    bathroom: [
+                        {
+                            id: '5',
+                            name: 'Bathroom Marble Tiles',
+                            description: 'Water-resistant marble tiles specifically designed for bathroom use.',
+                            price: '£65.00',
+                            image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                            unit: 'per sqm'
+                        }
+                    ],
+                    outdoor: [
+                        {
+                            id: '6',
+                            name: 'Outdoor Sandstone Pavers',
+                            description: 'Durable sandstone pavers perfect for patios, pathways and driveways.',
+                            price: '£40.00',
+                            image: 'https://images.unsplash.com/photo-1600585154340-2e5db6e509e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                            unit: 'per sqm'
+                        }
+                    ]
+                };
+
+                this.products = allProducts[this.category] || [];
+            }
+
+            renderCategoryInfo() {
+                const categoryTitle = document.getElementById('categoryTitle');
+                const categoryDescription = document.getElementById('categoryDescription');
+                const categoryBanner = document.getElementById('categoryBanner');
+                const productsTitle = document.getElementById('productsTitle');
+
+                const categoryData = this.loadCategoryData();
+
+                categoryTitle.textContent = categoryData.name;
+                categoryDescription.textContent = categoryData.description;
+                productsTitle.textContent = `${categoryData.name} Collection`;
+
+                // Update banner background
+                categoryBanner.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('${categoryData.bannerImage}')`;
+
+                // Update page title
+                document.title = `${categoryData.name} - StoneCraft UK`;
+            }
+
+            renderProducts() {
+                const productsGrid = document.getElementById('productsGrid');
+                
+                if (this.products.length === 0) {
+                    productsGrid.innerHTML = `
+                        <div class="no-products">
+                            <i class="fas fa-box-open"></i>
+                            <h3>No Products Found</h3>
+                            <p>We're currently updating our ${this.loadCategoryData().name} collection.</p>
+                            <a href="index.html" class="btn" style="margin-top: 20px;">Back to Home</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                productsGrid.innerHTML = this.products.map(product => `
+                    <div class="product-card" data-product-id="${product.id}">
+                        <div class="product-image" style="background-image: url('${product.image}')"></div>
+                        <div class="product-content">
+                            <h3 class="product-title">${product.name}</h3>
+                            <p class="product-description">${product.description}</p>
+                            <div class="product-price">${product.price} <small>${product.unit}</small></div>
+                            <button class="btn btn-block">View Details</button>
+                            <div class="product-meta">
+                                <span><i class="fas fa-ruler-combined"></i> Various Sizes</span>
+                                <span><i class="fas fa-shipping-fast"></i> Free Delivery</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Add click event to product cards
+                productsGrid.querySelectorAll('.product-card').forEach(card => {
+                    card.addEventListener('click', (e) => {
+                        if (!e.target.classList.contains('btn')) {
+                            const productId = card.getAttribute('data-product-id');
+                            this.viewProductDetails(productId);
+                        }
+                    });
+                });
+            }
+
+            viewProductDetails(productId) {
+                // Navigate to product details page
+                window.location.href = `product-details.html?id=${productId}`;
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new UserProfileManager();
+            new CategoryProductsManager();
+        });
+
+    </script>
+</body>
+</html>
