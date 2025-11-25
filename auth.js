@@ -1,9 +1,16 @@
-// auth.js - Fixed version without auto redirect
+// auth.js - Complete Authentication System
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 import {
   getFirestore,
   collection,
   addDoc,
+  getDocs,
+  query,
+  orderBy,
+  doc,
+  deleteDoc,
+  updateDoc,
+  where,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 import {
@@ -17,7 +24,7 @@ import {
   updateProfile
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
-// Firebase Configuration
+// ===== Firebase Config =====
 const firebaseConfig = {
   apiKey: "AIzaSyDxNMhU09mINvq_aDLtylBg3FucCK-MzYE",
   authDomain: "sandstonebijoliya-293d2.firebaseapp.com",
@@ -28,42 +35,38 @@ const firebaseConfig = {
   measurementId: "G-H7JMX9VNYF"
 };
 
-// Initialize Firebase
+// ===== Initialize Firebase =====
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
-// Authentication Manager Class
+// ===== Authentication Functions =====
 class AuthManager {
   constructor() {
     this.currentUser = null;
     this.initAuthListener();
   }
 
+  // Auth State Listener
   initAuthListener() {
     onAuthStateChanged(auth, (user) => {
       this.currentUser = user;
       this.updateUI(user);
-      
-      if (user) {
-        console.log('User logged in:', user.email);
-        // Auto redirect removed from here
-      } else {
-        console.log('User logged out');
-        // Auto redirect removed from here
-      }
     });
   }
 
+  // Sign Up with Email & Password
   async signUp(email, password, displayName) {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       
+      // Update profile with display name
       await updateProfile(userCredential.user, {
         displayName: displayName
       });
 
+      // Create user document in Firestore
       await this.createUserDocument(userCredential.user, displayName);
       
       return { success: true, user: userCredential.user };
@@ -72,6 +75,7 @@ class AuthManager {
     }
   }
 
+  // Sign In with Email & Password
   async signIn(email, password) {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -81,16 +85,21 @@ class AuthManager {
     }
   }
 
+  // Google Sign In
   async signInWithGoogle() {
     try {
       const result = await signInWithPopup(auth, googleProvider);
+      
+      // Create user document if first time
       await this.createUserDocument(result.user, result.user.displayName);
+      
       return { success: true, user: result.user };
     } catch (error) {
       return { success: false, error: this.getErrorMessage(error) };
     }
   }
 
+  // Sign Out
   async logout() {
     try {
       await signOut(auth);
@@ -100,6 +109,7 @@ class AuthManager {
     }
   }
 
+  // Create User Document in Firestore
   async createUserDocument(user, displayName) {
     try {
       const userDoc = {
@@ -117,6 +127,7 @@ class AuthManager {
     }
   }
 
+  // Update UI based on auth state
   updateUI(user) {
     const loginBtn = document.getElementById('loginBtn');
     const logoutBtn = document.getElementById('logoutBtn');
@@ -124,27 +135,30 @@ class AuthManager {
     const userDisplayName = document.getElementById('userDisplayName');
 
     if (user) {
+      // User is signed in
       if (loginBtn) loginBtn.style.display = 'none';
       if (logoutBtn) logoutBtn.style.display = 'block';
       if (userInfo) userInfo.style.display = 'block';
       if (userDisplayName) userDisplayName.textContent = user.displayName || user.email;
     } else {
+      // User is signed out
       if (loginBtn) loginBtn.style.display = 'block';
       if (logoutBtn) logoutBtn.style.display = 'none';
       if (userInfo) userInfo.style.display = 'none';
     }
   }
 
-  // REMOVED AUTO REDIRECT FUNCTIONS
-
+  // Get current user
   getCurrentUser() {
     return this.currentUser;
   }
 
+  // Check if user is authenticated
   isAuthenticated() {
     return this.currentUser !== null;
   }
 
+  // Get user-friendly error messages
   getErrorMessage(error) {
     switch (error.code) {
       case 'auth/invalid-email':
