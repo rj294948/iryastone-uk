@@ -6,6 +6,10 @@
     <title>StoneCraft UK - Premium Natural Stone & Marble Suppliers</title>
     <meta name="description" content="UK's leading supplier of premium natural stone, marble, sandstone & limestone. Free UK delivery. Trusted by homeowners & professionals.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         * {
             margin: 0;
@@ -363,10 +367,11 @@
         
         /* Uses Top Bar with Mega Menu */
         .uses-top-bar {
-            background: #333;
-            padding: 0;
-            position: relative;
-        }
+    /* Make sure .uses-top-bar is the one with position: relative */
+    position: relative; 
+    background: #333;
+    padding: 0;
+}
         
         .uses-container {
             display: flex;
@@ -374,11 +379,12 @@
             flex-wrap: wrap;
         }
         
-        .use-item {
-            flex: 1;
-            min-width: 120px;
-            position: relative;
-        }
+       .use-item {
+    flex: 1;
+    min-width: 120px;
+    /* KEEP position: relative; so hover works on this area, but rely on JS for mega-menu positioning */
+    position: relative; 
+}
         
         .use-link {
             display: block;
@@ -397,16 +403,18 @@
         
         /* Mega Menu Styles */
         .mega-menu {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            width: 100%;
-            background: white;
-            z-index: 1000;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-            display: none;
-            padding: 30px 0;
-        }
+    position: absolute;
+    top: 100%;
+    /* We'll set left: and width: using JavaScript */
+    left: 0; 
+    width: 100%; 
+    background: white;
+    z-index: 1000;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    /* Initially hide it, JS will show it on hover */
+    display: none; 
+    padding: 30px 0;
+}
         
         .use-item:hover .mega-menu {
             display: block;
@@ -603,6 +611,11 @@
             background-position: center;
             border-radius: 12px;
             margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+
+        .use-category-link:hover .use-category-image {
+            transform: scale(1.05);
         }
 
         .use-category-name {
@@ -1124,23 +1137,195 @@
             </div>
         </div>
     </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const usesTopBar = document.querySelector('.uses-top-bar');
+            const useItems = document.querySelectorAll('.use-item');
+            const container = document.querySelector('.uses-top-bar .container');
+            
+            // Get the bounding rectangle of the main container to align the mega menu
+            const containerRect = container.getBoundingClientRect();
+            
+            useItems.forEach(item => {
+                const megaMenu = item.querySelector('.mega-menu');
+
+                if (megaMenu) {
+                    // Set the menu's width and position relative to the main container
+                    megaMenu.style.width = containerRect.width + 'px';
+                    // Calculate the left offset to align with the container's left edge
+                    megaMenu.style.left = -(item.getBoundingClientRect().left - containerRect.left) + 'px';
+
+                    // Use a more controlled hover effect instead of pure CSS to keep full width
+                    item.addEventListener('mouseenter', () => {
+                        // Close any other open menus
+                        document.querySelectorAll('.mega-menu').forEach(menu => {
+                            if (menu !== megaMenu) {
+                                menu.style.display = 'none';
+                            }
+                        });
+                        megaMenu.style.display = 'block';
+                    });
+                    
+                    item.addEventListener('mouseleave', () => {
+                        // Simple delay to prevent accidental closure on re-hovering
+                        setTimeout(() => {
+                            if (!item.matches(':hover')) {
+                                megaMenu.style.display = 'none';
+                            }
+                        }, 50);
+                    });
+                }
+            });
+            
+            // To close the menu when clicking outside (optional but recommended)
+            document.addEventListener('click', (event) => {
+                if (!usesTopBar.contains(event.target)) {
+                    document.querySelectorAll('.mega-menu').forEach(menu => {
+                        menu.style.display = 'none';
+                    });
+                }
+            });
+        });
+    </script>
 
     <script type="module">
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "your-api-key-here",
+            authDomain: "stonecraft-uk.firebaseapp.com",
+            projectId: "stonecraft-uk",
+            storageBucket: "stonecraft-uk.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "your-app-id-here"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Authentication Manager
+        class AuthManager {
+            constructor() {
+                this.currentUser = null;
+                this.userData = null;
+                this.init();
+            }
+
+            init() {
+                this.setupAuthListener();
+                this.setupEventListeners();
+            }
+
+            setupAuthListener() {
+                auth.onAuthStateChanged(async (user) => {
+                    if (user) {
+                        this.currentUser = user;
+                        await this.loadUserData(user.uid);
+                        this.updateUI(user, this.userData);
+                    } else {
+                        this.currentUser = null;
+                        this.userData = null;
+                        this.updateUI(null);
+                    }
+                });
+            }
+
+            setupEventListeners() {
+                const logoutBtn = document.getElementById('logoutBtn');
+                logoutBtn?.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.handleLogout();
+                });
+            }
+
+            async loadUserData(uid) {
+                try {
+                    const userDoc = await db.collection('users').doc(uid).get();
+                    if (userDoc.exists) {
+                        this.userData = userDoc.data();
+                    } else {
+                        // Create user document if it doesn't exist
+                        await this.createUserDocument(uid);
+                    }
+                } catch (error) {
+                    console.error('Error loading user data:', error);
+                }
+            }
+
+            async createUserDocument(uid) {
+                try {
+                    const userData = {
+                        displayName: this.currentUser.displayName || 'User',
+                        email: this.currentUser.email,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    
+                    await db.collection('users').doc(uid).set(userData);
+                    this.userData = userData;
+                } catch (error) {
+                    console.error('Error creating user document:', error);
+                }
+            }
+
+            updateUI(user, userData = null) {
+                const userProfile = document.getElementById('userProfile');
+                const loginButton = document.getElementById('loginButton');
+                
+                if (user) {
+                    // User is logged in
+                    userProfile.style.display = 'block';
+                    loginButton.style.display = 'none';
+                    
+                    // Update profile information
+                    const displayName = userData?.displayName || user.displayName || 'User';
+                    const email = user.email;
+                    const initials = displayName.split(' ').map(n => n[0]).join('').toUpperCase();
+                    
+                    document.getElementById('profileName').textContent = displayName;
+                    document.getElementById('profileAvatar').textContent = initials;
+                    document.getElementById('dropdownUserName').textContent = displayName;
+                    document.getElementById('dropdownUserEmail').textContent = email;
+                } else {
+                    // User is logged out
+                    userProfile.style.display = 'none';
+                    loginButton.style.display = 'flex';
+                }
+            }
+
+            async handleLogout() {
+                try {
+                    await auth.signOut();
+                    console.log('User logged out successfully');
+                } catch (error) {
+                    console.error('Error logging out:', error);
+                }
+            }
+
+            getCurrentUser() {
+                return this.currentUser;
+            }
+
+            getUserData() {
+                return this.userData;
+            }
+        }
+
         // User Profile Management
         class UserProfileManager {
-            constructor() {
+            constructor(authManager) {
+                this.authManager = authManager;
                 this.init();
             }
 
             init() {
                 this.setupEventListeners();
-                this.updateUserInterface();
             }
 
             setupEventListeners() {
                 const profileToggle = document.getElementById('profileToggle');
                 const profileDropdown = document.getElementById('profileDropdown');
-                const logoutBtn = document.getElementById('logoutBtn');
 
                 profileToggle?.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -1150,36 +1335,6 @@
                 document.addEventListener('click', () => {
                     profileDropdown?.classList.remove('active');
                 });
-
-                logoutBtn?.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    await this.handleLogout();
-                });
-            }
-
-            updateUserInterface() {
-                // Check if user is logged in (mock implementation)
-                const isLoggedIn = false; // Change to true to test logged in state
-                
-                if (isLoggedIn) {
-                    document.getElementById('userProfile').style.display = 'block';
-                    document.getElementById('loginButton').style.display = 'none';
-                    
-                    // Set user data
-                    document.getElementById('profileName').textContent = 'John Doe';
-                    document.getElementById('profileAvatar').textContent = 'JD';
-                    document.getElementById('dropdownUserName').textContent = 'John Doe';
-                    document.getElementById('dropdownUserEmail').textContent = 'john.doe@example.com';
-                } else {
-                    document.getElementById('userProfile').style.display = 'none';
-                    document.getElementById('loginButton').style.display = 'flex';
-                }
-            }
-
-            async handleLogout() {
-                // Mock logout implementation
-                console.log('Logging out...');
-                this.updateUserInterface();
             }
         }
 
@@ -1464,7 +1619,8 @@
 
         // Initialize everything when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
-            new UserProfileManager();
+            const authManager = new AuthManager();
+            new UserProfileManager(authManager);
             new AdvancedSearch();
             new DynamicCategories();
         });
