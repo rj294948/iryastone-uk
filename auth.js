@@ -1,27 +1,46 @@
-// auth.js - Complete Authentication System
+// auth.js - Fixed version without auto redirect
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 import {
-  auth,
-  db,
-  googleProvider,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  signInWithPopup,
-  onAuthStateChanged,
-  updateProfile,
+  getFirestore,
   collection,
   addDoc,
   serverTimestamp
-} from './firebase-config.js';
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  GoogleAuthProvider,
+  signInWithPopup,
+  onAuthStateChanged,
+  updateProfile
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
-// ===== Authentication Functions =====
+// Firebase Configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyDxNMhU09mINvq_aDLtylBg3FucCK-MzYE",
+  authDomain: "sandstonebijoliya-293d2.firebaseapp.com",
+  projectId: "sandstonebijoliya-293d2",
+  storageBucket: "sandstonebijoliya-293d2.appspot.com",
+  messagingSenderId: "133756247845",
+  appId: "1:133756247845:web:8e769ce2af3db1765484cc",
+  measurementId: "G-H7JMX9VNYF"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+
+// Authentication Manager Class
 class AuthManager {
   constructor() {
     this.currentUser = null;
     this.initAuthListener();
   }
 
-  // Auth State Listener
   initAuthListener() {
     onAuthStateChanged(auth, (user) => {
       this.currentUser = user;
@@ -29,25 +48,22 @@ class AuthManager {
       
       if (user) {
         console.log('User logged in:', user.email);
-        this.redirectBasedOnAuth();
+        // Auto redirect removed from here
       } else {
         console.log('User logged out');
-        this.redirectToLogin();
+        // Auto redirect removed from here
       }
     });
   }
 
-  // Sign Up with Email & Password
   async signUp(email, password, displayName) {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       
-      // Update profile with display name
       await updateProfile(userCredential.user, {
         displayName: displayName
       });
 
-      // Create user document in Firestore
       await this.createUserDocument(userCredential.user, displayName);
       
       return { success: true, user: userCredential.user };
@@ -56,7 +72,6 @@ class AuthManager {
     }
   }
 
-  // Sign In with Email & Password
   async signIn(email, password) {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -66,21 +81,16 @@ class AuthManager {
     }
   }
 
-  // Google Sign In
   async signInWithGoogle() {
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      
-      // Create user document if first time
       await this.createUserDocument(result.user, result.user.displayName);
-      
       return { success: true, user: result.user };
     } catch (error) {
       return { success: false, error: this.getErrorMessage(error) };
     }
   }
 
-  // Sign Out
   async logout() {
     try {
       await signOut(auth);
@@ -90,7 +100,6 @@ class AuthManager {
     }
   }
 
-  // Create User Document in Firestore
   async createUserDocument(user, displayName) {
     try {
       const userDoc = {
@@ -108,7 +117,6 @@ class AuthManager {
     }
   }
 
-  // Update UI based on auth state
   updateUI(user) {
     const loginBtn = document.getElementById('loginBtn');
     const logoutBtn = document.getElementById('logoutBtn');
@@ -116,50 +124,27 @@ class AuthManager {
     const userDisplayName = document.getElementById('userDisplayName');
 
     if (user) {
-      // User is signed in
       if (loginBtn) loginBtn.style.display = 'none';
       if (logoutBtn) logoutBtn.style.display = 'block';
       if (userInfo) userInfo.style.display = 'block';
       if (userDisplayName) userDisplayName.textContent = user.displayName || user.email;
     } else {
-      // User is signed out
       if (loginBtn) loginBtn.style.display = 'block';
       if (logoutBtn) logoutBtn.style.display = 'none';
       if (userInfo) userInfo.style.display = 'none';
     }
   }
 
-  // Redirect based on authentication
-  redirectBasedOnAuth() {
-    const currentPage = window.location.pathname;
-    
-    // If user is on login page and already authenticated, redirect to home
-    if (currentPage.includes('login.html') || currentPage.includes('signup.html')) {
-      window.location.href = 'index.html';
-    }
-  }
+  // REMOVED AUTO REDIRECT FUNCTIONS
 
-  // Redirect to login if not authenticated
-  redirectToLogin() {
-    const currentPage = window.location.pathname;
-    const publicPages = ['/login.html', '/signup.html', '/index.html', '/'];
-    
-    if (!publicPages.includes(currentPage) && !this.currentUser) {
-      window.location.href = 'login.html';
-    }
-  }
-
-  // Get current user
   getCurrentUser() {
     return this.currentUser;
   }
 
-  // Check if user is authenticated
   isAuthenticated() {
     return this.currentUser !== null;
   }
 
-  // Get user-friendly error messages
   getErrorMessage(error) {
     switch (error.code) {
       case 'auth/invalid-email':
