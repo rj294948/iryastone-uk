@@ -389,11 +389,10 @@
             font-weight: 500;
         }
         
-        /* Uses Top Bar */
+        /* Uses Top Bar - Simple Navigation */
         .uses-top-bar {
             background: #333;
             padding: 0;
-            position: relative;
         }
         
         .uses-container {
@@ -405,80 +404,23 @@
         .use-item {
             flex: 1;
             min-width: 120px;
-            position: static;
         }
         
         .use-link {
             display: block;
             color: white;
             text-decoration: none;
-            padding: 12px 10px;
+            padding: 15px 10px;
             font-size: 14px;
             font-weight: 500;
             text-align: center;
             transition: all 0.3s;
-            position: relative;
-            cursor: pointer;
             border-bottom: 3px solid transparent;
         }
         
         .use-link:hover, .use-link.active {
             background: #b8860b;
             border-bottom: 3px solid #fff;
-        }
-        
-        /* Mega Menu */
-        .mega-menu {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            width: 100%;
-            background: white;
-            z-index: 1000;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-            padding: 30px 0;
-        }
-        
-        .mega-menu.active {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-        
-        .patterns-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 20px;
-            padding: 0 20px;
-        }
-        
-        .pattern-item {
-            text-align: center;
-            cursor: pointer;
-        }
-        
-        .pattern-image {
-            width: 100%;
-            height: 180px;
-            background-size: cover;
-            background-position: center;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            transition: transform 0.3s ease;
-        }
-        
-        .pattern-item:hover .pattern-image {
-            transform: scale(1.05);
-        }
-        
-        .pattern-name {
-            font-size: 14px;
-            color: #333;
-            font-weight: 500;
         }
         
         /* Main Content */
@@ -810,10 +752,6 @@
             .footer-content {
                 grid-template-columns: repeat(2, 1fr);
             }
-            
-            .patterns-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
         }
 
         @media (max-width: 768px) {
@@ -872,10 +810,6 @@
             
             .footer-content {
                 grid-template-columns: 1fr;
-            }
-            
-            .patterns-grid {
-                grid-template-columns: repeat(2, 1fr);
             }
             
             .hero h1 {
@@ -972,7 +906,7 @@
             </div>
         </div>
 
-        <!-- Desktop Uses Top Bar -->
+        <!-- Desktop Uses Top Bar - Simple Navigation -->
         <div class="uses-top-bar">
             <div class="container uses-container">
                 <div class="use-item">
