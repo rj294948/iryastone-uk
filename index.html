@@ -361,10 +361,11 @@
             font-weight: 500;
         }
         
-        /* Uses Top Bar - Simple Navigation */
+        /* Uses Top Bar with Mega Menu */
         .uses-top-bar {
             background: #333;
             padding: 0;
+            position: relative;
         }
         
         .uses-container {
@@ -376,6 +377,7 @@
         .use-item {
             flex: 1;
             min-width: 120px;
+            position: relative;
         }
         
         .use-link {
@@ -386,10 +388,62 @@
             font-size: 14px;
             font-weight: 500;
             text-align: center;
+            cursor: pointer;
         }
         
         .use-link:hover {
             background: #b8860b;
+        }
+        
+        /* Mega Menu Styles */
+        .mega-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: white;
+            z-index: 1000;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            display: none;
+            padding: 30px 0;
+        }
+        
+        .use-item:hover .mega-menu {
+            display: block;
+        }
+        
+        .patterns-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 20px;
+            padding: 0 20px;
+        }
+        
+        .pattern-item {
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+        }
+        
+        .pattern-image {
+            width: 100%;
+            height: 180px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: transform 0.3s ease;
+        }
+        
+        .pattern-item:hover .pattern-image {
+            transform: scale(1.05);
+        }
+        
+        .pattern-name {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
         }
         
         /* Main Content */
@@ -694,6 +748,10 @@
             .footer-content {
                 grid-template-columns: repeat(2, 1fr);
             }
+            
+            .patterns-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
 
         @media (max-width: 768px) {
@@ -743,6 +801,10 @@
             .profile-name {
                 display: none;
             }
+            
+            .patterns-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         @media (max-width: 480px) {
@@ -756,6 +818,10 @@
             
             .hero h1 {
                 font-size: 28px;
+            }
+            
+            .patterns-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -848,24 +914,85 @@
             </div>
         </div>
 
-        <!-- Desktop Uses Top Bar - Simple Navigation -->
+        <!-- Desktop Uses Top Bar with Mega Menu -->
         <div class="uses-top-bar">
             <div class="container uses-container">
                 <div class="use-item">
-                    <a href="category-products.html?category=flooring" class="use-link">Flooring</a>
+                    <div class="use-link">Flooring</div>
+                    <div class="mega-menu">
+                        <div class="patterns-grid">
+                            <a href="category-products.html?category=flooring&type=herringbone" class="pattern-item">
+                                <div class="pattern-image" style="background-image: url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80')"></div>
+                                <div class="pattern-name">Herringbone</div>
+                            </a>
+                            <a href="category-products.html?category=flooring&type=checkerboard" class="pattern-item">
+                                <div class="pattern-image" style="background-image: url('https://images.unsplash.com/photo-1628745277897-d8e04e11c0af?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80')"></div>
+                                <div class="pattern-name">Checkerboard</div>
+                            </a>
+                            <a href="category-products.html?category=flooring&type=random" class="pattern-item">
+                                <div class="pattern-image" style="background-image: url('https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80')"></div>
+                                <div class="pattern-name">Random Layout</div>
+                            </a>
+                            <a href="category-products.html?category=flooring&type=brick" class="pattern-item">
+                                <div class="pattern-image" style="background-image: url('https://images.unsplash.com/photo-1600585154340-2e5db6e509e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80')"></div>
+                                <div class="pattern-name">Brick Pattern</div>
+                            </a>
+                            <a href="category-products.html?category=flooring&type=diagonal" class="pattern-item">
+                                <div class="pattern-image" style="background-image: url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80')"></div>
+                                <div class="pattern-name">Diagonal</div>
+                            </a>
+                            <a href="category-products.html?category=flooring&type=hexagon" class="pattern-item">
+                                <div class="pattern-image" style="background-image: url('https://images.unsplash.com/photo-1628745277897-d8e04e11c0af?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80')"></div>
+                                <div class="pattern-name">Hexagon</div>
+                            </a>
+                        </div>
+                    </div>
                 </div>
+                
                 <div class="use-item">
-                    <a href="category-products.html?category=wall" class="use-link">Wall Decoration</a>
+                    <div class="use-link">Wall Decoration</div>
+                    <div class="mega-menu">
+                        <div class="patterns-grid">
+                            <a href="category-products.html?category=wall&type=cladding" class="pattern-item">
+                                <div class="pattern-image" style="background-image: url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80')"></div>
+                                <div class="pattern-name">Stone Cladding</div>
+                            </a>
+                            <a href="category-products.html?category=wall&type=feature" class="pattern-item">
+                                <div class="pattern-image" style="background-image: url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80')"></div>
+                                <div class="pattern-name">Feature Walls</div>
+                            </a>
+                            <a href="category-products.html?category=wall&type=mosaic" class="pattern-item">
+                                <div class="pattern-image" style="background-image: url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80')"></div>
+                                <div class="pattern-name">Stone Mosaic</div>
+                            </a>
+                            <a href="category-products.html?category=wall&type=panels" class="pattern-item">
+                                <div class="pattern-image" style="background-image: url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80')"></div>
+                                <div class="pattern-name">Wall Panels</div>
+                            </a>
+                            <a href="category-products.html?category=wall&type=veneer" class="pattern-item">
+                                <div class="pattern-image" style="background-image: url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80')"></div>
+                                <div class="pattern-name">Stone Veneer</div>
+                            </a>
+                            <a href="category-products.html?category=wall&type=accent" class="pattern-item">
+                                <div class="pattern-image" style="background-image: url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80')"></div>
+                                <div class="pattern-name">Accent Walls</div>
+                            </a>
+                        </div>
+                    </div>
                 </div>
+                
                 <div class="use-item">
                     <a href="category-products.html?category=bathroom" class="use-link">Bathroom</a>
                 </div>
+                
                 <div class="use-item">
                     <a href="category-products.html?category=outdoor" class="use-link">Outdoor</a>
                 </div>
+                
                 <div class="use-item">
                     <a href="category-products.html?category=kitchen" class="use-link">Kitchen</a>
                 </div>
+                
                 <div class="use-item">
                     <a href="category-products.html?category=commercial" class="use-link">Commercial</a>
                 </div>
@@ -999,8 +1126,6 @@
     </footer>
 
     <script type="module">
-        import { authManager } from './auth.js';
-
         // User Profile Management
         class UserProfileManager {
             constructor() {
@@ -1033,14 +1158,28 @@
             }
 
             updateUserInterface() {
-                authManager.updateUI(authManager.getCurrentUser());
+                // Check if user is logged in (mock implementation)
+                const isLoggedIn = false; // Change to true to test logged in state
+                
+                if (isLoggedIn) {
+                    document.getElementById('userProfile').style.display = 'block';
+                    document.getElementById('loginButton').style.display = 'none';
+                    
+                    // Set user data
+                    document.getElementById('profileName').textContent = 'John Doe';
+                    document.getElementById('profileAvatar').textContent = 'JD';
+                    document.getElementById('dropdownUserName').textContent = 'John Doe';
+                    document.getElementById('dropdownUserEmail').textContent = 'john.doe@example.com';
+                } else {
+                    document.getElementById('userProfile').style.display = 'none';
+                    document.getElementById('loginButton').style.display = 'flex';
+                }
             }
 
             async handleLogout() {
-                const result = await authManager.logout();
-                if (result.success) {
-                    window.location.href = 'index.html';
-                }
+                // Mock logout implementation
+                console.log('Logging out...');
+                this.updateUserInterface();
             }
         }
 
