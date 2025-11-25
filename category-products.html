@@ -6,6 +6,75 @@
     <title>Category Products - StoneCraft UK</title>
     <meta name="description" content="Browse our premium stone products by category">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            getDocs, 
+            query, 
+            orderBy, 
+            doc, 
+            deleteDoc, 
+            updateDoc, 
+            where, 
+            serverTimestamp 
+        } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+        import { 
+            getAuth, 
+            createUserWithEmailAndPassword, 
+            signInWithEmailAndPassword, 
+            signOut, 
+            GoogleAuthProvider, 
+            signInWithPopup, 
+            onAuthStateChanged, 
+            updateProfile 
+        } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+        import { 
+            getStorage, 
+            ref, 
+            uploadBytes, 
+            uploadBytesResumable, 
+            getDownloadURL 
+        } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-storage.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDxNMhU09mINvq_aDLtylBg3FucCK-MzYE",
+            authDomain: "sandstonebijoliya-293d2.firebaseapp.com",
+            projectId: "sandstonebijoliya-293d2",
+            storageBucket: "sandstonebijoliya-293d2.appspot.com",
+            messagingSenderId: "133756247845",
+            appId: "1:133756247845:web:8e769ce2af3db1765484cc",
+            measurementId: "G-H7JMX9VNYF"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const storage = getStorage(app);
+        const googleProvider = new GoogleAuthProvider();
+
+        // Make them globally available
+        window.firebaseApp = app;
+        window.firebaseDb = db;
+        window.firebaseAuth = auth;
+        window.firebaseStorage = storage;
+        window.firebaseGoogleProvider = googleProvider;
+        window.firebaseFunctions = {
+            collection, addDoc, getDocs, query, orderBy, doc, deleteDoc, updateDoc, where, serverTimestamp,
+            createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, signInWithPopup, onAuthStateChanged, updateProfile,
+            ref, uploadBytes, uploadBytesResumable, getDownloadURL
+        };
+
+        console.log("Firebase initialized successfully");
+    </script>
+    
     <style>
         * {
             margin: 0;
@@ -611,241 +680,433 @@
     </footer>
 
     <script type="module">
-        import { authManager } from './auth.js';
-
-        // User Profile Management
-        class UserProfileManager {
-            constructor() {
-                this.init();
+        // Wait for Firebase to be available
+        const initializeApp = async () => {
+            // Wait a bit for Firebase to load
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            if (!window.firebaseAuth) {
+                console.error("Firebase not initialized properly");
+                return;
             }
 
-            init() {
-                this.setupEventListeners();
-                this.updateUserInterface();
-            }
+            console.log("Initializing application with Firebase...");
 
-            setupEventListeners() {
-                const profileToggle = document.getElementById('profileToggle');
-                const profileDropdown = document.getElementById('profileDropdown');
-                const logoutBtn = document.getElementById('logoutBtn');
-
-                // Profile dropdown toggle
-                profileToggle?.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    profileDropdown.classList.toggle('active');
-                });
-
-                // Close dropdown when clicking outside
-                document.addEventListener('click', () => {
-                    profileDropdown?.classList.remove('active');
-                });
-
-                // Logout functionality
-                logoutBtn?.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    await this.handleLogout();
-                });
-            }
-
-            updateUserInterface() {
-                authManager.updateUI(authManager.getCurrentUser());
-            }
-
-            async handleLogout() {
-                const result = await authManager.logout();
-                if (result.success) {
-                    window.location.href = 'index.html';
-                }
-            }
-        }
-
-        // Category Products Manager
-        class CategoryProductsManager {
-            constructor() {
-                this.category = this.getCategoryFromURL();
-                this.products = [];
-                this.init();
-            }
-
-            getCategoryFromURL() {
-                const urlParams = new URLSearchParams(window.location.search);
-                return urlParams.get('category') || 'flooring';
-            }
-
-            async init() {
-                await this.loadCategoryData();
-                await this.loadProducts();
-                this.renderCategoryInfo();
-                this.renderProducts();
-            }
-
-            async loadCategoryData() {
-                // Mock category data - replace with Firestore
-                const categories = {
-                    flooring: {
-                        name: 'Flooring Stones',
-                        description: 'Premium stone flooring solutions for modern homes',
-                        bannerImage: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80'
-                    },
-                    wall: {
-                        name: 'Wall Decoration',
-                        description: 'Beautiful stone cladding for interior and exterior walls',
-                        bannerImage: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80'
-                    },
-                    bathroom: {
-                        name: 'Bathroom Stones',
-                        description: 'Luxury stone solutions for bathroom spaces',
-                        bannerImage: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80'
-                    },
-                    outdoor: {
-                        name: 'Outdoor Stones',
-                        description: 'Durable stone products for outdoor applications',
-                        bannerImage: 'https://images.unsplash.com/photo-1600585154340-2e5db6e509e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80'
-                    }
-                };
-
-                return categories[this.category] || categories.flooring;
-            }
-
-            async loadProducts() {
-                // Mock products data - replace with Firestore
-                await new Promise(resolve => setTimeout(resolve, 1500));
-
-                const allProducts = {
-                    flooring: [
-                        {
-                            id: '1',
-                            name: 'Kota Blue Stone',
-                            description: 'Premium quality kota stone with beautiful blue-grey hue, perfect for modern flooring.',
-                            price: '£45.00',
-                            image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
-                            unit: 'per sqm'
-                        },
-                        {
-                            id: '2',
-                            name: 'Sandstone Tiles',
-                            description: 'Natural sandstone tiles with unique texture and color variations.',
-                            price: '£35.00',
-                            image: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
-                            unit: 'per sqm'
-                        },
-                        {
-                            id: '3',
-                            name: 'Limestone Flooring',
-                            description: 'Elegant limestone flooring with smooth finish and natural beauty.',
-                            price: '£55.00',
-                            image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
-                            unit: 'per sqm'
-                        }
-                    ],
-                    wall: [
-                        {
-                            id: '4',
-                            name: 'Marble Wall Cladding',
-                            description: 'Luxury marble slabs for elegant wall cladding and feature walls.',
-                            price: '£75.00',
-                            image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
-                            unit: 'per sqm'
-                        }
-                    ],
-                    bathroom: [
-                        {
-                            id: '5',
-                            name: 'Bathroom Marble Tiles',
-                            description: 'Water-resistant marble tiles specifically designed for bathroom use.',
-                            price: '£65.00',
-                            image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
-                            unit: 'per sqm'
-                        }
-                    ],
-                    outdoor: [
-                        {
-                            id: '6',
-                            name: 'Outdoor Sandstone Pavers',
-                            description: 'Durable sandstone pavers perfect for patios, pathways and driveways.',
-                            price: '£40.00',
-                            image: 'https://images.unsplash.com/photo-1600585154340-2e5db6e509e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
-                            unit: 'per sqm'
-                        }
-                    ]
-                };
-
-                this.products = allProducts[this.category] || [];
-            }
-
-            renderCategoryInfo() {
-                const categoryTitle = document.getElementById('categoryTitle');
-                const categoryDescription = document.getElementById('categoryDescription');
-                const categoryBanner = document.getElementById('categoryBanner');
-                const productsTitle = document.getElementById('productsTitle');
-
-                const categoryData = this.loadCategoryData();
-
-                categoryTitle.textContent = categoryData.name;
-                categoryDescription.textContent = categoryData.description;
-                productsTitle.textContent = `${categoryData.name} Collection`;
-
-                // Update banner background
-                categoryBanner.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('${categoryData.bannerImage}')`;
-
-                // Update page title
-                document.title = `${categoryData.name} - StoneCraft UK`;
-            }
-
-            renderProducts() {
-                const productsGrid = document.getElementById('productsGrid');
-                
-                if (this.products.length === 0) {
-                    productsGrid.innerHTML = `
-                        <div class="no-products">
-                            <i class="fas fa-box-open"></i>
-                            <h3>No Products Found</h3>
-                            <p>We're currently updating our ${this.loadCategoryData().name} collection.</p>
-                            <a href="index.html" class="btn" style="margin-top: 20px;">Back to Home</a>
-                        </div>
-                    `;
-                    return;
+            // Simple Auth Manager
+            class AuthManager {
+                constructor() {
+                    this.currentUser = null;
+                    this.initAuthListener();
+                    this.setupEventListeners();
                 }
 
-                productsGrid.innerHTML = this.products.map(product => `
-                    <div class="product-card" data-product-id="${product.id}">
-                        <div class="product-image" style="background-image: url('${product.image}')"></div>
-                        <div class="product-content">
-                            <h3 class="product-title">${product.name}</h3>
-                            <p class="product-description">${product.description}</p>
-                            <div class="product-price">${product.price} <small>${product.unit}</small></div>
-                            <button class="btn btn-block">View Details</button>
-                            <div class="product-meta">
-                                <span><i class="fas fa-ruler-combined"></i> Various Sizes</span>
-                                <span><i class="fas fa-shipping-fast"></i> Free Delivery</span>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-
-                // Add click event to product cards
-                productsGrid.querySelectorAll('.product-card').forEach(card => {
-                    card.addEventListener('click', (e) => {
-                        if (!e.target.classList.contains('btn')) {
-                            const productId = card.getAttribute('data-product-id');
-                            this.viewProductDetails(productId);
+                initAuthListener() {
+                    window.firebaseFunctions.onAuthStateChanged(window.firebaseAuth, (user) => {
+                        console.log("Auth state changed:", user);
+                        this.currentUser = user;
+                        this.updateUI(user);
+                        
+                        // Store user state in localStorage for persistence
+                        if (user) {
+                            localStorage.setItem('userLoggedIn', 'true');
+                            localStorage.setItem('userEmail', user.email || '');
+                            localStorage.setItem('userDisplayName', user.displayName || 'User');
+                        } else {
+                            localStorage.removeItem('userLoggedIn');
+                            localStorage.removeItem('userEmail');
+                            localStorage.removeItem('userDisplayName');
                         }
                     });
-                });
+                }
+
+                setupEventListeners() {
+                    const logoutBtn = document.getElementById('logoutBtn');
+                    if (logoutBtn) {
+                        logoutBtn.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            this.handleLogout();
+                        });
+                    }
+
+                    const profileToggle = document.getElementById('profileToggle');
+                    const profileDropdown = document.getElementById('profileDropdown');
+
+                    if (profileToggle && profileDropdown) {
+                        profileToggle.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            profileDropdown.classList.toggle('active');
+                        });
+
+                        document.addEventListener('click', (e) => {
+                            if (!profileToggle.contains(e.target) && !profileDropdown.contains(e.target)) {
+                                profileDropdown.classList.remove('active');
+                            }
+                        });
+                    }
+                    
+                    // Check localStorage on page load
+                    this.checkLocalStorage();
+                }
+                
+                checkLocalStorage() {
+                    const isLoggedIn = localStorage.getItem('userLoggedIn');
+                    if (isLoggedIn === 'true') {
+                        const userEmail = localStorage.getItem('userEmail') || '';
+                        const userDisplayName = localStorage.getItem('userDisplayName') || 'User';
+                        this.updateUIFromStorage(userEmail, userDisplayName);
+                    }
+                }
+                
+                updateUIFromStorage(email, displayName) {
+                    const loginBtn = document.getElementById('loginButton');
+                    const userProfile = document.getElementById('userProfile');
+                    
+                    if (userProfile && loginBtn) {
+                        userProfile.style.display = 'block';
+                        loginBtn.style.display = 'none';
+                        
+                        const profileAvatar = document.getElementById('profileAvatar');
+                        const profileName = document.getElementById('profileName');
+                        const dropdownUserName = document.getElementById('dropdownUserName');
+                        const dropdownUserEmail = document.getElementById('dropdownUserEmail');
+                        
+                        if (profileAvatar) profileAvatar.textContent = displayName.charAt(0).toUpperCase();
+                        if (profileName) profileName.textContent = displayName;
+                        if (dropdownUserName) dropdownUserName.textContent = displayName;
+                        if (dropdownUserEmail) dropdownUserEmail.textContent = email;
+                    }
+                }
+
+                async handleLogout() {
+                    try {
+                        await window.firebaseFunctions.signOut(window.firebaseAuth);
+                        console.log('User logged out successfully');
+                        // Force reload to ensure clean state
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 500);
+                    } catch (error) {
+                        console.error('Error logging out:', error);
+                    }
+                }
+
+                updateUI(user) {
+                    const loginBtn = document.getElementById('loginButton');
+                    const userProfile = document.getElementById('userProfile');
+                    const profileAvatar = document.getElementById('profileAvatar');
+                    const profileName = document.getElementById('profileName');
+                    const dropdownUserName = document.getElementById('dropdownUserName');
+                    const dropdownUserEmail = document.getElementById('dropdownUserEmail');
+
+                    console.log("Updating UI for user:", user);
+                    
+                    if (user) {
+                        // User is signed in
+                        if (userProfile) userProfile.style.display = 'block';
+                        if (loginBtn) loginBtn.style.display = 'none';
+                        
+                        const displayName = user.displayName || 'User';
+                        const email = user.email || '';
+                        const initials = displayName.charAt(0).toUpperCase();
+                        
+                        if (profileAvatar) profileAvatar.textContent = initials;
+                        if (profileName) profileName.textContent = displayName;
+                        if (dropdownUserName) dropdownUserName.textContent = displayName;
+                        if (dropdownUserEmail) dropdownUserEmail.textContent = email;
+                        
+                        console.log("Profile updated for:", displayName);
+                    } else {
+                        // User is signed out
+                        if (userProfile) userProfile.style.display = 'none';
+                        if (loginBtn) loginBtn.style.display = 'flex';
+                        console.log("User logged out, showing login button");
+                    }
+                }
+
+                getCurrentUser() {
+                    return this.currentUser;
+                }
+
+                isAuthenticated() {
+                    return this.currentUser !== null;
+                }
             }
 
-            viewProductDetails(productId) {
-                // Navigate to product details page
-                window.location.href = `product-details.html?id=${productId}`;
+            // Category Products Manager
+            class CategoryProductsManager {
+                constructor() {
+                    this.category = this.getCategoryFromURL();
+                    this.products = [];
+                    this.categoryData = null;
+                    this.init();
+                }
+
+                getCategoryFromURL() {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    return urlParams.get('category') || 'flooring';
+                }
+
+                async init() {
+                    await this.loadCategoryData();
+                    await this.loadProducts();
+                    this.renderCategoryInfo();
+                    this.renderProducts();
+                }
+
+                async loadCategoryData() {
+                    // Category data with proper information
+                    const categories = {
+                        flooring: {
+                            name: 'Flooring Stones',
+                            description: 'Premium stone flooring solutions for modern homes and commercial spaces',
+                            bannerImage: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80'
+                        },
+                        wall: {
+                            name: 'Wall Decoration',
+                            description: 'Beautiful stone cladding for interior and exterior walls with elegant finishes',
+                            bannerImage: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80'
+                        },
+                        bathroom: {
+                            name: 'Bathroom Stones',
+                            description: 'Luxury stone solutions for bathroom spaces with water-resistant properties',
+                            bannerImage: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80'
+                        },
+                        outdoor: {
+                            name: 'Outdoor Stones',
+                            description: 'Durable stone products for outdoor applications including patios and pathways',
+                            bannerImage: 'https://images.unsplash.com/photo-1600585154340-2e5db6e509e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80'
+                        },
+                        kitchen: {
+                            name: 'Kitchen Stones',
+                            description: 'Premium stone countertops and backsplashes for modern kitchens',
+                            bannerImage: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80'
+                        },
+                        commercial: {
+                            name: 'Commercial Stones',
+                            description: 'Heavy-duty stone solutions for commercial and industrial applications',
+                            bannerImage: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80'
+                        }
+                    };
+
+                    this.categoryData = categories[this.category] || categories.flooring;
+                    return this.categoryData;
+                }
+
+                async loadProducts() {
+                    // Mock products data - replace with Firestore
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+
+                    const allProducts = {
+                        flooring: [
+                            {
+                                id: '1',
+                                name: 'Kota Blue Stone',
+                                description: 'Premium quality kota stone with beautiful blue-grey hue, perfect for modern flooring applications in both residential and commercial spaces.',
+                                price: '£45.00',
+                                image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                                unit: 'per sqm',
+                                features: ['Non-slip surface', 'Easy maintenance', 'Weather resistant']
+                            },
+                            {
+                                id: '2',
+                                name: 'Sandstone Tiles',
+                                description: 'Natural sandstone tiles with unique texture and color variations, ideal for creating warm and inviting spaces.',
+                                price: '£35.00',
+                                image: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                                unit: 'per sqm',
+                                features: ['Natural texture', 'Color variations', 'Durable']
+                            },
+                            {
+                                id: '3',
+                                name: 'Limestone Flooring',
+                                description: 'Elegant limestone flooring with smooth finish and natural beauty, perfect for creating sophisticated interiors.',
+                                price: '£55.00',
+                                image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                                unit: 'per sqm',
+                                features: ['Smooth finish', 'Easy to clean', 'Timeless appeal']
+                            },
+                            {
+                                id: '4',
+                                name: 'Marble Floor Tiles',
+                                description: 'Luxury marble floor tiles with exquisite veining patterns, adding elegance to any space.',
+                                price: '£75.00',
+                                image: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                                unit: 'per sqm',
+                                features: ['Luxury finish', 'Unique patterns', 'High durability']
+                            }
+                        ],
+                        wall: [
+                            {
+                                id: '5',
+                                name: 'Marble Wall Cladding',
+                                description: 'Luxury marble slabs for elegant wall cladding and feature walls in both interior and exterior applications.',
+                                price: '£75.00',
+                                image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                                unit: 'per sqm',
+                                features: ['Elegant finish', 'Weather resistant', 'Easy installation']
+                            },
+                            {
+                                id: '6',
+                                name: 'Stone Veneer Panels',
+                                description: 'Lightweight stone veneer panels that provide the look of natural stone with easier installation.',
+                                price: '£45.00',
+                                image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                                unit: 'per panel',
+                                features: ['Lightweight', 'Easy installation', 'Cost effective']
+                            }
+                        ],
+                        bathroom: [
+                            {
+                                id: '7',
+                                name: 'Bathroom Marble Tiles',
+                                description: 'Water-resistant marble tiles specifically designed for bathroom use with anti-slip properties.',
+                                price: '£65.00',
+                                image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                                unit: 'per sqm',
+                                features: ['Water resistant', 'Anti-slip', 'Easy maintenance']
+                            },
+                            {
+                                id: '8',
+                                name: 'Bathroom Stone Vanity',
+                                description: 'Elegant stone vanity tops with integrated sinks for luxurious bathroom spaces.',
+                                price: '£320.00',
+                                image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                                unit: 'per piece',
+                                features: ['Integrated sink', 'Stain resistant', 'Modern design']
+                            }
+                        ],
+                        outdoor: [
+                            {
+                                id: '9',
+                                name: 'Outdoor Sandstone Pavers',
+                                description: 'Durable sandstone pavers perfect for patios, pathways and driveways with excellent weather resistance.',
+                                price: '£40.00',
+                                image: 'https://images.unsplash.com/photo-1600585154340-2e5db6e509e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                                unit: 'per sqm',
+                                features: ['Weather resistant', 'Non-slip', 'Natural look']
+                            },
+                            {
+                                id: '10',
+                                name: 'Garden Stone Edging',
+                                description: 'Beautiful stone edging for garden beds and landscape borders with natural appearance.',
+                                price: '£25.00',
+                                image: 'https://images.unsplash.com/photo-1600585154340-2e5db6e509e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                                unit: 'per meter',
+                                features: ['Natural look', 'Easy installation', 'Durable']
+                            }
+                        ],
+                        kitchen: [
+                            {
+                                id: '11',
+                                name: 'Granite Countertops',
+                                description: 'Premium granite countertops with heat and scratch resistance for modern kitchens.',
+                                price: '£120.00',
+                                image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                                unit: 'per sqm',
+                                features: ['Heat resistant', 'Scratch proof', 'Easy to clean']
+                            }
+                        ],
+                        commercial: [
+                            {
+                                id: '12',
+                                name: 'Commercial Floor Tiles',
+                                description: 'Heavy-duty floor tiles designed for high-traffic commercial and industrial areas.',
+                                price: '£85.00',
+                                image: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                                unit: 'per sqm',
+                                features: ['Heavy duty', 'High traffic', 'Slip resistant']
+                            }
+                        ]
+                    };
+
+                    this.products = allProducts[this.category] || [];
+                }
+
+                renderCategoryInfo() {
+                    const categoryTitle = document.getElementById('categoryTitle');
+                    const categoryDescription = document.getElementById('categoryDescription');
+                    const categoryBanner = document.getElementById('categoryBanner');
+                    const productsTitle = document.getElementById('productsTitle');
+
+                    categoryTitle.textContent = this.categoryData.name;
+                    categoryDescription.textContent = this.categoryData.description;
+                    productsTitle.textContent = `${this.categoryData.name} Collection`;
+
+                    // Update banner background
+                    categoryBanner.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('${this.categoryData.bannerImage}')`;
+
+                    // Update page title
+                    document.title = `${this.categoryData.name} - StoneCraft UK`;
+                }
+
+                renderProducts() {
+                    const productsGrid = document.getElementById('productsGrid');
+                    
+                    if (this.products.length === 0) {
+                        productsGrid.innerHTML = `
+                            <div class="no-products">
+                                <i class="fas fa-box-open"></i>
+                                <h3>No Products Found</h3>
+                                <p>We're currently updating our ${this.categoryData.name} collection.</p>
+                                <a href="index.html" class="btn" style="margin-top: 20px;">Back to Home</a>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    productsGrid.innerHTML = this.products.map(product => `
+                        <div class="product-card" data-product-id="${product.id}">
+                            <div class="product-image" style="background-image: url('${product.image}')"></div>
+                            <div class="product-content">
+                                <h3 class="product-title">${product.name}</h3>
+                                <p class="product-description">${product.description}</p>
+                                <div class="product-price">${product.price} <small>${product.unit}</small></div>
+                                <button class="btn btn-block view-product-btn">View Details</button>
+                                <div class="product-meta">
+                                    <span><i class="fas fa-ruler-combined"></i> Various Sizes</span>
+                                    <span><i class="fas fa-shipping-fast"></i> Free Delivery</span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+
+                    // Add click event to product cards and buttons
+                    productsGrid.querySelectorAll('.product-card').forEach(card => {
+                        const viewBtn = card.querySelector('.view-product-btn');
+                        viewBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            const productId = card.getAttribute('data-product-id');
+                            this.viewProductDetails(productId);
+                        });
+                        
+                        card.addEventListener('click', (e) => {
+                            if (!e.target.classList.contains('btn')) {
+                                const productId = card.getAttribute('data-product-id');
+                                this.viewProductDetails(productId);
+                            }
+                        });
+                    });
+                }
+
+                viewProductDetails(productId) {
+                    // Navigate to product details page
+                    window.location.href = `product-details.html?id=${productId}&category=${this.category}`;
+                }
             }
-        }
 
-        // Initialize when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            new UserProfileManager();
-            new CategoryProductsManager();
-        });
+            // Initialize all managers
+            try {
+                const authManager = new AuthManager();
+                const categoryProductsManager = new CategoryProductsManager();
+                
+                console.log("All managers initialized successfully");
+            } catch (error) {
+                console.error("Error initializing managers:", error);
+            }
+        };
 
+        // Start the application
+        initializeApp();
     </script>
 </body>
 </html>
