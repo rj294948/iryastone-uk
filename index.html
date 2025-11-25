@@ -35,7 +35,7 @@
             top: 0;
             left: 0;
             width: 100%;
-            z-index: 100;
+            z-index: 1000;
             transition: transform 0.3s ease;
         }
         
@@ -76,52 +76,35 @@
         }
         
         .trust-info-content {
-           gap: 15px;
-                font-size: 13px;
-                padding: 10px 15px;
-                border-radius: 10px;
-                margin: 0 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            font-size: 15px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 12px 25px;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
         }
         
         .trust-item {
-             flex: 1;
-                min-width: 110px;
-                padding: 8px 10px;
-                gap: 6px;
-                justify-content: center;
-                background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
         }
         
         .trust-item i {
             color: #b8860b;
-            font-size: 16px;
-        }
-        
-        .user-actions {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .user-action {
-            display: flex ;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: #555;
-            font-size: 12px;
-        }
-        
-        .user-action i {
-            font-size: 20px;
-            margin-bottom: 3px;
-        }
-        
-        .user-action:hover {
-            color: #b8860b;
+            font-size: 18px;
         }
 
-        /* User Profile Dropdown */
+        /* User Profile Styles */
         .user-profile {
             position: relative;
         }
@@ -224,49 +207,189 @@
             background: #eee;
             margin: 8px 0;
         }
-        
-        /* Search Bar */
-        .search-container {
+
+        .user-actions {
             display: flex;
-            margin: 0px 0;
-            width: 50%;
-            margin-left: center;
-            margin-right: 20px;
+            align-items: center;
+            gap: 20px;
         }
-        
-        .search-input {
+
+        .user-action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #555;
+            font-size: 12px;
+        }
+
+        .user-action i {
+            font-size: 20px;
+            margin-bottom: 3px;
+        }
+
+        /* Advanced Search Styles */
+        .search-container {
+            position: relative;
             flex: 1;
-            padding: 10px 20px;
-            border: 1px solid #ddd;
-            border-radius: 4px 0 0 4px;
-            font-size: 14px;
+            max-width: 500px;
+            margin: 0 20px;
         }
-        
+
+        .search-input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 45px 12px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 25px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #b8860b;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.1);
+        }
+
         .search-button {
+            position: absolute;
+            right: 8px;
             background: #b8860b;
             color: white;
             border: none;
-            padding: 0 15px;
-            border-radius: 0 4px 4px 0;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-button:hover {
+            background: #a3780a;
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 1001;
+            display: none;
+            margin-top: 5px;
+        }
+
+        .search-results.active {
+            display: block;
+        }
+
+        .search-result-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
             cursor: pointer;
             transition: background 0.3s;
         }
-        
-        .search-button:hover {
-            background: #a3780a;
+
+        .search-result-item:hover {
+            background: #f8f9fa;
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 6px;
+            background-size: cover;
+            background-position: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .search-result-content {
+            flex: 1;
+        }
+
+        .search-result-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .search-result-category {
+            font-size: 12px;
+            color: #b8860b;
+            background: #fff9e6;
+            padding: 2px 8px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        .search-result-price {
+            font-weight: 700;
+            color: #b8860b;
+            font-size: 14px;
+        }
+
+        .no-results {
+            padding: 20px;
+            text-align: center;
+            color: #666;
+        }
+
+        .search-loading {
+            padding: 15px;
+            text-align: center;
+            color: #666;
+        }
+
+        .view-all-results {
+            padding: 12px 15px;
+            text-align: center;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .view-all-results a {
+            color: #b8860b;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .view-all-results a:hover {
+            text-decoration: underline;
         }
         
         /* Banner Text */
         .banner-text {
             background: linear-gradient(135deg, #b8860b, #a3780a);
             color: white;
-            padding: 10x 0;
+            padding: 12px 0;
             text-align: center;
             font-size: 16px;
             font-weight: 500;
         }
         
-        /* Uses Top Bar - Always Visible */
+        /* Uses Top Bar */
         .uses-top-bar {
             background: #333;
             padding: 0;
@@ -289,7 +412,7 @@
             display: block;
             color: white;
             text-decoration: none;
-            padding: 8px 10px;
+            padding: 12px 10px;
             font-size: 14px;
             font-weight: 500;
             text-align: center;
@@ -358,504 +481,6 @@
             font-weight: 500;
         }
         
-        /* Mobile Navigation */
-        .mobile-nav-toggle {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 24px;
-            color: #333;
-            cursor: pointer;
-            padding: 5px;
-        }
-        
-        .mobile-nav-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-        }
-        
-        .mobile-nav-container {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 85%;
-            max-width: 320px;
-            height: 100%;
-            background: white;
-            z-index: 1000;
-            overflow-y: auto;
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
-        }
-        
-        .mobile-nav-container.active {
-            transform: translateX(0);
-        }
-        
-        .mobile-nav-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            background: #333;
-            color: white;
-        }
-        
-        .mobile-nav-close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-        }
-        
-        .mobile-nav-menu {
-            padding: 15px 0;
-        }
-        
-        .mobile-nav-item {
-            border-bottom: 1px solid #eee;
-        }
-        
-        .mobile-nav-link {
-            display: block;
-            padding: 15px;
-            color: #333;
-            text-decoration: none;
-            font-weight: 500;
-            transition: background 0.3s;
-            position: relative;
-        }
-        
-        .mobile-nav-link:hover {
-            background: #f5f5f5;
-        }
-        
-        .mobile-nav-link.active {
-            background: #b8860b;
-            color: white;
-        }
-        
-        .mobile-nav-link.has-submenu:after {
-            content: '\f107';
-            font-family: 'Font Awesome 5 Free';
-            font-weight: 900;
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            transition: transform 0.3s;
-        }
-        
-        .mobile-nav-link.has-submenu.active:after {
-            transform: translateY(-50%) rotate(180deg);
-        }
-        
-        .mobile-submenu {
-            display: none;
-            background: #f9f9f9;
-            padding: 10px 0;
-        }
-        
-        .mobile-submenu.active {
-            display: block;
-        }
-        
-        .mobile-submenu-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 10px;
-            padding: 0 15px;
-        }
-        
-        .mobile-submenu-item {
-            text-align: center;
-        }
-        
-        .mobile-submenu-link {
-            display: block;
-            color: #666;
-            text-decoration: none;
-            font-size: 13px;
-            transition: color 0.3s;
-        }
-        
-        .mobile-submenu-image {
-            width: 100%;
-            height: 120px;
-            background-size: cover;
-            background-position: center;
-            border-radius: 6px;
-            margin-bottom: 8px;
-            transition: transform 0.3s;
-        }
-        
-        .mobile-submenu-link:hover .mobile-submenu-image {
-            transform: scale(1.05);
-        }
-        
-        .mobile-submenu-link:hover {
-            color: #b8860b;
-        }
-        
-        /* Trending Stone Banner */
-        .trending-banner {
-            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80');
-            background-size: cover;
-            background-position: center;
-            color: white;
-            padding: 60px 0;
-            text-align: center;
-            margin-top: none;
-        }
-        
-        .trending-banner h2 {
-            font-size: 36px;
-            margin-bottom: 20px;
-        }
-        
-        .trending-banner p {
-            font-size: 18px;
-            max-width: 600px;
-            margin: 0 auto 30px;
-        }
-        
-        /* Products Banner */
-.products-banner {
-    padding: 50px 0;
-    background: #f9f9f9;
-}
-
-.products-banner-content {
-    text-align: center;
-    margin-bottom: 40px;
-}
-
-.products-banner-content h2 {
-    font-size: 32px;
-    color: #333;
-    margin-bottom: 15px;
-}
-
-.products-banner-content p {
-    font-size: 16px;
-    color: #666;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-/* --- [1] मुख्य बदलाव: Grid Layout और Flex को हटाया --- */
-.products-grid-banner {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr); 
-    gap: 30px;
-}
-
-/* --- [2] मुख्य बदलाव: Item को बॉक्स लुक देना --- */
-.product-banner-item {
-    background: white; /* सफेद बैकग्राउंड */
-    border-radius: 8px; /* गोल कोने */
-    overflow: hidden; /* इमेज को ओवरफ्लो होने से रोकना */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* हल्का शैडो */
-    transition: all 0.3s ease;
-    position: relative;
-}
-
-/* --- [3] मुख्य बदलाव: Aspect Ratio के लिए height हटाई, padding-bottom जोड़ा --- */
-.product-banner-image {
-    width: 100%;
-    height: 0; /* निश्चित height हटाई */
-    padding-bottom: 60%; /* Aspect Ratio बनाए रखने के लिए */
-    
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    transition: transform 0.3s ease;
-}
-
-.product-banner-item:hover .product-banner-image {
-    transform: scale(1.05);
-}
-
-.product-banner-text {
-    padding: 25px;
-    text-align: center;
-    background: white;
-}
-
-.product-banner-text h3 {
-    font-size: 22px;
-    margin-bottom: 12px;
-    color: #333;
-    font-weight: 600;
-}
-
-.product-banner-text p {
-    font-size: 16px;
-    color: #666;
-    margin-bottom: 20px;
-    line-height: 1.6;
-}
-/* Tablet View Adjustments */
-@media (min-width: 768px) and (max-width: 1024px) {
-    .products-grid-banner {
-        grid-template-columns: 1fr;
-        gap: 25px;
-    }
-    
-    .product-banner-image {
-        height: 250px; /* Slightly smaller for tablet */
-    }
-}
-
-/* Mobile View Adjustments */
-@media (max-width: 767px) {
-    .products-grid-banner {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-    
-    .product-banner-image {
-        height: 220px; /* Adjusted for mobile but still full display */
-    }
-    
-    .product-banner-text {
-        padding: 20px;
-    }
-    
-    .product-banner-text h3 {
-        font-size: 20px;
-    }
-    
-    .product-banner-text p {
-        font-size: 15px;
-    }
-}
-
-@media (max-width: 480px) {
-    .product-banner-image {
-        height: 200px; /* Slightly smaller for very small screens */
-    }
-    
-    .product-banner-text h3 {
-        font-size: 18px;
-    }
-    
-    .product-banner-text p {
-        font-size: 14px;
-    }
-}
-        
-        /* Uses Categories Section */
-        .uses-categories {
-    padding: 60px 0;
-    background: white;
-}
-
-.section-title {
-    text-align: center;
-    margin: 0 0 40px;
-    font-size: 32px;
-    color: #333;
-    position: relative;
-    padding-bottom: 15px;
-}
-
-.section-title:after {
-    content: '';
-    position: absolute;
-    width: 80px;
-    height: 3px;
-    background: #b8860b;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-/* --- Global Desktop Grid --- */
-.uses-categories-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr); /* डेस्कटॉप: 4 कॉलम */
-    gap: 25px;
-}
-
-.use-category-item {
-    text-align: center;
-    cursor: pointer;
-}
-
-.use-category-link {
-    display: block;
-    text-decoration: none;
-    color: #333;
-}
-
-/* --- Image Aspect Ratio Fix (डेस्कटॉप और ग्लोबल) --- */
-.use-category-image {
-    width: 100%;
-    
-    /* निश्चित height हटाई */
-    height: 0; 
-    /* Aspect Ratio के लिए padding-bottom जोड़ा (4:3 अनुपात के लिए 75% सही रहता है) */
-    padding-bottom: 75%; 
-    
-    background-size: cover;
-    background-position: center;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    transition: transform 0.3s;
-}
-
-.use-category-link:hover .use-category-image {
-    transform: scale(1.05);
-}
-
-.use-category-name {
-    font-size: 16px;
-    font-weight: 500;
-}
-
-/* Dynamic Categories Styles */
-.loading-categories {
-    text-align: center;
-    padding: 40px;
-    color: #666;
-    grid-column: 1 / -1;
-}
-
-.product-count {
-    font-size: 12px;
-    color: #b8860b;
-    margin-top: 5px;
-    font-weight: 500;
-}
-
-/* ======================================================= */
-/* 📱 MOBILE VIEW FIXES (768px से नीचे की स्क्रीन के लिए) */
-/* ======================================================= */
-@media (max-width: 768px) {
-    .uses-categories {
-        padding: 30px 0; /* मोबाइल पर पैडिंग कम की */
-    }
-
-    /* 2. मोबाइल पर 4 कॉलम को 2 कॉलम में बदलना */
-    .uses-categories-grid {
-        grid-template-columns: repeat(2, 1fr); 
-        gap: 15px;
-    }
-
-    /* 3. मोबाइल पर इमेज को स्क्वायर (1:1) बनाना */
-    .use-category-image {
-        padding-bottom: 100%; /* मोबाइल पर इमेज को पूरी तरह दिखाने के लिए 1:1 Aspect Ratio */
-        margin-bottom: 10px;
-    }
-    
-    .use-category-name {
-        font-size: 14px;
-    }
-}
-        
-        /* Categories & Products Section */
-        .categories-products {
-            padding: 40px 0;
-            background: #f9f9f9;
-        }
-        
-        .categories-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 25px;
-            margin-bottom: 50px;
-        }
-        
-        .category-card {
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
-        }
-        
-        .category-card:hover {
-            transform: translateY(-10px);
-        }
-        
-        .category-img {
-            height: 250px;
-            background-size: cover;
-            background-position: center;
-            width: 100%;
-        }
-        
-        .category-content {
-            padding: 25px;
-            text-align: center;
-        }
-        
-        .category-content h3 {
-            font-size: 20px;
-            margin-bottom: 12px;
-            color: #333;
-        }
-        
-        .category-content p {
-            font-size: 15px;
-            color: #666;
-            margin-bottom: 20px;
-        }
-        
-        /* Products Grid */
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 25px;
-            margin: 40px 0;
-        }
-        
-        .product-card {
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
-        }
-        
-        .product-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .product-img {
-            height: 220px;
-            background-size: cover;
-            background-position: center;
-            width: 100%;
-        }
-        
-        .product-content {
-            padding: 20px;
-            text-align: center;
-        }
-        
-        .product-content h3 {
-            font-size: 10px;
-            margin-bottom: 10px;
-            color: #333;
-        }
-        
-        .product-price {
-            font-weight: bold;
-            color: #b8860b;
-            font-size: 18px;
-            margin-bottom: 15px;
-        }
-        
         /* Main Content */
         .main-content {
             margin-top: 180px;
@@ -863,7 +488,7 @@
         
         /* Hero Section */
         .hero {
-            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80');
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80');
             background-size: cover;
             background-position: center;
             color: white;
@@ -872,84 +497,244 @@
         }
         
         .hero h1 {
-            font-size: 36px;
+            font-size: 48px;
             margin-bottom: 20px;
-            line-height: 1.3;
+            line-height: 1.2;
         }
         
         .hero p {
-            font-size: 18px;
+            font-size: 20px;
             max-width: 600px;
             margin: 0 auto 30px;
+            opacity: 0.9;
         }
         
         .btn {
             display: inline-block;
             background: #b8860b;
             color: white;
-            padding: 14px 30px;
+            padding: 15px 35px;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             font-size: 16px;
             cursor: pointer;
             text-decoration: none;
-            transition: background 0.3s;
+            transition: all 0.3s;
             font-weight: 600;
         }
         
         .btn:hover {
             background: #a3780a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(184, 134, 11, 0.3);
         }
         
+        /* Products Banner */
+        .products-banner {
+            padding: 80px 0;
+            background: #f9f9f9;
+        }
+
+        .products-banner-content {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .products-banner-content h2 {
+            font-size: 36px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .products-banner-content p {
+            font-size: 18px;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .products-grid-banner {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+        }
+
+        .product-banner-item {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .product-banner-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-banner-image {
+            width: 100%;
+            height: 0;
+            padding-bottom: 60%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: transform 0.3s ease;
+        }
+
+        .product-banner-item:hover .product-banner-image {
+            transform: scale(1.05);
+        }
+
+        .product-banner-text {
+            padding: 30px;
+            text-align: center;
+            background: white;
+        }
+
+        .product-banner-text h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .product-banner-text p {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        /* Uses Categories Section */
+        .uses-categories {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .section-title {
+            text-align: center;
+            margin: 0 0 50px;
+            font-size: 36px;
+            color: #333;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .section-title:after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 3px;
+            background: #b8860b;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .uses-categories-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+        }
+
+        .use-category-item {
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .use-category-link {
+            display: block;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .use-category-image {
+            width: 100%;
+            height: 0;
+            padding-bottom: 75%;
+            background-size: cover;
+            background-position: center;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+
+        .use-category-link:hover .use-category-image {
+            transform: scale(1.05);
+        }
+
+        .use-category-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .product-count {
+            font-size: 14px;
+            color: #b8860b;
+            font-weight: 500;
+        }
+
+        .loading-categories {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            grid-column: 1 / -1;
+        }
+
         /* Features Section */
         .features {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 40px;
-            margin: 50px 0;
-            padding: 60px 0;
+            margin: 80px 0;
+            padding: 80px 0;
             background-color: #f9f9f9;
         }
         
         .feature {
             text-align: center;
-            padding: 20px;
+            padding: 30px 20px;
         }
         
         .feature i {
-            font-size: 40px;
+            font-size: 48px;
             color: #b8860b;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         
         .feature h3 {
-            margin-bottom: 12px;
-            font-size: 20px;
+            margin-bottom: 15px;
+            font-size: 22px;
+            color: #333;
         }
         
         .feature p {
-            font-size: 15px;
+            font-size: 16px;
             color: #666;
+            line-height: 1.6;
         }
         
         /* Footer */
         footer {
             background-color: #222;
             color: #ddd;
-            padding: 50px 0 20px;
+            padding: 60px 0 20px;
         }
         
         .footer-content {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 40px;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
         
         .footer-column h3 {
             color: white;
-            margin-bottom: 20px;
-            font-size: 18px;
+            margin-bottom: 25px;
+            font-size: 20px;
             padding-bottom: 10px;
             border-bottom: 2px solid #b8860b;
             display: inline-block;
@@ -960,14 +745,14 @@
         }
         
         .footer-links li {
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
         
         .footer-links a {
             color: #ddd;
             text-decoration: none;
             transition: color 0.3s;
-            font-size: 14px;
+            font-size: 15px;
         }
         
         .footer-links a:hover {
@@ -998,109 +783,40 @@
         
         .copyright {
             text-align: center;
-            padding-top: 25px;
+            padding-top: 30px;
             border-top: 1px solid #444;
             font-size: 14px;
+            color: #999;
         }
-        
-        /* ===== TABLET VIEW (768px - 1024px) ===== */
-        @media (min-width: 768px) and (max-width: 1024px) {
-            .main-content {
-                margin-top: 180px;
-            }
-            
-            .header-content {
-                flex-wrap: wrap;
-            }
-            
-            .trust-info {
-                order: 3;
-                flex-basis: 100%;
-                margin-top: 10px;
-                padding: 0;
-            }
-            
-            .trust-info-content {
-                gap: 15px;
-                font-size: 13px;
-            }
-            
-            .search-container {
-                order: 4;
-                flex-basis: 100%;
-                margin: 10px 0 0;
-                max-width: 100%;
-            }
-            
-            .category-img, .product-img {
-                height: 200px;
-            }
-            
-            .pattern-image {
-                height: 120px;
-            }
-            
-            .hero {
-                padding: 60px 0;
-            }
-            
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
             .hero h1 {
-                font-size: 28px;
+                font-size: 36px;
             }
             
-            .hero p {
-                font-size: 16px;
-            }
-            
-            .banner-grid {
-                grid-template-columns: repeat(2, 1fr);
+            .products-grid-banner {
+                grid-template-columns: 1fr;
             }
             
             .uses-categories-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
             
-            /* Tablet navigation - show desktop navigation */
-            .uses-top-bar {
-                display: block;
-            }
-            
-            /* Hide mobile navigation toggle on tablet */
-            .mobile-nav-toggle {
-                display: none;
-            }
-            
-            /* Tablet layout adjustments */
-            .categories-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .products-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
             .features {
                 grid-template-columns: repeat(2, 1fr);
-                gap: 30px;
-                padding: 50px 0;
             }
             
             .footer-content {
                 grid-template-columns: repeat(2, 1fr);
-                gap: 30px;
             }
             
             .patterns-grid {
                 grid-template-columns: repeat(3, 1fr);
             }
-            
-            .products-grid-banner {
-                grid-template-columns: 1fr;
-            }
         }
-        
-        /* ===== MOBILE VIEW (up to 767px) ===== */
-        @media (max-width: 767px) {
+
+        @media (max-width: 768px) {
             .main-content {
                 margin-top: 220px;
             }
@@ -1110,35 +826,17 @@
             }
             
             .trust-info {
-        display: block !important; 
-        padding: 10px 0;
-    }
-            
-            .trust-info-content {
-                gap: 10px;
-                font-size: 12px;
-                justify-content: space-between;
-            }
-            
-            .trust-item {
-                flex: 1;
-                min-width: 120px;
-                justify-content: center;
+                order: 3;
+                flex-basis: 100%;
+                margin-top: 15px;
+                padding: 0;
             }
             
             .search-container {
                 order: 4;
                 flex-basis: 100%;
-                margin: 10px 0 0;
+                margin: 15px 0 0;
                 max-width: 100%;
-            }
-            
-            .category-img, .product-img {
-                height: 200px;
-            }
-            
-            .pattern-image {
-                height: 120px;
             }
             
             .hero {
@@ -1146,359 +844,90 @@
             }
             
             .hero h1 {
-                font-size: 28px;
+                font-size: 32px;
             }
             
             .hero p {
-                font-size: 16px;
-            }
-            
-            .banner-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .uses-categories-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
-            }
-            
-            .use-category-image {
-                height: 120px;
-            }
-            
-            /* Hide desktop navigation on mobile */
-            .uses-top-bar {
-                display: none;
-            }
-            
-            /* Show mobile navigation toggle */
-            .mobile-nav-toggle {
-                display: block;
-            }
-            
-            /* Show mobile navigation elements when active */
-            .mobile-nav-overlay.active,
-            .mobile-nav-container.active {
-                display: block;
-            }
-            
-            /* Mobile layout adjustments */
-            .categories-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .products-grid {
-                grid-template-columns: 1fr;
+                font-size: 18px;
             }
             
             .features {
                 grid-template-columns: 1fr;
-                gap: 25px;
-                padding: 40px 0;
+                padding: 60px 0;
             }
             
-            .footer-content {
-                grid-template-columns: 1fr;
-                gap: 30px;
+            .uses-top-bar {
+                display: none;
             }
             
-            .patterns-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .products-grid-banner {
-                grid-template-columns: 1fr;
-            }
-            
-            /* Mobile submenu with 2 columns and square images */
-            .mobile-submenu-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 8px;
-                padding: 0 10px;
-            }
-            
-            .mobile-submenu-image {
-                width: 100%;
-                height: 80px;
-                background-size: cover;
-                background-position: center;
-                border-radius: 6px;
-                margin-bottom: 5px;
-                transition: transform 0.3s;
-            }
-            
-            .mobile-submenu-link {
-                font-size: 11px;
-                text-align: center;
-                padding: 5px;
-            }
-
-            /* Mobile profile adjustments */
             .profile-name {
                 display: none;
             }
-
-            .user-profile {
-                margin-left: auto;
-            }
         }
-        
+
         @media (max-width: 480px) {
-            .use-item {
-                min-width: 100px;
-            }
-            
-            .use-link {
-                padding: 12px 5px;
-                font-size: 12px;
-            }
-            
-            .patterns-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
-            }
-            
             .uses-categories-grid {
                 grid-template-columns: 1fr;
             }
             
-            .user-actions {
-                gap: 10px;
+            .footer-content {
+                grid-template-columns: 1fr;
             }
             
-            .user-action {
-                font-size: 10px;
+            .patterns-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
             
-            .user-action i {
-                font-size: 16px;
+            .hero h1 {
+                font-size: 28px;
             }
-            
-            /* Even smaller images for very small screens */
-            .mobile-submenu-image {
-                height: 70px;
-            }
-            
-            .mobile-submenu-link {
-                font-size: 10px;
-            }
-            
-            .trust-info-content {
-        display: flex;
-        flex-wrap: wrap; /* आइटम्स को अगली लाइन पर जाने दें */
-        justify-content: space-around; /* आइटम्स के बीच जगह दें */
-        padding: 0 10px;
-    }
-    
-    .trust-item {
-        flex: 1 1 45%; /* दो आइटम प्रति पंक्ति दिखाने के लिए */
-        text-align: center;
-        margin: 5px 0;
-        font-size: 12px;
-    }
         }
-        .trust-info {
-    flex: 1;
-    text-align: center;
-    padding: 0 20px;
-}
-
-.trust-info-content {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 30px;
-    font-size: 15px;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    padding: 12px 25px;
-    border-radius: 12px;
-    border: 1px solid #e0e0e0;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
-}
-
-.trust-info-content:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
-    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-}
-
-.trust-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    white-space: nowrap;
-    padding: 8px 15px;
-    background: rgba(255, 255, 255, 0.7);
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    border: 1px solid transparent;
-}
-
-.trust-item:hover {
-    background: rgba(255, 255, 255, 0.9);
-    border-color: #b8860b;
-    transform: scale(1.05);
-}
-
-.trust-item i {
-    color: #b8860b;
-    font-size: 18px;
-    width: 24px;
-    text-align: center;
-    transition: all 0.3s ease;
-}
-
-.trust-item:hover i {
-    color: #8b6914;
-    transform: scale(1.2);
-}
-
-.trust-item span {
-    font-weight: 600;
-    color: #2c3e50;
-    font-size: 14px;
-    letter-spacing: 0.3px;
-}
-
-/* Tablet View Adjustments */
-@media (min-width: 768px) and (max-width: 1024px) {
-    .trust-info-content {
-        gap: 20px;
-        font-size: 14px;
-        padding: 10px 20px;
-    }
-    
-    .trust-item {
-        padding: 6px 12px;
-        gap: 8px;
-    }
-    
-    .trust-item i {
-        font-size: 16px;
-        width: 20px;
-    }
-    
-    .trust-item span {
-        font-size: 13px;
-    }
-}
-
-/* Mobile View Adjustments */
-@media (max-width: 767px) {
-    .trust-info {
-        order: 3;
-        flex-basis: 100%;
-        margin-top: 15px;
-        padding: 0;
-    }
-    
-    .trust-info-content {
-        gap: 15px;
-        font-size: 13px;
-        padding: 10px 15px;
-        border-radius: 10px;
-        margin: 0 10px;
-    }
-    
-    .trust-item {
-        flex: 1;
-        min-width: 110px;
-        padding: 8px 10px;
-        gap: 6px;
-        justify-content: center;
-        background: rgba(255, 255, 255, 0.8);
-    }
-    
-    .trust-item i {
-        font-size: 15px;
-        width: 18px;
-    }
-    
-    .trust-item span {
-        font-size: 12px;
-        font-weight: 600;
-    }
-}
-
-@media (max-width: 480px) {
-    .trust-info-content {
-        gap: 8px;
-        padding: 8px 10px;
-    }
-    
-    .trust-item {
-        min-width: 100px;
-        padding: 6px 8px;
-        gap: 5px;
-    }
-    
-    .trust-item i {
-        font-size: 14px;
-        width: 16px;
-    }
-    
-    .trust-item span {
-        font-size: 11px;
-    }
-}
-
-/* Special styling for different trust items */
-.trust-item:nth-child(1) {
-    border-left: 3px solid #27ae60;
-}
-
-.trust-item:nth-child(2) {
-    border-left: 3px solid #f39c12;
-}
-
-.trust-item:nth-child(3) {
-    border-left: 3px solid #2980b9;
-}
     </style>
 </head>
 <body>
     <!-- Header Section -->
     <header id="mainHeader">
-        <div class="trust-info"style=>
-                    <div class="trust-info-content">
-                        <div class="trust-item">
-                            <i class="fas fa-truck"></i>
-                            <span>Free UK Delivery</span>
-                        </div>
-                        <div class="trust-item">
-                            <i class="fas fa-star"></i>
-                            <span>Rated 4.8/5</span>
-                        </div>
-                        <div class="trust-item">
-                            <i class="fas fa-award"></i>
-                            <span>BSF Member</span>
-                        </div>
-                    </div>
-                </div>  
+        <div class="trust-info">
+            <div class="trust-info-content">
+                <div class="trust-item">
+                    <i class="fas fa-truck"></i>
+                    <span>Free UK Delivery</span>
+                </div>
+                <div class="trust-item">
+                    <i class="fas fa-star"></i>
+                    <span>Rated 4.8/5</span>
+                </div>
+                <div class="trust-item">
+                    <i class="fas fa-award"></i>
+                    <span>BSF Member</span>
+                </div>
+            </div>
+        </div>
+
         <!-- Main Header -->
         <div class="main-header">
             <div class="container header-content">
-                <button class="mobile-nav-toggle">
-                    <i class="fas fa-bars"></i>
-                </button>
-                
                 <div class="logo">
-                    <h1>Stone<span>Craft</span></h1>
+                    <a href="index.html" style="text-decoration: none; color: inherit;">
+                        <h1>Stone<span>Craft</span></h1>
+                    </a>
                 </div>
+                
+                <!-- Advanced Search -->
                 <div class="search-container">
-                    <input type="text" class="search-input" placeholder="Search for stone types, products...">
-                    <button class="search-button"><i class="fas fa-search"></i></button>
+                    <div class="search-input-container">
+                        <input type="text" class="search-input" id="searchInput" placeholder="Search for stones, products, categories...">
+                        <button class="search-button" id="searchButton">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <div class="search-results" id="searchResults">
+                        <!-- Search results will be dynamically loaded here -->
+                    </div>
                 </div>
                 
                 <div class="user-actions">
-                    <a href="#" class="user-action">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>Location</span>
-                    </a>
-                    
-                    <!-- Dynamic User Profile/Login -->
+                    <!-- Dynamic User Profile -->
                     <div class="user-profile" id="userProfile" style="display: none;">
                         <button class="profile-toggle" id="profileToggle">
                             <div class="profile-avatar" id="profileAvatar">U</div>
@@ -1522,7 +951,7 @@
                         </div>
                     </div>
                     
-                    <!-- Login Button (shown when not logged in) -->
+                    <!-- Login Button -->
                     <a href="login.html" class="user-action" id="loginButton">
                         <i class="fas fa-user"></i>
                         <span>Sign In</span>
@@ -1543,113 +972,64 @@
             </div>
         </div>
 
-        <!-- Desktop Uses Top Bar - Hidden on Mobile, Visible on Tablet & Desktop -->
+        <!-- Desktop Uses Top Bar -->
         <div class="uses-top-bar">
             <div class="container uses-container">
                 <div class="use-item">
-                    <div class="use-link">Flooring</div>
-                    <div class="mega-menu">
-                        <div class="patterns-grid" id="flooringPatterns">
-                            <!-- Dynamic content will be loaded here -->
-                            <div class="loading-categories">
-                                <i class="fas fa-spinner fa-spin"></i>
-                                <p>Loading patterns...</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Other desktop navigation items remain the same -->
-                <div class="use-item">
-                    <div class="use-link">Wall Decoration</div>
+                    <a href="category-products.html?category=flooring" class="use-link">Flooring</a>
                 </div>
                 <div class="use-item">
-                    <div class="use-link">Bathroom</div>
+                    <a href="category-products.html?category=wall" class="use-link">Wall Decoration</a>
                 </div>
                 <div class="use-item">
-                    <div class="use-link">Outdoor</div>
+                    <a href="category-products.html?category=bathroom" class="use-link">Bathroom</a>
                 </div>
                 <div class="use-item">
-                    <div class="use-link">Kitchen</div>
+                    <a href="category-products.html?category=outdoor" class="use-link">Outdoor</a>
                 </div>
                 <div class="use-item">
-                    <div class="use-link">Commercial</div>
+                    <a href="category-products.html?category=kitchen" class="use-link">Kitchen</a>
+                </div>
+                <div class="use-item">
+                    <a href="category-products.html?category=commercial" class="use-link">Commercial</a>
                 </div>
             </div>
         </div>
-        
     </header>
-
-    <!-- Mobile Navigation Overlay -->
-    <div class="mobile-nav-overlay"></div>
-
-    <!-- Mobile Navigation Menu -->
-    <div class="mobile-nav-container">
-        <div class="mobile-nav-header">
-            <h3>StoneCraft Menu</h3>
-            <button class="mobile-nav-close">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="mobile-nav-menu">
-            <div class="mobile-nav-item">
-                <a href="#" class="mobile-nav-link">Home</a>
-            </div>
-            <div class="mobile-nav-item">
-                <a href="#" class="mobile-nav-link has-submenu">Flooring</a>
-                <div class="mobile-submenu">
-                    <div class="mobile-submenu-grid" id="mobileFlooringPatterns">
-                        <!-- Dynamic content will be loaded here -->
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Other mobile navigation items remain the same -->
-            <div class="mobile-nav-item">
-                <a href="#" class="mobile-nav-link">Wall Decoration</a>
-            </div>
-            <div class="mobile-nav-item">
-                <a href="#" class="mobile-nav-link">Bathroom</a>
-            </div>
-            <div class="mobile-nav-item">
-                <a href="#" class="mobile-nav-link">Outdoor</a>
-            </div>
-        </div>
-    </div>
 
     <!-- Main Content -->
     <div class="main-content">
-        <!-- Trending Stone Banner -->
-        <section class="trending-banner">
+        <!-- Hero Section -->
+        <section class="hero">
             <div class="container">
-                <h2>Live Trending Stone Collections</h2>
-                <p>Discover the most popular natural stone varieties trending across UK homes</p>
-                <a href="#" class="btn">Explore Trending Stones</a>
+                <h1>Premium Natural Stone & Marble</h1>
+                <p>UK's leading supplier of premium natural stone, marble, sandstone & limestone. Trusted by homeowners & professionals.</p>
+                <a href="#products" class="btn">Explore Collections</a>
             </div>
         </section>
 
         <!-- Products Banner -->
-        <section class="products-banner">
+        <section class="products-banner" id="products">
             <div class="container">
                 <div class="products-banner-content">
-                    <h2>Sandstone & Kota Stone Products</h2>
-                    <p>Premium quality natural stones perfect for all your construction and decoration needs</p>
+                    <h2>Featured Stone Collections</h2>
+                    <p>Discover our premium range of natural stones perfect for all your construction and decoration needs</p>
                 </div>
                 <div class="products-grid-banner">
                     <div class="product-banner-item">
                         <div class="product-banner-image" style="background-image: url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80')"></div>
                         <div class="product-banner-text">
-                            <h3>Premium Sandstone</h3>
-                            <p>Durable and elegant sandstone for flooring and wall cladding with natural texture and color variations</p>
-                            <a href="#" class="btn">View Collection</a>
+                            <h3>Premium Sandstone Collection</h3>
+                            <p>Durable and elegant sandstone for flooring and wall cladding with natural texture and color variations. Perfect for both indoor and outdoor applications.</p>
+                            <a href="category-products.html?category=flooring" class="btn">View Collection</a>
                         </div>
                     </div>
                     <div class="product-banner-item">
                         <div class="product-banner-image" style="background-image: url('https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80')"></div>
                         <div class="product-banner-text">
-                            <h3>Kota Blue Stone</h3>
-                            <p>Natural kota stone known for its exceptional strength, durability and beautiful blue-grey hue</p>
-                            <a href="#" class="btn">View Collection</a>
+                            <h3>Kota Stone & Marble</h3>
+                            <p>Natural kota stone and premium marble known for exceptional strength, durability and beautiful natural patterns. Ideal for luxury projects.</p>
+                            <a href="category-products.html?category=flooring" class="btn">Explore Stones</a>
                         </div>
                     </div>
                 </div>
@@ -1661,7 +1041,6 @@
             <div class="container">
                 <h2 class="section-title">Stone Applications</h2>
                 <div class="uses-categories-grid" id="dynamicCategories">
-                    <!-- Dynamic content will be loaded here -->
                     <div class="loading-categories">
                         <i class="fas fa-spinner fa-spin"></i>
                         <p>Loading categories...</p>
@@ -1670,24 +1049,23 @@
             </div>
         </section>
 
-        <!-- Rest of the content remains the same -->
         <!-- Features Section -->
         <section class="features">
             <div class="container">
                 <div class="feature">
                     <i class="fas fa-shipping-fast"></i>
                     <h3>Free UK Delivery</h3>
-                    <p>Free delivery on all orders across the United Kingdom with no minimum spend required.</p>
+                    <p>Free delivery on all orders across the United Kingdom with no minimum spend required. Fast and reliable shipping.</p>
                 </div>
                 <div class="feature">
                     <i class="fas fa-award"></i>
                     <h3>Quality Guaranteed</h3>
-                    <p>All our stones are sourced from trusted quarries and come with quality certification.</p>
+                    <p>All our stones are sourced from trusted quarries and come with quality certification and warranty.</p>
                 </div>
                 <div class="feature">
                     <i class="fas fa-headset"></i>
                     <h3>Expert Support</h3>
-                    <p>Get expert advice from our stone specialists for your project requirements.</p>
+                    <p>Get expert advice from our stone specialists for your project requirements. We're here to help you choose the perfect stone.</p>
                 </div>
             </div>
         </section>
@@ -1700,6 +1078,7 @@
                 <div class="footer-column">
                     <h3>StoneCraft</h3>
                     <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
                         <li><a href="#">About Us</a></li>
                         <li><a href="#">Our Story</a></li>
                         <li><a href="#">Sustainability</a></li>
@@ -1709,10 +1088,11 @@
                 <div class="footer-column">
                     <h3>Products</h3>
                     <ul class="footer-links">
-                        <li><a href="#">Sandstone</a></li>
-                        <li><a href="#">Marble</a></li>
-                        <li><a href="#">Limestone</a></li>
-                        <li><a href="#">Kota Stone</a></li>
+                        <li><a href="category-products.html?category=flooring">Flooring Stones</a></li>
+                        <li><a href="category-products.html?category=wall">Wall Stones</a></li>
+                        <li><a href="category-products.html?category=bathroom">Bathroom Stones</a></li>
+                        <li><a href="category-products.html?category=outdoor">Outdoor Stones</a></li>
+                        <li><a href="category-products.html?category=kitchen">Kitchen Stones</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
@@ -1720,7 +1100,8 @@
                     <ul class="footer-links">
                         <li><a href="#">Contact Us</a></li>
                         <li><a href="#">Delivery Info</a></li>
-                        <li><a href="#">Returns</a></li>
+                        <li><a href="#">Returns Policy</a></li>
+                        <li><a href="#">Installation Guide</a></li>
                         <li><a href="#">FAQ</a></li>
                     </ul>
                 </div>
@@ -1731,11 +1112,12 @@
                         <li><a href="#">Terms of Service</a></li>
                         <li><a href="#">Cookie Policy</a></li>
                         <li><a href="#">Disclaimer</a></li>
+                        <li><a href="#">Sitemap</a></li>
                     </ul>
                 </div>
             </div>
             <div class="copyright">
-                <p>&copy; 2024 StoneCraft UK. All rights reserved.</p>
+                <p>&copy; 2024 StoneCraft UK. All rights reserved. | Registered in England No: 12345678</p>
             </div>
         </div>
     </footer>
@@ -1743,33 +1125,9 @@
     <script type="module">
         import { authManager } from './auth.js';
 
-        // Header hide on scroll
-        let lastScrollTop = 0;
-        const header = document.getElementById('mainHeader');
-        
-        window.addEventListener('scroll', function() {
-            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            
-            if (scrollTop > lastScrollTop && scrollTop > 100) {
-                // Scroll down - hide header
-                header.classList.add('hidden');
-            } else {
-                // Scroll up - show header
-                header.classList.remove('hidden');
-            }
-            
-            lastScrollTop = scrollTop;
-        });
-
         // User Profile Management
         class UserProfileManager {
             constructor() {
-                this.profileToggle = document.getElementById('profileToggle');
-                this.profileDropdown = document.getElementById('profileDropdown');
-                this.userProfile = document.getElementById('userProfile');
-                this.loginButton = document.getElementById('loginButton');
-                this.logoutBtn = document.getElementById('logoutBtn');
-                
                 this.init();
             }
 
@@ -1779,81 +1137,240 @@
             }
 
             setupEventListeners() {
-                // Profile dropdown toggle
-                this.profileToggle?.addEventListener('click', (e) => {
+                const profileToggle = document.getElementById('profileToggle');
+                const profileDropdown = document.getElementById('profileDropdown');
+                const logoutBtn = document.getElementById('logoutBtn');
+
+                profileToggle?.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    this.profileDropdown.classList.toggle('active');
+                    profileDropdown.classList.toggle('active');
                 });
 
-                // Close dropdown when clicking outside
                 document.addEventListener('click', () => {
-                    this.profileDropdown?.classList.remove('active');
+                    profileDropdown?.classList.remove('active');
                 });
 
-                // Logout functionality
-                this.logoutBtn?.addEventListener('click', async (e) => {
+                logoutBtn?.addEventListener('click', async (e) => {
                     e.preventDefault();
                     await this.handleLogout();
                 });
             }
 
             updateUserInterface() {
-                const user = authManager.getCurrentUser();
-                
-                if (user) {
-                    // User is logged in - show profile
-                    this.showUserProfile(user);
-                    this.hideLoginButton();
-                } else {
-                    // User is not logged in - show login button
-                    this.hideUserProfile();
-                    this.showLoginButton();
-                }
-            }
-
-            showUserProfile(user) {
-                if (!this.userProfile) return;
-                
-                this.userProfile.style.display = 'block';
-                
-                // Update user information
-                const profileAvatar = document.getElementById('profileAvatar');
-                const profileName = document.getElementById('profileName');
-                const dropdownUserName = document.getElementById('dropdownUserName');
-                const dropdownUserEmail = document.getElementById('dropdownUserEmail');
-                
-                const displayName = user.displayName || 'User';
-                const email = user.email || '';
-                
-                // Set avatar with first letter of display name
-                profileAvatar.textContent = displayName.charAt(0).toUpperCase();
-                profileName.textContent = displayName;
-                dropdownUserName.textContent = displayName;
-                dropdownUserEmail.textContent = email;
-            }
-
-            hideUserProfile() {
-                if (this.userProfile) {
-                    this.userProfile.style.display = 'none';
-                }
-            }
-
-            showLoginButton() {
-                if (this.loginButton) {
-                    this.loginButton.style.display = 'flex';
-                }
-            }
-
-            hideLoginButton() {
-                if (this.loginButton) {
-                    this.loginButton.style.display = 'none';
-                }
+                authManager.updateUI(authManager.getCurrentUser());
             }
 
             async handleLogout() {
                 const result = await authManager.logout();
                 if (result.success) {
                     window.location.href = 'index.html';
+                }
+            }
+        }
+
+        // Advanced Search System
+        class AdvancedSearch {
+            constructor() {
+                this.searchInput = document.getElementById('searchInput');
+                this.searchResults = document.getElementById('searchResults');
+                this.searchButton = document.getElementById('searchButton');
+                this.products = [];
+                this.categories = [];
+                this.init();
+            }
+
+            async init() {
+                await this.loadData();
+                this.setupEventListeners();
+            }
+
+            async loadData() {
+                // Mock data - replace with Firestore
+                this.products = [
+                    {
+                        id: '1',
+                        name: 'Kota Blue Stone',
+                        category: 'flooring',
+                        price: '£45.00',
+                        image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                        description: 'Premium quality kota stone for flooring'
+                    },
+                    {
+                        id: '2',
+                        name: 'Sandstone Pavers',
+                        category: 'outdoor',
+                        price: '£35.00',
+                        image: 'https://images.unsplash.com/photo-1600585154340-2e5db6e509e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                        description: 'Natural sandstone for outdoor paving'
+                    },
+                    {
+                        id: '3',
+                        name: 'Marble Tiles',
+                        category: 'bathroom',
+                        price: '£75.00',
+                        image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                        description: 'Luxury marble tiles for bathrooms'
+                    },
+                    {
+                        id: '4',
+                        name: 'Limestone Flooring',
+                        category: 'flooring',
+                        price: '£55.00',
+                        image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                        description: 'Elegant limestone for modern flooring'
+                    },
+                    {
+                        id: '5',
+                        name: 'Granite Countertops',
+                        category: 'kitchen',
+                        price: '£85.00',
+                        image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                        description: 'Durable granite for kitchen countertops'
+                    }
+                ];
+
+                this.categories = [
+                    { name: 'Flooring', type: 'flooring' },
+                    { name: 'Wall Decoration', type: 'wall' },
+                    { name: 'Bathroom', type: 'bathroom' },
+                    { name: 'Outdoor', type: 'outdoor' },
+                    { name: 'Kitchen', type: 'kitchen' }
+                ];
+            }
+
+            setupEventListeners() {
+                this.searchInput.addEventListener('input', (e) => {
+                    this.handleSearch(e.target.value);
+                });
+
+                this.searchInput.addEventListener('focus', () => {
+                    if (this.searchInput.value.length > 0) {
+                        this.searchResults.classList.add('active');
+                    }
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.search-container')) {
+                        this.searchResults.classList.remove('active');
+                    }
+                });
+
+                this.searchButton.addEventListener('click', () => {
+                    this.performSearch(this.searchInput.value);
+                });
+
+                this.searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.performSearch(this.searchInput.value);
+                    }
+                });
+            }
+
+            handleSearch(query) {
+                if (query.length === 0) {
+                    this.searchResults.classList.remove('active');
+                    return;
+                }
+
+                this.searchResults.classList.add('active');
+                
+                // Show loading state
+                this.searchResults.innerHTML = `
+                    <div class="search-loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Searching...</p>
+                    </div>
+                `;
+
+                // Simulate search delay
+                setTimeout(() => {
+                    this.displaySearchResults(query);
+                }, 300);
+            }
+
+            displaySearchResults(query) {
+                const searchTerm = query.toLowerCase().trim();
+                
+                if (searchTerm.length === 0) {
+                    this.searchResults.innerHTML = '';
+                    return;
+                }
+
+                // Search in products and categories
+                const productResults = this.products.filter(product => 
+                    product.name.toLowerCase().includes(searchTerm) ||
+                    product.description.toLowerCase().includes(searchTerm) ||
+                    product.category.toLowerCase().includes(searchTerm)
+                );
+
+                const categoryResults = this.categories.filter(category =>
+                    category.name.toLowerCase().includes(searchTerm) ||
+                    category.type.toLowerCase().includes(searchTerm)
+                );
+
+                if (productResults.length === 0 && categoryResults.length === 0) {
+                    this.searchResults.innerHTML = `
+                        <div class="no-results">
+                            <i class="fas fa-search" style="font-size: 24px; margin-bottom: 10px;"></i>
+                            <p>No results found for "${query}"</p>
+                            <p style="font-size: 12px; margin-top: 5px;">Try different keywords or browse categories</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let resultsHTML = '';
+
+                // Add category results
+                categoryResults.forEach(category => {
+                    resultsHTML += `
+                        <div class="search-result-item" onclick="window.location.href='category-products.html?category=${category.type}'">
+                            <div class="search-result-image" style="background-image: url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80')"></div>
+                            <div class="search-result-content">
+                                <div class="search-result-name">${category.name}</div>
+                                <div class="search-result-category">Category</div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                // Add product results
+                productResults.forEach(product => {
+                    resultsHTML += `
+                        <div class="search-result-item" onclick="window.location.href='product-details.html?id=${product.id}'">
+                            <div class="search-result-image" style="background-image: url('${product.image}')"></div>
+                            <div class="search-result-content">
+                                <div class="search-result-name">${product.name}</div>
+                                <div class="search-result-category">${this.formatCategory(product.category)}</div>
+                                <div class="search-result-price">${product.price}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                resultsHTML += `
+                    <div class="view-all-results">
+                        <a href="search-results.html?q=${encodeURIComponent(query)}">View all results for "${query}"</a>
+                    </div>
+                `;
+
+                this.searchResults.innerHTML = resultsHTML;
+            }
+
+            formatCategory(category) {
+                const categoryMap = {
+                    'flooring': 'Flooring',
+                    'wall': 'Wall Decoration',
+                    'bathroom': 'Bathroom',
+                    'outdoor': 'Outdoor',
+                    'kitchen': 'Kitchen'
+                };
+                return categoryMap[category] || category;
+            }
+
+            performSearch(query) {
+                if (query.trim().length > 0) {
+                    window.location.href = `search-results.html?q=${encodeURIComponent(query)}`;
                 }
             }
         }
@@ -1867,15 +1384,14 @@
             }
 
             async init() {
-                await this.loadMockData();
+                await this.loadData();
                 this.renderCategories();
-                this.setupEventListeners();
             }
 
-            async loadMockData() {
-                // Mock data - replace with actual Firestore data
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                
+            async loadData() {
+                // Mock data - replace with Firestore
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
                 this.categories = [
                     {
                         id: '1',
@@ -1908,51 +1424,18 @@
                 ];
 
                 this.products = [
-                    {
-                        id: 'p1',
-                        name: 'Kota Blue Stone',
-                        type: 'Kota Stone',
-                        category: 'flooring',
-                        imageUrl: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
-                        description: 'Premium quality kota stone for flooring'
-                    },
-                    {
-                        id: 'p2',
-                        name: 'Sandstone Pavers', 
-                        type: 'Sandstone',
-                        category: 'outdoor',
-                        imageUrl: 'https://images.unsplash.com/photo-1600585154340-2e5db6e509e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
-                        description: 'Natural sandstone for outdoor paving'
-                    },
-                    {
-                        id: 'p3',
-                        name: 'Marble Tiles',
-                        type: 'Marble',
-                        category: 'bathroom',
-                        imageUrl: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
-                        description: 'Luxury marble tiles for bathrooms'
-                    },
-                    {
-                        id: 'p4',
-                        name: 'Limestone Flooring',
-                        type: 'Limestone',
-                        category: 'flooring',
-                        imageUrl: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
-                        description: 'Elegant limestone for modern flooring'
-                    }
+                    { id: 'p1', name: 'Kota Blue Stone', category: 'flooring' },
+                    { id: 'p2', name: 'Sandstone Pavers', category: 'outdoor' },
+                    { id: 'p3', name: 'Marble Tiles', category: 'bathroom' },
+                    { id: 'p4', name: 'Limestone Flooring', category: 'flooring' },
+                    { id: 'p5', name: 'Granite Countertops', category: 'kitchen' }
                 ];
             }
 
             renderCategories() {
-                this.renderMainCategories();
-                this.renderMegaMenuCategories();
-            }
-
-            renderMainCategories() {
                 const categoriesGrid = document.getElementById('dynamicCategories');
                 if (!categoriesGrid) return;
 
-                // Clear loading state
                 categoriesGrid.innerHTML = '';
 
                 this.categories.forEach(category => {
@@ -1965,33 +1448,12 @@
                 });
             }
 
-            renderMegaMenuCategories() {
-                const flooringMegaMenu = document.getElementById('flooringPatterns');
-                if (!flooringMegaMenu) return;
-
-                // Clear loading state
-                flooringMegaMenu.innerHTML = '';
-
-                const flooringProducts = this.products.filter(product => 
-                    product.category === 'flooring'
-                );
-
-                if (flooringProducts.length > 0) {
-                    flooringProducts.forEach(product => {
-                        const patternElement = this.createMegaMenuItem(product);
-                        flooringMegaMenu.appendChild(patternElement);
-                    });
-                } else {
-                    this.addDefaultMegaMenuItems(flooringMegaMenu);
-                }
-            }
-
             createCategoryElement(category, products) {
                 const categoryItem = document.createElement('div');
                 categoryItem.className = 'use-category-item';
                 
                 categoryItem.innerHTML = `
-                    <a href="/${category.type}" class="use-category-link">
+                    <a href="category-products.html?category=${category.type}" class="use-category-link">
                         <div class="use-category-image" style="background-image: url('${category.image}')"></div>
                         <div class="use-category-name">${category.name}</div>
                         ${products.length > 0 ? 
@@ -2003,180 +1465,29 @@
 
                 return categoryItem;
             }
-
-            createMegaMenuItem(product) {
-                const patternItem = document.createElement('a');
-                patternItem.href = `/product/${product.id}`;
-                patternItem.className = 'pattern-item';
-                
-                patternItem.innerHTML = `
-                    <div class="pattern-image" style="background-image: url('${product.imageUrl}')"></div>
-                    <div class="pattern-name">${product.name}</div>
-                `;
-
-                return patternItem;
-            }
-
-            addDefaultMegaMenuItems(container) {
-                const defaultItems = [
-                    { name: 'Herringbone', image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80' },
-                    { name: 'Checkerboard', image: 'https://images.unsplash.com/photo-1628745277897-d8e04e11c0af?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80' },
-                    { name: 'Random Layout', image: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80' }
-                ];
-
-                defaultItems.forEach(item => {
-                    const patternItem = document.createElement('a');
-                    patternItem.href = `/flooring/${item.name.toLowerCase()}`;
-                    patternItem.className = 'pattern-item';
-                    
-                    patternItem.innerHTML = `
-                        <div class="pattern-image" style="background-image: url('${item.image}')"></div>
-                        <div class="pattern-name">${item.name}</div>
-                    `;
-
-                    container.appendChild(patternItem);
-                });
-            }
-
-            setupEventListeners() {
-                // Add any additional event listeners here
-            }
         }
 
-        // Enhanced hover/click functionality for mega menus
-        function setupMegaMenus() {
-            const useItems = document.querySelectorAll('.use-item');
-            let activeMenu = null;
+        // Header scroll behavior
+        let lastScrollTop = 0;
+        const header = document.getElementById('mainHeader');
+        
+        window.addEventListener('scroll', function() {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
             
-            function closeAllMenus() {
-                useItems.forEach(item => {
-                    const menu = item.querySelector('.mega-menu');
-                    const link = item.querySelector('.use-link');
-                    menu?.classList.remove('active');
-                    link?.classList.remove('active');
-                });
-                activeMenu = null;
+            if (scrollTop > lastScrollTop && scrollTop > 100) {
+                header.classList.add('hidden');
+            } else {
+                header.classList.remove('hidden');
             }
             
-            useItems.forEach(item => {
-                const menu = item.querySelector('.mega-menu');
-                const link = item.querySelector('.use-link');
-                
-                if (!menu || !link) return;
-                
-                item.addEventListener('mouseenter', function() {
-                    closeAllMenus();
-                    menu.classList.add('active');
-                    link.classList.add('active');
-                    activeMenu = item;
-                });
-                
-                item.addEventListener('mouseleave', function(e) {
-                    const relatedTarget = e.relatedTarget;
-                    if (relatedTarget && !item.contains(relatedTarget) && !menu.contains(relatedTarget)) {
-                        setTimeout(() => {
-                            if (activeMenu === item) {
-                                closeAllMenus();
-                            }
-                        }, 300);
-                    }
-                });
-                
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    if (menu.classList.contains('active')) {
-                        closeAllMenus();
-                    } else {
-                        closeAllMenus();
-                        menu.classList.add('active');
-                        link.classList.add('active');
-                        activeMenu = item;
-                    }
-                });
-            });
-            
-            document.addEventListener('click', function(e) {
-                if (!e.target.closest('.use-item') && !e.target.closest('.mega-menu')) {
-                    closeAllMenus();
-                }
-            });
-            
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    closeAllMenus();
-                }
-            });
-        }
-
-        // Mobile Navigation Functionality
-        function setupMobileNavigation() {
-            const mobileNavToggle = document.querySelector('.mobile-nav-toggle');
-            const mobileNavClose = document.querySelector('.mobile-nav-close');
-            const mobileNavOverlay = document.querySelector('.mobile-nav-overlay');
-            const mobileNavContainer = document.querySelector('.mobile-nav-container');
-            const mobileNavLinks = document.querySelectorAll('.mobile-nav-link.has-submenu');
-            
-            function openMobileNav() {
-                mobileNavOverlay.classList.add('active');
-                mobileNavContainer.classList.add('active');
-                document.body.style.overflow = 'hidden';
-            }
-            
-            function closeMobileNav() {
-                mobileNavOverlay.classList.remove('active');
-                mobileNavContainer.classList.remove('active');
-                document.body.style.overflow = '';
-                
-                document.querySelectorAll('.mobile-submenu').forEach(submenu => {
-                    submenu.classList.remove('active');
-                });
-                
-                document.querySelectorAll('.mobile-nav-link').forEach(link => {
-                    link.classList.remove('active');
-                });
-            }
-            
-            mobileNavToggle?.addEventListener('click', openMobileNav);
-            mobileNavClose?.addEventListener('click', closeMobileNav);
-            mobileNavOverlay?.addEventListener('click', closeMobileNav);
-            
-            mobileNavLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const submenu = this.nextElementSibling;
-                    
-                    document.querySelectorAll('.mobile-submenu').forEach(otherSubmenu => {
-                        if (otherSubmenu !== submenu) {
-                            otherSubmenu.classList.remove('active');
-                        }
-                    });
-                    
-                    document.querySelectorAll('.mobile-nav-link').forEach(otherLink => {
-                        if (otherLink !== this) {
-                            otherLink.classList.remove('active');
-                        }
-                    });
-                    
-                    submenu.classList.toggle('active');
-                    this.classList.toggle('active');
-                });
-            });
-            
-            document.querySelectorAll('.mobile-submenu-link').forEach(link => {
-                link.addEventListener('click', function() {
-                    closeMobileNav();
-                });
-            });
-        }
+            lastScrollTop = scrollTop;
+        });
 
         // Initialize everything when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
             new UserProfileManager();
+            new AdvancedSearch();
             new DynamicCategories();
-            setupMegaMenus();
-            setupMobileNavigation();
         });
 
     </script>
