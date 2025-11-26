@@ -96,7 +96,7 @@
             padding: 0 15px;
         }
         
-        /* Header Styles - Same as home page */
+        /* Header Styles */
         header {
             background-color: #fff;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -165,6 +165,145 @@
         .trust-item i {
             color: #b8860b;
             font-size: 18px;
+        }
+
+        /* Search Bar Styles */
+        .search-container {
+            position: relative;
+            flex: 1;
+            max-width: 500px;
+            margin: 0 20px;
+        }
+
+        .search-input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 45px 12px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 25px;
+            font-size: 14px;
+            background-color: #f8f9fa;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #b8860b;
+            background-color: white;
+        }
+
+        .search-button {
+            position: absolute;
+            right: 8px;
+            background: #b8860b;
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 1001;
+            display: none;
+            margin-top: 5px;
+        }
+
+        .search-results.active {
+            display: block;
+        }
+
+        .search-result-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+        }
+
+        .search-result-item:hover {
+            background: #f8f9fa;
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 6px;
+            background-size: cover;
+            background-position: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .search-result-content {
+            flex: 1;
+        }
+
+        .search-result-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .search-result-category {
+            font-size: 12px;
+            color: #b8860b;
+            background: #fff9e6;
+            padding: 2px 8px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        .search-result-price {
+            font-weight: 700;
+            color: #b8860b;
+            font-size: 14px;
+        }
+
+        .no-results {
+            padding: 20px;
+            text-align: center;
+            color: #666;
+        }
+
+        .search-loading {
+            padding: 15px;
+            text-align: center;
+            color: #666;
+        }
+
+        .view-all-results {
+            padding: 12px 15px;
+            text-align: center;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .view-all-results a {
+            color: #b8860b;
+            text-decoration: none;
+            font-weight: 600;
         }
 
         /* User Profile Styles */
@@ -315,53 +454,15 @@
             opacity: 0.9;
         }
 
-        /* Subcategories Styles */
-        .subcategories-section {
-            padding: 40px 0;
-            background: #f8f9fa;
-        }
-
-        .subcategories-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
-        }
-
-        .subcategory-item {
-            background: white;
-            border-radius: 12px;
-            padding: 25px 20px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border: 2px solid transparent;
-        }
-
-        .subcategory-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-            border-color: #b8860b;
-        }
-
-        .subcategory-icon {
-            font-size: 40px;
-            color: #b8860b;
-            margin-bottom: 15px;
-        }
-
-        .subcategory-name {
-            font-size: 18px;
+        .type-indicator {
+            background: rgba(184, 134, 11, 0.9);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 16px;
             font-weight: 600;
-            color: #333;
-            margin-bottom: 8px;
-        }
-
-        .subcategory-description {
-            font-size: 14px;
-            color: #666;
-            line-height: 1.5;
+            display: inline-block;
+            margin-top: 15px;
         }
 
         /* Products Section */
@@ -370,9 +471,16 @@
             background: #f9f9f9;
         }
 
-        .section-title {
-            text-align: center;
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .section-title {
             font-size: 32px;
             color: #333;
             position: relative;
@@ -386,8 +494,16 @@
             height: 3px;
             background: #b8860b;
             bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 0;
+        }
+
+        .products-count {
+            color: #666;
+            font-size: 16px;
+            background: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid #e0e0e0;
         }
 
         .products-grid {
@@ -566,9 +682,9 @@
                 font-size: 32px;
             }
 
-            .subcategories-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
             }
 
             .products-grid {
@@ -583,6 +699,13 @@
             .profile-name {
                 display: none;
             }
+
+            .search-container {
+                order: 4;
+                flex-basis: 100%;
+                margin: 15px 0 0;
+                max-width: 100%;
+            }
         }
 
         @media (max-width: 480px) {
@@ -592,10 +715,6 @@
 
             .category-banner h1 {
                 font-size: 28px;
-            }
-
-            .subcategories-grid {
-                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -627,6 +746,19 @@
                     <a href="index.html" style="text-decoration: none; color: inherit;">
                         <h1>Stone<span>Craft</span></h1>
                     </a>
+                </div>
+                
+                <!-- Search Bar -->
+                <div class="search-container">
+                    <div class="search-input-container">
+                        <input type="text" class="search-input" id="searchInput" placeholder="Search products...">
+                        <button class="search-button" id="searchButton">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <div class="search-results" id="searchResults">
+                        <!-- Search results will be dynamically loaded here -->
+                    </div>
                 </div>
                 
                 <div class="user-actions">
@@ -674,23 +806,17 @@
         <div class="container">
             <h1 id="categoryTitle">Loading...</h1>
             <p id="categoryDescription">Discover our premium collection</p>
-        </div>
-    </section>
-
-    <!-- Subcategories Section (Only for Flooring) -->
-    <section class="subcategories-section" id="subcategoriesSection" style="display: none;">
-        <div class="container">
-            <h2 class="section-title">Flooring Patterns & Styles</h2>
-            <div class="subcategories-grid" id="subcategoriesGrid">
-                <!-- Subcategories will be loaded here -->
-            </div>
+            <div id="typeIndicator" class="type-indicator" style="display: none;"></div>
         </div>
     </section>
 
     <!-- Products Section -->
     <section class="products-section">
         <div class="container">
-            <h2 class="section-title" id="productsTitle">Our Products</h2>
+            <div class="section-header">
+                <h2 class="section-title" id="productsTitle">Our Products</h2>
+                <div class="products-count" id="productsCount">Loading...</div>
+            </div>
             <div class="products-grid" id="productsGrid">
                 <div class="loading-products">
                     <i class="fas fa-spinner fa-spin"></i>
@@ -900,6 +1026,158 @@
                 }
             }
 
+            // Advanced Search System
+            class AdvancedSearch {
+                constructor() {
+                    this.searchInput = document.getElementById('searchInput');
+                    this.searchResults = document.getElementById('searchResults');
+                    this.searchButton = document.getElementById('searchButton');
+                    this.allProducts = [];
+                    this.init();
+                }
+
+                async init() {
+                    await this.loadAllProducts();
+                    this.setupEventListeners();
+                }
+
+                async loadAllProducts() {
+                    // Load all products for search functionality
+                    const allProductsData = {
+                        flooring: [
+                            { id: '1', name: 'Kota Blue Stone', category: 'flooring', price: '£45.00', image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80', description: 'Premium quality kota stone for flooring', types: ['herringbone', 'checkerboard'] },
+                            { id: '2', name: 'Sandstone Tiles', category: 'flooring', price: '£35.00', image: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80', description: 'Natural sandstone tiles', types: ['random', 'brick'] },
+                            { id: '3', name: 'Limestone Flooring', category: 'flooring', price: '£55.00', image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80', description: 'Elegant limestone flooring', types: ['diagonal', 'hexagon'] }
+                        ],
+                        wall: [
+                            { id: '4', name: 'Marble Wall Cladding', category: 'wall', price: '£75.00', image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80', description: 'Luxury marble wall cladding', types: [] }
+                        ],
+                        bathroom: [
+                            { id: '5', name: 'Bathroom Marble Tiles', category: 'bathroom', price: '£65.00', image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80', description: 'Water-resistant marble tiles', types: [] }
+                        ],
+                        outdoor: [
+                            { id: '6', name: 'Outdoor Sandstone Pavers', category: 'outdoor', price: '£40.00', image: 'https://images.unsplash.com/photo-1600585154340-2e5db6e509e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80', description: 'Durable sandstone pavers', types: [] }
+                        ]
+                    };
+
+                    // Flatten all products into one array
+                    this.allProducts = Object.values(allProductsData).flat();
+                }
+
+                setupEventListeners() {
+                    this.searchInput.addEventListener('input', (e) => {
+                        this.handleSearch(e.target.value);
+                    });
+
+                    this.searchInput.addEventListener('focus', () => {
+                        if (this.searchInput.value.length > 0) {
+                            this.searchResults.classList.add('active');
+                        }
+                    });
+
+                    document.addEventListener('click', (e) => {
+                        if (!e.target.closest('.search-container')) {
+                            this.searchResults.classList.remove('active');
+                        }
+                    });
+
+                    this.searchButton.addEventListener('click', () => {
+                        this.performSearch(this.searchInput.value);
+                    });
+
+                    this.searchInput.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            this.performSearch(this.searchInput.value);
+                        }
+                    });
+                }
+
+                handleSearch(query) {
+                    if (query.length === 0) {
+                        this.searchResults.classList.remove('active');
+                        return;
+                    }
+
+                    this.searchResults.classList.add('active');
+                    
+                    this.searchResults.innerHTML = `
+                        <div class="search-loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Searching...</p>
+                        </div>
+                    `;
+
+                    setTimeout(() => {
+                        this.displaySearchResults(query);
+                    }, 300);
+                }
+
+                displaySearchResults(query) {
+                    const searchTerm = query.toLowerCase().trim();
+                    
+                    if (searchTerm.length === 0) {
+                        this.searchResults.innerHTML = '';
+                        return;
+                    }
+
+                    const productResults = this.allProducts.filter(product => 
+                        product.name.toLowerCase().includes(searchTerm) ||
+                        product.description.toLowerCase().includes(searchTerm) ||
+                        product.category.toLowerCase().includes(searchTerm)
+                    );
+
+                    if (productResults.length === 0) {
+                        this.searchResults.innerHTML = `
+                            <div class="no-results">
+                                <i class="fas fa-search" style="font-size: 24px; margin-bottom: 10px;"></i>
+                                <p>No results found for "${query}"</p>
+                                <p style="font-size: 12px; margin-top: 5px;">Try different keywords</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    let resultsHTML = '';
+
+                    productResults.forEach(product => {
+                        resultsHTML += `
+                            <div class="search-result-item" onclick="window.location.href='product-details.html?id=${product.id}&category=${product.category}'">
+                                <div class="search-result-image" style="background-image: url('${product.image}')"></div>
+                                <div class="search-result-content">
+                                    <div class="search-result-name">${product.name}</div>
+                                    <div class="search-result-category">${this.formatCategory(product.category)}</div>
+                                    <div class="search-result-price">${product.price}</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    resultsHTML += `
+                        <div class="view-all-results">
+                            <a href="search-results.html?q=${encodeURIComponent(query)}">View all results for "${query}"</a>
+                        </div>
+                    `;
+
+                    this.searchResults.innerHTML = resultsHTML;
+                }
+
+                formatCategory(category) {
+                    const categoryMap = {
+                        'flooring': 'Flooring',
+                        'wall': 'Wall Decoration',
+                        'bathroom': 'Bathroom',
+                        'outdoor': 'Outdoor'
+                    };
+                    return categoryMap[category] || category;
+                }
+
+                performSearch(query) {
+                    if (query.trim().length > 0) {
+                        window.location.href = `search-results.html?q=${encodeURIComponent(query)}`;
+                    }
+                }
+            }
+
             // Category Products Manager
             class CategoryProductsManager {
                 constructor() {
@@ -924,7 +1202,6 @@
                     await this.loadCategoryData();
                     await this.loadProducts();
                     this.renderCategoryInfo();
-                    this.renderSubcategories();
                     this.renderProducts();
                 }
 
@@ -934,45 +1211,7 @@
                         flooring: {
                             name: 'Flooring Stones',
                             description: 'Premium stone flooring solutions for modern homes and commercial spaces',
-                            bannerImage: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80',
-                            subcategories: [
-                                {
-                                    name: 'Herringbone',
-                                    description: 'Classic herringbone pattern for elegant flooring',
-                                    icon: 'fas fa-th-large',
-                                    type: 'herringbone'
-                                },
-                                {
-                                    name: 'Checkerboard',
-                                    description: 'Timeless checkerboard pattern for dramatic effect',
-                                    icon: 'fas fa-chess-board',
-                                    type: 'checkerboard'
-                                },
-                                {
-                                    name: 'Random Layout',
-                                    description: 'Natural random pattern for organic look',
-                                    icon: 'fas fa-random',
-                                    type: 'random'
-                                },
-                                {
-                                    name: 'Brick Pattern',
-                                    description: 'Traditional brick pattern for classic appeal',
-                                    icon: 'fas fa-grip-lines',
-                                    type: 'brick'
-                                },
-                                {
-                                    name: 'Diagonal',
-                                    description: 'Diagonal layout to create visual interest',
-                                    icon: 'fas fa-arrows-alt-h',
-                                    type: 'diagonal'
-                                },
-                                {
-                                    name: 'Hexagon',
-                                    description: 'Modern hexagon pattern for contemporary spaces',
-                                    icon: 'fas fa-hexagon',
-                                    type: 'hexagon'
-                                }
-                            ]
+                            bannerImage: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80'
                         },
                         wall: {
                             name: 'Wall Decoration',
@@ -988,16 +1227,6 @@
                             name: 'Outdoor Stones',
                             description: 'Durable stone products for outdoor applications including patios and pathways',
                             bannerImage: 'https://images.unsplash.com/photo-1600585154340-2e5db6e509e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80'
-                        },
-                        kitchen: {
-                            name: 'Kitchen Stones',
-                            description: 'Premium stone countertops and backsplashes for modern kitchens',
-                            bannerImage: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80'
-                        },
-                        commercial: {
-                            name: 'Commercial Stones',
-                            description: 'Heavy-duty stone solutions for commercial and industrial applications',
-                            bannerImage: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80'
                         }
                     };
 
@@ -1013,46 +1242,70 @@
                         flooring: [
                             {
                                 id: '1',
-                                name: 'Kota Blue Stone',
-                                description: 'Premium quality kota stone with beautiful blue-grey hue, perfect for modern flooring applications in both residential and commercial spaces.',
+                                name: 'Kota Blue Stone - Herringbone',
+                                description: 'Premium quality kota stone with beautiful blue-grey hue, perfect for herringbone pattern flooring in modern spaces.',
                                 price: '£45.00',
                                 image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
                                 unit: 'per sqm',
-                                features: ['Non-slip surface', 'Easy maintenance', 'Weather resistant'],
-                                types: ['herringbone', 'checkerboard', 'random', 'brick']
+                                types: ['herringbone']
                             },
                             {
                                 id: '2',
-                                name: 'Sandstone Tiles',
-                                description: 'Natural sandstone tiles with unique texture and color variations, ideal for creating warm and inviting spaces.',
+                                name: 'Sandstone Tiles - Checkerboard',
+                                description: 'Natural sandstone tiles arranged in classic checkerboard pattern for timeless appeal.',
                                 price: '£35.00',
                                 image: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
                                 unit: 'per sqm',
-                                features: ['Natural texture', 'Color variations', 'Durable'],
-                                types: ['herringbone', 'diagonal', 'random']
+                                types: ['checkerboard']
                             },
                             {
                                 id: '3',
-                                name: 'Limestone Flooring',
-                                description: 'Elegant limestone flooring with smooth finish and natural beauty, perfect for creating sophisticated interiors.',
+                                name: 'Limestone Flooring - Random',
+                                description: 'Elegant limestone flooring with random pattern layout for natural organic look.',
                                 price: '£55.00',
                                 image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
                                 unit: 'per sqm',
-                                features: ['Smooth finish', 'Easy to clean', 'Timeless appeal'],
-                                types: ['checkerboard', 'brick', 'hexagon']
+                                types: ['random']
                             },
                             {
                                 id: '4',
-                                name: 'Marble Floor Tiles',
-                                description: 'Luxury marble floor tiles with exquisite veining patterns, adding elegance to any space.',
+                                name: 'Marble Floor Tiles - Brick Pattern',
+                                description: 'Luxury marble floor tiles arranged in traditional brick pattern for classic elegance.',
                                 price: '£75.00',
                                 image: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
                                 unit: 'per sqm',
-                                features: ['Luxury finish', 'Unique patterns', 'High durability'],
-                                types: ['herringbone', 'diagonal', 'hexagon']
+                                types: ['brick']
+                            },
+                            {
+                                id: '5',
+                                name: 'Granite Tiles - Diagonal',
+                                description: 'Premium granite tiles laid in diagonal pattern to create visual interest and spacious feel.',
+                                price: '£65.00',
+                                image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                                unit: 'per sqm',
+                                types: ['diagonal']
+                            },
+                            {
+                                id: '6',
+                                name: 'Slate Tiles - Hexagon',
+                                description: 'Natural slate tiles in modern hexagon pattern for contemporary interior design.',
+                                price: '£50.00',
+                                image: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                                unit: 'per sqm',
+                                types: ['hexagon']
                             }
                         ],
-                        // ... other categories remain same
+                        wall: [
+                            {
+                                id: '7',
+                                name: 'Marble Wall Cladding',
+                                description: 'Luxury marble slabs for elegant wall cladding and feature walls.',
+                                price: '£75.00',
+                                image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                                unit: 'per sqm',
+                                types: []
+                            }
+                        ]
                     };
 
                     // Filter products by type if specified
@@ -1062,58 +1315,6 @@
                         );
                     } else {
                         this.products = allProducts[this.category] || [];
-                    }
-                }
-
-                renderCategoryInfo() {
-                    const categoryTitle = document.getElementById('categoryTitle');
-                    const categoryDescription = document.getElementById('categoryDescription');
-                    const categoryBanner = document.getElementById('categoryBanner');
-                    const productsTitle = document.getElementById('productsTitle');
-
-                    categoryTitle.textContent = this.categoryData.name;
-                    categoryDescription.textContent = this.categoryData.description;
-                    
-                    // Update title based on type
-                    if (this.type) {
-                        const typeName = this.getTypeName(this.type);
-                        productsTitle.textContent = `${typeName} ${this.categoryData.name}`;
-                    } else {
-                        productsTitle.textContent = `${this.categoryData.name} Collection`;
-                    }
-
-                    // Update banner background
-                    categoryBanner.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('${this.categoryData.bannerImage}')`;
-
-                    // Update page title
-                    document.title = `${this.categoryData.name} - StoneCraft UK`;
-                }
-
-                renderSubcategories() {
-                    const subcategoriesSection = document.getElementById('subcategoriesSection');
-                    const subcategoriesGrid = document.getElementById('subcategoriesGrid');
-
-                    // Only show subcategories for flooring
-                    if (this.category === 'flooring' && this.categoryData.subcategories) {
-                        subcategoriesSection.style.display = 'block';
-                        
-                        subcategoriesGrid.innerHTML = this.categoryData.subcategories.map(subcategory => `
-                            <div class="subcategory-item" data-type="${subcategory.type}">
-                                <div class="subcategory-icon">
-                                    <i class="${subcategory.icon}"></i>
-                                </div>
-                                <h3 class="subcategory-name">${subcategory.name}</h3>
-                                <p class="subcategory-description">${subcategory.description}</p>
-                            </div>
-                        `).join('');
-
-                        // Add click event to subcategories
-                        subcategoriesGrid.querySelectorAll('.subcategory-item').forEach(item => {
-                            item.addEventListener('click', () => {
-                                const type = item.getAttribute('data-type');
-                                this.filterByType(type);
-                            });
-                        });
                     }
                 }
 
@@ -1129,14 +1330,40 @@
                     return typeNames[type] || type;
                 }
 
-                filterByType(type) {
-                    // Update URL with type parameter
-                    const newUrl = `category-products.html?category=${this.category}&type=${type}`;
-                    window.location.href = newUrl;
+                renderCategoryInfo() {
+                    const categoryTitle = document.getElementById('categoryTitle');
+                    const categoryDescription = document.getElementById('categoryDescription');
+                    const categoryBanner = document.getElementById('categoryBanner');
+                    const productsTitle = document.getElementById('productsTitle');
+                    const typeIndicator = document.getElementById('typeIndicator');
+
+                    categoryTitle.textContent = this.categoryData.name;
+                    categoryDescription.textContent = this.categoryData.description;
+                    
+                    // Update title and show type indicator if type is specified
+                    if (this.type) {
+                        const typeName = this.getTypeName(this.type);
+                        productsTitle.textContent = `${typeName} ${this.categoryData.name}`;
+                        typeIndicator.textContent = `${typeName} Pattern`;
+                        typeIndicator.style.display = 'inline-block';
+                        
+                        // Update page title
+                        document.title = `${typeName} ${this.categoryData.name} - StoneCraft UK`;
+                    } else {
+                        productsTitle.textContent = `${this.categoryData.name} Collection`;
+                        document.title = `${this.categoryData.name} - StoneCraft UK`;
+                    }
+
+                    // Update banner background
+                    categoryBanner.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('${this.categoryData.bannerImage}')`;
                 }
 
                 renderProducts() {
                     const productsGrid = document.getElementById('productsGrid');
+                    const productsCount = document.getElementById('productsCount');
+                    
+                    // Update products count
+                    productsCount.textContent = `${this.products.length} Products Found`;
                     
                     if (this.products.length === 0) {
                         productsGrid.innerHTML = `
@@ -1159,7 +1386,7 @@
                                 <div class="product-price">${product.price} <small>${product.unit}</small></div>
                                 <button class="btn btn-block view-product-btn">View Details</button>
                                 <div class="product-meta">
-                                    <span><i class="fas fa-palette"></i> ${product.types ? product.types.map(t => this.getTypeName(t)).join(', ') : 'Various Patterns'}</span>
+                                    <span><i class="fas fa-palette"></i> ${product.types && product.types.length > 0 ? product.types.map(t => this.getTypeName(t)).join(', ') : 'Various Patterns'}</span>
                                     <span><i class="fas fa-shipping-fast"></i> Free Delivery</span>
                                 </div>
                             </div>
@@ -1193,6 +1420,7 @@
             // Initialize all managers
             try {
                 const authManager = new AuthManager();
+                const advancedSearch = new AdvancedSearch();
                 const categoryProductsManager = new CategoryProductsManager();
                 
                 console.log("All managers initialized successfully");
