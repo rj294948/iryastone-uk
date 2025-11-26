@@ -6,76 +6,9 @@
     <title>StoneCraft UK - Premium Natural Stone & Marble Suppliers</title>
     <meta name="description" content="UK's leading supplier of premium natural stone, marble, sandstone & limestone. Free UK delivery. Trusted by homeowners & professionals.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Firebase SDK -->
-    <script type="module">
-        // Import Firebase modules
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-        import { 
-            getFirestore, 
-            collection, 
-            addDoc, 
-            getDocs, 
-            query, 
-            orderBy, 
-            doc, 
-            deleteDoc, 
-            updateDoc, 
-            where, 
-            serverTimestamp 
-        } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
-        import { 
-            getAuth, 
-            createUserWithEmailAndPassword, 
-            signInWithEmailAndPassword, 
-            signOut, 
-            GoogleAuthProvider, 
-            signInWithPopup, 
-            onAuthStateChanged, 
-            updateProfile 
-        } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
-        import { 
-            getStorage, 
-            ref, 
-            uploadBytes, 
-            uploadBytesResumable, 
-            getDownloadURL 
-        } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-storage.js";
-
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyDxNMhU09mINvq_aDLtylBg3FucCK-MzYE",
-            authDomain: "sandstonebijoliya-293d2.firebaseapp.com",
-            projectId: "sandstonebijoliya-293d2",
-            storageBucket: "sandstonebijoliya-293d2.appspot.com",
-            messagingSenderId: "133756247845",
-            appId: "1:133756247845:web:8e769ce2af3db1765484cc",
-            measurementId: "G-H7JMX9VNYF"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-        const storage = getStorage(app);
-        const googleProvider = new GoogleAuthProvider();
-
-        // Make them globally available
-        window.firebaseApp = app;
-        window.firebaseDb = db;
-        window.firebaseAuth = auth;
-        window.firebaseStorage = storage;
-        window.firebaseGoogleProvider = googleProvider;
-        window.firebaseFunctions = {
-            collection, addDoc, getDocs, query, orderBy, doc, deleteDoc, updateDoc, where, serverTimestamp,
-            createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, signInWithPopup, onAuthStateChanged, updateProfile,
-            ref, uploadBytes, uploadBytesResumable, getDownloadURL
-        };
-
-        console.log("Firebase initialized successfully");
-    </script>
-    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
     <style>
+        /* All your existing CSS styles remain exactly the same */
         * {
             margin: 0;
             padding: 0;
@@ -1037,85 +970,11 @@
 
         <!-- Desktop Uses Top Bar with Mega Menu -->
         <div class="uses-top-bar">
-            <div class="container uses-container">
-                <div class="use-item">
-                    <div class="use-link">Flooring</div>
-                    <div class="mega-menu">
-                        <div class="patterns-grid">
-                            <a href="category-products.html?category=flooring&type=herringbone" class="pattern-item">
-                                <div class="pattern-image" style="background-image: url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80')"></div>
-                                <div class="pattern-name">Herringbone</div>
-                            </a>
-                            <a href="category-products.html?category=flooring&type=checkerboard" class="pattern-item">
-                                <div class="pattern-image" style="background-image: url('https://images.unsplash.com/photo-1628745277897-d8e04e11c0af?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80')"></div>
-                                <div class="pattern-name">Checkerboard</div>
-                            </a>
-                            <a href="category-products.html?category=flooring&type=random" class="pattern-item">
-                                <div class="pattern-image" style="background-image: url('https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80')"></div>
-                                <div class="pattern-name">Random Layout</div>
-                            </a>
-                            <a href="category-products.html?category=flooring&type=brick" class="pattern-item">
-                                <div class="pattern-image" style="background-image: url('https://images.unsplash.com/photo-1600585154340-2e5db6e509e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80')"></div>
-                                <div class="pattern-name">Brick Pattern</div>
-                            </a>
-                            <a href="category-products.html?category=flooring&type=diagonal" class="pattern-item">
-                                <div class="pattern-image" style="background-image: url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80')"></div>
-                                <div class="pattern-name">Diagonal</div>
-                            </a>
-                            <a href="category-products.html?category=flooring&type=hexagon" class="pattern-item">
-                                <div class="pattern-image" style="background-image: url('https://images.unsplash.com/photo-1628745277897-d8e04e11c0af?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80')"></div>
-                                <div class="pattern-name">Hexagon</div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="use-item">
-                    <div class="use-link">Wall Decoration</div>
-                    <div class="mega-menu">
-                        <div class="patterns-grid">
-                            <a href="category-products.html?category=wall&type=cladding" class="pattern-item">
-                                <div class="pattern-image" style="background-image: url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80')"></div>
-                                <div class="pattern-name">Stone Cladding</div>
-                            </a>
-                            <a href="category-products.html?category=wall&type=feature" class="pattern-item">
-                                <div class="pattern-image" style="background-image: url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80')"></div>
-                                <div class="pattern-name">Feature Walls</div>
-                            </a>
-                            <a href="category-products.html?category=wall&type=mosaic" class="pattern-item">
-                                <div class="pattern-image" style="background-image: url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80')"></div>
-                                <div class="pattern-name">Stone Mosaic</div>
-                            </a>
-                            <a href="category-products.html?category=wall&type=panels" class="pattern-item">
-                                <div class="pattern-image" style="background-image: url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80')"></div>
-                                <div class="pattern-name">Wall Panels</div>
-                            </a>
-                            <a href="category-products.html?category=wall&type=veneer" class="pattern-item">
-                                <div class="pattern-image" style="background-image: url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80')"></div>
-                                <div class="pattern-name">Stone Veneer</div>
-                            </a>
-                            <a href="category-products.html?category=wall&type=accent" class="pattern-item">
-                                <div class="pattern-image" style="background-image: url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80')"></div>
-                                <div class="pattern-name">Accent Walls</div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="use-item">
-                    <a href="category-products.html?category=bathroom" class="use-link">Bathroom</a>
-                </div>
-                
-                <div class="use-item">
-                    <a href="category-products.html?category=outdoor" class="use-link">Outdoor</a>
-                </div>
-                
-                <div class="use-item">
-                    <a href="category-products.html?category=kitchen" class="use-link">Kitchen</a>
-                </div>
-                
-                <div class="use-item">
-                    <a href="category-products.html?category=commercial" class="use-link">Commercial</a>
+            <div class="container uses-container" id="dynamicUsesContainer">
+                <!-- Dynamic uses will be loaded here -->
+                <div class="loading-categories">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading navigation...</p>
                 </div>
             </div>
         </div>
@@ -1148,7 +1007,7 @@
                         <div class="product-banner-text">
                             <h3>Premium Sandstone Collection</h3>
                             <p>Durable and elegant sandstone for flooring and wall cladding with natural texture and color variations. Perfect for both indoor and outdoor applications.</p>
-                            <a href="category-products.html?category=flooring" class="btn">View Collection</a>
+                            <a href="category-products.html?usage=flooring" class="btn">View Collection</a>
                         </div>
                     </div>
                     <div class="product-banner-item">
@@ -1156,7 +1015,7 @@
                         <div class="product-banner-text">
                             <h3>Kota Stone & Marble</h3>
                             <p>Natural kota stone and premium marble known for exceptional strength, durability and beautiful natural patterns. Ideal for luxury projects.</p>
-                            <a href="category-products.html?category=flooring" class="btn">Explore Stones</a>
+                            <a href="category-products.html?usage=countertops" class="btn">Explore Stones</a>
                         </div>
                     </div>
                 </div>
@@ -1215,11 +1074,11 @@
                 <div class="footer-column">
                     <h3>Products</h3>
                     <ul class="footer-links">
-                        <li><a href="category-products.html?category=flooring">Flooring Stones</a></li>
-                        <li><a href="category-products.html?category=wall">Wall Stones</a></li>
-                        <li><a href="category-products.html?category=bathroom">Bathroom Stones</a></li>
-                        <li><a href="category-products.html?category=outdoor">Outdoor Stones</a></li>
-                        <li><a href="category-products.html?category=kitchen">Kitchen Stones</a></li>
+                        <li><a href="category-products.html?usage=flooring">Flooring Stones</a></li>
+                        <li><a href="category-products.html?usage=wall">Wall Stones</a></li>
+                        <li><a href="category-products.html?usage=bathroom">Bathroom Stones</a></li>
+                        <li><a href="category-products.html?usage=outdoor">Outdoor Stones</a></li>
+                        <li><a href="category-products.html?usage=kitchen">Kitchen Stones</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
@@ -1249,677 +1108,509 @@
         </div>
     </footer>
 
-    <script>
-        // Mega Menu Functionality
-        document.addEventListener('DOMContentLoaded', () => {
+    <!-- Your existing Firebase config -->
+    <script type="module" src="./firebase-config.js"></script>
+    
+    <script type="module">
+        // Import from your existing firebase-config.js
+        import { 
+            db, auth, 
+            collection, getDocs,
+            onAuthStateChanged, signOut
+        } from './firebase-config.js';
+
+        // Import onSnapshot separately
+        import { onSnapshot } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+
+        // StoneCraft Application - Main JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Initializing StoneCraft Application...');
+            
+            // Initialize the application with Firestore
+            initializeAppWithFirestore();
+            
+            // Initialize user interface components
+            initializeUI();
+            
+            // Initialize authentication
+            initializeAuth();
+        });
+
+        // Application State
+        const appState = {
+            categories: [],
+            products: [],
+            user: null,
+            cart: []
+        };
+
+        // Initialize the main application with Firestore
+        async function initializeAppWithFirestore() {
+            console.log('📊 Loading data from Firestore...');
+            
+            try {
+                // Load Products from Firestore
+                await loadProductsFromFirestore();
+                
+                console.log('✅ Data loaded successfully from Firestore');
+                console.log('📦 Products: ' + appState.products.length);
+                
+                // Generate dynamic navigation and categories
+                generateUsesNavigation();
+                updateCategoriesSection();
+                
+            } catch (error) {
+                console.error('❌ Error loading data from Firestore:', error);
+            }
+            
+            console.log('✅ StoneCraft Application initialized successfully');
+        }
+
+        // Load Products from Firestore
+        async function loadProductsFromFirestore() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "products"));
+                appState.products = [];
+                
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    appState.products.push({
+                        id: doc.id,
+                        ...data
+                    });
+                });
+                
+                console.log('✅ Products loaded from Firestore: ', appState.products);
+                
+                // Debug: Check uses in products
+                const allUsesInProducts = [...new Set(appState.products
+                    .filter(product => product.uses)
+                    .map(product => product.uses)
+                )];
+                console.log('🔍 Uses found in products:', allUsesInProducts);
+                
+                // Real-time listener for product changes
+                onSnapshot(collection(db, "products"), (snapshot) => {
+                    const updatedProducts = [];
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        updatedProducts.push({
+                            id: doc.id,
+                            ...data
+                        });
+                    });
+                    appState.products = updatedProducts;
+                    console.log('🔄 Products updated in real-time');
+                    generateUsesNavigation();
+                    updateCategoriesSection();
+                });
+                
+            } catch (error) {
+                console.error('Error loading products:', error);
+                throw error;
+            }
+        }
+
+        // Function to get UNIQUE USES (CASE INSENSITIVE + NO DUPLICATES)
+        function getUniqueUses() {
+            const usesMap = new Map();
+            
+            appState.products.forEach(product => {
+                if (product.uses && product.uses.trim() !== '') {
+                    const useKey = product.uses.toLowerCase().trim();
+                    const useValue = product.uses.trim();
+                    
+                    // Store the original case version
+                    if (!usesMap.has(useKey)) {
+                        usesMap.set(useKey, useValue);
+                    }
+                }
+            });
+            
+            const uniqueUses = Array.from(usesMap.values()).sort();
+            console.log('🎯 Unique Uses (No Duplicates):', uniqueUses);
+            return uniqueUses;
+        }
+
+        // Function to generate uses navigation - UNIQUE USES ONLY
+        function generateUsesNavigation() {
+            const usesContainer = document.getElementById('dynamicUsesContainer');
+            if (!usesContainer) return;
+            
+            usesContainer.innerHTML = '';
+            
+            const uniqueUses = getUniqueUses();
+            console.log('🔄 Generating navigation for unique uses:', uniqueUses.length);
+            
+            if (uniqueUses.length === 0) {
+                usesContainer.innerHTML = `
+                    <div class="loading-categories">
+                        <i class="fas fa-info-circle"></i>
+                        <p>No uses found. Add products to see navigation.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // UNIQUE USES KE LIYE NAVIGATION BANAO
+            uniqueUses.forEach(usage => {
+                const usageKey = usage.toLowerCase().replace(/\s+/g, '-');
+                const useItem = document.createElement('div');
+                useItem.className = 'use-item';
+                
+                // Get products for this usage (CASE INSENSITIVE)
+                const usageProducts = appState.products.filter(product => 
+                    product.uses && product.uses.toLowerCase() === usage.toLowerCase()
+                );
+                
+                const uniqueStoneNames = [...new Set(usageProducts
+                    .filter(product => product.stone_name)
+                    .map(product => product.stone_name)
+                )];
+                
+                console.log(`📁 ${usage} - Products: ${usageProducts.length}, Stone Names: ${uniqueStoneNames.length}`);
+                
+                if (uniqueStoneNames.length > 0) {
+                    // Usage with stone names - create mega menu
+                    useItem.innerHTML = `
+                        <div class="use-link">${usage} (${usageProducts.length})</div>
+                        <div class="mega-menu">
+                            <div class="patterns-grid">
+                                ${uniqueStoneNames.map(stoneName => {
+                                    const stoneSlug = stoneName.toLowerCase().replace(/\s+/g, '-');
+                                    // Find a product image for this stone or use default
+                                    const stoneProduct = appState.products.find(p => 
+                                        p.uses && p.uses.toLowerCase() === usage.toLowerCase() && 
+                                        p.stone_name === stoneName
+                                    );
+                                    const imageUrl = stoneProduct?.images?.[0] || 
+                                        'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80';
+                                    
+                                    return `
+                                        <a href="category-products.html?usage=${usageKey}&stone=${stoneSlug}" class="pattern-item" data-usage="${usage}" data-stone="${stoneName}">
+                                            <div class="pattern-image" style="background-image: url('${imageUrl}')"></div>
+                                            <div class="pattern-name">${stoneName}</div>
+                                        </a>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Usage with products but no stone names - simple link
+                    useItem.innerHTML = `
+                        <a href="category-products.html?usage=${usageKey}" class="use-link">${usage} (${usageProducts.length})</a>
+                    `;
+                }
+                
+                usesContainer.appendChild(useItem);
+            });
+            
+            // Reinitialize mega menu functionality
+            setTimeout(() => {
+                initializeMegaMenu();
+            }, 100);
+        }
+
+        // Function to update categories section - UNIQUE USES ONLY
+        function updateCategoriesSection() {
+            const categoriesGrid = document.getElementById('dynamicCategories');
+            if (!categoriesGrid) return;
+            
+            categoriesGrid.innerHTML = '';
+            
+            const uniqueUses = getUniqueUses();
+            console.log('🔄 Updating categories section with unique uses:', uniqueUses.length);
+            
+            if (uniqueUses.length === 0) {
+                categoriesGrid.innerHTML = `
+                    <div class="loading-categories">
+                        <i class="fas fa-info-circle"></i>
+                        <p>No categories found. Add products to see categories.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // UNIQUE USES KE LIYE CATEGORIES BANAO
+            uniqueUses.forEach(usage => {
+                const categoryItem = document.createElement('div');
+                categoryItem.className = 'use-category-item';
+                
+                // Count products in this usage (CASE INSENSITIVE)
+                const productCount = appState.products.filter(product => 
+                    product.uses && product.uses.toLowerCase() === usage.toLowerCase()
+                ).length;
+                
+                // Find a product image for this usage or use default
+                const usageProduct = appState.products.find(p => 
+                    p.uses && p.uses.toLowerCase() === usage.toLowerCase()
+                );
+                const imageUrl = usageProduct?.images?.[0] || 
+                    'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80';
+                
+                const usageSlug = usage.toLowerCase().replace(/\s+/g, '-');
+                
+                categoryItem.innerHTML = `
+                    <a href="category-products.html?usage=${usageSlug}" class="use-category-link">
+                        <div class="use-category-image" style="background-image: url('${imageUrl}')"></div>
+                        <div class="use-category-name">${usage}</div>
+                        <div class="product-count">${productCount} Products</div>
+                    </a>
+                `;
+                
+                categoriesGrid.appendChild(categoryItem);
+            });
+        }
+
+        // Initialize mega menu functionality
+        function initializeMegaMenu() {
+            console.log('🔄 Initializing Mega Menu...');
+            
             const usesTopBar = document.querySelector('.uses-top-bar');
             const useItems = document.querySelectorAll('.use-item');
             const container = document.querySelector('.uses-top-bar .container');
             
-            if (container) {
-                const containerRect = container.getBoundingClientRect();
-                
-                useItems.forEach(item => {
-                    const megaMenu = item.querySelector('.mega-menu');
-
-                    if (megaMenu) {
-                        megaMenu.style.width = containerRect.width + 'px';
-                        megaMenu.style.left = -(item.getBoundingClientRect().left - containerRect.left) + 'px';
-
-                        item.addEventListener('mouseenter', () => {
-                            document.querySelectorAll('.mega-menu').forEach(menu => {
-                                if (menu !== megaMenu) {
-                                    menu.style.display = 'none';
-                                }
-                            });
-                            megaMenu.style.display = 'block';
-                        });
-                        
-                        item.addEventListener('mouseleave', () => {
-                            setTimeout(() => {
-                                if (!item.matches(':hover')) {
-                                    megaMenu.style.display = 'none';
-                                }
-                            }, 50);
-                        });
-                    }
-                });
-                
-                document.addEventListener('click', (event) => {
-                    if (!usesTopBar.contains(event.target)) {
-                        document.querySelectorAll('.mega-menu').forEach(menu => {
-                            menu.style.display = 'none';
-                        });
-                    }
-                });
-            }
-        });
-    </script>
-
-    <script type="module">
-        // Wait for Firebase to be available
-        const initializeApp = async () => {
-            // Wait a bit for Firebase to load
-            await new Promise(resolve => setTimeout(resolve, 500));
-            
-            if (!window.firebaseAuth) {
-                console.error("Firebase not initialized properly");
+            if (!container || !usesTopBar) {
+                console.log('❌ Mega Menu container not found');
                 return;
             }
-
-            console.log("Initializing application with Firebase...");
-
-            // Simple Auth Manager
-            class AuthManager {
-                constructor() {
-                    this.currentUser = null;
-                    this.initAuthListener();
-                    this.setupEventListeners();
-                }
-
-                initAuthListener() {
-                    window.firebaseFunctions.onAuthStateChanged(window.firebaseAuth, (user) => {
-                        console.log("Auth state changed:", user);
-                        this.currentUser = user;
-                        this.updateUI(user);
-                        
-                        // Store user state in localStorage for persistence
-                        if (user) {
-                            localStorage.setItem('userLoggedIn', 'true');
-                            localStorage.setItem('userEmail', user.email || '');
-                            localStorage.setItem('userDisplayName', user.displayName || 'User');
-                        } else {
-                            localStorage.removeItem('userLoggedIn');
-                            localStorage.removeItem('userEmail');
-                            localStorage.removeItem('userDisplayName');
-                        }
-                    });
-                }
-
-                setupEventListeners() {
-                    const logoutBtn = document.getElementById('logoutBtn');
-                    if (logoutBtn) {
-                        logoutBtn.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            this.handleLogout();
-                        });
-                    }
-
-                    const profileToggle = document.getElementById('profileToggle');
-                    const profileDropdown = document.getElementById('profileDropdown');
-
-                    if (profileToggle && profileDropdown) {
-                        profileToggle.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            profileDropdown.classList.toggle('active');
-                        });
-
-                        document.addEventListener('click', (e) => {
-                            if (!profileToggle.contains(e.target) && !profileDropdown.contains(e.target)) {
-                                profileDropdown.classList.remove('active');
+            
+            const containerRect = container.getBoundingClientRect();
+            
+            useItems.forEach((item, index) => {
+                const megaMenu = item.querySelector('.mega-menu');
+                
+                if (megaMenu) {
+                    // Set mega menu width and position
+                    megaMenu.style.width = containerRect.width + 'px';
+                    megaMenu.style.left = '0px';
+                    
+                    // Mouse events for mega menu
+                    item.addEventListener('mouseenter', () => {
+                        // Hide all other mega menus
+                        document.querySelectorAll('.mega-menu').forEach(menu => {
+                            if (menu !== megaMenu) {
+                                menu.style.display = 'none';
                             }
                         });
-                    }
+                        // Show current mega menu
+                        megaMenu.style.display = 'block';
+                    });
                     
-                    // Check localStorage on page load
-                    this.checkLocalStorage();
-                }
-                
-                checkLocalStorage() {
-                    const isLoggedIn = localStorage.getItem('userLoggedIn');
-                    if (isLoggedIn === 'true') {
-                        const userEmail = localStorage.getItem('userEmail') || '';
-                        const userDisplayName = localStorage.getItem('userDisplayName') || 'User';
-                        this.updateUIFromStorage(userEmail, userDisplayName);
-                    }
-                }
-                
-                updateUIFromStorage(email, displayName) {
-                    const loginBtn = document.getElementById('loginButton');
-                    const userProfile = document.getElementById('userProfile');
-                    const addProductBtn = document.getElementById('addProductButton');
-                    const heroAddProductBtn = document.getElementById('heroAddProductBtn');
+                    item.addEventListener('mouseleave', (e) => {
+                        const relatedTarget = e.relatedTarget;
+                        if (!megaMenu.contains(relatedTarget)) {
+                            setTimeout(() => {
+                                if (!item.matches(':hover') && !megaMenu.matches(':hover')) {
+                                    megaMenu.style.display = 'none';
+                                }
+                            }, 100);
+                        }
+                    });
                     
-                    if (userProfile && loginBtn) {
-                        userProfile.style.display = 'block';
-                        loginBtn.style.display = 'none';
-                        if (addProductBtn) addProductBtn.style.display = 'flex';
-                        if (heroAddProductBtn) heroAddProductBtn.style.display = 'inline-block';
-                        
-                        const profileAvatar = document.getElementById('profileAvatar');
-                        const profileName = document.getElementById('profileName');
-                        const dropdownUserName = document.getElementById('dropdownUserName');
-                        const dropdownUserEmail = document.getElementById('dropdownUserEmail');
-                        
-                        if (profileAvatar) profileAvatar.textContent = displayName.charAt(0).toUpperCase();
-                        if (profileName) profileName.textContent = displayName;
-                        if (dropdownUserName) dropdownUserName.textContent = displayName;
-                        if (dropdownUserEmail) dropdownUserEmail.textContent = email;
-                    }
-                }
-
-                async handleLogout() {
-                    try {
-                        await window.firebaseFunctions.signOut(window.firebaseAuth);
-                        console.log('User logged out successfully');
-                        // Force reload to ensure clean state
+                    // Also handle mega menu mouse events
+                    megaMenu.addEventListener('mouseenter', () => {
+                        megaMenu.style.display = 'block';
+                    });
+                    
+                    megaMenu.addEventListener('mouseleave', () => {
                         setTimeout(() => {
-                            window.location.reload();
-                        }, 500);
-                    } catch (error) {
-                        console.error('Error logging out:', error);
-                    }
-                }
-
-                updateUI(user) {
-                    const loginBtn = document.getElementById('loginButton');
-                    const userProfile = document.getElementById('userProfile');
-                    const addProductBtn = document.getElementById('addProductButton');
-                    const heroAddProductBtn = document.getElementById('heroAddProductBtn');
-                    const profileAvatar = document.getElementById('profileAvatar');
-                    const profileName = document.getElementById('profileName');
-                    const dropdownUserName = document.getElementById('dropdownUserName');
-                    const dropdownUserEmail = document.getElementById('dropdownUserEmail');
-
-                    console.log("Updating UI for user:", user);
-                    
-                    if (user) {
-                        // User is signed in
-                        if (userProfile) userProfile.style.display = 'block';
-                        if (loginBtn) loginBtn.style.display = 'none';
-                        if (addProductBtn) addProductBtn.style.display = 'flex';
-                        if (heroAddProductBtn) heroAddProductBtn.style.display = 'inline-block';
-                        
-                        const displayName = user.displayName || 'User';
-                        const email = user.email || '';
-                        const initials = displayName.charAt(0).toUpperCase();
-                        
-                        if (profileAvatar) profileAvatar.textContent = initials;
-                        if (profileName) profileName.textContent = displayName;
-                        if (dropdownUserName) dropdownUserName.textContent = displayName;
-                        if (dropdownUserEmail) dropdownUserEmail.textContent = email;
-                        
-                        console.log("Profile updated for:", displayName);
-                    } else {
-                        // User is signed out
-                        if (userProfile) userProfile.style.display = 'none';
-                        if (loginBtn) loginBtn.style.display = 'flex';
-                        if (addProductBtn) addProductBtn.style.display = 'none';
-                        if (heroAddProductBtn) heroAddProductBtn.style.display = 'none';
-                        console.log("User logged out, showing login button");
-                    }
-                }
-
-                getCurrentUser() {
-                    return this.currentUser;
-                }
-
-                isAuthenticated() {
-                    return this.currentUser !== null;
-                }
-            }
-
-            // Advanced Search System
-            class AdvancedSearch {
-                constructor() {
-                    this.searchInput = document.getElementById('searchInput');
-                    this.searchResults = document.getElementById('searchResults');
-                    this.searchButton = document.getElementById('searchButton');
-                    this.products = [];
-                    this.categories = [];
-                    this.init();
-                }
-
-                async init() {
-                    await this.loadDataFromFirestore();
-                    this.setupEventListeners();
-                }
-
-                async loadDataFromFirestore() {
-                    try {
-                        console.log("Loading search data from Firestore...");
-                        
-                        // Firestore se products fetch karein
-                        const productsQuery = window.firebaseFunctions.collection(
-                            window.firebaseDb, 
-                            'products'
-                        );
-                        const productsSnapshot = await window.firebaseFunctions.getDocs(productsQuery);
-                        
-                        this.products = [];
-                        productsSnapshot.forEach((doc) => {
-                            this.products.push({
-                                id: doc.id,
-                                ...doc.data()
-                            });
-                        });
-
-                        // Firestore se categories fetch karein
-                        const categoriesQuery = window.firebaseFunctions.collection(
-                            window.firebaseDb, 
-                            'categories'
-                        );
-                        const categoriesSnapshot = await window.firebaseFunctions.getDocs(categoriesQuery);
-                        
-                        this.categories = [];
-                        categoriesSnapshot.forEach((doc) => {
-                            this.categories.push({
-                                id: doc.id,
-                                ...doc.data()
-                            });
-                        });
-
-                        console.log("Search data loaded from Firestore:", {
-                            products: this.products.length,
-                            categories: this.categories.length
-                        });
-
-                    } catch (error) {
-                        console.error("Error loading search data from Firestore:", error);
-                        // Fallback to mock data
-                        await this.loadMockData();
-                    }
-                }
-
-                async loadMockData() {
-                    // Mock data as fallback
-                    this.products = [
-                        {
-                            id: '1',
-                            name: 'Kota Blue Stone',
-                            category: 'flooring',
-                            price: '£45.00',
-                            image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
-                            description: 'Premium quality kota stone for flooring',
-                            stone_name: 'Kota Blue',
-                            type: 'Natural Stone'
-                        },
-                        {
-                            id: '2',
-                            name: 'Sandstone Pavers',
-                            category: 'outdoor',
-                            price: '£35.00',
-                            image: 'https://images.unsplash.com/photo-1600585154340-2e5db6e509e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
-                            description: 'Natural sandstone for outdoor paving',
-                            stone_name: 'Raj Green Sandstone',
-                            type: 'Calibrated'
-                        },
-                        {
-                            id: '3',
-                            name: 'Marble Tiles',
-                            category: 'bathroom',
-                            price: '£75.00',
-                            image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
-                            description: 'Luxury marble tiles for bathrooms',
-                            stone_name: 'White Marble',
-                            type: 'Polished'
-                        }
-                    ];
-
-                    this.categories = [
-                        { name: 'Flooring', type: 'flooring' },
-                        { name: 'Wall Decoration', type: 'wall' },
-                        { name: 'Bathroom', type: 'bathroom' },
-                        { name: 'Outdoor', type: 'outdoor' }
-                    ];
-                }
-
-                setupEventListeners() {
-                    this.searchInput.addEventListener('input', (e) => {
-                        this.handleSearch(e.target.value);
-                    });
-
-                    this.searchInput.addEventListener('focus', () => {
-                        if (this.searchInput.value.length > 0) {
-                            this.searchResults.classList.add('active');
-                        }
-                    });
-
-                    document.addEventListener('click', (e) => {
-                        if (!e.target.closest('.search-container')) {
-                            this.searchResults.classList.remove('active');
-                        }
-                    });
-
-                    this.searchButton.addEventListener('click', () => {
-                        this.performSearch(this.searchInput.value);
-                    });
-
-                    this.searchInput.addEventListener('keypress', (e) => {
-                        if (e.key === 'Enter') {
-                            this.performSearch(this.searchInput.value);
-                        }
-                    });
-                }
-
-                handleSearch(query) {
-                    if (query.length === 0) {
-                        this.searchResults.classList.remove('active');
-                        return;
-                    }
-
-                    this.searchResults.classList.add('active');
-                    
-                    this.searchResults.innerHTML = `
-                        <div class="search-loading">
-                            <i class="fas fa-spinner fa-spin"></i>
-                            <p>Searching...</p>
-                        </div>
-                    `;
-
-                    setTimeout(() => {
-                        this.displaySearchResults(query);
-                    }, 300);
-                }
-
-                displaySearchResults(query) {
-                    const searchTerm = query.toLowerCase().trim();
-                    
-                    if (searchTerm.length === 0) {
-                        this.searchResults.innerHTML = '';
-                        return;
-                    }
-
-                    const productResults = this.products.filter(product => 
-                        product.name.toLowerCase().includes(searchTerm) ||
-                        product.description.toLowerCase().includes(searchTerm) ||
-                        product.category.toLowerCase().includes(searchTerm) ||
-                        (product.stone_name && product.stone_name.toLowerCase().includes(searchTerm)) ||
-                        (product.type && product.type.toLowerCase().includes(searchTerm))
-                    );
-
-                    const categoryResults = this.categories.filter(category =>
-                        category.name.toLowerCase().includes(searchTerm) ||
-                        category.type.toLowerCase().includes(searchTerm)
-                    );
-
-                    if (productResults.length === 0 && categoryResults.length === 0) {
-                        this.searchResults.innerHTML = `
-                            <div class="no-results">
-                                <i class="fas fa-search" style="font-size: 24px; margin-bottom: 10px;"></i>
-                                <p>No results found for "${query}"</p>
-                                <p style="font-size: 12px; margin-top: 5px;">Try different keywords or browse categories</p>
-                            </div>
-                        `;
-                        return;
-                    }
-
-                    let resultsHTML = '';
-
-                    categoryResults.forEach(category => {
-                        resultsHTML += `
-                            <div class="search-result-item" onclick="window.location.href='category-products.html?category=${category.type}'">
-                                <div class="search-result-image" style="background-image: url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80')"></div>
-                                <div class="search-result-content">
-                                    <div class="search-result-name">${category.name}</div>
-                                    <div class="search-result-category">Category</div>
-                                </div>
-                            </div>
-                        `;
-                    });
-
-                    productResults.forEach(product => {
-                        resultsHTML += `
-                            <div class="search-result-item" onclick="window.location.href='product-details.html?id=${product.id}'">
-                                <div class="search-result-image" style="background-image: url('${product.image}')"></div>
-                                <div class="search-result-content">
-                                    <div class="search-result-name">${product.name}</div>
-                                    <div class="search-result-category">${this.formatCategory(product.category)}</div>
-                                    ${product.type ? `<div style="font-size: 12px; color: #666; margin: 2px 0;">${product.type}</div>` : ''}
-                                    <div class="search-result-price">${product.price}</div>
-                                </div>
-                            </div>
-                        `;
-                    });
-
-                    resultsHTML += `
-                        <div class="view-all-results">
-                            <a href="search-results.html?q=${encodeURIComponent(query)}">View all results for "${query}"</a>
-                        </div>
-                    `;
-
-                    this.searchResults.innerHTML = resultsHTML;
-                }
-
-                formatCategory(category) {
-                    const categoryMap = {
-                        'flooring': 'Flooring',
-                        'wall': 'Wall Decoration',
-                        'bathroom': 'Bathroom',
-                        'outdoor': 'Outdoor',
-                        'kitchen': 'Kitchen',
-                        'commercial': 'Commercial'
-                    };
-                    return categoryMap[category] || category;
-                }
-
-                performSearch(query) {
-                    if (query.trim().length > 0) {
-                        window.location.href = `search-results.html?q=${encodeURIComponent(query)}`;
-                    }
-                }
-            }
-
-            // Dynamic Categories System
-            class DynamicCategories {
-                constructor() {
-                    this.categories = [];
-                    this.products = [];
-                    this.init();
-                }
-
-                async init() {
-                    await this.loadDataFromFirestore();
-                    this.renderCategories();
-                }
-
-                async loadDataFromFirestore() {
-                    try {
-                        console.log("Loading categories from Firestore...");
-                        
-                        // Firestore se categories fetch karein
-                        const categoriesQuery = window.firebaseFunctions.collection(
-                            window.firebaseDb, 
-                            'categories'
-                        );
-                        const categoriesSnapshot = await window.firebaseFunctions.getDocs(categoriesQuery);
-                        
-                        this.categories = [];
-                        categoriesSnapshot.forEach((doc) => {
-                            this.categories.push({
-                                id: doc.id,
-                                ...doc.data()
-                            });
-                        });
-                        
-                        console.log("Categories loaded from Firestore:", this.categories);
-
-                        // Firestore se products fetch karein
-                        const productsQuery = window.firebaseFunctions.collection(
-                            window.firebaseDb, 
-                            'products'
-                        );
-                        const productsSnapshot = await window.firebaseFunctions.getDocs(productsQuery);
-                        
-                        this.products = [];
-                        productsSnapshot.forEach((doc) => {
-                            this.products.push({
-                                id: doc.id,
-                                ...doc.data()
-                            });
-                        });
-                        
-                        console.log("Products loaded from Firestore:", this.products);
-
-                    } catch (error) {
-                        console.error("Error loading data from Firestore:", error);
-                        // Fallback to mock data
-                        await this.loadMockData();
-                    }
-                }
-
-                async loadMockData() {
-                    // Mock data as fallback
-                    this.categories = [
-                        {
-                            id: '1',
-                            name: 'Flooring',
-                            type: 'flooring',
-                            image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
-                            description: 'Stone flooring solutions for homes and commercial spaces'
-                        },
-                        {
-                            id: '2', 
-                            name: 'Wall Decoration',
-                            type: 'wall',
-                            image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
-                            description: 'Wall cladding and decorative stone solutions'
-                        },
-                        {
-                            id: '3',
-                            name: 'Bathroom',
-                            type: 'bathroom', 
-                            image: 'https://images.unsplash.com/photo-1600607687920-26eb2c5fab6a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
-                            description: 'Bathroom stone tiles and solutions'
-                        },
-                        {
-                            id: '4',
-                            name: 'Outdoor',
-                            type: 'outdoor',
-                            image: 'https://images.unsplash.com/photo-1600585154340-2e5db6e509e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
-                            description: 'Outdoor stone paving and landscaping'
-                        },
-                        {
-                            id: '5',
-                            name: 'Kitchen',
-                            type: 'kitchen',
-                            image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
-                            description: 'Kitchen countertops and stone surfaces'
-                        },
-                        {
-                            id: '6',
-                            name: 'Commercial',
-                            type: 'commercial', 
-                            image: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
-                            description: 'Commercial stone projects and installations'
-                        }
-                    ];
-
-                    this.products = [
-                        { 
-                            id: 'p1', 
-                            name: 'Kota Blue Stone', 
-                            category: 'flooring',
-                            stone_name: 'Kota Blue',
-                            type: 'Natural Stone',
-                            price: '£45.00'
-                        },
-                        { 
-                            id: 'p2', 
-                            name: 'Sandstone Pavers', 
-                            category: 'outdoor',
-                            stone_name: 'Raj Green Sandstone', 
-                            type: 'Calibrated',
-                            price: '£35.00'
-                        },
-                        { 
-                            id: 'p3', 
-                            name: 'Marble Tiles', 
-                            category: 'bathroom',
-                            stone_name: 'White Marble',
-                            type: 'Polished', 
-                            price: '£75.00'
-                        },
-                        { 
-                            id: 'p4', 
-                            name: 'Granite Countertops', 
-                            category: 'kitchen',
-                            stone_name: 'Black Galaxy Granite',
-                            type: 'Polished',
-                            price: '£120.00'
-                        },
-                        { 
-                            id: 'p5', 
-                            name: 'Limestone Cladding', 
-                            category: 'wall',
-                            stone_name: 'Kota Brown Limestone',
-                            type: 'Natural',
-                            price: '£55.00'
-                        },
-                        { 
-                            id: 'p6', 
-                            name: 'Commercial Flooring', 
-                            category: 'commercial',
-                            stone_name: 'Dholpur Stone',
-                            type: 'Calibrated',
-                            price: '£40.00'
-                        }
-                    ];
-                }
-
-                renderCategories() {
-                    const categoriesGrid = document.getElementById('dynamicCategories');
-                    if (!categoriesGrid) return;
-
-                    // Loading remove karein
-                    categoriesGrid.innerHTML = '';
-
-                    if (this.categories.length === 0) {
-                        categoriesGrid.innerHTML = `
-                            <div class="loading-categories">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                <p>No categories found</p>
-                            </div>
-                        `;
-                        return;
-                    }
-
-                    this.categories.forEach(category => {
-                        const categoryProducts = this.products.filter(product => 
-                            product.category === category.type
-                        );
-                        
-                        const categoryElement = this.createCategoryElement(category, categoryProducts);
-                        categoriesGrid.appendChild(categoryElement);
-                    });
-                }
-
-                createCategoryElement(category, products) {
-                    const categoryItem = document.createElement('div');
-                    categoryItem.className = 'use-category-item';
-                    
-                    categoryItem.innerHTML = `
-                        <a href="category-products.html?category=${category.type}" class="use-category-link">
-                            <div class="use-category-image" style="background-image: url('${category.image || 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80'}')"></div>
-                            <div class="use-category-name">${category.name}</div>
-                            ${products.length > 0 ? 
-                                `<div class="product-count">${products.length} products</div>` : 
-                                '<div class="product-count">0 products</div>'
+                            if (!item.matches(':hover') && !megaMenu.matches(':hover')) {
+                                megaMenu.style.display = 'none';
                             }
-                        </a>
-                    `;
-
-                    return categoryItem;
+                        }, 100);
+                    });
                 }
-            }
+            });
+            
+            // Close all mega menus when clicking outside
+            document.addEventListener('click', (event) => {
+                if (!usesTopBar.contains(event.target)) {
+                    document.querySelectorAll('.mega-menu').forEach(menu => {
+                        menu.style.display = 'none';
+                    });
+                }
+            });
+            
+            console.log('✅ Mega Menu initialization complete');
+        }
 
-            // Initialize all managers
-            try {
-                const authManager = new AuthManager();
-                const searchManager = new AdvancedSearch();
-                const categoriesManager = new DynamicCategories();
-                
-                console.log("✅ All managers initialized successfully");
-                console.log("📊 Categories:", categoriesManager.categories);
-                console.log("📦 Products:", categoriesManager.products);
-                
-            } catch (error) {
-                console.error("❌ Error initializing managers:", error);
-            }
-        };
+        // Initialize authentication
+        function initializeAuth() {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    // User is signed in
+                    appState.user = {
+                        uid: user.uid,
+                        email: user.email,
+                        name: user.displayName || user.email.split('@')[0]
+                    };
+                    localStorage.setItem('stonecraft_user', JSON.stringify(appState.user));
+                    updateUserInterface();
+                } else {
+                    // User is signed out
+                    appState.user = null;
+                    localStorage.removeItem('stonecraft_user');
+                    updateUserInterface();
+                }
+            });
+        }
 
-        // Start the application
-        initializeApp();
+        // Update UI based on user authentication
+        function updateUserInterface() {
+            if (appState.user) {
+                // User is logged in
+                document.getElementById('userProfile').style.display = 'block';
+                document.getElementById('loginButton').style.display = 'none';
+                document.getElementById('addProductButton').style.display = 'flex';
+                document.getElementById('heroAddProductBtn').style.display = 'inline-block';
+                
+                // Update user info
+                document.getElementById('profileName').textContent = appState.user.name;
+                document.getElementById('profileAvatar').textContent = appState.user.name.charAt(0).toUpperCase();
+                document.getElementById('dropdownUserName').textContent = appState.user.name;
+                document.getElementById('dropdownUserEmail').textContent = appState.user.email;
+            } else {
+                // User is not logged in
+                document.getElementById('userProfile').style.display = 'none';
+                document.getElementById('loginButton').style.display = 'flex';
+                document.getElementById('addProductButton').style.display = 'none';
+                document.getElementById('heroAddProductBtn').style.display = 'none';
+            }
+        }
+
+        // Initialize UI components
+        function initializeUI() {
+            // Initialize search functionality
+            initializeSearch();
+            
+            // Initialize user profile dropdown
+            initializeUserProfile();
+        }
+
+        // Initialize search functionality
+        function initializeSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const searchButton = document.getElementById('searchButton');
+            const searchResults = document.getElementById('searchResults');
+            
+            if (!searchInput || !searchButton || !searchResults) return;
+            
+            searchButton.addEventListener('click', performSearch);
+            searchInput.addEventListener('keyup', function(event) {
+                if (event.key === 'Enter') {
+                    performSearch();
+                }
+            });
+            
+            searchInput.addEventListener('input', function() {
+                if (searchInput.value.length > 2) {
+                    performSearch();
+                } else {
+                    searchResults.classList.remove('active');
+                }
+            });
+            
+            function performSearch() {
+                const query = searchInput.value.trim().toLowerCase();
+                
+                if (query.length < 2) {
+                    searchResults.classList.remove('active');
+                    return;
+                }
+                
+                // Show loading state
+                searchResults.innerHTML = '<div class="search-loading"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+                searchResults.classList.add('active');
+                
+                // Simulate API delay
+                setTimeout(() => {
+                    const results = appState.products.filter(product => 
+                        (product.stone_name && product.stone_name.toLowerCase().includes(query)) ||
+                        (product.uses && product.uses.toLowerCase().includes(query)) ||
+                        (product.type && product.type.toLowerCase().includes(query))
+                    );
+                    
+                    displaySearchResults(results, query);
+                }, 300);
+            }
+            
+            function displaySearchResults(results, query) {
+                searchResults.innerHTML = '';
+                
+                if (results.length === 0) {
+                    searchResults.innerHTML = '<div class="no-results">No products found for "' + query + '"</div>';
+                    return;
+                }
+                
+                results.forEach(product => {
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'search-result-item';
+                    resultItem.innerHTML = `
+                        <div class="search-result-image" style="background-image: url('${product.images?.[0] || 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80'}')"></div>
+                        <div class="search-result-content">
+                            <div class="search-result-name">${product.stone_name || 'Stone Product'}</div>
+                            <div class="search-result-category">${product.uses || 'General'} • ${product.type || 'Natural Stone'}</div>
+                        </div>
+                        <div class="search-result-price">${product.price ? '£' + product.price : 'Price on request'}</div>
+                    `;
+                    
+                    resultItem.addEventListener('click', function() {
+                        window.location.href = `product-details.html?id=${product.id}`;
+                    });
+                    
+                    searchResults.appendChild(resultItem);
+                });
+                
+                // Add "View all results" link
+                const viewAll = document.createElement('div');
+                viewAll.className = 'view-all-results';
+                viewAll.innerHTML = `<a href="search-results.html?q=${encodeURIComponent(query)}">View all ${results.length} results</a>`;
+                searchResults.appendChild(viewAll);
+            }
+            
+            // Close search results when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!searchResults.contains(event.target) && event.target !== searchInput && event.target !== searchButton) {
+                    searchResults.classList.remove('active');
+                }
+            });
+        }
+
+        // Initialize user profile dropdown
+        function initializeUserProfile() {
+            const profileToggle = document.getElementById('profileToggle');
+            const profileDropdown = document.getElementById('profileDropdown');
+            const logoutBtn = document.getElementById('logoutBtn');
+            
+            if (!profileToggle || !profileDropdown) return;
+            
+            profileToggle.addEventListener('click', function(event) {
+                event.stopPropagation();
+                profileDropdown.classList.toggle('active');
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function() {
+                profileDropdown.classList.remove('active');
+            });
+            
+            // Logout functionality
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    signOut(auth).then(() => {
+                        console.log('User signed out');
+                    }).catch((error) => {
+                        console.error('Sign out error:', error);
+                    });
+                });
+            }
+        }
+
+        // Demo: Show how new types are automatically added
+        console.log('🔄 Navigation will automatically update when new products with usage are added to Firestore');
     </script>
 </body>
 </html>
