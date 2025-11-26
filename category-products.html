@@ -1163,7 +1163,7 @@
                 }
             }
 
-            // Type Products Manager - CORRECTED VERSION
+            // Type Products Manager - AUTOMATIC FILTERING
             class TypeProductsManager {
                 constructor() {
                     this.type = this.getTypeFromURL();
@@ -1185,23 +1185,9 @@
 
                 async loadProducts() {
                     try {
-                        // Fetch products from Firestore
+                        // Fetch ALL products from Firestore
                         const productsRef = window.firebaseFunctions.collection(window.firebaseDb, "products");
-                        let querySnapshot;
-                        
-                        if (this.type) {
-                            // Agar type hai to filter by type
-                            console.log("Filtering products by type:", this.type);
-                            const q = window.firebaseFunctions.query(
-                                productsRef, 
-                                window.firebaseFunctions.where("type", "==", this.type)
-                            );
-                            querySnapshot = await window.firebaseFunctions.getDocs(q);
-                        } else {
-                            // Agar type nahi hai to sare products lelo
-                            console.log("Loading all products (no type filter)");
-                            querySnapshot = await window.firebaseFunctions.getDocs(productsRef);
-                        }
+                        const querySnapshot = await window.firebaseFunctions.getDocs(productsRef);
                         
                         this.products = [];
                         querySnapshot.forEach((doc) => {
@@ -1209,9 +1195,17 @@
                             product.id = doc.id;
                             this.products.push(product);
                         });
+
+                        console.log("All products loaded from Firestore:", this.products.length);
                         
-                        console.log("Filtered products loaded from Firestore:", this.products);
-                        console.log("Total products found:", this.products.length);
+                        // Agar type specified hai to filter karo
+                        if (this.type) {
+                            const originalCount = this.products.length;
+                            this.products = this.products.filter(product => 
+                                product.type && product.type.toLowerCase() === this.type.toLowerCase()
+                            );
+                            console.log(`Filtered products for type '${this.type}': ${this.products.length} out of ${originalCount}`);
+                        }
                         
                     } catch (error) {
                         console.error("Error loading products from Firestore:", error);
@@ -1258,7 +1252,7 @@
                             }
                         ];
 
-                        // Filter products by type if specified
+                        // Agar type specified hai to filter karo
                         if (this.type) {
                             this.products = allProducts.filter(product => 
                                 product.type === this.type
