@@ -1163,11 +1163,12 @@
                 }
             }
 
-            // Type Products Manager - YAHAN MAIN CHANGE KIYA HAI
+            // Type Products Manager - CORRECTED VERSION
             class TypeProductsManager {
                 constructor() {
                     this.type = this.getTypeFromURL();
                     this.products = [];
+                    console.log("Type from URL:", this.type);
                     this.init();
                 }
 
@@ -1184,12 +1185,13 @@
 
                 async loadProducts() {
                     try {
-                        // Fetch products from Firestore by type
+                        // Fetch products from Firestore
                         const productsRef = window.firebaseFunctions.collection(window.firebaseDb, "products");
-                        
                         let querySnapshot;
+                        
                         if (this.type) {
                             // Agar type hai to filter by type
+                            console.log("Filtering products by type:", this.type);
                             const q = window.firebaseFunctions.query(
                                 productsRef, 
                                 window.firebaseFunctions.where("type", "==", this.type)
@@ -1197,6 +1199,7 @@
                             querySnapshot = await window.firebaseFunctions.getDocs(q);
                         } else {
                             // Agar type nahi hai to sare products lelo
+                            console.log("Loading all products (no type filter)");
                             querySnapshot = await window.firebaseFunctions.getDocs(productsRef);
                         }
                         
@@ -1207,7 +1210,9 @@
                             this.products.push(product);
                         });
                         
-                        console.log("Type products loaded from Firestore:", this.products);
+                        console.log("Filtered products loaded from Firestore:", this.products);
+                        console.log("Total products found:", this.products.length);
+                        
                     } catch (error) {
                         console.error("Error loading products from Firestore:", error);
                         
@@ -1282,6 +1287,8 @@
                     const productsTitle = document.getElementById('productsTitle');
                     const typeIndicator = document.getElementById('typeIndicator');
 
+                    console.log("Rendering type info for:", this.type);
+
                     if (this.type) {
                         const typeName = this.getTypeName(this.type);
                         typeTitle.textContent = typeName;
@@ -1319,21 +1326,28 @@
                         return;
                     }
 
-                    productsGrid.innerHTML = this.products.map(product => `
+                    productsGrid.innerHTML = this.products.map(product => {
+                        // Image URL ko properly handle karo
+                        let imageUrl = product.image || product.images?.[0];
+                        if (!imageUrl || imageUrl === 'undefined') {
+                            imageUrl = 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80';
+                        }
+                        
+                        return `
                         <div class="product-card" data-product-id="${product.id}">
-                            <div class="product-image" style="background-image: url('${product.image}')"></div>
+                            <div class="product-image" style="background-image: url('${imageUrl}')"></div>
                             <div class="product-content">
-                                <h3 class="product-title">${product.name}</h3>
-                                <p class="product-description">${product.description}</p>
-                                <div class="product-price">${product.price} <small>${product.unit || 'per sqm'}</small></div>
+                                <h3 class="product-title">${product.name || product.stone_name || 'Stone Product'}</h3>
+                                <p class="product-description">${product.description || 'Premium quality natural stone product'}</p>
+                                <div class="product-price">${product.price || '£50.00'} <small>${product.unit || 'per sqm'}</small></div>
                                 <button class="btn btn-block view-product-btn">View Details</button>
                                 <div class="product-meta">
-                                    <span><i class="fas fa-palette"></i> ${product.type ? this.getTypeName(product.type) : 'Various Patterns'}</span>
+                                    <span><i class="fas fa-palette"></i> ${product.type ? this.getTypeName(product.type) : 'Natural Stone'}</span>
                                     <span><i class="fas fa-shipping-fast"></i> Free Delivery</span>
                                 </div>
                             </div>
                         </div>
-                    `).join('');
+                    `}).join('');
 
                     // Add click event to product cards and buttons
                     productsGrid.querySelectorAll('.product-card').forEach(card => {
