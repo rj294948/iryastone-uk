@@ -14,33 +14,15 @@
         import { 
             getFirestore, 
             collection, 
-            addDoc, 
-            getDocs, 
-            query, 
-            orderBy, 
-            doc, 
-            deleteDoc, 
-            updateDoc, 
-            where, 
-            serverTimestamp 
+            getDocs,
+            query,
+            where
         } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
         import { 
             getAuth, 
-            createUserWithEmailAndPassword, 
-            signInWithEmailAndPassword, 
             signOut, 
-            GoogleAuthProvider, 
-            signInWithPopup, 
-            onAuthStateChanged, 
-            updateProfile 
+            onAuthStateChanged
         } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
-        import { 
-            getStorage, 
-            ref, 
-            uploadBytes, 
-            uploadBytesResumable, 
-            getDownloadURL 
-        } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-storage.js";
 
         // Firebase Configuration
         const firebaseConfig = {
@@ -57,19 +39,14 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
-        const storage = getStorage(app);
-        const googleProvider = new GoogleAuthProvider();
 
         // Make them globally available
         window.firebaseApp = app;
         window.firebaseDb = db;
         window.firebaseAuth = auth;
-        window.firebaseStorage = storage;
-        window.firebaseGoogleProvider = googleProvider;
         window.firebaseFunctions = {
-            collection, addDoc, getDocs, query, orderBy, doc, deleteDoc, updateDoc, where, serverTimestamp,
-            createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, signInWithPopup, onAuthStateChanged, updateProfile,
-            ref, uploadBytes, uploadBytesResumable, getDownloadURL
+            collection, getDocs, query, where,
+            signOut, onAuthStateChanged
         };
 
         console.log("Firebase initialized successfully");
@@ -1059,25 +1036,14 @@
                         console.error("Error loading products from Firestore:", error);
                         
                         // Fallback to mock data if Firestore fails
-                        const allProductsData = {
-                            flooring: [
-                                { id: '1', name: 'Kota Blue Stone', category: 'flooring', price: '£45.00', image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80', description: 'Premium quality kota stone for flooring', types: ['herringbone', 'checkerboard'] },
-                                { id: '2', name: 'Sandstone Tiles', category: 'flooring', price: '£35.00', image: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80', description: 'Natural sandstone tiles', types: ['random', 'brick'] },
-                                { id: '3', name: 'Limestone Flooring', category: 'flooring', price: '£55.00', image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80', description: 'Elegant limestone flooring', types: ['diagonal', 'hexagon'] }
-                            ],
-                            wall: [
-                                { id: '4', name: 'Marble Wall Cladding', category: 'wall', price: '£75.00', image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80', description: 'Luxury marble wall cladding', types: [] }
-                            ],
-                            bathroom: [
-                                { id: '5', name: 'Bathroom Marble Tiles', category: 'bathroom', price: '£65.00', image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80', description: 'Water-resistant marble tiles', types: [] }
-                            ],
-                            outdoor: [
-                                { id: '6', name: 'Outdoor Sandstone Pavers', category: 'outdoor', price: '£40.00', image: 'https://images.unsplash.com/photo-1600585154340-2e5db6e509e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80', description: 'Durable sandstone pavers', types: [] }
-                            ]
-                        };
+                        const allProductsData = [
+                            { id: '1', name: 'Kota Blue Stone', type: 'herringbone', price: '£45.00', image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80', description: 'Premium quality kota stone for flooring' },
+                            { id: '2', name: 'Sandstone Tiles', type: 'checkerboard', price: '£35.00', image: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80', description: 'Natural sandstone tiles' },
+                            { id: '3', name: 'Limestone Flooring', type: 'random', price: '£55.00', image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80', description: 'Elegant limestone flooring' },
+                            { id: '4', name: 'Marble Wall Cladding', type: 'brick', price: '£75.00', image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80', description: 'Luxury marble wall cladding' }
+                        ];
 
-                        // Flatten all products into one array
-                        this.allProducts = Object.values(allProductsData).flat();
+                        this.allProducts = allProductsData;
                     }
                 }
 
@@ -1140,8 +1106,7 @@
                     const productResults = this.allProducts.filter(product => 
                         product.name.toLowerCase().includes(searchTerm) ||
                         product.description.toLowerCase().includes(searchTerm) ||
-                        product.category.toLowerCase().includes(searchTerm) ||
-                        (product.types && product.types.some(type => type.toLowerCase().includes(searchTerm)))
+                        (product.type && product.type.toLowerCase().includes(searchTerm))
                     );
 
                     if (productResults.length === 0) {
@@ -1159,11 +1124,11 @@
 
                     productResults.forEach(product => {
                         resultsHTML += `
-                            <div class="search-result-item" onclick="window.location.href='product-details.html?id=${product.id}&category=${product.category}'">
+                            <div class="search-result-item" onclick="window.location.href='product-details.html?id=${product.id}'">
                                 <div class="search-result-image" style="background-image: url('${product.image}')"></div>
                                 <div class="search-result-content">
                                     <div class="search-result-name">${product.name}</div>
-                                    <div class="search-result-category">${this.formatCategory(product.category)}</div>
+                                    <div class="search-result-category">${this.formatType(product.type)}</div>
                                     <div class="search-result-price">${product.price}</div>
                                 </div>
                             </div>
@@ -1179,14 +1144,16 @@
                     this.searchResults.innerHTML = resultsHTML;
                 }
 
-                formatCategory(category) {
-                    const categoryMap = {
-                        'flooring': 'Flooring',
-                        'wall': 'Wall Decoration',
-                        'bathroom': 'Bathroom',
-                        'outdoor': 'Outdoor'
+                formatType(type) {
+                    const typeMap = {
+                        'herringbone': 'Herringbone Pattern',
+                        'checkerboard': 'Checkerboard Pattern',
+                        'random': 'Random Layout',
+                        'brick': 'Brick Pattern',
+                        'diagonal': 'Diagonal Pattern',
+                        'hexagon': 'Hexagon Pattern'
                     };
-                    return categoryMap[category] || category;
+                    return typeMap[type] || type;
                 }
 
                 performSearch(query) {
@@ -1196,76 +1163,42 @@
                 }
             }
 
-            // Type Products Manager
+            // Type Products Manager - YAHAN MAIN CHANGE KIYA HAI
             class TypeProductsManager {
                 constructor() {
                     this.type = this.getTypeFromURL();
                     this.products = [];
-                    this.typeData = null;
                     this.init();
                 }
 
                 getTypeFromURL() {
                     const urlParams = new URLSearchParams(window.location.search);
-                    return urlParams.get('type') || 'herringbone';
+                    return urlParams.get('type') || '';
                 }
 
                 async init() {
-                    await this.loadTypeData();
                     await this.loadProducts();
                     this.renderTypeInfo();
                     this.renderProducts();
-                }
-
-                async loadTypeData() {
-                    // Type data with proper information
-                    const types = {
-                        herringbone: {
-                            name: 'Herringbone Pattern',
-                            description: 'Classic herringbone pattern stone flooring for timeless elegance and visual appeal',
-                            bannerImage: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80'
-                        },
-                        checkerboard: {
-                            name: 'Checkerboard Pattern',
-                            description: 'Traditional checkerboard pattern with alternating stone colors for dramatic effect',
-                            bannerImage: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80'
-                        },
-                        random: {
-                            name: 'Random Layout',
-                            description: 'Natural random stone layout for organic, rustic appearance with varying sizes',
-                            bannerImage: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80'
-                        },
-                        brick: {
-                            name: 'Brick Pattern',
-                            description: 'Traditional brick pattern stone layout for classic and contemporary spaces',
-                            bannerImage: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80'
-                        },
-                        diagonal: {
-                            name: 'Diagonal Pattern',
-                            description: 'Diagonal stone layout to create visual interest and make spaces appear larger',
-                            bannerImage: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80'
-                        },
-                        hexagon: {
-                            name: 'Hexagon Pattern',
-                            description: 'Modern hexagon pattern stone tiles for contemporary interior design',
-                            bannerImage: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80'
-                        }
-                    };
-
-                    this.typeData = types[this.type] || types.herringbone;
-                    return this.typeData;
                 }
 
                 async loadProducts() {
                     try {
                         // Fetch products from Firestore by type
                         const productsRef = window.firebaseFunctions.collection(window.firebaseDb, "products");
-                        const q = window.firebaseFunctions.query(
-                            productsRef, 
-                            window.firebaseFunctions.where("types", "array-contains", this.type)
-                        );
                         
-                        const querySnapshot = await window.firebaseFunctions.getDocs(q);
+                        let querySnapshot;
+                        if (this.type) {
+                            // Agar type hai to filter by type
+                            const q = window.firebaseFunctions.query(
+                                productsRef, 
+                                window.firebaseFunctions.where("type", "==", this.type)
+                            );
+                            querySnapshot = await window.firebaseFunctions.getDocs(q);
+                        } else {
+                            // Agar type nahi hai to sare products lelo
+                            querySnapshot = await window.firebaseFunctions.getDocs(productsRef);
+                        }
                         
                         this.products = [];
                         querySnapshot.forEach((doc) => {
@@ -1289,8 +1222,7 @@
                                 price: '£45.00',
                                 image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
                                 unit: 'per sqm',
-                                types: ['herringbone'],
-                                category: 'flooring'
+                                type: 'herringbone'
                             },
                             {
                                 id: '2',
@@ -1299,8 +1231,7 @@
                                 price: '£35.00',
                                 image: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
                                 unit: 'per sqm',
-                                types: ['checkerboard'],
-                                category: 'flooring'
+                                type: 'checkerboard'
                             },
                             {
                                 id: '3',
@@ -1309,8 +1240,7 @@
                                 price: '£55.00',
                                 image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
                                 unit: 'per sqm',
-                                types: ['random'],
-                                category: 'flooring'
+                                type: 'random'
                             },
                             {
                                 id: '4',
@@ -1319,56 +1249,55 @@
                                 price: '£75.00',
                                 image: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
                                 unit: 'per sqm',
-                                types: ['brick'],
-                                category: 'flooring'
-                            },
-                            {
-                                id: '5',
-                                name: 'Granite Tiles - Diagonal',
-                                description: 'Premium granite tiles laid in diagonal pattern to create visual interest and spacious feel.',
-                                price: '£65.00',
-                                image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
-                                unit: 'per sqm',
-                                types: ['diagonal'],
-                                category: 'flooring'
-                            },
-                            {
-                                id: '6',
-                                name: 'Slate Tiles - Hexagon',
-                                description: 'Natural slate tiles in modern hexagon pattern for contemporary interior design.',
-                                price: '£50.00',
-                                image: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
-                                unit: 'per sqm',
-                                types: ['hexagon'],
-                                category: 'flooring'
+                                type: 'brick'
                             }
                         ];
 
-                        // Filter products by type
-                        this.products = allProducts.filter(product => 
-                            product.types && product.types.includes(this.type)
-                        );
+                        // Filter products by type if specified
+                        if (this.type) {
+                            this.products = allProducts.filter(product => 
+                                product.type === this.type
+                            );
+                        } else {
+                            this.products = allProducts;
+                        }
                     }
+                }
+
+                getTypeName(type) {
+                    const typeNames = {
+                        'herringbone': 'Herringbone Pattern',
+                        'checkerboard': 'Checkerboard Pattern',
+                        'random': 'Random Layout',
+                        'brick': 'Brick Pattern',
+                        'diagonal': 'Diagonal Pattern',
+                        'hexagon': 'Hexagon Pattern'
+                    };
+                    return typeNames[type] || type;
                 }
 
                 renderTypeInfo() {
                     const typeTitle = document.getElementById('typeTitle');
                     const typeDescription = document.getElementById('typeDescription');
-                    const typeBanner = document.getElementById('typeBanner');
                     const productsTitle = document.getElementById('productsTitle');
                     const typeIndicator = document.getElementById('typeIndicator');
 
-                    typeTitle.textContent = this.typeData.name;
-                    typeDescription.textContent = this.typeData.description;
-                    
-                    // Update title
-                    productsTitle.textContent = `${this.typeData.name} Collection`;
-                    
-                    // Update page title
-                    document.title = `${this.typeData.name} - StoneCraft UK`;
-
-                    // Update banner background
-                    typeBanner.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('${this.typeData.bannerImage}')`;
+                    if (this.type) {
+                        const typeName = this.getTypeName(this.type);
+                        typeTitle.textContent = typeName;
+                        typeDescription.textContent = `Discover our premium collection of ${typeName.toLowerCase()} stone products`;
+                        productsTitle.textContent = `${typeName} Collection`;
+                        typeIndicator.textContent = `${typeName}`;
+                        typeIndicator.style.display = 'inline-block';
+                        
+                        // Update page title
+                        document.title = `${typeName} - StoneCraft UK`;
+                    } else {
+                        typeTitle.textContent = 'All Products';
+                        typeDescription.textContent = 'Discover our complete collection of premium stone products';
+                        productsTitle.textContent = 'All Products Collection';
+                        document.title = 'All Products - StoneCraft UK';
+                    }
                 }
 
                 renderProducts() {
@@ -1383,7 +1312,7 @@
                             <div class="no-products">
                                 <i class="fas fa-box-open"></i>
                                 <h3>No Products Found</h3>
-                                <p>We don't have ${this.typeData.name} products available at the moment.</p>
+                                <p>${this.type ? `We don't have ${this.getTypeName(this.type)} products available at the moment.` : `We're currently updating our product collection.`}</p>
                                 <a href="index.html" class="btn" style="margin-top: 20px;">Browse All Products</a>
                             </div>
                         `;
@@ -1396,10 +1325,10 @@
                             <div class="product-content">
                                 <h3 class="product-title">${product.name}</h3>
                                 <p class="product-description">${product.description}</p>
-                                <div class="product-price">${product.price} <small>${product.unit}</small></div>
+                                <div class="product-price">${product.price} <small>${product.unit || 'per sqm'}</small></div>
                                 <button class="btn btn-block view-product-btn">View Details</button>
                                 <div class="product-meta">
-                                    <span><i class="fas fa-layer-group"></i> ${product.category}</span>
+                                    <span><i class="fas fa-palette"></i> ${product.type ? this.getTypeName(product.type) : 'Various Patterns'}</span>
                                     <span><i class="fas fa-shipping-fast"></i> Free Delivery</span>
                                 </div>
                             </div>
@@ -1426,10 +1355,7 @@
 
                 viewProductDetails(productId) {
                     // Navigate to product details page
-                    const product = this.products.find(p => p.id === productId);
-                    if (product) {
-                        window.location.href = `product-details.html?id=${productId}&category=${product.category}&type=${this.type}`;
-                    }
+                    window.location.href = `product-details.html?id=${productId}`;
                 }
             }
 
