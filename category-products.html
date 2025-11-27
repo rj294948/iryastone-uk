@@ -605,33 +605,6 @@
             font-weight: 500;
         }
         
-        .sort-options {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        
-        .sort-btn {
-            padding: 10px 20px;
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
-        
-        .sort-btn:hover {
-            background: #e9ecef;
-        }
-        
-        .sort-btn.active {
-            background: #b8860b;
-            color: white;
-            border-color: #b8860b;
-        }
-        
         .products-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -1146,6 +1119,25 @@
             <div class="main-layout">
                 <!-- Left Filters Sidebar -->
                 <div class="filters-sidebar">
+                    <!-- Sort Options -->
+                    <div class="filter-section">
+                        <h3 class="filter-title">
+                            <i class="fas fa-sort"></i>
+                            Sort By
+                        </h3>
+                        <div class="filter-tags" id="sortOptions">
+                            <div class="filter-tag active" data-sort="name">
+                                Name A-Z
+                            </div>
+                            <div class="filter-tag" data-sort="price-low">
+                                Price Low to High
+                            </div>
+                            <div class="filter-tag" data-sort="price-high">
+                                Price High to Low
+                            </div>
+                        </div>
+                    </div>
+                    
                     <!-- Stone Types Filter -->
                     <div class="filter-section">
                         <h3 class="filter-title">
@@ -1220,11 +1212,6 @@
                     <div class="products-header">
                         <div class="products-count" id="productsCount">
                             Loading products...
-                        </div>
-                        <div class="sort-options">
-                            <div class="sort-btn active" data-sort="name">Name A-Z</div>
-                            <div class="sort-btn" data-sort="price-low">Price Low to High</div>
-                            <div class="sort-btn" data-sort="price-high">Price High to Low</div>
                         </div>
                     </div>
                     
@@ -1822,6 +1809,17 @@
 
         // ✅ FILTERS INITIALIZATION
         function initializeFilters() {
+            // Sort options
+            document.querySelectorAll('[data-sort]').forEach(tag => {
+                tag.addEventListener('click', function() {
+                    document.querySelectorAll('[data-sort]').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    appState.filters.sortBy = this.getAttribute('data-sort');
+                    applyManualFilters();
+                });
+            });
+            
             // Stone type filters
             document.querySelectorAll('[data-filter="stoneType"]').forEach(tag => {
                 tag.addEventListener('click', function() {
@@ -1978,15 +1976,7 @@
 
         // ✅ INITIALIZE SORTING
         function initializeSorting() {
-            document.querySelectorAll('.sort-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    appState.filters.sortBy = this.getAttribute('data-sort');
-                    applyManualFilters();
-                });
-            });
+            // Already handled in initializeFilters
         }
 
         // ✅ DISPLAY PRODUCTS FUNCTION
@@ -2125,6 +2115,16 @@
 
         // ✅ UPDATE FILTER TAGS
         function updateFilterTags() {
+            // Update sort options
+            document.querySelectorAll('[data-sort]').forEach(tag => {
+                const value = tag.getAttribute('data-sort');
+                if (appState.filters.sortBy === value) {
+                    tag.classList.add('active');
+                } else {
+                    tag.classList.remove('active');
+                }
+            });
+            
             // Update stone type tags
             document.querySelectorAll('[data-filter="stoneType"]').forEach(tag => {
                 const value = tag.getAttribute('data-value');
@@ -2177,7 +2177,7 @@
             };
             
             // Reset sorting
-            document.querySelectorAll('.sort-btn').forEach(btn => {
+            document.querySelectorAll('[data-sort]').forEach(btn => {
                 btn.classList.remove('active');
                 if (btn.getAttribute('data-sort') === 'name') {
                     btn.classList.add('active');
@@ -2223,12 +2223,58 @@
                 const useItem = document.createElement('div');
                 useItem.className = 'use-item';
                 
-                useItem.innerHTML = `
-                    <a href="category-products.html?usage=${usageKey}" class="use-link">${usage}</a>
-                `;
+                // Get products for this usage
+                const usageProducts = appState.products.filter(product => 
+                    product.uses && product.uses.toLowerCase() === usage.toLowerCase()
+                );
+                
+                const uniqueStoneNames = [...new Set(usageProducts
+                    .filter(product => product.stone_name)
+                    .map(product => product.stone_name)
+                )];
+                
+                console.log(`📁 ${usage} - Products: ${usageProducts.length}, Stone Names: ${uniqueStoneNames.length}`);
+                
+                if (uniqueStoneNames.length > 0) {
+                    // Usage with stone names - create mega menu
+                    useItem.innerHTML = `
+                        <div class="use-link">${usage} (${usageProducts.length})</div>
+                        <div class="mega-menu">
+                            <div class="patterns-grid">
+                                ${uniqueStoneNames.map(stoneName => {
+                                    const stoneSlug = stoneName.toLowerCase().replace(/\s+/g, '-');
+                                    // Find a product image for this stone or use default
+                                    const stoneProduct = appState.products.find(p => 
+                                        p.uses && p.uses.toLowerCase() === usage.toLowerCase() && 
+                                        p.stone_name === stoneName
+                                    );
+                                    const imageUrl = stoneProduct?.images?.[0] || 
+                                        'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80';
+                                    
+                                    return `
+                                        <a href="category-products.html?usage=${usageKey}&stone=${stoneSlug}" class="pattern-item" data-usage="${usage}" data-stone="${stoneName}">
+                                            <div class="pattern-image" style="background-image: url('${imageUrl}')"></div>
+                                            <div class="pattern-name">${stoneName}</div>
+                                        </a>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Usage with products but no stone names - simple link
+                    useItem.innerHTML = `
+                        <a href="category-products.html?usage=${usageKey}" class="use-link">${usage} (${usageProducts.length})</a>
+                    `;
+                }
                 
                 usesContainer.appendChild(useItem);
             });
+            
+            // Reinitialize mega menu functionality
+            setTimeout(() => {
+                initializeMegaMenu();
+            }, 100);
         }
 
         // ✅ AUTHENTICATION FUNCTIONS
