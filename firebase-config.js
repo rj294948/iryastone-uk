@@ -1,7 +1,7 @@
 // firebase-config.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 
-// Firestore
+// Firestore - onSnapshot add karo
 import {
   getFirestore,
   collection,
@@ -13,7 +13,8 @@ import {
   deleteDoc,
   updateDoc,
   where,
-  serverTimestamp
+  serverTimestamp,
+  onSnapshot  // ✅ YEH ADD KARO
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
 // Auth
@@ -72,6 +73,7 @@ export {
   updateDoc,
   where,
   serverTimestamp,
+  onSnapshot,  // ✅ YEH EXPORT KARO
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
