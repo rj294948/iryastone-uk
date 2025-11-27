@@ -375,7 +375,7 @@
             font-weight: 500;
         }
         
-        /* Uses Top Bar with Mega Menu */
+        /* Uses Top Bar with Mega Menu - HOME PAGE JAISE */
         .uses-top-bar {
             position: relative; 
             background: #333;
@@ -498,61 +498,83 @@
             color: #999;
         }
         
-        /* Quick Filters */
-        .quick-filters {
+        /* Main Layout with Sidebar */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+        
+        /* Sidebar Filters */
+        .sidebar-filters {
             background: white;
-            padding: 30px;
+            padding: 25px;
             border-radius: 12px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            margin-bottom: 40px;
+            position: sticky;
+            top: 200px;
+            height: fit-content;
         }
         
         .filter-section {
             margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .filter-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
         }
         
         .filter-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 600;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             color: #333;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
         
         .filter-title i {
             color: #b8860b;
-            font-size: 22px;
+            font-size: 18px;
         }
         
-        .filter-tags {
+        .filter-options {
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: column;
             gap: 12px;
         }
         
-        .filter-tag {
-            padding: 10px 20px;
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 25px;
+        .filter-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             cursor: pointer;
-            font-size: 15px;
-            font-weight: 500;
-            transition: all 0.3s;
+            padding: 8px 0;
         }
         
-        .filter-tag:hover {
-            background: #e9ecef;
-            transform: translateY(-2px);
+        .filter-option input {
+            width: 18px;
+            height: 18px;
+            accent-color: #b8860b;
         }
         
-        .filter-tag.active {
-            background: #b8860b;
-            color: white;
-            border-color: #b8860b;
-            box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
+        .filter-option label {
+            cursor: pointer;
+            flex: 1;
+            font-size: 14px;
+        }
+        
+        .option-count {
+            color: #666;
+            font-size: 12px;
+            background: #f8f9fa;
+            padding: 2px 8px;
+            border-radius: 12px;
         }
         
         /* Price Range Filter */
@@ -591,13 +613,53 @@
             margin-top: 10px;
         }
         
+        .filter-actions {
+            margin-top: 20px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: #b8860b;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .btn:hover {
+            background: #a3780a;
+            transform: translateY(-2px);
+        }
+        
+        .clear-all-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .clear-all-btn:hover {
+            background: #c82333;
+        }
+        
         /* Products Section */
         .products-section {
             background: white;
-            padding: 40px;
+            padding: 30px;
             border-radius: 12px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            margin-bottom: 60px;
         }
         
         .products-header {
@@ -644,8 +706,8 @@
         
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
         }
         
         .product-card {
@@ -672,13 +734,13 @@
         }
         
         .product-info {
-            padding: 25px;
+            padding: 20px;
         }
         
         .product-name {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 600;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             color: #333;
             line-height: 1.3;
         }
@@ -687,17 +749,18 @@
             font-size: 14px;
             color: #b8860b;
             background: #fff9e6;
-            padding: 6px 12px;
-            border-radius: 8px;
+            padding: 4px 8px;
+            border-radius: 6px;
             display: inline-block;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             font-weight: 500;
         }
         
+        /* ✅ SIRF DESCRIPTION AUR RATE SHOW HOGA */
         .product-description {
             font-size: 14px;
             color: #666;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             line-height: 1.5;
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -710,20 +773,23 @@
             color: #888;
             margin-bottom: 15px;
             font-style: italic;
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border-left: 3px solid #b8860b;
         }
         
         .product-price-section {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding: 15px 0;
+            margin-bottom: 15px;
+            padding: 12px 0;
             border-top: 1px solid #f0f0f0;
-            border-bottom: 1px solid #f0f0f0;
         }
         
         .product-price {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
             color: #b8860b;
         }
@@ -733,55 +799,24 @@
             color: #666;
         }
         
-        .product-details {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
-        
-        .product-details div {
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .product-details i {
-            color: #b8860b;
-            width: 16px;
-        }
-        
         .product-actions {
             display: flex;
-            gap: 12px;
-        }
-        
-        .btn {
-            display: inline-block;
-            background: #b8860b;
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-size: 15px;
-            cursor: pointer;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s;
-            flex: 1;
-            text-align: center;
-        }
-        
-        .btn:hover {
-            background: #a3780a;
-            transform: translateY(-2px);
+            gap: 10px;
         }
         
         .btn-outline {
             background: transparent;
             border: 2px solid #b8860b;
             color: #b8860b;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            flex: 1;
+            text-align: center;
+            text-decoration: none;
         }
         
         .btn-outline:hover {
@@ -857,21 +892,6 @@
         
         .remove-filter:hover {
             color: #dc3545;
-        }
-        
-        .clear-all-btn {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            margin-left: auto;
-        }
-        
-        .clear-all-btn:hover {
-            background: #c82333;
         }
 
         /* Features Section - Home Page jaise */
@@ -984,6 +1004,10 @@
 
         /* Responsive Design */
         @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 280px 1fr;
+            }
+            
             .products-grid {
                 grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             }
@@ -1024,6 +1048,15 @@
                 max-width: 100%;
             }
             
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar-filters {
+                position: static;
+                margin-bottom: 30px;
+            }
+            
             .features {
                 grid-template-columns: 1fr;
                 padding: 60px 0;
@@ -1062,10 +1095,6 @@
             
             .patterns-grid {
                 grid-template-columns: 1fr;
-            }
-            
-            .filter-tags {
-                justify-content: center;
             }
         }
     </style>
@@ -1165,7 +1194,7 @@
             </div>
         </div>
 
-        <!-- Desktop Uses Top Bar with Mega Menu -->
+        <!-- Desktop Uses Top Bar with Mega Menu - HOME PAGE JAISE -->
         <div class="uses-top-bar">
             <div class="container uses-container" id="dynamicUsesContainer">
                 <!-- Dynamic uses will be loaded here -->
@@ -1196,82 +1225,86 @@
                 <!-- Active filters will show here -->
             </div>
             
-            <!-- Quick Filters -->
-            <div class="quick-filters">
-                <!-- Type Filter (Polished, Natural, etc) -->
-                <div class="filter-section">
-                    <h3 class="filter-title">
-                        <i class="fas fa-gem"></i>
-                        Finish Type
-                    </h3>
-                    <div class="filter-tags" id="typeFilters">
+            <!-- Main Layout with Sidebar -->
+            <div class="main-layout">
+                <!-- Sidebar Filters -->
+                <div class="sidebar-filters">
+                    <!-- Type Filter -->
+                    <div class="filter-section">
+                        <h3 class="filter-title">
+                            <i class="fas fa-gem"></i>
+                            Finish Type
+                        </h3>
+                        <div class="filter-options" id="typeFilters">
+                            <div class="loading-products">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <p>Loading types...</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Colors Filter -->
+                    <div class="filter-section">
+                        <h3 class="filter-title">
+                            <i class="fas fa-palette"></i>
+                            Colors
+                        </h3>
+                        <div class="filter-options" id="colorFilters">
+                            <div class="loading-products">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <p>Loading colors...</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Price Range Filter -->
+                    <div class="filter-section">
+                        <h3 class="filter-title">
+                            <i class="fas fa-indian-rupee-sign"></i>
+                            Price Range
+                        </h3>
+                        <div class="price-range">
+                            <div class="price-inputs">
+                                <input type="number" class="price-input" id="minPrice" placeholder="Min Price">
+                                <input type="number" class="price-input" id="maxPrice" placeholder="Max Price">
+                            </div>
+                            <input type="range" class="price-slider" id="priceRange" min="0" max="1000" step="10">
+                            <div class="price-display" id="priceDisplay">
+                                Price: ₹0 - ₹1000
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-actions">
+                        <button class="btn" id="applyFilters">
+                            <i class="fas fa-filter"></i>
+                            Apply Filters
+                        </button>
+                        <button class="clear-all-btn" id="clearAllFilters">
+                            <i class="fas fa-times"></i>
+                            Clear All Filters
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Products Section -->
+                <div class="products-section">
+                    <div class="products-header">
+                        <div class="products-count" id="productsCount">
+                            Loading products...
+                        </div>
+                        <div class="sort-options">
+                            <div class="sort-btn active" data-sort="name">Name A-Z</div>
+                            <div class="sort-btn" data-sort="price-low">Price Low to High</div>
+                            <div class="sort-btn" data-sort="price-high">Price High to Low</div>
+                        </div>
+                    </div>
+                    
+                    <div class="products-grid" id="productsGrid">
                         <div class="loading-products">
                             <i class="fas fa-spinner fa-spin"></i>
-                            <p>Loading types...</p>
+                            <p>Loading products...</p>
                         </div>
-                    </div>
-                </div>
-                
-                <!-- Colors Filter -->
-                <div class="filter-section">
-                    <h3 class="filter-title">
-                        <i class="fas fa-palette"></i>
-                        Colors
-                    </h3>
-                    <div class="filter-tags" id="colorFilters">
-                        <div class="loading-products">
-                            <i class="fas fa-spinner fa-spin"></i>
-                            <p>Loading colors...</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Price Range Filter -->
-                <div class="filter-section">
-                    <h3 class="filter-title">
-                        <i class="fas fa-indian-rupee-sign"></i>
-                        Price Range
-                    </h3>
-                    <div class="price-range">
-                        <div class="price-inputs">
-                            <input type="number" class="price-input" id="minPrice" placeholder="Min Price">
-                            <input type="number" class="price-input" id="maxPrice" placeholder="Max Price">
-                        </div>
-                        <input type="range" class="price-slider" id="priceRange" min="0" max="1000" step="10">
-                        <div class="price-display" id="priceDisplay">
-                            Price: ₹0 - ₹1000
-                        </div>
-                    </div>
-                </div>
-                
-                <button class="btn" id="applyFilters" style="width: 100%; margin-top: 20px;">
-                    <i class="fas fa-filter"></i>
-                    Apply Filters
-                </button>
-                
-                <button class="clear-all-btn" id="clearAllFilters" style="width: 100%; margin-top: 10px;">
-                    <i class="fas fa-times"></i>
-                    Clear All Filters
-                </button>
-            </div>
-            
-            <!-- Products Section -->
-            <div class="products-section">
-                <div class="products-header">
-                    <div class="products-count" id="productsCount">
-                        Loading products...
-                    </div>
-                    <div class="sort-options">
-                        <div class="sort-btn active" data-sort="name">Name A-Z</div>
-                        <div class="sort-btn" data-sort="price-low">Price Low to High</div>
-                        <div class="sort-btn" data-sort="price-high">Price High to Low</div>
-                    </div>
-                </div>
-                
-                <div class="products-grid" id="productsGrid">
-                    <div class="loading-products">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <p>Loading products...</p>
                     </div>
                 </div>
             </div>
@@ -1517,14 +1550,14 @@
                     event.preventDefault();
                     signOut(auth).then(() => {
                         console.log('User signed out');
-                    }).catch((error) => {
+                    }).catch((error) {
                         console.error('Sign out error:', error);
                     });
                 });
             }
         }
 
-        // Initialize mega menu functionality
+        // Initialize mega menu functionality - HOME PAGE JAISE
         function initializeMegaMenu() {
             const usesTopBar = document.querySelector('.uses-top-bar');
             const useItems = document.querySelectorAll('.use-item');
@@ -1600,7 +1633,7 @@
                 updatePriceRange();
                 applyAutoFilter();
                 initializeSorting();
-                generateUsesNavigation();
+                generateUsesNavigation(); // ✅ HOME PAGE JAISE NAVIGATION
                 initializeFilters();
             } catch (error) {
                 console.error('Error initializing page:', error);
@@ -1677,7 +1710,7 @@
             }
         }
 
-        // ✅ QUICK FILTERS GENERATION
+        // ✅ QUICK FILTERS GENERATION - SIDEBAR MEIN
         function generateQuickFilters() {
             generateTypeFilters();
             generateColorFilters();
@@ -1709,10 +1742,11 @@
                 const isActive = appState.filters.types.includes(type);
                 
                 return `
-                    <div class="filter-tag ${isActive ? 'active' : ''}" 
-                         data-filter="type" 
-                         data-value="${type}">
-                        ${type} (${count})
+                    <div class="filter-option">
+                        <input type="checkbox" id="type-${type.replace(/\s+/g, '-')}" 
+                               value="${type}" ${isActive ? 'checked' : ''}>
+                        <label for="type-${type.replace(/\s+/g, '-')}">${type}</label>
+                        <span class="option-count">${count}</span>
                     </div>
                 `;
             }).join('');
@@ -1744,10 +1778,11 @@
                 const isActive = appState.filters.colors.includes(color);
                 
                 return `
-                    <div class="filter-tag ${isActive ? 'active' : ''}" 
-                         data-filter="color" 
-                         data-value="${color}">
-                        ${color} (${count})
+                    <div class="filter-option">
+                        <input type="checkbox" id="color-${color.replace(/\s+/g, '-')}" 
+                               value="${color}" ${isActive ? 'checked' : ''}>
+                        <label for="color-${color.replace(/\s+/g, '-')}">${color}</label>
+                        <span class="option-count">${count}</span>
                     </div>
                 `;
             }).join('');
@@ -1782,52 +1817,16 @@
 
         // ✅ FILTERS INITIALIZATION
         function initializeFilters() {
-            // Type filters
-            document.querySelectorAll('[data-filter="type"]').forEach(tag => {
-                tag.addEventListener('click', function() {
-                    const value = this.getAttribute('data-value');
-                    toggleTypeFilter(value);
-                });
-            });
-            
-            // Color filters
-            document.querySelectorAll('[data-filter="color"]').forEach(tag => {
-                tag.addEventListener('click', function() {
-                    const value = this.getAttribute('data-value');
-                    toggleColorFilter(value);
-                });
-            });
-            
-            // Price filters
-            document.getElementById('minPrice').addEventListener('input', updatePriceFilters);
-            document.getElementById('maxPrice').addEventListener('input', updatePriceFilters);
-            document.getElementById('priceRange').addEventListener('input', updatePriceSlider);
-            
             // Apply filters button
             document.getElementById('applyFilters').addEventListener('click', applyManualFilters);
             
             // Clear all filters
             document.getElementById('clearAllFilters').addEventListener('click', clearAllFilters);
-        }
-
-        function toggleTypeFilter(type) {
-            const index = appState.filters.types.indexOf(type);
-            if (index > -1) {
-                appState.filters.types.splice(index, 1);
-            } else {
-                appState.filters.types.push(type);
-            }
-            updateFilterTags();
-        }
-
-        function toggleColorFilter(color) {
-            const index = appState.filters.colors.indexOf(color);
-            if (index > -1) {
-                appState.filters.colors.splice(index, 1);
-            } else {
-                appState.filters.colors.push(color);
-            }
-            updateFilterTags();
+            
+            // Price filters
+            document.getElementById('minPrice').addEventListener('input', updatePriceFilters);
+            document.getElementById('maxPrice').addEventListener('input', updatePriceFilters);
+            document.getElementById('priceRange').addEventListener('input', updatePriceSlider);
         }
 
         function updatePriceFilters() {
@@ -1897,6 +1896,20 @@
             
             console.log('Applying manual filters:', appState.filters);
             
+            // Get selected types from checkboxes
+            const selectedTypes = [];
+            document.querySelectorAll('#typeFilters input:checked').forEach(checkbox => {
+                selectedTypes.push(checkbox.value);
+            });
+            appState.filters.types = selectedTypes;
+            
+            // Get selected colors from checkboxes
+            const selectedColors = [];
+            document.querySelectorAll('#colorFilters input:checked').forEach(checkbox => {
+                selectedColors.push(checkbox.value);
+            });
+            appState.filters.colors = selectedColors;
+            
             // Filter by types
             if (appState.filters.types.length > 0) {
                 filteredProducts = filteredProducts.filter(product => 
@@ -1927,7 +1940,6 @@
             displayProducts();
             updateProductsCount();
             updateActiveFilters();
-            updateFilterTags();
         }
 
         // ✅ SORTING FUNCTION
@@ -1957,7 +1969,7 @@
             });
         }
 
-        // ✅ DISPLAY PRODUCTS FUNCTION
+        // ✅ DISPLAY PRODUCTS FUNCTION - SIRF DESCRIPTION AUR RATE
         function displayProducts() {
             const productsGrid = document.getElementById('productsGrid');
             if (!productsGrid) return;
@@ -1984,16 +1996,18 @@
                         <h3 class="product-name">${product.stone_name || 'Stone Product'}</h3>
                         <div class="product-type">${product.type || 'Natural Stone'}</div>
                         
+                        <!-- ✅ SIRF DESCRIPTION SHOW HOGA -->
+                        ${product.description ? `
+                            <div class="product-description">
+                                ${product.description}
+                            </div>
+                        ` : ''}
+                        
+                        <!-- ✅ SIRF RATE DESCRIPTION SHOW HOGA -->
                         ${product.rate_description ? `
                             <div class="product-rate">
                                 <i class="fas fa-tag"></i>
                                 ${product.rate_description}
-                            </div>
-                        ` : ''}
-                        
-                        ${product.description ? `
-                            <div class="product-description">
-                                ${product.description}
                             </div>
                         ` : ''}
                         
@@ -2002,18 +2016,11 @@
                             <div class="product-unit">${product.price_unit || 'per sqft'}</div>
                         </div>
                         
-                        <div class="product-details">
-                            <div><i class="fas fa-palette"></i><strong>Color:</strong> ${product.color || 'N/A'}</div>
-                            <div><i class="fas fa-ruler-combined"></i><strong>Size:</strong> ${product.size || 'N/A'}</div>
-                            <div><i class="fas fa-layer-group"></i><strong>Thickness:</strong> ${product.thickness || 'N/A'}</div>
-                            <div><i class="fas fa-tag"></i><strong>Category:</strong> ${product.category || 'Natural Stone'}</div>
-                        </div>
-                        
                         <div class="product-actions">
-                            <button class="btn" onclick="viewProductDetails('${product.id}')">
+                            <button class="btn-outline" onclick="viewProductDetails('${product.id}')">
                                 <i class="fas fa-eye"></i> View Details
                             </button>
-                            <button class="btn btn-outline add-to-cart" data-product-id="${product.id}">
+                            <button class="btn add-to-cart" data-product-id="${product.id}">
                                 <i class="fas fa-shopping-cart"></i>
                             </button>
                         </div>
@@ -2100,8 +2107,10 @@
                         
                         if (type === 'type') {
                             appState.filters.types = appState.filters.types.filter(t => t !== value);
+                            document.querySelector(`#typeFilters input[value="${value}"]`).checked = false;
                         } else if (type === 'color') {
                             appState.filters.colors = appState.filters.colors.filter(c => c !== value);
+                            document.querySelector(`#colorFilters input[value="${value}"]`).checked = false;
                         } else if (type === 'price') {
                             appState.filters.minPrice = 0;
                             appState.filters.maxPrice = 1000;
@@ -2116,29 +2125,6 @@
             }
         }
 
-        // ✅ UPDATE FILTER TAGS
-        function updateFilterTags() {
-            // Update type tags
-            document.querySelectorAll('[data-filter="type"]').forEach(tag => {
-                const value = tag.getAttribute('data-value');
-                if (appState.filters.types.includes(value)) {
-                    tag.classList.add('active');
-                } else {
-                    tag.classList.remove('active');
-                }
-            });
-            
-            // Update color tags
-            document.querySelectorAll('[data-filter="color"]').forEach(tag => {
-                const value = tag.getAttribute('data-value');
-                if (appState.filters.colors.includes(value)) {
-                    tag.classList.add('active');
-                } else {
-                    tag.classList.remove('active');
-                }
-            });
-        }
-
         // ✅ CLEAR ALL FILTERS
         function clearAllFilters() {
             appState.filters = {
@@ -2148,6 +2134,11 @@
                 maxPrice: 1000,
                 sortBy: 'name'
             };
+            
+            // Reset all checkboxes
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.checked = false;
+            });
             
             // Reset price inputs
             updatePriceRange();
@@ -2169,7 +2160,7 @@
             alert('Product added to cart!');
         }
 
-        // ✅ USES NAVIGATION FUNCTION
+        // ✅ USES NAVIGATION FUNCTION - HOME PAGE JAISE (QUANTITY NAHI)
         function generateUsesNavigation() {
             const usesContainer = document.getElementById('dynamicUsesContainer');
             if (!usesContainer) return;
@@ -2199,8 +2190,26 @@
                 const useItem = document.createElement('div');
                 useItem.className = 'use-item';
                 
+                // ✅ QUANTITY NAHI SHOW HOGA - SIRF USAGE NAME
                 useItem.innerHTML = `
-                    <a href="category-products.html?usage=${usageKey}" class="use-link">${usage}</a>
+                    <div class="use-link">${usage}</div>
+                    <div class="mega-menu">
+                        <div class="patterns-grid">
+                            ${appState.products
+                                .filter(product => product.uses && product.uses.trim() === usage)
+                                .slice(0, 6) // Maximum 6 products show karo
+                                .map(product => {
+                                    const stoneName = product.stone_name || 'Stone Product';
+                                    return `
+                                        <a href="category-products.html?usage=${usageKey}&stone=${stoneName.toLowerCase().replace(/\s+/g, '-')}" 
+                                           class="pattern-item">
+                                            <div class="pattern-image" style="background-image: url('${product.images?.[0] || 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80'}')"></div>
+                                            <div class="pattern-name">${stoneName}</div>
+                                        </a>
+                                    `;
+                                }).join('')}
+                        </div>
+                    </div>
                 `;
                 
                 usesContainer.appendChild(useItem);
