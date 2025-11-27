@@ -3,56 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Type Products - StoneCraft UK</title>
-    <meta name="description" content="Browse our premium stone products by type">
+    <title>Stone Products - StoneCraft UK</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Firebase SDK -->
-    <script type="module">
-        // Import Firebase modules
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-        import { 
-            getFirestore, 
-            collection, 
-            getDocs,
-            query,
-            where
-        } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
-        import { 
-            getAuth, 
-            signOut, 
-            onAuthStateChanged
-        } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
-
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyDxNMhU09mINvq_aDLtylBg3FucCK-MzYE",
-            authDomain: "sandstonebijoliya-293d2.firebaseapp.com",
-            projectId: "sandstonebijoliya-293d2",
-            storageBucket: "sandstonebijoliya-293d2.appspot.com",
-            messagingSenderId: "133756247845",
-            appId: "1:133756247845:web:8e769ce2af3db1765484cc",
-            measurementId: "G-H7JMX9VNYF"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-
-        // Make them globally available
-        window.firebaseApp = app;
-        window.firebaseDb = db;
-        window.firebaseAuth = auth;
-        window.firebaseFunctions = {
-            collection, getDocs, query, where,
-            signOut, onAuthStateChanged
-        };
-
-        console.log("Firebase initialized successfully");
-    </script>
-    
     <style>
+        /* Same CSS as your home page */
         * {
             margin: 0;
             padding: 0;
@@ -73,7 +27,7 @@
             padding: 0 15px;
         }
         
-        /* Header Styles */
+        /* Header Styles - Same as home page */
         header {
             background-color: #fff;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -81,719 +35,291 @@
             top: 0;
             left: 0;
             width: 100%;
-            z-index: 100;
-        }
-        
-        .main-header {
-            padding: 15px 0;
-        }
-        
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-        }
-        
-        .logo h1 {
-            font-size: 28px;
-            color: #333;
-            font-weight: 700;
-        }
-        
-        .logo span {
-            color: #b8860b;
-        }
-        
-        .trust-info {
-            flex: 1;
-            text-align: center;
-            padding: 0 20px;
-        }
-        
-        .trust-info-content {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 30px;
-            font-size: 15px;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 12px 25px;
-            border-radius: 12px;
-            border: 1px solid #e0e0e0;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-        }
-        
-        .trust-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            white-space: nowrap;
-            padding: 8px 15px;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 8px;
-        }
-        
-        .trust-item i {
-            color: #b8860b;
-            font-size: 18px;
-        }
-
-        /* Search Bar Styles */
-        .search-container {
-            position: relative;
-            flex: 1;
-            max-width: 500px;
-            margin: 0 20px;
-        }
-
-        .search-input-container {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 12px 45px 12px 20px;
-            border: 2px solid #e1e5e9;
-            border-radius: 25px;
-            font-size: 14px;
-            background-color: #f8f9fa;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: #b8860b;
-            background-color: white;
-        }
-
-        .search-button {
-            position: absolute;
-            right: 8px;
-            background: #b8860b;
-            color: white;
-            border: none;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .search-results {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            max-height: 400px;
-            overflow-y: auto;
-            z-index: 1001;
-            display: none;
-            margin-top: 5px;
-        }
-
-        .search-results.active {
-            display: block;
-        }
-
-        .search-result-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 15px;
-            border-bottom: 1px solid #f0f0f0;
-            cursor: pointer;
-        }
-
-        .search-result-item:hover {
-            background: #f8f9fa;
-        }
-
-        .search-result-item:last-child {
-            border-bottom: none;
-        }
-
-        .search-result-image {
-            width: 50px;
-            height: 50px;
-            border-radius: 6px;
-            background-size: cover;
-            background-position: center;
-            margin-right: 15px;
-            flex-shrink: 0;
-        }
-
-        .search-result-content {
-            flex: 1;
-        }
-
-        .search-result-name {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 4px;
-        }
-
-        .search-result-category {
-            font-size: 12px;
-            color: #b8860b;
-            background: #fff9e6;
-            padding: 2px 8px;
-            border-radius: 12px;
-            display: inline-block;
-        }
-
-        .search-result-price {
-            font-weight: 700;
-            color: #b8860b;
-            font-size: 14px;
-        }
-
-        .no-results {
-            padding: 20px;
-            text-align: center;
-            color: #666;
-        }
-
-        .search-loading {
-            padding: 15px;
-            text-align: center;
-            color: #666;
-        }
-
-        .view-all-results {
-            padding: 12px 15px;
-            text-align: center;
-            background: #f8f9fa;
-            border-top: 1px solid #e9ecef;
-        }
-
-        .view-all-results a {
-            color: #b8860b;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        /* User Profile Styles */
-        .user-profile {
-            position: relative;
-        }
-
-        .profile-toggle {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 8px 12px;
-            border-radius: 6px;
-            transition: background 0.3s;
-        }
-
-        .profile-toggle:hover {
-            background: #f5f5f5;
-        }
-
-        .profile-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: #b8860b;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .profile-name {
-            font-size: 14px;
-            font-weight: 500;
-            color: #333;
-        }
-
-        .profile-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-            min-width: 200px;
             z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
         }
-
-        .profile-dropdown.active {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
+        
+        /* Add your existing header styles here */
+        
+        .main-content {
+            margin-top: 180px;
+            padding: 40px 0;
         }
-
-        .dropdown-header {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
         }
-
-        .dropdown-header .user-email {
-            font-size: 12px;
+        
+        .page-header h1 {
+            font-size: 36px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .page-header .breadcrumb {
             color: #666;
-            margin-top: 4px;
+            font-size: 16px;
         }
-
-        .dropdown-menu {
-            list-style: none;
-            padding: 8px 0;
+        
+        .page-header .breadcrumb a {
+            color: #b8860b;
+            text-decoration: none;
         }
-
-        .dropdown-item {
+        
+        .page-header .breadcrumb span {
+            margin: 0 10px;
+        }
+        
+        .filters-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 40px;
+        }
+        
+        .filter-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #333;
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 10px 15px;
-            color: #333;
-            text-decoration: none;
-            transition: background 0.3s;
-            font-size: 14px;
         }
-
-        .dropdown-item:hover {
-            background: #f8f9fa;
+        
+        .filter-title i {
             color: #b8860b;
         }
-
-        .dropdown-item i {
-            width: 16px;
+        
+        .types-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .type-filter-btn {
+            padding: 12px 20px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
             text-align: center;
+            font-weight: 500;
+            transition: all 0.3s;
         }
-
-        .dropdown-divider {
-            height: 1px;
-            background: #eee;
-            margin: 8px 0;
+        
+        .type-filter-btn:hover {
+            background: #e9ecef;
         }
-
-        .user-actions {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .user-action {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: #555;
-            font-size: 12px;
-        }
-
-        .user-action i {
-            font-size: 20px;
-            margin-bottom: 3px;
-        }
-
-        /* Type Banner */
-        .type-banner {
-            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80');
-            background-size: cover;
-            background-position: center;
-            color: white;
-            padding: 100px 0 60px;
-            text-align: center;
-            margin-top: 180px;
-        }
-
-        .type-banner h1 {
-            font-size: 42px;
-            margin-bottom: 15px;
-            font-weight: 700;
-        }
-
-        .type-banner p {
-            font-size: 18px;
-            max-width: 600px;
-            margin: 0 auto;
-            opacity: 0.9;
-        }
-
-        .type-indicator {
-            background: rgba(184, 134, 11, 0.9);
-            color: white;
-            padding: 8px 20px;
-            border-radius: 25px;
-            font-size: 16px;
-            font-weight: 600;
-            display: inline-block;
-            margin-top: 15px;
-        }
-
-        /* Products Section */
-        .products-section {
-            padding: 60px 0;
-            background: #f9f9f9;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 40px;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .section-title {
-            font-size: 32px;
-            color: #333;
-            position: relative;
-            padding-bottom: 15px;
-        }
-
-        .section-title:after {
-            content: '';
-            position: absolute;
-            width: 80px;
-            height: 3px;
+        
+        .type-filter-btn.active {
             background: #b8860b;
-            bottom: 0;
-            left: 0;
+            color: white;
+            border-color: #b8860b;
         }
-
+        
         .products-count {
-            color: #666;
             font-size: 16px;
-            background: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            border: 1px solid #e0e0e0;
+            color: #666;
+            margin-bottom: 20px;
         }
-
+        
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 30px;
             margin-bottom: 50px;
         }
-
+        
         .product-card {
             background: white;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
         }
-
+        
         .product-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
         }
-
+        
         .product-image {
             width: 100%;
-            height: 250px;
+            height: 200px;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
         }
-
-        .product-content {
-            padding: 25px;
+        
+        .product-info {
+            padding: 20px;
         }
-
-        .product-title {
-            font-size: 20px;
+        
+        .product-name {
+            font-size: 18px;
             font-weight: 600;
-            color: #333;
             margin-bottom: 10px;
+            color: #333;
         }
-
-        .product-description {
-            color: #666;
-            font-size: 14px;
-            line-height: 1.6;
-            margin-bottom: 15px;
-        }
-
-        .product-price {
-            font-size: 22px;
-            font-weight: 700;
-            color: #b8860b;
-            margin-bottom: 20px;
-        }
-
+        
         .product-meta {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            font-size: 12px;
-            color: #888;
-            border-top: 1px solid #eee;
-            padding-top: 15px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #666;
         }
-
+        
+        .product-type {
+            background: #fff9e6;
+            color: #b8860b;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        
+        .product-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: #b8860b;
+            margin-bottom: 15px;
+        }
+        
+        .product-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
         .btn {
             display: inline-block;
             background: #b8860b;
             color: white;
-            padding: 12px 25px;
+            padding: 10px 20px;
             border: none;
             border-radius: 6px;
             font-size: 14px;
-            font-weight: 600;
             cursor: pointer;
             text-decoration: none;
-            transition: all 0.3s ease;
+            font-weight: 600;
+            transition: all 0.3s;
+            flex: 1;
+            text-align: center;
         }
-
+        
         .btn:hover {
             background: #a3780a;
-            transform: translateY(-2px);
         }
-
-        .btn-block {
-            display: block;
-            width: 100%;
-            text-align: center;
-        }
-
-        /* Loading State */
-        .loading-products {
-            text-align: center;
-            padding: 60px;
-            color: #666;
-            grid-column: 1 / -1;
-        }
-
-        .loading-products i {
-            font-size: 40px;
-            margin-bottom: 20px;
-        }
-
-        /* No Products State */
-        .no-products {
-            text-align: center;
-            padding: 60px;
-            color: #666;
-            grid-column: 1 / -1;
-        }
-
-        .no-products i {
-            font-size: 60px;
-            margin-bottom: 20px;
-            color: #ddd;
-        }
-
-        /* Footer */
-        footer {
-            background-color: #222;
-            color: #ddd;
-            padding: 50px 0 20px;
-        }
-
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 40px;
-            margin-bottom: 30px;
-        }
-
-        .footer-column h3 {
-            color: white;
-            margin-bottom: 20px;
-            font-size: 18px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #b8860b;
-            display: inline-block;
-        }
-
-        .footer-links {
-            list-style: none;
-        }
-
-        .footer-links li {
-            margin-bottom: 10px;
-        }
-
-        .footer-links a {
-            color: #ddd;
-            text-decoration: none;
-            transition: color 0.3s;
-            font-size: 14px;
-        }
-
-        .footer-links a:hover {
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #b8860b;
             color: #b8860b;
         }
-
-        .copyright {
-            text-align: center;
-            padding-top: 25px;
-            border-top: 1px solid #444;
-            font-size: 14px;
+        
+        .btn-outline:hover {
+            background: #b8860b;
+            color: white;
         }
-
-        /* Responsive Design */
+        
+        .no-products {
+            text-align: center;
+            padding: 60px 20px;
+            grid-column: 1 / -1;
+        }
+        
+        .no-products i {
+            font-size: 48px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .no-products h3 {
+            font-size: 24px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .no-products p {
+            color: #888;
+            margin-bottom: 20px;
+        }
+        
+        .loading-products {
+            text-align: center;
+            padding: 40px;
+            grid-column: 1 / -1;
+            color: #666;
+        }
+        
         @media (max-width: 768px) {
-            .type-banner {
+            .main-content {
                 margin-top: 220px;
-                padding: 80px 0 40px;
             }
-
-            .type-banner h1 {
-                font-size: 32px;
+            
+            .types-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
             }
-
-            .section-header {
-                flex-direction: column;
-                align-items: flex-start;
+            
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             }
-
+        }
+        
+        @media (max-width: 480px) {
             .products-grid {
                 grid-template-columns: 1fr;
-                gap: 20px;
             }
-
-            .footer-content {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .profile-name {
-                display: none;
-            }
-
-            .search-container {
-                order: 4;
-                flex-basis: 100%;
-                margin: 15px 0 0;
-                max-width: 100%;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .footer-content {
+            
+            .types-grid {
                 grid-template-columns: 1fr;
-            }
-
-            .type-banner h1 {
-                font-size: 28px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Header Section -->
+    <!-- Header - Same as your home page -->
     <header id="mainHeader">
-        <div class="trust-info">
-            <div class="trust-info-content">
-                <div class="trust-item">
-                    <i class="fas fa-truck"></i>
-                    <span>Free UK Delivery</span>
-                </div>
-                <div class="trust-item">
-                    <i class="fas fa-star"></i>
-                    <span>Rated 4.8/5</span>
-                </div>
-                <div class="trust-item">
-                    <i class="fas fa-award"></i>
-                    <span>BSF Member</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Header -->
-        <div class="main-header">
-            <div class="container header-content">
-                <div class="logo">
-                    <a href="index.html" style="text-decoration: none; color: inherit;">
-                        <h1>Stone<span>Craft</span></h1>
-                    </a>
-                </div>
-                
-                <!-- Search Bar -->
-                <div class="search-container">
-                    <div class="search-input-container">
-                        <input type="text" class="search-input" id="searchInput" placeholder="Search products...">
-                        <button class="search-button" id="searchButton">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                    <div class="search-results" id="searchResults">
-                        <!-- Search results will be dynamically loaded here -->
-                    </div>
-                </div>
-                
-                <div class="user-actions">
-                    <!-- Dynamic User Profile -->
-                    <div class="user-profile" id="userProfile" style="display: none;">
-                        <button class="profile-toggle" id="profileToggle">
-                            <div class="profile-avatar" id="profileAvatar">U</div>
-                            <span class="profile-name" id="profileName">User</span>
-                            <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
-                        </button>
-                        <div class="profile-dropdown" id="profileDropdown">
-                            <div class="dropdown-header">
-                                <div class="profile-name" id="dropdownUserName">User Name</div>
-                                <div class="user-email" id="dropdownUserEmail">user@example.com</div>
-                            </div>
-                            <ul class="dropdown-menu">
-                                <li><a href="dashboard.html" class="dropdown-item"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                                <li><a href="edit-profile.html" class="dropdown-item"><i class="fas fa-user-edit"></i> Edit Profile</a></li>
-                                <li><a href="wishlist.html" class="dropdown-item"><i class="fas fa-heart"></i> My Wishlist</a></li>
-                                <li><a href="billing.html" class="dropdown-item"><i class="fas fa-address-card"></i> Billing/Shipping</a></li>
-                                <li><a href="orders.html" class="dropdown-item"><i class="fas fa-history"></i> Order History</a></li>
-                                <li class="dropdown-divider"></li>
-                                <li><a href="#" class="dropdown-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <!-- Login Button -->
-                    <a href="login.html" class="user-action" id="loginButton">
-                        <i class="fas fa-user"></i>
-                        <span>Sign In</span>
-                    </a>
-                    
-                    <a href="#" class="user-action">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span>Cart (0)</span>
-                    </a>
-                </div>
-            </div>
-        </div>
+        <!-- Copy the exact same header from your home page here -->
     </header>
 
-    <!-- Type Banner -->
-    <section class="type-banner" id="typeBanner">
+    <!-- Main Content -->
+    <div class="main-content">
         <div class="container">
-            <h1 id="typeTitle">Loading...</h1>
-            <p id="typeDescription">Discover our premium collection</p>
-            <div id="typeIndicator" class="type-indicator" style="display: none;"></div>
-        </div>
-    </section>
-
-    <!-- Products Section -->
-    <section class="products-section">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title" id="productsTitle">Our Products</h2>
-                <div class="products-count" id="productsCount">Loading...</div>
+            <!-- Page Header with Breadcrumb -->
+            <div class="page-header">
+                <h1 id="pageTitle">Stone Products</h1>
+                <div class="breadcrumb" id="breadcrumb">
+                    <a href="index.html">Home</a>
+                    <span>></span>
+                    <span>Products</span>
+                </div>
             </div>
+            
+            <!-- Filters Section -->
+            <div class="filters-section">
+                <h2 class="filter-title">
+                    <i class="fas fa-filter"></i>
+                    Filter by Type
+                </h2>
+                <div class="types-grid" id="typesGrid">
+                    <!-- Types will be dynamically loaded here -->
+                    <div class="loading-products">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Loading types...</p>
+                    </div>
+                </div>
+                
+                <div class="products-count" id="productsCount">
+                    Loading products...
+                </div>
+            </div>
+            
+            <!-- Products Grid -->
             <div class="products-grid" id="productsGrid">
                 <div class="loading-products">
                     <i class="fas fa-spinner fa-spin"></i>
@@ -801,586 +327,333 @@
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- Footer -->
+    <!-- Footer - Same as your home page -->
     <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-column">
-                    <h3>StoneCraft</h3>
-                    <ul class="footer-links">
-                        <li><a href="index.html">Home</a></li>
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Our Story</a></li>
-                        <li><a href="#">Careers</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Products</h3>
-                    <ul class="footer-links">
-                        <li><a href="type-products.html?type=herringbone">Herringbone Pattern</a></li>
-                        <li><a href="type-products.html?type=checkerboard">Checkerboard Pattern</a></li>
-                        <li><a href="type-products.html?type=random">Random Layout</a></li>
-                        <li><a href="type-products.html?type=brick">Brick Pattern</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Support</h3>
-                    <ul class="footer-links">
-                        <li><a href="#">Contact Us</a></li>
-                        <li><a href="#">Delivery Info</a></li>
-                        <li><a href="#">Returns</a></li>
-                        <li><a href="#">FAQ</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Legal</h3>
-                    <ul class="footer-links">
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms of Service</a></li>
-                        <li><a href="#">Cookie Policy</a></li>
-                        <li><a href="#">Disclaimer</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="copyright">
-                <p>&copy; 2024 StoneCraft UK. All rights reserved.</p>
-            </div>
-        </div>
+        <!-- Copy the exact same footer from your home page here -->
     </footer>
 
+    <!-- Firebase Config -->
+    <script type="module" src="./firebase-config.js"></script>
+    
     <script type="module">
-        // Wait for Firebase to be available
-        const initializeApp = async () => {
-            // Wait a bit for Firebase to load
-            await new Promise(resolve => setTimeout(resolve, 500));
-            
-            if (!window.firebaseAuth) {
-                console.error("Firebase not initialized properly");
-                return;
-            }
+        // Import Firebase functions
+        import { 
+            db, auth, 
+            collection, getDocs,
+            onAuthStateChanged, signOut,
+            query, where
+        } from './firebase-config.js';
 
-            console.log("Initializing application with Firebase...");
+        import { onSnapshot } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
-            // Simple Auth Manager
-            class AuthManager {
-                constructor() {
-                    this.currentUser = null;
-                    this.initAuthListener();
-                    this.setupEventListeners();
-                }
-
-                initAuthListener() {
-                    window.firebaseFunctions.onAuthStateChanged(window.firebaseAuth, (user) => {
-                        console.log("Auth state changed:", user);
-                        this.currentUser = user;
-                        this.updateUI(user);
-                        
-                        // Store user state in localStorage for persistence
-                        if (user) {
-                            localStorage.setItem('userLoggedIn', 'true');
-                            localStorage.setItem('userEmail', user.email || '');
-                            localStorage.setItem('userDisplayName', user.displayName || 'User');
-                        } else {
-                            localStorage.removeItem('userLoggedIn');
-                            localStorage.removeItem('userEmail');
-                            localStorage.removeItem('userDisplayName');
-                        }
-                    });
-                }
-
-                setupEventListeners() {
-                    const logoutBtn = document.getElementById('logoutBtn');
-                    if (logoutBtn) {
-                        logoutBtn.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            this.handleLogout();
-                        });
-                    }
-
-                    const profileToggle = document.getElementById('profileToggle');
-                    const profileDropdown = document.getElementById('profileDropdown');
-
-                    if (profileToggle && profileDropdown) {
-                        profileToggle.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            profileDropdown.classList.toggle('active');
-                        });
-
-                        document.addEventListener('click', (e) => {
-                            if (!profileToggle.contains(e.target) && !profileDropdown.contains(e.target)) {
-                                profileDropdown.classList.remove('active');
-                            }
-                        });
-                    }
-                    
-                    // Check localStorage on page load
-                    this.checkLocalStorage();
-                }
-                
-                checkLocalStorage() {
-                    const isLoggedIn = localStorage.getItem('userLoggedIn');
-                    if (isLoggedIn === 'true') {
-                        const userEmail = localStorage.getItem('userEmail') || '';
-                        const userDisplayName = localStorage.getItem('userDisplayName') || 'User';
-                        this.updateUIFromStorage(userEmail, userDisplayName);
-                    }
-                }
-                
-                updateUIFromStorage(email, displayName) {
-                    const loginBtn = document.getElementById('loginButton');
-                    const userProfile = document.getElementById('userProfile');
-                    
-                    if (userProfile && loginBtn) {
-                        userProfile.style.display = 'block';
-                        loginBtn.style.display = 'none';
-                        
-                        const profileAvatar = document.getElementById('profileAvatar');
-                        const profileName = document.getElementById('profileName');
-                        const dropdownUserName = document.getElementById('dropdownUserName');
-                        const dropdownUserEmail = document.getElementById('dropdownUserEmail');
-                        
-                        if (profileAvatar) profileAvatar.textContent = displayName.charAt(0).toUpperCase();
-                        if (profileName) profileName.textContent = displayName;
-                        if (dropdownUserName) dropdownUserName.textContent = displayName;
-                        if (dropdownUserEmail) dropdownUserEmail.textContent = email;
-                    }
-                }
-
-                async handleLogout() {
-                    try {
-                        await window.firebaseFunctions.signOut(window.firebaseAuth);
-                        console.log('User logged out successfully');
-                        // Force reload to ensure clean state
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 500);
-                    } catch (error) {
-                        console.error('Error logging out:', error);
-                    }
-                }
-
-                updateUI(user) {
-                    const loginBtn = document.getElementById('loginButton');
-                    const userProfile = document.getElementById('userProfile');
-                    const profileAvatar = document.getElementById('profileAvatar');
-                    const profileName = document.getElementById('profileName');
-                    const dropdownUserName = document.getElementById('dropdownUserName');
-                    const dropdownUserEmail = document.getElementById('dropdownUserEmail');
-
-                    console.log("Updating UI for user:", user);
-                    
-                    if (user) {
-                        // User is signed in
-                        if (userProfile) userProfile.style.display = 'block';
-                        if (loginBtn) loginBtn.style.display = 'none';
-                        
-                        const displayName = user.displayName || 'User';
-                        const email = user.email || '';
-                        const initials = displayName.charAt(0).toUpperCase();
-                        
-                        if (profileAvatar) profileAvatar.textContent = initials;
-                        if (profileName) profileName.textContent = displayName;
-                        if (dropdownUserName) dropdownUserName.textContent = displayName;
-                        if (dropdownUserEmail) dropdownUserEmail.textContent = email;
-                        
-                        console.log("Profile updated for:", displayName);
-                    } else {
-                        // User is signed out
-                        if (userProfile) userProfile.style.display = 'none';
-                        if (loginBtn) loginBtn.style.display = 'flex';
-                        console.log("User logged out, showing login button");
-                    }
-                }
-
-                getCurrentUser() {
-                    return this.currentUser;
-                }
-
-                isAuthenticated() {
-                    return this.currentUser !== null;
-                }
-            }
-
-            // Advanced Search System
-            class AdvancedSearch {
-                constructor() {
-                    this.searchInput = document.getElementById('searchInput');
-                    this.searchResults = document.getElementById('searchResults');
-                    this.searchButton = document.getElementById('searchButton');
-                    this.allProducts = [];
-                    this.init();
-                }
-
-                async init() {
-                    await this.loadAllProducts();
-                    this.setupEventListeners();
-                }
-
-                async loadAllProducts() {
-                    try {
-                        // Fetch products from Firestore
-                        const productsRef = window.firebaseFunctions.collection(window.firebaseDb, "products");
-                        const querySnapshot = await window.firebaseFunctions.getDocs(productsRef);
-                        
-                        this.allProducts = [];
-                        querySnapshot.forEach((doc) => {
-                            const product = doc.data();
-                            product.id = doc.id;
-                            this.allProducts.push(product);
-                        });
-                        
-                        console.log("Products loaded from Firestore:", this.allProducts);
-                    } catch (error) {
-                        console.error("Error loading products from Firestore:", error);
-                        
-                        // Fallback to mock data if Firestore fails
-                        const allProductsData = [
-                            { id: '1', name: 'Kota Blue Stone', type: 'herringbone', price: '£45.00', image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80', description: 'Premium quality kota stone for flooring' },
-                            { id: '2', name: 'Sandstone Tiles', type: 'checkerboard', price: '£35.00', image: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80', description: 'Natural sandstone tiles' },
-                            { id: '3', name: 'Limestone Flooring', type: 'random', price: '£55.00', image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80', description: 'Elegant limestone flooring' },
-                            { id: '4', name: 'Marble Wall Cladding', type: 'brick', price: '£75.00', image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80', description: 'Luxury marble wall cladding' }
-                        ];
-
-                        this.allProducts = allProductsData;
-                    }
-                }
-
-                setupEventListeners() {
-                    this.searchInput.addEventListener('input', (e) => {
-                        this.handleSearch(e.target.value);
-                    });
-
-                    this.searchInput.addEventListener('focus', () => {
-                        if (this.searchInput.value.length > 0) {
-                            this.searchResults.classList.add('active');
-                        }
-                    });
-
-                    document.addEventListener('click', (e) => {
-                        if (!e.target.closest('.search-container')) {
-                            this.searchResults.classList.remove('active');
-                        }
-                    });
-
-                    this.searchButton.addEventListener('click', () => {
-                        this.performSearch(this.searchInput.value);
-                    });
-
-                    this.searchInput.addEventListener('keypress', (e) => {
-                        if (e.key === 'Enter') {
-                            this.performSearch(this.searchInput.value);
-                        }
-                    });
-                }
-
-                handleSearch(query) {
-                    if (query.length === 0) {
-                        this.searchResults.classList.remove('active');
-                        return;
-                    }
-
-                    this.searchResults.classList.add('active');
-                    
-                    this.searchResults.innerHTML = `
-                        <div class="search-loading">
-                            <i class="fas fa-spinner fa-spin"></i>
-                            <p>Searching...</p>
-                        </div>
-                    `;
-
-                    setTimeout(() => {
-                        this.displaySearchResults(query);
-                    }, 300);
-                }
-
-                displaySearchResults(query) {
-                    const searchTerm = query.toLowerCase().trim();
-                    
-                    if (searchTerm.length === 0) {
-                        this.searchResults.innerHTML = '';
-                        return;
-                    }
-
-                    const productResults = this.allProducts.filter(product => 
-                        product.name.toLowerCase().includes(searchTerm) ||
-                        product.description.toLowerCase().includes(searchTerm) ||
-                        (product.type && product.type.toLowerCase().includes(searchTerm))
-                    );
-
-                    if (productResults.length === 0) {
-                        this.searchResults.innerHTML = `
-                            <div class="no-results">
-                                <i class="fas fa-search" style="font-size: 24px; margin-bottom: 10px;"></i>
-                                <p>No results found for "${query}"</p>
-                                <p style="font-size: 12px; margin-top: 5px;">Try different keywords</p>
-                            </div>
-                        `;
-                        return;
-                    }
-
-                    let resultsHTML = '';
-
-                    productResults.forEach(product => {
-                        resultsHTML += `
-                            <div class="search-result-item" onclick="window.location.href='product-details.html?id=${product.id}'">
-                                <div class="search-result-image" style="background-image: url('${product.image}')"></div>
-                                <div class="search-result-content">
-                                    <div class="search-result-name">${product.name}</div>
-                                    <div class="search-result-category">${this.formatType(product.type)}</div>
-                                    <div class="search-result-price">${product.price}</div>
-                                </div>
-                            </div>
-                        `;
-                    });
-
-                    resultsHTML += `
-                        <div class="view-all-results">
-                            <a href="search-results.html?q=${encodeURIComponent(query)}">View all results for "${query}"</a>
-                        </div>
-                    `;
-
-                    this.searchResults.innerHTML = resultsHTML;
-                }
-
-                formatType(type) {
-                    const typeMap = {
-                        'herringbone': 'Herringbone Pattern',
-                        'checkerboard': 'Checkerboard Pattern',
-                        'random': 'Random Layout',
-                        'brick': 'Brick Pattern',
-                        'diagonal': 'Diagonal Pattern',
-                        'hexagon': 'Hexagon Pattern'
-                    };
-                    return typeMap[type] || type;
-                }
-
-                performSearch(query) {
-                    if (query.trim().length > 0) {
-                        window.location.href = `search-results.html?q=${encodeURIComponent(query)}`;
-                    }
-                }
-            }
-
-            // Type Products Manager - AUTOMATIC FILTERING
-            class TypeProductsManager {
-                constructor() {
-                    this.type = this.getTypeFromURL();
-                    this.products = [];
-                    console.log("Type from URL:", this.type);
-                    this.init();
-                }
-
-                getTypeFromURL() {
-                    const urlParams = new URLSearchParams(window.location.search);
-                    return urlParams.get('type') || '';
-                }
-
-                async init() {
-                    await this.loadProducts();
-                    this.renderTypeInfo();
-                    this.renderProducts();
-                }
-
-                async loadProducts() {
-                    try {
-                        // Fetch ALL products from Firestore
-                        const productsRef = window.firebaseFunctions.collection(window.firebaseDb, "products");
-                        const querySnapshot = await window.firebaseFunctions.getDocs(productsRef);
-                        
-                        this.products = [];
-                        querySnapshot.forEach((doc) => {
-                            const product = doc.data();
-                            product.id = doc.id;
-                            this.products.push(product);
-                        });
-
-                        console.log("All products loaded from Firestore:", this.products.length);
-                        
-                        // Agar type specified hai to filter karo
-                        if (this.type) {
-                            const originalCount = this.products.length;
-                            this.products = this.products.filter(product => 
-                                product.type && product.type.toLowerCase() === this.type.toLowerCase()
-                            );
-                            console.log(`Filtered products for type '${this.type}': ${this.products.length} out of ${originalCount}`);
-                        }
-                        
-                    } catch (error) {
-                        console.error("Error loading products from Firestore:", error);
-                        
-                        // Fallback to mock data if Firestore fails
-                        await new Promise(resolve => setTimeout(resolve, 1500));
-
-                        const allProducts = [
-                            {
-                                id: '1',
-                                name: 'Kota Blue Stone - Herringbone',
-                                description: 'Premium quality kota stone with beautiful blue-grey hue, perfect for herringbone pattern flooring in modern spaces.',
-                                price: '£45.00',
-                                image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
-                                unit: 'per sqm',
-                                type: 'herringbone'
-                            },
-                            {
-                                id: '2',
-                                name: 'Sandstone Tiles - Checkerboard',
-                                description: 'Natural sandstone tiles arranged in classic checkerboard pattern for timeless appeal.',
-                                price: '£35.00',
-                                image: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
-                                unit: 'per sqm',
-                                type: 'checkerboard'
-                            },
-                            {
-                                id: '3',
-                                name: 'Limestone Flooring - Random',
-                                description: 'Elegant limestone flooring with random pattern layout for natural organic look.',
-                                price: '£55.00',
-                                image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
-                                unit: 'per sqm',
-                                type: 'random'
-                            },
-                            {
-                                id: '4',
-                                name: 'Marble Floor Tiles - Brick Pattern',
-                                description: 'Luxury marble floor tiles arranged in traditional brick pattern for classic elegance.',
-                                price: '£75.00',
-                                image: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
-                                unit: 'per sqm',
-                                type: 'brick'
-                            }
-                        ];
-
-                        // Agar type specified hai to filter karo
-                        if (this.type) {
-                            this.products = allProducts.filter(product => 
-                                product.type === this.type
-                            );
-                        } else {
-                            this.products = allProducts;
-                        }
-                    }
-                }
-
-                getTypeName(type) {
-                    const typeNames = {
-                        'herringbone': 'Herringbone Pattern',
-                        'checkerboard': 'Checkerboard Pattern',
-                        'random': 'Random Layout',
-                        'brick': 'Brick Pattern',
-                        'diagonal': 'Diagonal Pattern',
-                        'hexagon': 'Hexagon Pattern'
-                    };
-                    return typeNames[type] || type;
-                }
-
-                renderTypeInfo() {
-                    const typeTitle = document.getElementById('typeTitle');
-                    const typeDescription = document.getElementById('typeDescription');
-                    const productsTitle = document.getElementById('productsTitle');
-                    const typeIndicator = document.getElementById('typeIndicator');
-
-                    console.log("Rendering type info for:", this.type);
-
-                    if (this.type) {
-                        const typeName = this.getTypeName(this.type);
-                        typeTitle.textContent = typeName;
-                        typeDescription.textContent = `Discover our premium collection of ${typeName.toLowerCase()} stone products`;
-                        productsTitle.textContent = `${typeName} Collection`;
-                        typeIndicator.textContent = `${typeName}`;
-                        typeIndicator.style.display = 'inline-block';
-                        
-                        // Update page title
-                        document.title = `${typeName} - StoneCraft UK`;
-                    } else {
-                        typeTitle.textContent = 'All Products';
-                        typeDescription.textContent = 'Discover our complete collection of premium stone products';
-                        productsTitle.textContent = 'All Products Collection';
-                        document.title = 'All Products - StoneCraft UK';
-                    }
-                }
-
-                renderProducts() {
-                    const productsGrid = document.getElementById('productsGrid');
-                    const productsCount = document.getElementById('productsCount');
-                    
-                    // Update products count
-                    productsCount.textContent = `${this.products.length} Products Found`;
-                    
-                    if (this.products.length === 0) {
-                        productsGrid.innerHTML = `
-                            <div class="no-products">
-                                <i class="fas fa-box-open"></i>
-                                <h3>No Products Found</h3>
-                                <p>${this.type ? `We don't have ${this.getTypeName(this.type)} products available at the moment.` : `We're currently updating our product collection.`}</p>
-                                <a href="index.html" class="btn" style="margin-top: 20px;">Browse All Products</a>
-                            </div>
-                        `;
-                        return;
-                    }
-
-                    productsGrid.innerHTML = this.products.map(product => {
-                        // Image URL ko properly handle karo
-                        let imageUrl = product.image || product.images?.[0];
-                        if (!imageUrl || imageUrl === 'undefined') {
-                            imageUrl = 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80';
-                        }
-                        
-                        return `
-                        <div class="product-card" data-product-id="${product.id}">
-                            <div class="product-image" style="background-image: url('${imageUrl}')"></div>
-                            <div class="product-content">
-                                <h3 class="product-title">${product.name || product.stone_name || 'Stone Product'}</h3>
-                                <p class="product-description">${product.description || 'Premium quality natural stone product'}</p>
-                                <div class="product-price">${product.price || '£50.00'} <small>${product.unit || 'per sqm'}</small></div>
-                                <button class="btn btn-block view-product-btn">View Details</button>
-                                <div class="product-meta">
-                                    <span><i class="fas fa-palette"></i> ${product.type ? this.getTypeName(product.type) : 'Natural Stone'}</span>
-                                    <span><i class="fas fa-shipping-fast"></i> Free Delivery</span>
-                                </div>
-                            </div>
-                        </div>
-                    `}).join('');
-
-                    // Add click event to product cards and buttons
-                    productsGrid.querySelectorAll('.product-card').forEach(card => {
-                        const viewBtn = card.querySelector('.view-product-btn');
-                        viewBtn.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            const productId = card.getAttribute('data-product-id');
-                            this.viewProductDetails(productId);
-                        });
-                        
-                        card.addEventListener('click', (e) => {
-                            if (!e.target.classList.contains('btn')) {
-                                const productId = card.getAttribute('data-product-id');
-                                this.viewProductDetails(productId);
-                            }
-                        });
-                    });
-                }
-
-                viewProductDetails(productId) {
-                    // Navigate to product details page
-                    window.location.href = `product-details.html?id=${productId}`;
-                }
-            }
-
-            // Initialize all managers
-            try {
-                const authManager = new AuthManager();
-                const advancedSearch = new AdvancedSearch();
-                const typeProductsManager = new TypeProductsManager();
-                
-                console.log("All managers initialized successfully");
-            } catch (error) {
-                console.error("Error initializing managers:", error);
-            }
+        // Application State
+        const appState = {
+            products: [],
+            filteredProducts: [],
+            currentUsage: null,
+            currentType: null,
+            user: null
         };
 
-        // Start the application
-        initializeApp();
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Initializing Category Products Page...');
+            
+            // Get URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            appState.currentUsage = urlParams.get('usage');
+            appState.currentType = urlParams.get('type');
+            
+            console.log('URL Parameters:', {
+                usage: appState.currentUsage,
+                type: appState.currentType
+            });
+            
+            // Initialize the page
+            initializePage();
+            initializeAuth();
+        });
+
+        // Initialize the page
+        async function initializePage() {
+            try {
+                await loadProductsFromFirestore();
+                updatePageTitle();
+                generateTypeFilters();
+                filterProducts();
+            } catch (error) {
+                console.error('Error initializing page:', error);
+            }
+        }
+
+        // Load Products from Firestore
+        async function loadProductsFromFirestore() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "products"));
+                appState.products = [];
+                
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    appState.products.push({
+                        id: doc.id,
+                        ...data
+                    });
+                });
+                
+                console.log('Products loaded:', appState.products);
+                
+                // Real-time listener
+                onSnapshot(collection(db, "products"), (snapshot) => {
+                    const updatedProducts = [];
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        updatedProducts.push({
+                            id: doc.id,
+                            ...data
+                        });
+                    });
+                    appState.products = updatedProducts;
+                    generateTypeFilters();
+                    filterProducts();
+                });
+                
+            } catch (error) {
+                console.error('Error loading products:', error);
+            }
+        }
+
+        // Update page title based on current filters
+        function updatePageTitle() {
+            const pageTitle = document.getElementById('pageTitle');
+            const breadcrumb = document.getElementById('breadcrumb');
+            
+            if (appState.currentUsage && appState.currentType) {
+                // Both usage and type are specified
+                pageTitle.textContent = `${appState.currentType} - ${appState.currentUsage}`;
+                breadcrumb.innerHTML = `
+                    <a href="index.html">Home</a>
+                    <span>></span>
+                    <a href="category-products.html?usage=${appState.currentUsage}">${appState.currentUsage}</a>
+                    <span>></span>
+                    <span>${appState.currentType}</span>
+                `;
+            } else if (appState.currentUsage) {
+                // Only usage is specified
+                pageTitle.textContent = `${appState.currentUsage} Stones`;
+                breadcrumb.innerHTML = `
+                    <a href="index.html">Home</a>
+                    <span>></span>
+                    <span>${appState.currentUsage}</span>
+                `;
+            } else {
+                // No filters
+                pageTitle.textContent = 'All Stone Products';
+            }
+        }
+
+        // Generate type filters based on current usage
+        function generateTypeFilters() {
+            const typesGrid = document.getElementById('typesGrid');
+            if (!typesGrid) return;
+            
+            // Get unique types for current usage
+            let productsToFilter = appState.products;
+            
+            if (appState.currentUsage) {
+                productsToFilter = appState.products.filter(product => 
+                    product.uses && 
+                    product.uses.toLowerCase().replace(/\s+/g, '-') === appState.currentUsage.toLowerCase()
+                );
+            }
+            
+            const uniqueTypes = [...new Set(productsToFilter
+                .filter(product => product.type && product.type.trim() !== '')
+                .map(product => product.type.trim())
+            )].sort();
+            
+            console.log('Unique types for filtering:', uniqueTypes);
+            
+            if (uniqueTypes.length === 0) {
+                typesGrid.innerHTML = '<div class="no-products">No types available for this category</div>';
+                return;
+            }
+            
+            // Add "All Types" option
+            const allTypesBtn = document.createElement('div');
+            allTypesBtn.className = `type-filter-btn ${!appState.currentType ? 'active' : ''}`;
+            allTypesBtn.textContent = 'All Types';
+            allTypesBtn.setAttribute('data-type', 'all');
+            allTypesBtn.addEventListener('click', () => {
+                appState.currentType = null;
+                updateURL();
+                setActiveTypeFilter('all');
+                filterProducts();
+            });
+            
+            typesGrid.innerHTML = '';
+            typesGrid.appendChild(allTypesBtn);
+            
+            // Add type buttons
+            uniqueTypes.forEach(type => {
+                const typeBtn = document.createElement('div');
+                typeBtn.className = `type-filter-btn ${appState.currentType === type ? 'active' : ''}`;
+                typeBtn.textContent = type;
+                typeBtn.setAttribute('data-type', type);
+                typeBtn.addEventListener('click', () => {
+                    appState.currentType = type;
+                    updateURL();
+                    setActiveTypeFilter(type);
+                    filterProducts();
+                });
+                
+                typesGrid.appendChild(typeBtn);
+            });
+        }
+
+        // Set active type filter
+        function setActiveTypeFilter(selectedType) {
+            document.querySelectorAll('.type-filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-type') === selectedType) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        // Update URL without reloading page
+        function updateURL() {
+            const params = new URLSearchParams();
+            
+            if (appState.currentUsage) {
+                params.set('usage', appState.currentUsage);
+            }
+            
+            if (appState.currentType) {
+                params.set('type', appState.currentType);
+            }
+            
+            const newURL = params.toString() ? `category-products.html?${params.toString()}` : 'category-products.html';
+            window.history.replaceState({}, '', newURL);
+            updatePageTitle();
+        }
+
+        // Filter products based on current usage and type
+        function filterProducts() {
+            let filteredProducts = [...appState.products];
+            
+            // Filter by usage
+            if (appState.currentUsage) {
+                filteredProducts = filteredProducts.filter(product => 
+                    product.uses && 
+                    product.uses.toLowerCase().replace(/\s+/g, '-') === appState.currentUsage.toLowerCase()
+                );
+            }
+            
+            // Filter by type
+            if (appState.currentType && appState.currentType !== 'all') {
+                filteredProducts = filteredProducts.filter(product => 
+                    product.type && product.type === appState.currentType
+                );
+            }
+            
+            appState.filteredProducts = filteredProducts;
+            displayProducts();
+            updateProductsCount();
+        }
+
+        // Update products count
+        function updateProductsCount() {
+            const productsCount = document.getElementById('productsCount');
+            if (!productsCount) return;
+            
+            let countText = `${appState.filteredProducts.length} products found`;
+            
+            if (appState.currentUsage && appState.currentType) {
+                countText = `${appState.filteredProducts.length} ${appState.currentType} products for ${appState.currentUsage}`;
+            } else if (appState.currentUsage) {
+                countText = `${appState.filteredProducts.length} products for ${appState.currentUsage}`;
+            } else if (appState.currentType) {
+                countText = `${appState.filteredProducts.length} ${appState.currentType} products`;
+            }
+            
+            productsCount.textContent = countText;
+        }
+
+        // Display products in grid
+        function displayProducts() {
+            const productsGrid = document.getElementById('productsGrid');
+            if (!productsGrid) return;
+            
+            if (appState.filteredProducts.length === 0) {
+                productsGrid.innerHTML = `
+                    <div class="no-products">
+                        <i class="fas fa-box-open"></i>
+                        <h3>No Products Found</h3>
+                        <p>No products match your current filters.</p>
+                        <a href="category-products.html" class="btn">View All Products</a>
+                    </div>
+                `;
+                return;
+            }
+            
+            productsGrid.innerHTML = appState.filteredProducts.map(product => `
+                <div class="product-card">
+                    <div class="product-image" style="background-image: url('${product.images?.[0] || 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80'}')"></div>
+                    <div class="product-info">
+                        <h3 class="product-name">${product.stone_name || 'Stone Product'}</h3>
+                        <div class="product-meta">
+                            <span class="product-type">${product.type || 'Natural Stone'}</span>
+                            <span>${product.uses || 'General Use'}</span>
+                        </div>
+                        <div class="product-price">${product.price ? '£' + product.price : 'Price on request'}</div>
+                        <div class="product-actions">
+                            <a href="product-details.html?id=${product.id}" class="btn">View Details</a>
+                            <button class="btn btn-outline add-to-cart" data-product-id="${product.id}">
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Add event listeners to add-to-cart buttons
+            document.querySelectorAll('.add-to-cart').forEach(button => {
+                button.addEventListener('click', function() {
+                    const productId = this.getAttribute('data-product-id');
+                    addToCart(productId);
+                });
+            });
+        }
+
+        // Add to cart function
+        function addToCart(productId) {
+            // Implement your cart functionality here
+            console.log('Adding product to cart:', productId);
+            alert('Product added to cart!');
+        }
+
+        // Initialize authentication (same as home page)
+        function initializeAuth() {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    appState.user = {
+                        uid: user.uid,
+                        email: user.email,
+                        name: user.displayName || user.email.split('@')[0]
+                    };
+                    updateUserInterface();
+                } else {
+                    appState.user = null;
+                    updateUserInterface();
+                }
+            });
+        }
+
+        // Update user interface (same as home page)
+        function updateUserInterface() {
+            // Implement same user interface updates as home page
+        }
     </script>
 </body>
 </html>
