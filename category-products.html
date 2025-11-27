@@ -1547,13 +1547,13 @@
             // Logout functionality
             if (logoutBtn) {
                 logoutBtn.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    signOut(auth).then(() => {
-                        console.log('User signed out');
-                    }).catch((error) {
-                        console.error('Sign out error:', error);
-                    });
-                });
+    event.preventDefault();
+    signOut(auth).then(() => {
+        console.log('User signed out');
+    }).catch((error) => {
+        console.error('Sign out error:', error);
+    });
+});
             }
         }
 
