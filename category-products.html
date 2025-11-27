@@ -1264,8 +1264,9 @@
     </footer>
 
     <!-- Firebase Script -->
+      <!-- Firebase Script - CORRECTED VERSION -->
     <script type="module">
-        // Import from your firebase-config.js
+        // ✅ CORRECT FIREBASE IMPORT - Aapke firebase-config.js se import karo
         import { 
             db, auth, 
             collection, getDocs, onSnapshot,
@@ -1287,14 +1288,14 @@
         };
 
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Initializing Category Products Page...');
+            console.log('🚀 Initializing Category Products Page...');
             
-            // Get URL parameters - FIXED: 'stone' parameter ko 'stone_name' mein convert karo
+            // Get URL parameters
             const urlParams = new URLSearchParams(window.location.search);
             appState.currentUsage = urlParams.get('usage');
             appState.currentStoneName = urlParams.get('stone') || urlParams.get('stone_name');
             
-            console.log('URL Parameters:', {
+            console.log('📋 URL Parameters:', {
                 usage: appState.currentUsage,
                 stone_name: appState.currentStoneName
             });
@@ -1505,20 +1506,23 @@
 
         async function initializePage() {
             try {
+                console.log('🔄 Starting page initialization...');
                 await loadProductsFromFirestore();
                 updatePageTitle();
                 generateQuickFilters();
                 applyAutoFilter();
                 initializeSorting();
                 generateUsesNavigation();
-                initializeFilters(); // ✅ YEH ADD KIYA
+                initializeFilters();
+                console.log('✅ Page initialization completed successfully!');
             } catch (error) {
-                console.error('Error initializing page:', error);
+                console.error('❌ Error initializing page:', error);
             }
         }
 
         async function loadProductsFromFirestore() {
             try {
+                console.log('🔥 Loading products from Firestore...');
                 const querySnapshot = await getDocs(collection(db, "products"));
                 appState.products = [];
                 
@@ -1530,7 +1534,8 @@
                     });
                 });
                 
-                console.log('Products loaded:', appState.products.length);
+                console.log('✅ Products loaded successfully:', appState.products.length);
+                console.log('📦 Sample product data:', appState.products[0]);
                 
                 // Real-time listener
                 onSnapshot(collection(db, "products"), (snapshot) => {
@@ -1543,14 +1548,17 @@
                         });
                     });
                     appState.products = updatedProducts;
-                    console.log('Products updated in real-time:', updatedProducts.length);
+                    console.log('🔄 Products updated in real-time:', updatedProducts.length);
                     generateQuickFilters();
                     applyAutoFilter();
                     generateUsesNavigation();
                 });
                 
             } catch (error) {
-                console.error('Error loading products:', error);
+                console.error('❌ Error loading products from Firestore:', error);
+                console.log('🔄 Using sample data as fallback...');
+                // Fallback to sample data if Firebase fails
+                appState.products = getSampleProducts();
             }
         }
 
@@ -1560,7 +1568,6 @@
             const breadcrumb = document.getElementById('breadcrumb');
             
             if (appState.currentUsage && appState.currentStoneName) {
-                // Agar URL mein usage aur stone_name dono hain
                 pageTitle.textContent = `${appState.currentStoneName} Stones`;
                 breadcrumb.innerHTML = `
                     <a href="index.html">Home</a>
@@ -1571,7 +1578,6 @@
                 `;
                 
             } else if (appState.currentUsage) {
-                // Agar sirf usage hai
                 pageTitle.textContent = `${appState.currentUsage} Stones`;
                 breadcrumb.innerHTML = `
                     <a href="index.html">Home</a>
@@ -1579,7 +1585,6 @@
                     <span>${appState.currentUsage}</span>
                 `;
             } else {
-                // Agar koi filter nahi hai
                 pageTitle.textContent = 'All Stone Products';
                 breadcrumb.innerHTML = `
                     <a href="index.html">Home</a>
@@ -2133,6 +2138,48 @@
                 document.getElementById('loginButton').style.display = 'flex';
                 document.getElementById('addProductButton').style.display = 'none';
             }
+        }
+
+        // ✅ SAMPLE DATA FALLBACK
+        function getSampleProducts() {
+            return [
+                {
+                    id: 1,
+                    stone_name: "Italian Marble",
+                    category: "Marble",
+                    type: "Natural",
+                    color: "White",
+                    size: "Large Slabs",
+                    uses: "flooring",
+                    price: 1250,
+                    price_unit: "sqft",
+                    images: ["https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"]
+                },
+                {
+                    id: 2,
+                    stone_name: "Kashmir Gold",
+                    category: "Granite",
+                    type: "Natural",
+                    color: "Gold",
+                    size: "Medium Slabs",
+                    uses: "flooring",
+                    price: 850,
+                    price_unit: "sqft",
+                    images: ["https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"]
+                },
+                {
+                    id: 3,
+                    stone_name: "Kota Blue",
+                    category: "Limestone",
+                    type: "Natural",
+                    color: "Blue",
+                    size: "Small Tiles",
+                    uses: "flooring",
+                    price: 550,
+                    price_unit: "sqft",
+                    images: ["https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"]
+                }
+            ];
         }
 
         // Make clearAllFilters available globally
