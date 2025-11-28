@@ -607,7 +607,7 @@
         
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 25px;
         }
         
@@ -1626,7 +1626,7 @@
                     const data = doc.data();
                     console.log('📄 Firestore Document Data:', data);
                     
-                    // ✅ FIX: Handle ALL Firestore data properly
+                    // ✅ FIX: Handle additional_fields array properly
                     let processedData = { ...data };
                     
                     // If additional_fields exists and is an array, extract the properties
@@ -1638,63 +1638,10 @@
                         });
                     }
                     
-                    // ✅ Ensure ALL fields are included
-                    const productData = {
+                    appState.products.push({
                         id: doc.id,
-                        // Basic Information
-                        stone_name: data.stone_name || '',
-                        category: data.category || '',
-                        type: data.type || '',
-                        color: data.color || '',
-                        
-                        // Dimensions
-                        size: data.size || '',
-                        length: data.length || '',
-                        width: data.width || '',
-                        thickness: data.thickness || '',
-                        
-                        // Usage
-                        uses: data.uses || '',
-                        usage: data.usage || '',
-                        
-                        // Pricing
-                        price: data.price || 0,
-                        price_unit: data.price_unit || 'sqft',
-                        
-                        // Descriptions
-                        description: data.description || '',
-                        rate_description: data.rate_description || '',
-                        
-                        // Technical Specifications
-                        density: data.density || '',
-                        finish: data.finish || '',
-                        water_absorption: data.water_absorption || '',
-                        compressive_strength: data.compressive_strength || '',
-                        
-                        // Factory Information
-                        factory_name: data.factory_name || '',
-                        contact_number: data.contact_number || '',
-                        email: data.email || '',
-                        address: data.address || '',
-                        gst_number: data.gst_number || '',
-                        
-                        // Images
-                        images: data.images || [],
-                        
-                        // User Information
-                        userId: data.userId || '',
-                        
-                        // Timestamp
-                        created_at: data.created_at || '',
-                        
-                        // Sub Category
-                        sub_category: data.sub_category || '',
-                        
-                        // Additional Fields (merged)
                         ...processedData
-                    };
-                    
-                    appState.products.push(productData);
+                    });
                 });
                 
                 console.log('✅ Products loaded successfully:', appState.products.length);
@@ -1716,39 +1663,10 @@
                             });
                         }
                         
-                        const productData = {
+                        updatedProducts.push({
                             id: doc.id,
-                            stone_name: data.stone_name || '',
-                            category: data.category || '',
-                            type: data.type || '',
-                            color: data.color || '',
-                            size: data.size || '',
-                            length: data.length || '',
-                            width: data.width || '',
-                            thickness: data.thickness || '',
-                            uses: data.uses || '',
-                            usage: data.usage || '',
-                            price: data.price || 0,
-                            price_unit: data.price_unit || 'sqft',
-                            description: data.description || '',
-                            rate_description: data.rate_description || '',
-                            density: data.density || '',
-                            finish: data.finish || '',
-                            water_absorption: data.water_absorption || '',
-                            compressive_strength: data.compressive_strength || '',
-                            factory_name: data.factory_name || '',
-                            contact_number: data.contact_number || '',
-                            email: data.email || '',
-                            address: data.address || '',
-                            gst_number: data.gst_number || '',
-                            images: data.images || [],
-                            userId: data.userId || '',
-                            created_at: data.created_at || '',
-                            sub_category: data.sub_category || '',
                             ...processedData
-                        };
-                        
-                        updatedProducts.push(productData);
+                        });
                     });
                     appState.products = updatedProducts;
                     console.log('🔄 Products updated in real-time:', updatedProducts.length);
@@ -2045,7 +1963,7 @@
             const index = appState.filters.colors.indexOf(color);
             if (index > -1) {
                 appState.filters.colors.splice(index, 1);
-            else {
+            } else {
                 appState.filters.colors.push(color);
             }
             applyManualFilters();
@@ -2171,7 +2089,7 @@
                     </a>
                     <div class="product-info">
                         <h3 class="product-name">${product.stone_name || 'Stone Product'}</h3>
-                        <div class="product-category">${product.category || 'Natural Stone'} • ${product.type || 'Natural'}</div>
+                        <div class="product-category">${product.category || 'Natural Stone'}</div>
                         
                         <!-- Description Section -->
                         <div class="product-description">
@@ -2188,7 +2106,6 @@
                             ${product.length ? `<div class="spec-item"><i class="fas fa-ruler"></i> Length: ${product.length}</div>` : ''}
                             ${product.width ? `<div class="spec-item"><i class="fas fa-ruler"></i> Width: ${product.width}</div>` : ''}
                             ${product.compressive_strength && product.compressive_strength !== 'osm' ? `<div class="spec-item"><i class="fas fa-gem"></i> Compressive Strength: ${product.compressive_strength}</div>` : ''}
-                            ${product.color ? `<div class="spec-item"><i class="fas fa-palette"></i> Color: ${product.color}</div>` : ''}
                         </div>
                         
                         <!-- Rate Description -->
@@ -2199,13 +2116,11 @@
                         ` : ''}
                         
                         <!-- Additional Information -->
-                        ${product.factory_name || product.contact_number || product.email ? `
+                        ${product.factory_name || product.contact_number ? `
                             <div class="additional-info">
                                 ${product.factory_name ? `<div><strong>Factory:</strong> ${product.factory_name}</div>` : ''}
                                 ${product.contact_number ? `<div><strong>Contact:</strong> ${product.contact_number}</div>` : ''}
                                 ${product.email ? `<div><strong>Email:</strong> ${product.email}</div>` : ''}
-                                ${product.address ? `<div><strong>Address:</strong> ${product.address}</div>` : ''}
-                                ${product.gst_number ? `<div><strong>GST:</strong> ${product.gst_number}</div>` : ''}
                             </div>
                         ` : ''}
                         
@@ -2255,4 +2170,323 @@
             const baseCount = getBaseFilteredProducts().length;
             const filteredCount = appState.filteredProducts.length;
             
-            let countText = `Showing ${filteredCount} product${filter
+            let countText = `Showing ${filteredCount} product${filteredCount !== 1 ? 's' : ''}`;
+            
+            if (filteredCount < baseCount) {
+                countText += ` (${baseCount - filteredCount} hidden by filters)`;
+            }
+            
+            productsCount.textContent = countText;
+        }
+
+        // ✅ UPDATE ACTIVE FILTERS
+        function updateActiveFilters() {
+            const activeFilters = document.getElementById('activeFilters');
+            const filters = [];
+            
+            // Stone type filters
+            appState.filters.stoneTypes.forEach(stoneType => {
+                filters.push(`
+                    <div class="active-filter">
+                        Stone: ${stoneType}
+                        <span class="remove-filter" data-type="stoneType" data-value="${stoneType}">×</span>
+                    </div>
+                `);
+            });
+            
+            // Category filters
+            appState.filters.categories.forEach(category => {
+                filters.push(`
+                    <div class="active-filter">
+                        Category: ${category}
+                        <span class="remove-filter" data-type="category" data-value="${category}">×</span>
+                    </div>
+                `);
+            });
+            
+            // Color filters
+            appState.filters.colors.forEach(color => {
+                filters.push(`
+                    <div class="active-filter">
+                        Color: ${color}
+                        <span class="remove-filter" data-type="color" data-value="${color}">×</span>
+                    </div>
+                `);
+            });
+            
+            // Price filters
+            appState.filters.priceRanges.forEach(priceRange => {
+                filters.push(`
+                    <div class="active-filter">
+                        Price: ${priceRange}
+                        <span class="remove-filter" data-type="price" data-value="${priceRange}">×</span>
+                    </div>
+                `);
+            });
+            
+            if (filters.length > 0) {
+                activeFilters.innerHTML = '<span class="active-filters-title">Active Filters:</span>' + filters.join('') + 
+                    `<button class="clear-all-btn" onclick="clearAllFilters()">Clear All</button>`;
+                activeFilters.style.display = 'flex';
+                
+                // Add remove functionality
+                document.querySelectorAll('.remove-filter').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const type = this.getAttribute('data-type');
+                        const value = this.getAttribute('data-value');
+                        
+                        if (type === 'stoneType') {
+                            appState.filters.stoneTypes = appState.filters.stoneTypes.filter(s => s !== value);
+                        } else if (type === 'category') {
+                            appState.filters.categories = appState.filters.categories.filter(c => c !== value);
+                        } else if (type === 'color') {
+                            appState.filters.colors = appState.filters.colors.filter(c => c !== value);
+                        } else if (type === 'price') {
+                            appState.filters.priceRanges = appState.filters.priceRanges.filter(p => p !== value);
+                        }
+                        
+                        applyManualFilters();
+                    });
+                });
+            } else {
+                activeFilters.style.display = 'none';
+            }
+        }
+
+        // ✅ UPDATE FILTER TAGS
+        function updateFilterTags() {
+            // Update sort options
+            document.querySelectorAll('[data-sort]').forEach(tag => {
+                const value = tag.getAttribute('data-sort');
+                if (appState.filters.sortBy === value) {
+                    tag.classList.add('active');
+                } else {
+                    tag.classList.remove('active');
+                }
+            });
+            
+            // Update stone type tags
+            document.querySelectorAll('[data-filter="stoneType"]').forEach(tag => {
+                const value = tag.getAttribute('data-value');
+                if (appState.filters.stoneTypes.includes(value)) {
+                    tag.classList.add('active');
+                } else {
+                    tag.classList.remove('active');
+                }
+            });
+            
+            // Update category tags
+            document.querySelectorAll('[data-filter="category"]').forEach(tag => {
+                const value = tag.getAttribute('data-value');
+                if (appState.filters.categories.includes(value)) {
+                    tag.classList.add('active');
+                } else {
+                    tag.classList.remove('active');
+                }
+            });
+            
+            // Update color tags
+            document.querySelectorAll('[data-filter="color"]').forEach(tag => {
+                const value = tag.getAttribute('data-value');
+                if (appState.filters.colors.includes(value)) {
+                    tag.classList.add('active');
+                } else {
+                    tag.classList.remove('active');
+                }
+            });
+            
+            // Update price tags
+            document.querySelectorAll('[data-filter="price"]').forEach(tag => {
+                const value = tag.getAttribute('data-value');
+                if (appState.filters.priceRanges.includes(value)) {
+                    tag.classList.add('active');
+                } else {
+                    tag.classList.remove('active');
+                }
+            });
+        }
+
+        // ✅ CLEAR ALL FILTERS
+        function clearAllFilters() {
+            appState.filters = {
+                stoneTypes: [],
+                categories: [],
+                colors: [],
+                priceRanges: [],
+                sortBy: 'name'
+            };
+            
+            // Reset sorting
+            document.querySelectorAll('[data-sort]').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-sort') === 'name') {
+                    btn.classList.add('active');
+                }
+            });
+            
+            applyManualFilters();
+        }
+
+        // ✅ ADD TO CART FUNCTION
+        function addToCart(productId) {
+            console.log('Adding product to cart:', productId);
+            alert('Product added to cart!');
+        }
+
+        // ✅ USES NAVIGATION FUNCTION
+        function generateUsesNavigation() {
+            const usesContainer = document.getElementById('dynamicUsesContainer');
+            if (!usesContainer) return;
+            
+            usesContainer.innerHTML = '';
+            
+            // Get unique uses from products
+            const uniqueUses = [...new Set(appState.products
+                .filter(product => product.uses && product.uses.trim() !== '')
+                .map(product => product.uses.trim())
+            )].sort();
+            
+            console.log('Unique uses for navigation:', uniqueUses);
+            
+            if (uniqueUses.length === 0) {
+                usesContainer.innerHTML = `
+                    <div class="loading-categories">
+                        <i class="fas fa-info-circle"></i>
+                        <p>No uses found</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            uniqueUses.forEach(usage => {
+                const usageKey = usage.toLowerCase().replace(/\s+/g, '-');
+                const useItem = document.createElement('div');
+                useItem.className = 'use-item';
+                
+                // Get products for this usage
+                const usageProducts = appState.products.filter(product => 
+                    product.uses && product.uses.toLowerCase() === usage.toLowerCase()
+                );
+                
+                const uniqueStoneNames = [...new Set(usageProducts
+                    .filter(product => product.stone_name)
+                    .map(product => product.stone_name)
+                )];
+                
+                console.log(`📁 ${usage} - Products: ${usageProducts.length}, Stone Names: ${uniqueStoneNames.length}`);
+                
+                if (uniqueStoneNames.length > 0) {
+                    // Usage with stone names - create mega menu
+                    useItem.innerHTML = `
+                        <div class="use-link">${usage} (${usageProducts.length})</div>
+                        <div class="mega-menu">
+                            <div class="patterns-grid">
+                                ${uniqueStoneNames.map(stoneName => {
+                                    const stoneSlug = stoneName.toLowerCase().replace(/\s+/g, '-');
+                                    // Find a product image for this stone or use default
+                                    const stoneProduct = appState.products.find(p => 
+                                        p.uses && p.uses.toLowerCase() === usage.toLowerCase() && 
+                                        p.stone_name === stoneName
+                                    );
+                                    const imageUrl = stoneProduct?.images?.[0] || getDefaultImage(stoneProduct?.category);
+                                    
+                                    return `
+                                        <a href="category-products.html?usage=${usageKey}&stone=${stoneSlug}" class="pattern-item" data-usage="${usage}" data-stone="${stoneName}">
+                                            <div class="pattern-image" style="background-image: url('${imageUrl}')"></div>
+                                            <div class="pattern-name">${stoneName}</div>
+                                        </a>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Usage with products but no stone names - simple link
+                    useItem.innerHTML = `
+                        <a href="category-products.html?usage=${usageKey}" class="use-link">${usage} (${usageProducts.length})</a>
+                    `;
+                }
+                
+                usesContainer.appendChild(useItem);
+            });
+            
+            // Reinitialize mega menu functionality
+            setTimeout(() => {
+                initializeMegaMenu();
+            }, 100);
+        }
+
+        // ✅ AUTHENTICATION FUNCTIONS
+        function initializeAuth() {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    appState.user = {
+                        uid: user.uid,
+                        email: user.email,
+                        name: user.displayName || user.email.split('@')[0]
+                    };
+                    updateUserInterface();
+                } else {
+                    appState.user = null;
+                    updateUserInterface();
+                }
+            });
+        }
+
+        function updateUserInterface() {
+            if (appState.user) {
+                // User is logged in
+                document.getElementById('userProfile').style.display = 'block';
+                document.getElementById('loginButton').style.display = 'none';
+                document.getElementById('addProductButton').style.display = 'flex';
+                
+                // Update user info
+                document.getElementById('profileName').textContent = appState.user.name;
+                document.getElementById('profileAvatar').textContent = appState.user.name.charAt(0).toUpperCase();
+                document.getElementById('dropdownUserName').textContent = appState.user.name;
+                document.getElementById('dropdownUserEmail').textContent = appState.user.email;
+            } else {
+                // User is not logged in
+                document.getElementById('userProfile').style.display = 'none';
+                document.getElementById('loginButton').style.display = 'flex';
+                document.getElementById('addProductButton').style.display = 'none';
+            }
+        }
+
+        // ✅ SAMPLE DATA FALLBACK
+        function getSampleProducts() {
+            return [
+                {
+                    id: 1,
+                    stone_name: "RED SAND STONE",
+                    category: "Red Sand Stone",
+                    type: "Natural",
+                    color: "green",
+                    size: "10",
+                    length: "5",
+                    width: "2",
+                    thickness: "20-30 mm",
+                    uses: "Flooring",
+                    price: 100,
+                    price_unit: "sqft",
+                    description: "Premium red sandstone with excellent durability and natural beauty",
+                    density: "2.4 g/cm³",
+                    finish: "Natural",
+                    water_absorption: "Low",
+                    rate_description: "Competitive pricing with bulk discounts available",
+                    factory_name: "ravi jain",
+                    contact_number: "+91 7737740207",
+                    email: "ravijain236129@gmail.com",
+                    compressive_strength: "High",
+                    images: ["https://i.ibb.co/HLpBc94R/51b7aaab131a.jpg"]
+                }
+            ];
+        }
+
+        // Make clearAllFilters available globally
+        window.clearAllFilters = clearAllFilters;
+
+        console.log('✅ All functions defined successfully!');
+    </script>
+</body>
+</html>
