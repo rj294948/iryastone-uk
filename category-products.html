@@ -140,6 +140,109 @@
             font-size: 18px;
             margin-bottom: 3px;
         }
+
+        /* User Profile */
+        .user-profile {
+            position: relative;
+        }
+
+        .profile-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+        }
+
+        .profile-toggle:hover {
+            background: #f8f9fa;
+        }
+
+        .profile-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #b8860b;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .profile-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            min-width: 200px;
+            z-index: 1000;
+            display: none;
+            border: 1px solid #e0e0e0;
+        }
+
+        .profile-dropdown.active {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            background: #f8f9fa;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .dropdown-header .user-email {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .dropdown-menu {
+            list-style: none;
+            padding: 8px 0;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .dropdown-item:hover {
+            background: #f8f9fa;
+            color: #b8860b;
+        }
+
+        .dropdown-item i {
+            width: 16px;
+            text-align: center;
+            color: #666;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #eee;
+            margin: 8px 0;
+        }
         
         /* ===== MAIN CONTENT ===== */
         .main-content {
@@ -556,7 +659,9 @@
             <div class="header-content">
                 <!-- Logo -->
                 <div class="logo">
-                    <h1>Stone<span>Craft</span></h1>
+                    <a href="index.html" style="text-decoration: none; color: inherit;">
+                        <h1>Stone<span>Craft</span></h1>
+                    </a>
                 </div>
                 
                 <!-- Search Bar -->
@@ -571,14 +676,43 @@
                 
                 <!-- User Icons -->
                 <div class="user-actions">
-                    <a href="#" class="user-action">
+                    <!-- Dynamic User Profile -->
+                    <div class="user-profile" id="userProfile" style="display: none;">
+                        <button class="profile-toggle" id="profileToggle">
+                            <div class="profile-avatar" id="profileAvatar">U</div>
+                            <span class="profile-name" id="profileName">User</span>
+                            <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
+                        </button>
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <div class="dropdown-header">
+                                <div class="profile-name" id="dropdownUserName">User Name</div>
+                                <div class="user-email" id="dropdownUserEmail">user@example.com</div>
+                            </div>
+                            <ul class="dropdown-menu">
+                                <li><a href="dashboard.html" class="dropdown-item"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                                <li><a href="add.html" class="dropdown-item"><i class="fas fa-plus-circle"></i> Add Product</a></li>
+                                <li><a href="edit-profile.html" class="dropdown-item"><i class="fas fa-user-edit"></i> Edit Profile</a></li>
+                                <li><a href="wishlist.html" class="dropdown-item"><i class="fas fa-heart"></i> My Wishlist</a></li>
+                                <li><a href="billing.html" class="dropdown-item"><i class="fas fa-address-card"></i> Billing/Shipping</a></li>
+                                <li><a href="orders.html" class="dropdown-item"><i class="fas fa-history"></i> Order History</a></li>
+                                <li class="dropdown-divider"></li>
+                                <li><a href="#" class="dropdown-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Add Product Button -->
+                    <a href="add.html" class="user-action" id="addProductButton" style="display: none;">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Add Product</span>
+                    </a>
+                    
+                    <!-- Login Button -->
+                    <a href="login.html" class="user-action" id="loginButton">
                         <i class="fas fa-user"></i>
-                        <span>Account</span>
+                        <span>Sign In</span>
                     </a>
-                    <a href="#" class="user-action">
-                        <i class="fas fa-heart"></i>
-                        <span>Wishlist</span>
-                    </a>
+                    
                     <a href="#" class="user-action">
                         <i class="fas fa-shopping-cart"></i>
                         <span>Cart (0)</span>
@@ -593,8 +727,8 @@
         <div class="container">
             <!-- Page Header -->
             <div class="page-header">
-                <h1>Premium Stone Collection</h1>
-                <div class="breadcrumb">
+                <h1 id="pageTitle">Premium Stone Collection</h1>
+                <div class="breadcrumb" id="breadcrumb">
                     <a href="index.html">Home</a>
                     <span>></span>
                     <span>Products</span>
@@ -674,166 +808,579 @@
     </div>
 
     <script>
-        // ===== PRODUCT DATA =====
-        const productsData = [
-            {
-                id: 1,
-                name: "Carrara Marble",
-                description: "Premium white marble with subtle grey veins",
-                price: 125,
-                category: "Marble",
-                stoneType: "Marble",
-                color: "White",
-                usage: "Flooring",
-                image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
-            },
-            {
-                id: 2,
-                name: "Black Galaxy Granite",
-                description: "Luxury black granite with gold speckles",
-                price: 95,
-                category: "Granite",
-                stoneType: "Granite",
-                color: "Black",
-                usage: "Countertops",
-                image: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
-            },
-            {
-                id: 3,
-                name: "Kashmir Gold Granite",
-                description: "Warm golden granite with brown patterns",
-                price: 110,
-                category: "Granite",
-                stoneType: "Granite",
-                color: "Gold",
-                usage: "Flooring",
-                image: "https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
-            },
-            {
-                id: 4,
-                name: "Travertine Classic",
-                description: "Natural travertine with earthy tones",
-                price: 85,
-                category: "Travertine",
-                stoneType: "Limestone",
-                color: "Beige",
-                usage: "Wall Cladding",
-                image: "https://images.unsplash.com/photo-1541140532154-b024d705b90a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
-            },
-            {
-                id: 5,
-                name: "Blue Pearl Granite",
-                description: "Stunning blue granite with silver flecks",
-                price: 140,
-                category: "Granite",
-                stoneType: "Granite",
-                color: "Blue",
-                usage: "Countertops",
-                image: "https://images.unsplash.com/photo-1516937941344-00b4e0337589?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
-            },
-            {
-                id: 6,
-                name: "Calacatta Gold Marble",
-                description: "Luxurious white marble with gold veins",
-                price: 180,
-                category: "Marble",
-                stoneType: "Marble",
-                color: "White",
-                usage: "Bathroom",
-                image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
-            },
-            {
-                id: 7,
-                name: "Red Sandstone",
-                description: "Natural red sandstone with rich texture",
-                price: 75,
-                category: "Sandstone",
-                stoneType: "Sandstone",
-                color: "Red",
-                usage: "Outdoor",
-                image: "https://images.unsplash.com/photo-1541140532154-b024d705b90a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
-            },
-            {
-                id: 8,
-                name: "Slate Grey",
-                description: "Durable slate with charcoal grey finish",
-                price: 65,
-                category: "Slate",
-                stoneType: "Slate",
-                color: "Grey",
-                usage: "Flooring",
-                image: "https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
-            },
-            {
-                id: 9,
-                name: "Emerald Pearl Granite",
-                description: "Green granite with pearl-like patterns",
-                price: 120,
-                category: "Granite",
-                stoneType: "Granite",
-                color: "Green",
-                usage: "Countertops",
-                image: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
-            },
-            {
-                id: 10,
-                name: "Botticino Marble",
-                description: "Classic Italian marble with warm tones",
-                price: 135,
-                category: "Marble",
-                stoneType: "Marble",
-                color: "Beige",
-                usage: "Flooring",
-                image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
-            },
-            {
-                id: 11,
-                name: "Limestone Cream",
-                description: "Soft cream limestone with natural texture",
-                price: 90,
-                category: "Limestone",
-                stoneType: "Limestone",
-                color: "Cream",
-                usage: "Wall Cladding",
-                image: "https://images.unsplash.com/photo-1541140532154-b024d705b90a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
-            },
-            {
-                id: 12,
-                name: "Absolute Black Granite",
-                description: "Deep black granite with mirror finish",
-                price: 150,
-                category: "Granite",
-                stoneType: "Granite",
-                color: "Black",
-                usage: "Countertops",
-                image: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
-            }
-        ];
-
-        // ===== APPLICATION STATE =====
+        // ===== ORIGINAL PROGRAMMING LOGIC =====
         const appState = {
-            products: productsData,
-            filteredProducts: productsData,
+            products: [],
+            filteredProducts: [],
+            currentUsage: null,
+            currentStoneName: null,
             filters: {
                 categories: [],
                 stoneTypes: [],
                 colors: [],
-                usage: []
+                usage: [],
+                sortBy: 'name'
             },
+            user: null,
             searchQuery: ''
         };
 
         // ===== INITIALIZATION =====
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Initializing Category Products Page...');
+            
+            // Get URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            appState.currentUsage = urlParams.get('usage');
+            appState.currentStoneName = urlParams.get('stone') || urlParams.get('stone_name');
+            
+            console.log('📋 URL Parameters:', {
+                usage: appState.currentUsage,
+                stone_name: appState.currentStoneName
+            });
+            
+            // Initialize the page
             initializePage();
-            initializeSearch();
+            initializeAuth();
+            initializeUI();
         });
 
         // ===== PAGE INITIALIZATION =====
-        function initializePage() {
+        async function initializePage() {
+            try {
+                console.log('🔄 Starting page initialization...');
+                await loadProductsFromFirestore();
+                updatePageTitle();
+                generateQuickFilters();
+                applyAutoFilter();
+                initializeSorting();
+                initializeFilters();
+                console.log('✅ Page initialization completed successfully!');
+            } catch (error) {
+                console.error('❌ Error initializing page:', error);
+            }
+        }
+
+        // ===== FIREBASE/FIRESTORE INTEGRATION =====
+        async function loadProductsFromFirestore() {
+            try {
+                console.log('🔥 Loading products from Firestore...');
+                // In a real implementation, this would connect to Firebase
+                // For demo purposes, we'll use sample data
+                
+                // Sample products data (would come from Firestore in real implementation)
+                appState.products = [
+                    {
+                        id: 1,
+                        stone_name: "Carrara Marble",
+                        category: "Marble",
+                        type: "Natural",
+                        color: "White",
+                        uses: "Flooring",
+                        price: 125,
+                        description: "Premium white marble with subtle grey veins",
+                        images: ["https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"],
+                        pageUrl: "product-details.html?id=1"
+                    },
+                    {
+                        id: 2,
+                        stone_name: "Black Galaxy Granite",
+                        category: "Granite",
+                        type: "Natural",
+                        color: "Black",
+                        uses: "Countertops",
+                        price: 95,
+                        description: "Luxury black granite with gold speckles",
+                        images: ["https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"],
+                        pageUrl: "product-details.html?id=2"
+                    },
+                    {
+                        id: 3,
+                        stone_name: "Kashmir Gold Granite",
+                        category: "Granite",
+                        type: "Natural",
+                        color: "Gold",
+                        uses: "Flooring",
+                        price: 110,
+                        description: "Warm golden granite with brown patterns",
+                        images: ["https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"],
+                        pageUrl: "product-details.html?id=3"
+                    },
+                    {
+                        id: 4,
+                        stone_name: "Travertine Classic",
+                        category: "Travertine",
+                        type: "Natural",
+                        color: "Beige",
+                        uses: "Wall Cladding",
+                        price: 85,
+                        description: "Natural travertine with earthy tones",
+                        images: ["https://images.unsplash.com/photo-1541140532154-b024d705b90a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"],
+                        pageUrl: "product-details.html?id=4"
+                    },
+                    {
+                        id: 5,
+                        stone_name: "Blue Pearl Granite",
+                        category: "Granite",
+                        type: "Natural",
+                        color: "Blue",
+                        uses: "Countertops",
+                        price: 140,
+                        description: "Stunning blue granite with silver flecks",
+                        images: ["https://images.unsplash.com/photo-1516937941344-00b4e0337589?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"],
+                        pageUrl: "product-details.html?id=5"
+                    },
+                    {
+                        id: 6,
+                        stone_name: "Calacatta Gold Marble",
+                        category: "Marble",
+                        type: "Natural",
+                        color: "White",
+                        uses: "Bathroom",
+                        price: 180,
+                        description: "Luxurious white marble with gold veins",
+                        images: ["https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"],
+                        pageUrl: "product-details.html?id=6"
+                    },
+                    {
+                        id: 7,
+                        stone_name: "Red Sandstone",
+                        category: "Sandstone",
+                        type: "Natural",
+                        color: "Red",
+                        uses: "Outdoor",
+                        price: 75,
+                        description: "Natural red sandstone with rich texture",
+                        images: ["https://images.unsplash.com/photo-1541140532154-b024d705b90a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"],
+                        pageUrl: "product-details.html?id=7"
+                    },
+                    {
+                        id: 8,
+                        stone_name: "Slate Grey",
+                        category: "Slate",
+                        type: "Natural",
+                        color: "Grey",
+                        uses: "Flooring",
+                        price: 65,
+                        description: "Durable slate with charcoal grey finish",
+                        images: ["https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"],
+                        pageUrl: "product-details.html?id=8"
+                    },
+                    {
+                        id: 9,
+                        stone_name: "Emerald Pearl Granite",
+                        category: "Granite",
+                        type: "Natural",
+                        color: "Green",
+                        uses: "Countertops",
+                        price: 120,
+                        description: "Green granite with pearl-like patterns",
+                        images: ["https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"],
+                        pageUrl: "product-details.html?id=9"
+                    },
+                    {
+                        id: 10,
+                        stone_name: "Botticino Marble",
+                        category: "Marble",
+                        type: "Natural",
+                        color: "Beige",
+                        uses: "Flooring",
+                        price: 135,
+                        description: "Classic Italian marble with warm tones",
+                        images: ["https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"],
+                        pageUrl: "product-details.html?id=10"
+                    },
+                    {
+                        id: 11,
+                        stone_name: "Limestone Cream",
+                        category: "Limestone",
+                        type: "Natural",
+                        color: "Cream",
+                        uses: "Wall Cladding",
+                        price: 90,
+                        description: "Soft cream limestone with natural texture",
+                        images: ["https://images.unsplash.com/photo-1541140532154-b024d705b90a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"],
+                        pageUrl: "product-details.html?id=11"
+                    },
+                    {
+                        id: 12,
+                        stone_name: "Absolute Black Granite",
+                        category: "Granite",
+                        type: "Natural",
+                        color: "Black",
+                        uses: "Countertops",
+                        price: 150,
+                        description: "Deep black granite with mirror finish",
+                        images: ["https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"],
+                        pageUrl: "product-details.html?id=12"
+                    }
+                ];
+                
+                console.log('✅ Products loaded successfully:', appState.products.length);
+                
+            } catch (error) {
+                console.error('❌ Error loading products from Firestore:', error);
+                console.log('🔄 Using sample data as fallback...');
+                // Fallback to sample data if Firebase fails
+                appState.products = getSampleProducts();
+            }
+        }
+
+        // ===== UI INITIALIZATION =====
+        function initializeUI() {
+            initializeSearch();
+            initializeUserProfile();
+        }
+
+        function initializeSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const searchButton = document.getElementById('searchButton');
+            
+            searchButton.addEventListener('click', performSearch);
+            searchInput.addEventListener('keyup', function(event) {
+                if (event.key === 'Enter') {
+                    performSearch();
+                }
+            });
+            
+            function performSearch() {
+                appState.searchQuery = searchInput.value.trim();
+                applyManualFilters();
+            }
+        }
+
+        function initializeUserProfile() {
+            const profileToggle = document.getElementById('profileToggle');
+            const profileDropdown = document.getElementById('profileDropdown');
+            
+            if (!profileToggle || !profileDropdown) return;
+            
+            profileToggle.addEventListener('click', function(event) {
+                event.stopPropagation();
+                profileDropdown.classList.toggle('active');
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function() {
+                profileDropdown.classList.remove('active');
+            });
+        }
+
+        // ===== AUTHENTICATION =====
+        function initializeAuth() {
+            // Simulate auth state change
+            setTimeout(() => {
+                // For demo, show user as logged in
+                appState.user = {
+                    uid: '123',
+                    email: 'user@example.com',
+                    name: 'John Doe'
+                };
+                updateUserInterface();
+            }, 1000);
+        }
+
+        function updateUserInterface() {
+            if (appState.user) {
+                // User is logged in
+                document.getElementById('userProfile').style.display = 'block';
+                document.getElementById('loginButton').style.display = 'none';
+                document.getElementById('addProductButton').style.display = 'flex';
+                
+                // Update user info
+                document.getElementById('profileName').textContent = appState.user.name;
+                document.getElementById('profileAvatar').textContent = appState.user.name.charAt(0).toUpperCase();
+                document.getElementById('dropdownUserName').textContent = appState.user.name;
+                document.getElementById('dropdownUserEmail').textContent = appState.user.email;
+            } else {
+                // User is not logged in
+                document.getElementById('userProfile').style.display = 'none';
+                document.getElementById('loginButton').style.display = 'flex';
+                document.getElementById('addProductButton').style.display = 'none';
+            }
+        }
+
+        // ===== PAGE TITLE UPDATE =====
+        function updatePageTitle() {
+            const pageTitle = document.getElementById('pageTitle');
+            const breadcrumb = document.getElementById('breadcrumb');
+            
+            if (appState.currentUsage && appState.currentStoneName) {
+                pageTitle.textContent = `${appState.currentStoneName} Stones`;
+                breadcrumb.innerHTML = `
+                    <a href="index.html">Home</a>
+                    <span>></span>
+                    <a href="category-products.html?usage=${appState.currentUsage}">${appState.currentUsage}</a>
+                    <span>></span>
+                    <span>${appState.currentStoneName}</span>
+                `;
+            } else if (appState.currentUsage) {
+                pageTitle.textContent = `${appState.currentUsage} Stones`;
+                breadcrumb.innerHTML = `
+                    <a href="index.html">Home</a>
+                    <span>></span>
+                    <span>${appState.currentUsage}</span>
+                `;
+            } else {
+                pageTitle.textContent = 'All Stone Products';
+                breadcrumb.innerHTML = `
+                    <a href="index.html">Home</a>
+                    <span>></span>
+                    <span>All Products</span>
+                `;
+            }
+        }
+
+        // ===== AUTO FILTER =====
+        function applyAutoFilter() {
+            console.log('🔄 Applying auto filter from URL...');
+            
+            let filteredProducts = [...appState.products];
+            
+            // Filter by usage if specified in URL
+            if (appState.currentUsage) {
+                filteredProducts = filteredProducts.filter(product => 
+                    product.uses && 
+                    product.uses.toLowerCase().replace(/\s+/g, '-') === appState.currentUsage.toLowerCase()
+                );
+                console.log(`✅ After usage filter (${appState.currentUsage}):`, filteredProducts.length);
+            }
+            
+            // Filter by stone_name if specified in URL
+            if (appState.currentStoneName) {
+                filteredProducts = filteredProducts.filter(product => 
+                    product.stone_name && 
+                    product.stone_name.toLowerCase().replace(/\s+/g, '-') === appState.currentStoneName.toLowerCase()
+                );
+                console.log(`✅ After stone name filter (${appState.currentStoneName}):`, filteredProducts.length);
+                
+                // Auto-select the stone type in filters
+                if (!appState.filters.stoneTypes.includes(appState.currentStoneName)) {
+                    appState.filters.stoneTypes = [appState.currentStoneName];
+                }
+            }
+            
+            appState.filteredProducts = filteredProducts;
             displayProducts();
-            generateFilters();
             updateProductsCount();
+            updateActiveFilters();
+        }
+
+        // ===== QUICK FILTERS GENERATION =====
+        function generateQuickFilters() {
+            generateCategoryFilters();
+            generateStoneTypeFilters();
+            generateColorFilters();
+            generateUsageFilters();
+        }
+
+        function generateCategoryFilters() {
+            const container = document.getElementById('categoryFilters');
+            const categories = [...new Set(appState.products
+                .filter(product => product.category && product.category.trim() !== '')
+                .map(product => product.category.trim())
+            )].sort();
+            
+            container.innerHTML = categories.map(category => {
+                const count = appState.products.filter(product => 
+                    product.category && product.category.trim() === category
+                ).length;
+                
+                const isActive = appState.filters.categories.includes(category);
+                
+                return `
+                    <div class="filter-option ${isActive ? 'active' : ''}" data-filter="categories" data-value="${category}">
+                        <div class="filter-checkbox"></div>
+                        <span class="filter-label">${category}</span>
+                        <span class="filter-count">${count}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function generateStoneTypeFilters() {
+            const container = document.getElementById('stoneTypeFilters');
+            const stoneTypes = [...new Set(appState.products
+                .filter(product => product.stone_name && product.stone_name.trim() !== '')
+                .map(product => product.stone_name.trim())
+            )].sort();
+            
+            container.innerHTML = stoneTypes.map(stoneType => {
+                const count = appState.products.filter(product => 
+                    product.stone_name && product.stone_name.trim() === stoneType
+                ).length;
+                
+                const isActive = appState.filters.stoneTypes.includes(stoneType);
+                
+                return `
+                    <div class="filter-option ${isActive ? 'active' : ''}" data-filter="stoneTypes" data-value="${stoneType}">
+                        <div class="filter-checkbox"></div>
+                        <span class="filter-label">${stoneType}</span>
+                        <span class="filter-count">${count}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function generateColorFilters() {
+            const container = document.getElementById('colorFilters');
+            const colors = [...new Set(appState.products
+                .filter(product => product.color && product.color.trim() !== '')
+                .map(product => product.color.trim())
+            )].sort();
+            
+            container.innerHTML = colors.map(color => {
+                const count = appState.products.filter(product => 
+                    product.color && product.color.trim() === color
+                ).length;
+                
+                const isActive = appState.filters.colors.includes(color);
+                
+                return `
+                    <div class="filter-option ${isActive ? 'active' : ''}" data-filter="colors" data-value="${color}">
+                        <div class="filter-checkbox"></div>
+                        <span class="filter-label">${color}</span>
+                        <span class="filter-count">${count}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function generateUsageFilters() {
+            const container = document.getElementById('usageFilters');
+            const usageOptions = [...new Set(appState.products
+                .filter(product => product.uses && product.uses.trim() !== '')
+                .map(product => product.uses.trim())
+            )].sort();
+            
+            container.innerHTML = usageOptions.map(usage => {
+                const count = appState.products.filter(product => 
+                    product.uses && product.uses.trim() === usage
+                ).length;
+                
+                const isActive = appState.filters.usage.includes(usage);
+                
+                return `
+                    <div class="filter-option ${isActive ? 'active' : ''}" data-filter="usage" data-value="${usage}">
+                        <div class="filter-checkbox"></div>
+                        <span class="filter-label">${usage}</span>
+                        <span class="filter-count">${count}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ===== FILTERS INITIALIZATION =====
+        function initializeFilters() {
+            // Add event listeners to all filter options
+            document.querySelectorAll('.filter-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const filterType = this.getAttribute('data-filter');
+                    const value = this.getAttribute('data-value');
+                    toggleFilter(filterType, value);
+                });
+            });
+        }
+
+        function toggleFilter(filterType, value) {
+            const filterArray = appState.filters[filterType];
+            const index = filterArray.indexOf(value);
+            
+            if (index > -1) {
+                filterArray.splice(index, 1);
+            } else {
+                filterArray.push(value);
+            }
+            
+            applyManualFilters();
+            updateFilterUI(filterType, value);
+            updateActiveFilters();
+        }
+
+        function applyManualFilters() {
+            let filteredProducts = [...appState.products];
+            
+            console.log('Applying manual filters:', appState.filters);
+            
+            // Filter by categories
+            if (appState.filters.categories.length > 0) {
+                filteredProducts = filteredProducts.filter(product => 
+                    product.category && 
+                    appState.filters.categories.includes(product.category.trim())
+                );
+            }
+            
+            // Filter by stone types
+            if (appState.filters.stoneTypes.length > 0) {
+                filteredProducts = filteredProducts.filter(product => 
+                    product.stone_name && 
+                    appState.filters.stoneTypes.includes(product.stone_name.trim())
+                );
+            }
+            
+            // Filter by colors
+            if (appState.filters.colors.length > 0) {
+                filteredProducts = filteredProducts.filter(product => 
+                    product.color && 
+                    appState.filters.colors.includes(product.color.trim())
+                );
+            }
+            
+            // Filter by usage
+            if (appState.filters.usage.length > 0) {
+                filteredProducts = filteredProducts.filter(product => 
+                    product.uses && 
+                    appState.filters.usage.includes(product.uses.trim())
+                );
+            }
+            
+            // Apply search query
+            if (appState.searchQuery) {
+                const query = appState.searchQuery.toLowerCase();
+                filteredProducts = filteredProducts.filter(product => 
+                    (product.stone_name && product.stone_name.toLowerCase().includes(query)) ||
+                    (product.description && product.description.toLowerCase().includes(query)) ||
+                    (product.category && product.category.toLowerCase().includes(query))
+                );
+            }
+            
+            // Sort products
+            filteredProducts = sortProducts(filteredProducts);
+            
+            appState.filteredProducts = filteredProducts;
+            displayProducts();
+            updateProductsCount();
+            updateActiveFilters();
+        }
+
+        function updateFilterUI(filterType, value) {
+            const option = document.querySelector(`[data-filter="${filterType}"][data-value="${value}"]`);
+            if (option) {
+                const isActive = appState.filters[filterType].includes(value);
+                if (isActive) {
+                    option.classList.add('active');
+                } else {
+                    option.classList.remove('active');
+                }
+            }
+        }
+
+        // ===== SORTING =====
+        function initializeSorting() {
+            // Sorting functionality can be added here
+        }
+
+        function sortProducts(products) {
+            switch (appState.filters.sortBy) {
+                case 'name':
+                    return products.sort((a, b) => (a.stone_name || '').localeCompare(b.stone_name || ''));
+                case 'price-low':
+                    return products.sort((a, b) => (a.price || 0) - (b.price || 0));
+                case 'price-high':
+                    return products.sort((a, b) => (b.price || 0) - (a.price || 0));
+                default:
+                    return products;
+            }
         }
 
         // ===== PRODUCT DISPLAY =====
@@ -851,211 +1398,42 @@
                 return;
             }
 
-            productsContainer.innerHTML = appState.filteredProducts.map(product => `
-                <div class="product-card">
-                    <div class="product-img-box">
-                        <img src="${product.image}" alt="${product.name}" class="product-img">
-                    </div>
-                    <div class="product-info">
-                        <p class="product-description">${product.description}</p>
-                        <p class="product-rate">£${product.price}</p>
-                        <a href="#" class="details-btn">View Details</a>
-                    </div>
-                </div>
-            `).join('');
-        }
+            productsContainer.innerHTML = appState.filteredProducts.map(product => {
+                const imageUrl = product.images?.[0] || getDefaultImage(product.category);
+                const description = product.description || product.stone_name || "Premium Stone Product";
+                const rate = product.price ? `£${product.price}` : "Price on request";
+                const detailsLink = product.pageUrl || `product-details.html?id=${product.id}`;
 
-        // ===== FILTER GENERATION =====
-        function generateFilters() {
-            generateCategoryFilters();
-            generateStoneTypeFilters();
-            generateColorFilters();
-            generateUsageFilters();
-        }
-
-        function generateCategoryFilters() {
-            const container = document.getElementById('categoryFilters');
-            const categories = [...new Set(appState.products.map(p => p.category))];
-            
-            container.innerHTML = categories.map(category => {
-                const count = appState.products.filter(p => p.category === category).length;
-                const isActive = appState.filters.categories.includes(category);
-                
                 return `
-                    <div class="filter-option ${isActive ? 'active' : ''}" data-filter="category" data-value="${category}">
-                        <div class="filter-checkbox"></div>
-                        <span class="filter-label">${category}</span>
-                        <span class="filter-count">${count}</span>
+                    <div class="product-card">
+                        <a href="${detailsLink}">
+                            <div class="product-img-box">
+                                <img src="${imageUrl}" alt="${description}" class="product-img">
+                            </div>
+                        </a>
+                        <div class="product-info">
+                            <p class="product-description">${description}</p>
+                            <p class="product-rate">${rate}</p>
+                            <a href="${detailsLink}" class="details-btn">View Details</a>
+                        </div>
                     </div>
                 `;
             }).join('');
-            
-            // Add event listeners
-            container.querySelectorAll('.filter-option').forEach(option => {
-                option.addEventListener('click', function() {
-                    const filterType = this.getAttribute('data-filter');
-                    const value = this.getAttribute('data-value');
-                    toggleFilter(filterType, value);
-                });
-            });
         }
 
-        function generateStoneTypeFilters() {
-            const container = document.getElementById('stoneTypeFilters');
-            const stoneTypes = [...new Set(appState.products.map(p => p.stoneType))];
+        function getDefaultImage(category) {
+            const defaultImages = {
+                'marble': 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
+                'granite': 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
+                'limestone': 'https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
+                'sandstone': 'https://images.unsplash.com/photo-1541140532154-b024d705b90a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80'
+            };
             
-            container.innerHTML = stoneTypes.map(stoneType => {
-                const count = appState.products.filter(p => p.stoneType === stoneType).length;
-                const isActive = appState.filters.stoneTypes.includes(stoneType);
-                
-                return `
-                    <div class="filter-option ${isActive ? 'active' : ''}" data-filter="stoneType" data-value="${stoneType}">
-                        <div class="filter-checkbox"></div>
-                        <span class="filter-label">${stoneType}</span>
-                        <span class="filter-count">${count}</span>
-                    </div>
-                `;
-            }).join('');
-            
-            // Add event listeners
-            container.querySelectorAll('.filter-option').forEach(option => {
-                option.addEventListener('click', function() {
-                    const filterType = this.getAttribute('data-filter');
-                    const value = this.getAttribute('data-value');
-                    toggleFilter(filterType, value);
-                });
-            });
+            const cat = category ? category.toLowerCase() : 'marble';
+            return defaultImages[cat] || defaultImages.marble;
         }
 
-        function generateColorFilters() {
-            const container = document.getElementById('colorFilters');
-            const colors = [...new Set(appState.products.map(p => p.color))];
-            
-            container.innerHTML = colors.map(color => {
-                const count = appState.products.filter(p => p.color === color).length;
-                const isActive = appState.filters.colors.includes(color);
-                
-                return `
-                    <div class="filter-option ${isActive ? 'active' : ''}" data-filter="colors" data-value="${color}">
-                        <div class="filter-checkbox"></div>
-                        <span class="filter-label">${color}</span>
-                        <span class="filter-count">${count}</span>
-                    </div>
-                `;
-            }).join('');
-            
-            // Add event listeners
-            container.querySelectorAll('.filter-option').forEach(option => {
-                option.addEventListener('click', function() {
-                    const filterType = this.getAttribute('data-filter');
-                    const value = this.getAttribute('data-value');
-                    toggleFilter(filterType, value);
-                });
-            });
-        }
-
-        function generateUsageFilters() {
-            const container = document.getElementById('usageFilters');
-            const usageOptions = [...new Set(appState.products.map(p => p.usage))];
-            
-            container.innerHTML = usageOptions.map(usage => {
-                const count = appState.products.filter(p => p.usage === usage).length;
-                const isActive = appState.filters.usage.includes(usage);
-                
-                return `
-                    <div class="filter-option ${isActive ? 'active' : ''}" data-filter="usage" data-value="${usage}">
-                        <div class="filter-checkbox"></div>
-                        <span class="filter-label">${usage}</span>
-                        <span class="filter-count">${count}</span>
-                    </div>
-                `;
-            }).join('');
-            
-            // Add event listeners
-            container.querySelectorAll('.filter-option').forEach(option => {
-                option.addEventListener('click', function() {
-                    const filterType = this.getAttribute('data-filter');
-                    const value = this.getAttribute('data-value');
-                    toggleFilter(filterType, value);
-                });
-            });
-        }
-
-        // ===== FILTER LOGIC =====
-        function toggleFilter(filterType, value) {
-            const filterArray = appState.filters[filterType];
-            const index = filterArray.indexOf(value);
-            
-            if (index > -1) {
-                filterArray.splice(index, 1);
-            } else {
-                filterArray.push(value);
-            }
-            
-            applyFilters();
-            updateFilterUI(filterType, value);
-            updateActiveFilters();
-        }
-
-        function applyFilters() {
-            let filtered = [...appState.products];
-            
-            // Apply category filters
-            if (appState.filters.categories.length > 0) {
-                filtered = filtered.filter(product => 
-                    appState.filters.categories.includes(product.category)
-                );
-            }
-            
-            // Apply stone type filters
-            if (appState.filters.stoneTypes.length > 0) {
-                filtered = filtered.filter(product => 
-                    appState.filters.stoneTypes.includes(product.stoneType)
-                );
-            }
-            
-            // Apply color filters
-            if (appState.filters.colors.length > 0) {
-                filtered = filtered.filter(product => 
-                    appState.filters.colors.includes(product.color)
-                );
-            }
-            
-            // Apply usage filters
-            if (appState.filters.usage.length > 0) {
-                filtered = filtered.filter(product => 
-                    appState.filters.usage.includes(product.usage)
-                );
-            }
-            
-            // Apply search query
-            if (appState.searchQuery) {
-                const query = appState.searchQuery.toLowerCase();
-                filtered = filtered.filter(product => 
-                    product.name.toLowerCase().includes(query) ||
-                    product.description.toLowerCase().includes(query) ||
-                    product.category.toLowerCase().includes(query)
-                );
-            }
-            
-            appState.filteredProducts = filtered;
-            displayProducts();
-            updateProductsCount();
-        }
-
-        function updateFilterUI(filterType, value) {
-            const option = document.querySelector(`[data-filter="${filterType}"][data-value="${value}"]`);
-            if (option) {
-                const isActive = appState.filters[filterType].includes(value);
-                if (isActive) {
-                    option.classList.add('active');
-                } else {
-                    option.classList.remove('active');
-                }
-            }
-        }
-
-        // ===== ACTIVE FILTERS DISPLAY =====
+        // ===== ACTIVE FILTERS =====
         function updateActiveFilters() {
             const activeFiltersContainer = document.getElementById('activeFilters');
             const filters = [];
@@ -1130,7 +1508,7 @@
             
             if (index > -1) {
                 filterArray.splice(index, 1);
-                applyFilters();
+                applyManualFilters();
                 updateFilterUI(filterType, value);
                 updateActiveFilters();
             }
@@ -1141,34 +1519,17 @@
                 categories: [],
                 stoneTypes: [],
                 colors: [],
-                usage: []
+                usage: [],
+                sortBy: 'name'
             };
             
-            applyFilters();
+            applyManualFilters();
             updateActiveFilters();
             
             // Update all filter options UI
             document.querySelectorAll('.filter-option').forEach(option => {
                 option.classList.remove('active');
             });
-        }
-
-        // ===== SEARCH FUNCTIONALITY =====
-        function initializeSearch() {
-            const searchInput = document.getElementById('searchInput');
-            const searchButton = document.getElementById('searchButton');
-            
-            searchButton.addEventListener('click', performSearch);
-            searchInput.addEventListener('keyup', function(event) {
-                if (event.key === 'Enter') {
-                    performSearch();
-                }
-            });
-            
-            function performSearch() {
-                appState.searchQuery = searchInput.value.trim();
-                applyFilters();
-            }
         }
 
         // ===== PRODUCT COUNT UPDATE =====
@@ -1185,6 +1546,29 @@
             
             productsCount.textContent = countText;
         }
+
+        // ===== SAMPLE DATA FALLBACK =====
+        function getSampleProducts() {
+            return [
+                {
+                    id: 1,
+                    stone_name: "RED SAND STONE",
+                    category: "Red Sand Stone",
+                    type: "Natural",
+                    color: "Red",
+                    uses: "Flooring",
+                    price: 100,
+                    description: "Premium red sandstone with excellent durability and natural beauty",
+                    images: ["https://images.unsplash.com/photo-1541140532154-b024d705b90a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"],
+                    pageUrl: "product-details.html?id=1"
+                }
+            ];
+        }
+
+        // Make clearAllFilters available globally
+        window.clearAllFilters = clearAllFilters;
+
+        console.log('✅ All functions defined successfully!');
     </script>
 </body>
 </html>
