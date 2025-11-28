@@ -605,39 +605,65 @@
             font-weight: 500;
         }
         
-        /* ✅ PERFECT GALLERY LAYOUT - NO BOX, FULL IMAGE FIT */
+        /* ✅ PERFECT E-COMMERCE PRODUCT CARDS */
         #products-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 15px;
+            gap: 18px;
             padding: 10px;
         }
 
-        .product-item {
+        .product-card {
+            padding: 5px;
+            text-align: left;
+        }
+
+        .product-img-box {
             width: 100%;
+            height: 220px;
+            overflow: hidden;
+            border-radius: 10px;
+            background: #eee; /* blank area hide */
         }
 
         .product-img {
             width: 100%;
-            height: 200px;
-            object-fit: contain;   /* FULL IMAGE FIT-CONTAIN */
-            background: #fff;       /* IMAGE PLAIN WHITE BACKGROUND */
+            height: 100%;
+            object-fit: cover; /* FULL FIT, NO BLANK, CLEAN */
+            transition: 0.3s ease;
         }
 
-        .product-info {
-            margin-top: 5px;
+        .product-img:hover {
+            transform: scale(1.05);
         }
 
         .product-description {
+            margin-top: 8px;
             font-size: 15px;
-            color: #000;
+            color: #222;
         }
 
         .product-rate {
+            margin-top: 4px;
             font-size: 17px;
             font-weight: bold;
-            margin-top: 4px;
             color: #0066ff;
+        }
+
+        .details-btn {
+            display: inline-block;
+            margin-top: 6px;
+            padding: 6px 12px;
+            font-size: 14px;
+            background: #0066ff;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: 0.3s ease;
+        }
+
+        .details-btn:hover {
+            background: #004ecc;
         }
         
         .no-products {
@@ -1157,7 +1183,7 @@
                         </div>
                     </div>
                     
-                    <!-- ✅ PERFECT GALLERY LAYOUT - NO BOX, FULL IMAGE FIT -->
+                    <!-- ✅ PERFECT E-COMMERCE PRODUCT CARDS -->
                     <div id="products-list"></div>
                 </div>
             </div>
@@ -1942,7 +1968,7 @@
             // Already handled in initializeFilters
         }
 
-        // ✅ PERFECT GALLERY LAYOUT - NO BOX, FULL IMAGE FIT
+        // ✅ PERFECT E-COMMERCE PRODUCT CARDS
         function displayProducts() {
             const productsContainer = document.getElementById("products-list");
             productsContainer.innerHTML = "";
@@ -1954,21 +1980,27 @@
 
             appState.filteredProducts.forEach(product => {
                 const imageUrl = product.image || product.images?.[0] || "default.jpg";
-                const description = product.description || "";
-                const rate = product.rate || product.price || "";
+                const description = product.description || "No description";
+                const rate = product.rate || product.price || "N/A";
+                const detailsLink = product.pageUrl || product.link || "#"; // Firestore me jo diya hai
 
-                const card = `
-                    <div class="product-item">
-                        <img src="${imageUrl}" alt="Product Image" class="product-img">
+                const cardHTML = `
+                    <div class="product-card">
 
-                        <div class="product-info">
-                            <p class="product-description">${description}</p>
-                            <p class="product-rate">₹ ${rate}</p>
-                        </div>
+                        <a href="${detailsLink}">
+                            <div class="product-img-box">
+                                <img src="${imageUrl}" alt="Product Image" class="product-img">
+                            </div>
+                        </a>
+
+                        <p class="product-description">${description}</p>
+                        <p class="product-rate">₹ ${rate}</p>
+
+                        <a href="${detailsLink}" class="details-btn">View Details</a>
                     </div>
                 `;
 
-                productsContainer.innerHTML += card;
+                productsContainer.innerHTML += cardHTML;
             });
         }
 
@@ -2302,7 +2334,8 @@
                     contact_number: "+91 7737740207",
                     email: "ravijain236129@gmail.com",
                     compressive_strength: "High",
-                    images: ["https://i.ibb.co/HLpBc94R/51b7aaab131a.jpg"]
+                    images: ["https://i.ibb.co/HLpBc94R/51b7aaab131a.jpg"],
+                    pageUrl: "product-details.html?id=1"
                 }
             ];
         }
