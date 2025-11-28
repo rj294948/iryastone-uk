@@ -605,65 +605,84 @@
             font-weight: 500;
         }
         
-        /* ✅ PERFECT E-COMMERCE PRODUCT CARDS */
+        /* ✅ OPTIMIZED E-COMMERCE PRODUCT CARDS - BIGGER & CLEARER */
         #products-list {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 18px;
-            padding: 10px;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Increased from 180px */
+            gap: 25px; /* Increased from 18px */
+            padding: 15px; /* Increased from 10px */
         }
 
         .product-card {
-            padding: 5px;
+            padding: 10px; /* Increased from 5px */
             text-align: left;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 12px;
+            background: white;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
         }
 
         .product-img-box {
             width: 100%;
-            height: 220px;
+            height: 280px; /* Increased from 220px */
             overflow: hidden;
-            border-radius: 10px;
-            background: #eee; /* blank area hide */
+            border-radius: 12px; /* Increased from 10px */
+            background: #f8f9fa; /* Lighter background for better contrast */
+            position: relative;
         }
 
         .product-img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* FULL FIT, NO BLANK, CLEAN */
-            transition: 0.3s ease;
+            object-fit: cover; /* Maintains aspect ratio while filling container */
+            transition: transform 0.4s ease;
         }
 
         .product-img:hover {
-            transform: scale(1.05);
+            transform: scale(1.08); /* More pronounced zoom effect */
         }
 
         .product-description {
-            margin-top: 8px;
-            font-size: 15px;
+            margin-top: 12px; /* Increased from 8px */
+            font-size: 16px; /* Increased from 15px */
             color: #222;
+            font-weight: 500;
+            line-height: 1.4;
+            min-height: 44px; /* Ensure consistent height */
         }
 
         .product-rate {
-            margin-top: 4px;
-            font-size: 17px;
+            margin-top: 8px; /* Increased from 4px */
+            font-size: 20px; /* Increased from 17px */
             font-weight: bold;
-            color: #0066ff;
+            color: #b8860b; /* Changed to match theme */
         }
 
         .details-btn {
             display: inline-block;
-            margin-top: 6px;
-            padding: 6px 12px;
-            font-size: 14px;
-            background: #0066ff;
+            margin-top: 12px; /* Increased from 6px */
+            padding: 10px 20px; /* Increased from 6px 12px */
+            font-size: 15px; /* Increased from 14px */
+            background: #b8860b; /* Changed to match theme */
             color: white;
-            border-radius: 6px;
+            border-radius: 8px; /* Increased from 6px */
             text-decoration: none;
-            transition: 0.3s ease;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-align: center;
+            width: 100%;
+            border: none;
+            cursor: pointer;
         }
 
         .details-btn:hover {
-            background: #004ecc;
+            background: #a3780a; /* Darker shade for hover */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
         }
         
         .no-products {
@@ -872,7 +891,11 @@
             }
             
             #products-list {
-                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* Increased from 160px */
+            }
+            
+            .product-img-box {
+                height: 260px; /* Slightly smaller on tablet */
             }
             
             .features {
@@ -934,7 +957,20 @@
             }
             
             #products-list {
-                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Increased from 140px */
+                gap: 20px;
+            }
+            
+            .product-img-box {
+                height: 240px; /* Adjusted for mobile */
+            }
+            
+            .product-description {
+                font-size: 15px;
+            }
+            
+            .product-rate {
+                font-size: 18px;
             }
             
             .trust-info-content {
@@ -951,6 +987,25 @@
         @media (max-width: 480px) {
             #products-list {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .product-img-box {
+                height: 200px; /* Optimized for small screens */
+            }
+            
+            .product-description {
+                font-size: 14px;
+                min-height: 40px;
+            }
+            
+            .product-rate {
+                font-size: 16px;
+            }
+            
+            .details-btn {
+                padding: 8px 16px;
+                font-size: 14px;
             }
             
             .footer-content {
@@ -1201,7 +1256,7 @@
                         </div>
                     </div>
                     
-                    <!-- ✅ PERFECT E-COMMERCE PRODUCT CARDS -->
+                    <!-- ✅ OPTIMIZED E-COMMERCE PRODUCT CARDS - BIGGER & CLEARER -->
                     <div id="products-list"></div>
                 </div>
             </div>
@@ -1884,7 +1939,7 @@
             const index = appState.filters.colors.indexOf(color);
             if (index > -1) {
                 appState.filters.colors.splice(index, 1);
-            } else {
+            else {
                 appState.filters.colors.push(color);
             }
             applyManualFilters();
@@ -1986,34 +2041,37 @@
             // Already handled in initializeFilters
         }
 
-        // ✅ PERFECT E-COMMERCE PRODUCT CARDS
+        // ✅ OPTIMIZED PRODUCT DISPLAY FUNCTION
         function displayProducts() {
             const productsContainer = document.getElementById("products-list");
             productsContainer.innerHTML = "";
 
             if (!appState.filteredProducts.length) {
-                productsContainer.innerHTML = "<p>No products found.</p>";
+                productsContainer.innerHTML = `
+                    <div class="no-products">
+                        <i class="fas fa-search"></i>
+                        <h3>No Products Found</h3>
+                        <p>Try adjusting your filters or search terms</p>
+                    </div>
+                `;
                 return;
             }
 
             appState.filteredProducts.forEach(product => {
-                const imageUrl = product.image || product.images?.[0] || "default.jpg";
-                const description = product.description || "No description";
-                const rate = product.rate || product.price || "N/A";
-                const detailsLink = product.pageUrl || product.link || "#"; // Firestore me jo diya hai
+                const imageUrl = product.images?.[0] || product.image || getDefaultImage(product.category);
+                const description = product.description || product.stone_name || "Premium Stone Product";
+                const rate = product.price ? `£${product.price}` : "Price on request";
+                const detailsLink = product.pageUrl || product.link || `product-details.html?id=${product.id}`;
 
                 const cardHTML = `
                     <div class="product-card">
-
                         <a href="${detailsLink}">
                             <div class="product-img-box">
-                                <img src="${imageUrl}" alt="Product Image" class="product-img">
+                                <img src="${imageUrl}" alt="${description}" class="product-img" loading="lazy">
                             </div>
                         </a>
-
                         <p class="product-description">${description}</p>
-                        <p class="product-rate">₹ ${rate}</p>
-
+                        <p class="product-rate">${rate}</p>
                         <a href="${detailsLink}" class="details-btn">View Details</a>
                     </div>
                 `;
@@ -2025,10 +2083,10 @@
         // ✅ DEFAULT IMAGE GETTER
         function getDefaultImage(category) {
             const defaultImages = {
-                'marble': 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
-                'granite': 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
-                'limestone': 'https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
-                'sandstone': 'https://images.unsplash.com/photo-1541140532154-b024d705b90a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                'marble': 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
+                'granite': 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
+                'limestone': 'https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
+                'sandstone': 'https://images.unsplash.com/photo-1541140532154-b024d705b90a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80',
                 'red sand stone': 'https://i.ibb.co/HLpBc94R/51b7aaab131a.jpg'
             };
             
