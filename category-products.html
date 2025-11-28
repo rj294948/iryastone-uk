@@ -836,7 +836,21 @@
         </div>
     </div>
 
-    <script>
+    <!-- ✅ FIREBASE CONFIG SCRIPT -->
+    <script type="module" src="firebase-config.js"></script>
+
+    <script type="module">
+        // ===== IMPORT FIREBASE CONFIG =====
+        import { 
+            db, 
+            auth, 
+            collection, 
+            getDocs, 
+            onSnapshot,
+            onAuthStateChanged, 
+            signOut 
+        } from './firebase-config.js';
+
         // ===== ORIGINAL PROGRAMMING LOGIC =====
         const appState = {
             products: [],
@@ -893,175 +907,68 @@
             }
         }
 
-        // ===== FIREBASE/FIRESTORE INTEGRATION =====
+        // ===== REAL FIREBASE/FIRESTORE INTEGRATION =====
         async function loadProductsFromFirestore() {
             try {
-                console.log('🔥 Loading products from Firestore...');
+                console.log('🔥 Loading products from REAL Firestore...');
                 
-                // ✅ FIXED: Proper Firestore data structure with additional_fields handling
-                const firestoreData = [
-                    {
-                        id: '1',
-                        stone_name: 'Carrara Marble',
-                        category: 'Marble',
-                        type: 'Natural',
-                        color: 'White',
-                        uses: 'Flooring',
-                        price: 125,
-                        description: 'Premium white marble with subtle grey veins',
-                        additional_fields: [
-                            { density: '2.5 g/cm³' },
-                            { finish: 'Polished' },
-                            { water_absorption: 'Low' }
-                        ],
-                        images: ['https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80'],
-                        pageUrl: 'product-details.html?id=1'
-                    },
-                    {
-                        id: '2',
-                        stone_name: 'Black Galaxy Granite',
-                        category: 'Granite',
-                        type: 'Natural',
-                        color: 'Black',
-                        uses: 'Countertops',
-                        price: 95,
-                        description: 'Luxury black granite with gold speckles',
-                        additional_fields: [
-                            { density: '2.7 g/cm³' },
-                            { finish: 'Honed' },
-                            { water_absorption: 'Very Low' }
-                        ],
-                        images: ['https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80'],
-                        pageUrl: 'product-details.html?id=2'
-                    },
-                    {
-                        id: '3',
-                        stone_name: 'Kashmir Gold Granite',
-                        category: 'Granite',
-                        type: 'Natural',
-                        color: 'Gold',
-                        uses: 'Flooring',
-                        price: 110,
-                        description: 'Warm golden granite with brown patterns',
-                        additional_fields: [
-                            { density: '2.6 g/cm³' },
-                            { finish: 'Polished' },
-                            { water_absorption: 'Low' }
-                        ],
-                        images: ['https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80'],
-                        pageUrl: 'product-details.html?id=3'
-                    },
-                    {
-                        id: '4',
-                        stone_name: 'Travertine Classic',
-                        category: 'Travertine',
-                        type: 'Natural',
-                        color: 'Beige',
-                        uses: 'Wall Cladding',
-                        price: 85,
-                        description: 'Natural travertine with earthy tones',
-                        additional_fields: [
-                            { density: '2.3 g/cm³' },
-                            { finish: 'Tumbled' },
-                            { water_absorption: 'Medium' }
-                        ],
-                        images: ['https://images.unsplash.com/photo-1541140532154-b024d705b90a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80'],
-                        pageUrl: 'product-details.html?id=4'
-                    },
-                    {
-                        id: '5',
-                        stone_name: 'Blue Pearl Granite',
-                        category: 'Granite',
-                        type: 'Natural',
-                        color: 'Blue',
-                        uses: 'Countertops',
-                        price: 140,
-                        description: 'Stunning blue granite with silver flecks',
-                        additional_fields: [
-                            { density: '2.8 g/cm³' },
-                            { finish: 'Polished' },
-                            { water_absorption: 'Very Low' }
-                        ],
-                        images: ['https://images.unsplash.com/photo-1516937941344-00b4e0337589?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80'],
-                        pageUrl: 'product-details.html?id=5'
-                    },
-                    {
-                        id: '6',
-                        stone_name: 'Calacatta Gold Marble',
-                        category: 'Marble',
-                        type: 'Natural',
-                        color: 'White',
-                        uses: 'Bathroom',
-                        price: 180,
-                        description: 'Luxurious white marble with gold veins',
-                        additional_fields: [
-                            { density: '2.5 g/cm³' },
-                            { finish: 'Polished' },
-                            { water_absorption: 'Low' }
-                        ],
-                        images: ['https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80'],
-                        pageUrl: 'product-details.html?id=6'
-                    },
-                    {
-                        id: '7',
-                        stone_name: 'Red Sandstone',
-                        category: 'Sandstone',
-                        type: 'Natural',
-                        color: 'Red',
-                        uses: 'Outdoor',
-                        price: 75,
-                        description: 'Natural red sandstone with rich texture',
-                        additional_fields: [
-                            { density: '2.2 g/cm³' },
-                            { finish: 'Natural' },
-                            { water_absorption: 'High' }
-                        ],
-                        images: ['https://images.unsplash.com/photo-1541140532154-b024d705b90a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80'],
-                        pageUrl: 'product-details.html?id=7'
-                    },
-                    {
-                        id: '8',
-                        stone_name: 'Slate Grey',
-                        category: 'Slate',
-                        type: 'Natural',
-                        color: 'Grey',
-                        uses: 'Flooring',
-                        price: 65,
-                        description: 'Durable slate with charcoal grey finish',
-                        additional_fields: [
-                            { density: '2.8 g/cm³' },
-                            { finish: 'Natural' },
-                            { water_absorption: 'Low' }
-                        ],
-                        images: ['https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80'],
-                        pageUrl: 'product-details.html?id=8'
-                    }
-                ];
-
-                // ✅ FIXED: Process Firestore data with additional_fields - NO CONSTANT REASSIGNMENT
-                appState.products = firestoreData.map(doc => {
-                    let processedData = { ...doc };
+                // ✅ REAL Firestore Query
+                const querySnapshot = await getDocs(collection(db, "products"));
+                appState.products = [];
+                
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    console.log('📄 Firestore Document Data:', data);
                     
-                    // Handle additional_fields array properly
-                    if (processedData.additional_fields && Array.isArray(processedData.additional_fields)) {
-                        processedData.additional_fields.forEach(field => {
+                    // ✅ Handle additional_fields array properly
+                    let processedData = { ...data };
+                    
+                    if (data.additional_fields && Array.isArray(data.additional_fields)) {
+                        data.additional_fields.forEach(field => {
                             if (field && typeof field === 'object') {
                                 processedData = { ...processedData, ...field };
                             }
                         });
                     }
                     
-                    return {
+                    appState.products.push({
                         id: doc.id,
                         ...processedData
-                    };
+                    });
                 });
                 
-                console.log('✅ Products loaded successfully:', appState.products.length);
+                console.log('✅ REAL Firestore products loaded successfully:', appState.products.length);
                 console.log('📦 Sample product data:', appState.products[0]);
                 
+                // ✅ Real-time listener for Firestore updates
+                onSnapshot(collection(db, "products"), (snapshot) => {
+                    console.log('🔄 Real-time Firestore update received');
+                    const updatedProducts = [];
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        let processedData = { ...data };
+                        
+                        if (data.additional_fields && Array.isArray(data.additional_fields)) {
+                            data.additional_fields.forEach(field => {
+                                if (field && typeof field === 'object') {
+                                    processedData = { ...processedData, ...field };
+                                }
+                            });
+                        }
+                        
+                        updatedProducts.push({
+                            id: doc.id,
+                            ...processedData
+                        });
+                    });
+                    appState.products = updatedProducts;
+                    console.log('🔄 Products updated in real-time:', updatedProducts.length);
+                    generateQuickFilters();
+                    applyAutoFilter();
+                });
+                
             } catch (error) {
-                console.error('❌ Error loading products from Firestore:', error);
+                console.error('❌ Error loading products from REAL Firestore:', error);
                 console.log('🔄 Using sample data as fallback...');
                 // Fallback to sample data if Firebase fails
                 appState.products = getSampleProducts();
@@ -1094,6 +1001,7 @@
         function initializeUserProfile() {
             const profileToggle = document.getElementById('profileToggle');
             const profileDropdown = document.getElementById('profileDropdown');
+            const logoutBtn = document.getElementById('logoutBtn');
             
             if (!profileToggle || !profileDropdown) return;
             
@@ -1106,20 +1014,35 @@
             document.addEventListener('click', function() {
                 profileDropdown.classList.remove('active');
             });
+            
+            // Logout functionality
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    signOut(auth).then(() => {
+                        console.log('User signed out');
+                    }).catch((error) => {
+                        console.error('Sign out error:', error);
+                    });
+                });
+            }
         }
 
         // ===== AUTHENTICATION =====
         function initializeAuth() {
-            // Simulate auth state change
-            setTimeout(() => {
-                // For demo, show user as logged in
-                appState.user = {
-                    uid: '123',
-                    email: 'user@example.com',
-                    name: 'John Doe'
-                };
-                updateUserInterface();
-            }, 1000);
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    appState.user = {
+                        uid: user.uid,
+                        email: user.email,
+                        name: user.displayName || user.email.split('@')[0]
+                    };
+                    updateUserInterface();
+                } else {
+                    appState.user = null;
+                    updateUserInterface();
+                }
+            });
         }
 
         function updateUserInterface() {
