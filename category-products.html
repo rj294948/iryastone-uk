@@ -386,15 +386,16 @@
             font-weight: 600;
         }
         
-        /* Banner Text */
+        /* Banner Text - COMPACT */
         .banner-text {
             background: linear-gradient(135deg, #b8860b, #a3780a);
             color: white;
-            padding: 5px 0; /* 5px padding as requested */
+            padding: 2px 0; /* Reduced to 2px */
             text-align: center;
             font-size: 12px; /* Smaller text */
             font-weight: 500;
-            margin: 0; /* Margin remove karo */
+            margin: 0;
+            line-height: 1.2; /* Reduced line height */
         }
         
         /* Uses Top Bar with Mega Menu - HOME PAGE JAISE */
@@ -488,28 +489,28 @@
 
         /* ===== CATEGORY PRODUCTS SPECIFIC STYLES ===== */
         .main-content {
-            margin-top: 20px; /* Reduced margin since header is smaller */
-            padding: 30px 0; /* Reduced padding */
+            margin-top: 5px; /* GREATLY REDUCED from 20px */
+            padding: 15px 0; /* REDUCED from 30px */
         }
         
-        /* Page Header */
+        /* Page Header - COMPACT */
         .page-header {
             text-align: center;
-            margin-bottom: 30px; /* Reduced margin */
-            padding: 30px 0; /* Reduced padding */
+            margin-bottom: 5px; /* GREATLY REDUCED from 30px */
+            padding: 10px 0; /* REDUCED from 30px */
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-radius: 10px;
+            border-radius: 8px; /* Slightly smaller radius */
         }
         
         .page-header h1 {
-            font-size: 36px; /* Slightly smaller */
+            font-size: 32px; /* Slightly smaller */
             color: #333;
-            margin-bottom: 12px; /* Reduced margin */
+            margin-bottom: 5px; /* REDUCED from 12px */
         }
         
         .page-header .breadcrumb {
             color: #666;
-            font-size: 16px; /* Smaller text */
+            font-size: 14px; /* Smaller text */
         }
         
         .page-header .breadcrumb a {
@@ -519,7 +520,7 @@
         }
         
         .page-header .breadcrumb span {
-            margin: 0 10px; /* Reduced margin */
+            margin: 0 8px; /* Reduced margin */
             color: #999;
         }
         
@@ -531,17 +532,17 @@
         /* Products Section - Full width now */
         .products-section {
             background: white;
-            padding: 25px; /* Reduced padding */
+            padding: 20px; /* Reduced padding */
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            margin-bottom: 50px; /* Reduced margin */
+            margin-bottom: 40px; /* Reduced margin */
         }
         
         .products-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px; /* Reduced margin */
+            margin-bottom: 20px; /* Reduced margin */
             flex-wrap: wrap;
             gap: 15px; /* Reduced gap */
         }
@@ -590,7 +591,7 @@
         }
 
         .product-description {
-            margin-top: 10px;
+            margin-top: 8px; /* Reduced margin */
             font-size: 13px; /* Smaller text */
             color: #333;
             line-height: 1.4;
@@ -602,7 +603,7 @@
         }
 
         .product-rate {
-            margin-top: 6px;
+            margin-top: 5px; /* Reduced margin */
             font-size: 15px; /* Smaller text */
             font-weight: bold;
             color: #b8860b;
@@ -610,8 +611,8 @@
 
         .details-btn {
             display: inline-block;
-            margin-top: 8px;
-            padding: 7px 14px; /* Reduced padding */
+            margin-top: 6px; /* Reduced margin */
+            padding: 6px 12px; /* Reduced padding */
             font-size: 13px; /* Smaller text */
             background: #b8860b;
             color: white;
@@ -628,31 +629,31 @@
         
         .no-products {
             text-align: center;
-            padding: 60px 15px; /* Reduced padding */
+            padding: 40px 15px; /* Reduced padding */
             grid-column: 1 / -1;
         }
         
         .no-products i {
-            font-size: 50px; /* Smaller icon */
+            font-size: 40px; /* Smaller icon */
             color: #ddd;
-            margin-bottom: 20px; /* Reduced margin */
+            margin-bottom: 15px; /* Reduced margin */
         }
         
         .no-products h3 {
-            font-size: 24px; /* Smaller text */
+            font-size: 20px; /* Smaller text */
             color: #666;
-            margin-bottom: 12px; /* Reduced margin */
+            margin-bottom: 10px; /* Reduced margin */
         }
         
         .no-products p {
             color: #888;
-            margin-bottom: 20px; /* Reduced margin */
-            font-size: 15px; /* Smaller text */
+            margin-bottom: 15px; /* Reduced margin */
+            font-size: 14px; /* Smaller text */
         }
         
         .loading-products {
             text-align: center;
-            padding: 50px; /* Reduced padding */
+            padding: 40px; /* Reduced padding */
             grid-column: 1 / -1;
             color: #666;
         }
@@ -661,57 +662,57 @@
         .features {
             display: grid;
             grid-template-columns: repeat(3, 1fr); /* 3 features in a row */
-            gap: 30px; /* Reduced gap */
-            margin: 60px 0; /* Reduced margin */
-            padding: 60px 0; /* Reduced padding */
+            gap: 25px; /* Reduced gap */
+            margin: 40px 0; /* Reduced margin */
+            padding: 40px 0; /* Reduced padding */
             background-color: #f9f9f9;
         }
         
         .feature {
             text-align: center;
-            padding: 30px 20px; /* Reduced padding */
+            padding: 25px 15px; /* Reduced padding */
             background: white;
-            border-radius: 10px;
+            border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
         
         .feature i {
-            font-size: 40px; /* Smaller icons */
+            font-size: 35px; /* Smaller icons */
             color: #b8860b;
-            margin-bottom: 20px; /* Reduced margin */
+            margin-bottom: 15px; /* Reduced margin */
         }
         
         .feature h3 {
-            margin-bottom: 15px; /* Reduced margin */
-            font-size: 20px; /* Smaller text */
+            margin-bottom: 12px; /* Reduced margin */
+            font-size: 18px; /* Smaller text */
             color: #333;
         }
         
         .feature p {
-            font-size: 15px; /* Smaller text */
+            font-size: 14px; /* Smaller text */
             color: #666;
-            line-height: 1.6;
+            line-height: 1.5;
         }
         
         /* Footer - Home Page jaise */
         footer {
             background-color: #222;
             color: #ddd;
-            padding: 50px 0 15px; /* Reduced padding */
+            padding: 40px 0 15px; /* Reduced padding */
         }
         
         .footer-content {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 30px; /* Reduced gap */
-            margin-bottom: 30px; /* Reduced margin */
+            gap: 25px; /* Reduced gap */
+            margin-bottom: 25px; /* Reduced margin */
         }
         
         .footer-column h3 {
             color: white;
-            margin-bottom: 20px; /* Reduced margin */
-            font-size: 18px; /* Smaller text */
-            padding-bottom: 8px; /* Reduced padding */
+            margin-bottom: 15px; /* Reduced margin */
+            font-size: 16px; /* Smaller text */
+            padding-bottom: 6px; /* Reduced padding */
             border-bottom: 2px solid #b8860b;
             display: inline-block;
         }
@@ -721,13 +722,13 @@
         }
         
         .footer-links li {
-            margin-bottom: 10px; /* Reduced margin */
+            margin-bottom: 8px; /* Reduced margin */
         }
         
         .footer-links a {
             color: #ddd;
             text-decoration: none;
-            font-size: 14px; /* Smaller text */
+            font-size: 13px; /* Smaller text */
             transition: color 0.3s;
         }
         
@@ -737,21 +738,21 @@
         
         .social-links {
             display: flex;
-            gap: 12px; /* Reduced gap */
-            margin-top: 15px; /* Reduced margin */
+            gap: 10px; /* Reduced gap */
+            margin-top: 12px; /* Reduced margin */
         }
         
         .social-links a {
             color: white;
             background: #444;
-            width: 35px; /* Smaller buttons */
-            height: 35px;
+            width: 32px; /* Smaller buttons */
+            height: 32px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: background 0.3s;
-            font-size: 14px; /* Smaller icons */
+            font-size: 13px; /* Smaller icons */
         }
         
         .social-links a:hover {
@@ -760,9 +761,9 @@
         
         .copyright {
             text-align: center;
-            padding-top: 25px; /* Reduced padding */
+            padding-top: 20px; /* Reduced padding */
             border-top: 1px solid #444;
-            font-size: 13px; /* Smaller text */
+            font-size: 12px; /* Smaller text */
             color: #999;
         }
 
@@ -791,7 +792,7 @@
             }
             
             .main-content {
-                margin-top: 10px;
+                margin-top: 5px;
             }
             
             .header-content {
@@ -801,21 +802,21 @@
             .trust-info {
                 order: 3;
                 flex-basis: 100%;
-                margin-top: 10px; /* Reduced margin */
+                margin-top: 8px; /* Reduced margin */
                 padding: 0;
             }
             
             .search-container {
                 order: 4;
                 flex-basis: 100%;
-                margin: 10px 0 0; /* Reduced margin */
+                margin: 8px 0 0; /* Reduced margin */
                 max-width: 100%;
             }
             
             .features {
                 grid-template-columns: 1fr; /* Stack on mobile */
-                padding: 40px 0; /* Reduced padding */
-                margin: 40px 0; /* Reduced margin */
+                padding: 30px 0; /* Reduced padding */
+                margin: 30px 0; /* Reduced margin */
             }
             
             .uses-top-bar {
@@ -838,6 +839,10 @@
             #products-list {
                 grid-template-columns: repeat(2, 1fr); /* 2 products per row on mobile */
             }
+            
+            .page-header h1 {
+                font-size: 28px; /* Smaller on mobile */
+            }
         }
 
         @media (max-width: 480px) {
@@ -855,6 +860,15 @@
             
             .patterns-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .page-header {
+                padding: 8px 0; /* Even more compact on mobile */
+                margin-bottom: 3px;
+            }
+            
+            .page-header h1 {
+                font-size: 24px; /* Even smaller on very small screens */
             }
         }
     </style>
@@ -947,7 +961,7 @@
             </div>
         </div>
 
-        <!-- Banner Text -->
+        <!-- Banner Text - COMPACT -->
         <div class="banner-text">
             <div class="container">
                 Premium Natural Stone Collections - Sandstone, Marble & Limestone for UK Homes & Commercial Projects
@@ -970,7 +984,7 @@
     <!-- ===== MAIN CONTENT ===== -->
     <div class="main-content">
         <div class="container">
-            <!-- Page Header -->
+            <!-- Page Header - COMPACT -->
             <div class="page-header">
                 <h1 id="pageTitle">Stone Products</h1>
                 <div class="breadcrumb" id="breadcrumb">
