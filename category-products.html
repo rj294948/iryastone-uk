@@ -396,6 +396,7 @@
             font-weight: 500;
             margin: 0;
             line-height: 1.2; /* Reduced line height */
+    /* existing styles remain same */
         }
         
         /* Uses Top Bar with Mega Menu - HOME PAGE JAISE */
@@ -1353,6 +1354,18 @@
                 }
             });
         }
+
+        function setBannerImage(stoneName) {
+    const banner = document.querySelector('.banner-text');
+    const imageMap = {
+        'red-sand-stone': 'https://i.ibb.co/HLpBc94R/51b7aaab131a.jpg',
+        'marble': 'marble-image-url.jpg',
+        'granite': 'granite-image-url.jpg'
+    };
+    
+    const imageUrl = imageMap[stoneName.toLowerCase().replace(/\s+/g, '-')] || 'default-image.jpg';
+    banner.style.background = `linear-gradient(135deg, rgba(184, 134, 11, 0.9), rgba(163, 120, 10, 0.9)), url('${imageUrl}') center/cover`;
+}
 
         // ===== CATEGORY PRODUCTS SPECIFIC FUNCTIONS =====
 
