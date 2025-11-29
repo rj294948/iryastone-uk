@@ -6,6 +6,22 @@
     <title>Stone Products - StoneCraft UK</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* ===== IMPROVED COLOR THEME ===== */
+        :root {
+            --primary: #2c5530;
+            --primary-dark: #1e3a23;
+            --primary-light: #4a7c59;
+            --accent: #d4af37;
+            --accent-dark: #b8941f;
+            --accent-light: #e8c874;
+            --neutral: #f8f9fa;
+            --neutral-dark: #e9ecef;
+            --text: #2d3748;
+            --text-light: #718096;
+            --white: #ffffff;
+            --border: #e2e8f0;
+        }
+
         /* ===== HOME PAGE JAISE STYLES ===== */
         * {
             margin: 0;
@@ -15,10 +31,10 @@
         }
         
         body {
-            background-color: #ffffff;
-            color: #333;
+            background-color: var(--white);
+            color: var(--text);
             line-height: 1.6;
-            padding-top: 120px; /* Adjusted for smaller header */
+            padding-top: 120px;
             transition: padding-top 0.3s ease;
         }
         
@@ -29,10 +45,10 @@
             padding: 0 15px;
         }
         
-        /* Header Styles - Home Page jaise */
+        /* Header Styles - Improved Colors */
         header {
-            background-color: #fff;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            background-color: var(--white);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
             position: fixed;
             top: 0;
             left: 0;
@@ -52,7 +68,7 @@
         }
         
         .main-header {
-            padding: 8px 0; /* Reduced padding */
+            padding: 8px 0;
         }
         
         .header-content {
@@ -67,19 +83,19 @@
         }
         
         .logo h1 {
-            font-size: 24px; /* Smaller logo */
-            color: #333;
+            font-size: 24px;
+            color: var(--primary);
             font-weight: 700;
         }
         
         .logo span {
-            color: #b8860b;
+            color: var(--accent);
         }
         
         .trust-info {
             flex: 1;
             text-align: center;
-            padding: 0 10px; /* Reduced padding */
+            padding: 0 10px;
             margin-top: 0;
             padding-top: 5px;
         }
@@ -89,28 +105,28 @@
             justify-content: center;
             align-items: center;
             flex-wrap: wrap;
-            gap: 15px; /* Reduced gap */
-            font-size: 13px; /* Smaller text */
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 5px 10px; /* Reduced padding */
+            gap: 15px;
+            font-size: 13px;
+            background: linear-gradient(135deg, var(--neutral) 0%, var(--neutral-dark) 100%);
+            padding: 5px 10px;
             border-radius: 8px;
-            border: 1px solid #e0e0e0;
+            border: 1px solid var(--border);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
         
         .trust-item {
             display: flex;
             align-items: center;
-            gap: 6px; /* Reduced gap */
+            gap: 6px;
             white-space: nowrap;
-            padding: 5px 10px; /* Reduced padding */
+            padding: 5px 10px;
             background: rgba(255, 255, 255, 0.7);
             border-radius: 6px;
         }
         
         .trust-item i {
-            color: #b8860b;
-            font-size: 14px; /* Smaller icons */
+            color: var(--accent);
+            font-size: 14px;
         }
 
         /* User Profile Styles */
@@ -121,49 +137,49 @@
         .profile-toggle {
             display: flex;
             align-items: center;
-            gap: 6px; /* Reduced gap */
+            gap: 6px;
             background: none;
             border: none;
             cursor: pointer;
-            padding: 6px 10px; /* Reduced padding */
+            padding: 6px 10px;
             border-radius: 6px;
             transition: background-color 0.3s;
         }
 
         .profile-toggle:hover {
-            background: #f8f9fa;
+            background: var(--neutral);
         }
 
         .profile-avatar {
-            width: 28px; /* Smaller avatar */
+            width: 28px;
             height: 28px;
             border-radius: 50%;
-            background: #b8860b;
+            background: var(--accent);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 600;
-            font-size: 12px; /* Smaller text */
+            font-size: 12px;
         }
 
         .profile-name {
-            font-size: 12px; /* Smaller text */
+            font-size: 12px;
             font-weight: 500;
-            color: #333;
+            color: var(--text);
         }
 
         .profile-dropdown {
             position: absolute;
             top: 100%;
             right: 0;
-            background: white;
+            background: var(--white);
             border-radius: 8px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-            min-width: 180px; /* Slightly smaller */
+            min-width: 180px;
             z-index: 1000;
             display: none;
-            border: 1px solid #e0e0e0;
+            border: 1px solid var(--border);
         }
 
         .profile-dropdown.active {
@@ -171,56 +187,56 @@
         }
 
         .dropdown-header {
-            padding: 12px; /* Reduced padding */
-            border-bottom: 1px solid #eee;
-            background: #f8f9fa;
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            background: var(--neutral);
             border-radius: 8px 8px 0 0;
         }
 
         .dropdown-header .user-email {
-            font-size: 11px; /* Smaller text */
-            color: #666;
+            font-size: 11px;
+            color: var(--text-light);
             margin-top: 4px;
         }
 
         .dropdown-menu {
             list-style: none;
-            padding: 6px 0; /* Reduced padding */
+            padding: 6px 0;
         }
 
         .dropdown-item {
             display: flex;
             align-items: center;
-            gap: 8px; /* Reduced gap */
-            padding: 8px 12px; /* Reduced padding */
-            color: #333;
+            gap: 8px;
+            padding: 8px 12px;
+            color: var(--text);
             text-decoration: none;
-            font-size: 13px; /* Smaller text */
+            font-size: 13px;
             transition: all 0.3s;
         }
 
         .dropdown-item:hover {
-            background: #f8f9fa;
-            color: #b8860b;
+            background: var(--neutral);
+            color: var(--accent);
         }
 
         .dropdown-item i {
-            width: 14px; /* Smaller icons */
+            width: 14px;
             text-align: center;
-            color: #666;
+            color: var(--text-light);
             font-size: 13px;
         }
 
         .dropdown-divider {
             height: 1px;
-            background: #eee;
-            margin: 6px 0; /* Reduced margin */
+            background: var(--border);
+            margin: 6px 0;
         }
 
         .user-actions {
             display: flex;
             align-items: center;
-            gap: 15px; /* Reduced gap */
+            gap: 15px;
         }
 
         .user-action {
@@ -228,17 +244,17 @@
             flex-direction: column;
             align-items: center;
             text-decoration: none;
-            color: #555;
-            font-size: 11px; /* Smaller text */
+            color: var(--text-light);
+            font-size: 11px;
             transition: color 0.3s;
         }
 
         .user-action:hover {
-            color: #b8860b;
+            color: var(--accent);
         }
 
         .user-action i {
-            font-size: 18px; /* Smaller icons */
+            font-size: 18px;
             margin-bottom: 2px;
         }
 
@@ -246,8 +262,8 @@
         .search-container {
             position: relative;
             flex: 1;
-            max-width: 450px; /* Slightly smaller */
-            margin: 0 15px; /* Reduced margin */
+            max-width: 450px;
+            margin: 0 15px;
         }
 
         .search-input-container {
@@ -258,33 +274,33 @@
 
         .search-input {
             width: 100%;
-            padding: 10px 40px 10px 15px; /* Reduced padding */
-            border: 2px solid #e1e5e9;
+            padding: 10px 40px 10px 15px;
+            border: 2px solid var(--border);
             border-radius: 20px;
-            font-size: 13px; /* Smaller text */
-            background-color: #f8f9fa;
+            font-size: 13px;
+            background-color: var(--neutral);
         }
 
         .search-input:focus {
             outline: none;
-            border-color: #b8860b;
+            border-color: var(--accent);
             background-color: white;
         }
 
         .search-button {
             position: absolute;
-            right: 6px; /* Adjusted position */
-            background: #b8860b;
+            right: 6px;
+            background: var(--accent);
             color: white;
             border: none;
-            width: 30px; /* Smaller button */
+            width: 30px;
             height: 30px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px; /* Smaller icon */
+            font-size: 12px;
         }
 
         .search-results {
@@ -292,10 +308,10 @@
             top: 100%;
             left: 0;
             right: 0;
-            background: white;
+            background: var(--white);
             border-radius: 10px;
             box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            max-height: 350px; /* Slightly smaller */
+            max-height: 350px;
             overflow-y: auto;
             z-index: 1001;
             display: none;
@@ -309,13 +325,13 @@
         .search-result-item {
             display: flex;
             align-items: center;
-            padding: 10px 12px; /* Reduced padding */
-            border-bottom: 1px solid #f0f0f0;
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
             cursor: pointer;
         }
 
         .search-result-item:hover {
-            background: #f8f9fa;
+            background: var(--neutral);
         }
 
         .search-result-item:last-child {
@@ -323,12 +339,12 @@
         }
 
         .search-result-image {
-            width: 45px; /* Smaller image */
+            width: 45px;
             height: 45px;
             border-radius: 6px;
             background-size: cover;
             background-position: center;
-            margin-right: 12px; /* Reduced margin */
+            margin-right: 12px;
             flex-shrink: 0;
         }
 
@@ -338,73 +354,73 @@
 
         .search-result-name {
             font-weight: 600;
-            color: #333;
+            color: var(--text);
             margin-bottom: 3px;
-            font-size: 13px; /* Smaller text */
+            font-size: 13px;
         }
 
         .search-result-category {
-            font-size: 11px; /* Smaller text */
-            color: #b8860b;
-            background: #fff9e6;
-            padding: 2px 6px; /* Reduced padding */
+            font-size: 11px;
+            color: var(--accent);
+            background: #fef9e7;
+            padding: 2px 6px;
             border-radius: 10px;
             display: inline-block;
         }
 
         .search-result-price {
             font-weight: 700;
-            color: #b8860b;
-            font-size: 13px; /* Smaller text */
+            color: var(--accent);
+            font-size: 13px;
         }
 
         .no-results {
-            padding: 15px; /* Reduced padding */
+            padding: 15px;
             text-align: center;
-            color: #666;
+            color: var(--text-light);
             font-size: 13px;
         }
 
         .search-loading {
-            padding: 12px; /* Reduced padding */
+            padding: 12px;
             text-align: center;
-            color: #666;
+            color: var(--text-light);
             font-size: 13px;
         }
 
         .view-all-results {
-            padding: 10px 12px; /* Reduced padding */
+            padding: 10px 12px;
             text-align: center;
-            background: #f8f9fa;
-            border-top: 1px solid #e9ecef;
+            background: var(--neutral);
+            border-top: 1px solid var(--border);
             font-size: 13px;
         }
 
         .view-all-results a {
-            color: #b8860b;
+            color: var(--accent);
             text-decoration: none;
             font-weight: 600;
         }
         
         /* Banner Text - COMPACT */
         .banner-text {
-            background: linear-gradient(135deg, #b8860b, #a3780a);
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
             color: white;
-            padding: 2px 0; /* Reduced to 2px */
+            padding: 2px 0;
             text-align: center;
-            font-size: 12px; /* Smaller text */
+            font-size: 12px;
             font-weight: 500;
             margin: 0;
-            line-height: 1.2; /* Reduced line height */
+            line-height: 1.2;
         }
         
-        /* Uses Top Bar with Mega Menu - HOME PAGE JAISE */
+        /* Uses Top Bar with Mega Menu - Improved Colors */
         .uses-top-bar {
             position: sticky;
             top: 0;
-            background: #333;
+            background: var(--primary);
             padding: 0;
-            z-index: 999; /* Below main header but above content */
+            z-index: 999;
             transition: top 0.3s ease;
         }
         
@@ -416,7 +432,7 @@
         
         .use-item {
             flex: 1;
-            min-width: 110px; /* Slightly smaller */
+            min-width: 110px;
             position: relative; 
         }
         
@@ -424,8 +440,8 @@
             display: block;
             color: white;
             text-decoration: none;
-            padding: 12px 8px; /* Reduced padding */
-            font-size: 13px; /* Smaller text */
+            padding: 12px 8px;
+            font-size: 13px;
             font-weight: 500;
             text-align: center;
             cursor: pointer;
@@ -433,7 +449,7 @@
         }
         
         .use-link:hover {
-            background: #b8860b;
+            background: var(--accent);
         }
         
         /* Mega Menu Styles */
@@ -442,11 +458,11 @@
             top: 100%;
             left: 0; 
             width: 100%; 
-            background: white;
+            background: var(--white);
             z-index: 1000;
             box-shadow: 0 5px 20px rgba(0,0,0,0.15);
             display: none; 
-            padding: 25px 0; /* Reduced padding */
+            padding: 25px 0;
         }
         
         .use-item:hover .mega-menu {
@@ -456,24 +472,24 @@
         .patterns-grid {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
-            gap: 15px; /* Reduced gap */
-            padding: 0 15px; /* Reduced padding */
+            gap: 15px;
+            padding: 0 15px;
         }
         
         .pattern-item {
             text-align: center;
             cursor: pointer;
             text-decoration: none;
-            color: #333;
+            color: var(--text);
         }
         
         .pattern-image {
             width: 100%;
-            height: 160px; /* Smaller images */
+            height: 160px;
             background-size: cover;
             background-position: center;
             border-radius: 6px;
-            margin-bottom: 8px; /* Reduced margin */
+            margin-bottom: 8px;
             transition: transform 0.3s ease;
         }
         
@@ -482,82 +498,216 @@
         }
         
         .pattern-name {
-            font-size: 13px; /* Smaller text */
-            color: #333;
+            font-size: 13px;
+            color: var(--text);
             font-weight: 500;
         }
 
         /* ===== CATEGORY PRODUCTS SPECIFIC STYLES ===== */
         .main-content {
-            margin-top: 5px; /* GREATLY REDUCED from 20px */
-            padding: 15px 0; /* REDUCED from 30px */
+            margin-top: 5px;
+            padding: 15px 0;
         }
         
         /* Page Header - COMPACT */
         .page-header {
             text-align: center;
-            margin-bottom: 5px; /* GREATLY REDUCED from 30px */
-            padding: 10px 0; /* REDUCED from 30px */
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-radius: 8px; /* Slightly smaller radius */
+            margin-bottom: 5px;
+            padding: 10px 0;
+            background: linear-gradient(135deg, var(--neutral) 0%, var(--neutral-dark) 100%);
+            border-radius: 8px;
         }
         
         .page-header h1 {
-            font-size: 32px; /* Slightly smaller */
-            color: #333;
-            margin-bottom: 5px; /* REDUCED from 12px */
+            font-size: 32px;
+            color: var(--primary);
+            margin-bottom: 5px;
         }
         
         .page-header .breadcrumb {
-            color: #666;
-            font-size: 14px; /* Smaller text */
+            color: var(--text-light);
+            font-size: 14px;
         }
         
         .page-header .breadcrumb a {
-            color: #b8860b;
+            color: var(--accent);
             text-decoration: none;
             font-weight: 500;
         }
         
         .page-header .breadcrumb span {
-            margin: 0 8px; /* Reduced margin */
-            color: #999;
+            margin: 0 8px;
+            color: var(--text-light);
         }
         
-        /* Main Layout - Filters removed */
+        /* Main Layout with Filters */
         .main-layout {
-            display: block;
+            display: flex;
+            gap: 25px;
         }
         
-        /* Products Section - Full width now */
-        .products-section {
-            background: white;
-            padding: 20px; /* Reduced padding */
+        /* Left Filters Sidebar */
+        .filters-sidebar {
+            flex: 0 0 280px;
+            background: var(--white);
+            padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            margin-bottom: 40px; /* Reduced margin */
+            height: fit-content;
+            position: sticky;
+            top: 160px;
+        }
+        
+        .filter-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .filter-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .filter-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .filter-title i {
+            color: var(--accent);
+            font-size: 18px;
+        }
+        
+        .filter-tags {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .filter-tag {
+            padding: 8px 12px;
+            background: var(--neutral);
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .filter-tag:hover {
+            background: var(--neutral-dark);
+        }
+        
+        .filter-tag.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .filter-count {
+            background: rgba(255,255,255,0.2);
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        /* Products Section */
+        .products-section {
+            flex: 1;
+            background: var(--white);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
         }
         
         .products-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px; /* Reduced margin */
+            margin-bottom: 20px;
             flex-wrap: wrap;
-            gap: 15px; /* Reduced gap */
+            gap: 15px;
         }
         
         .products-count {
-            font-size: 16px; /* Smaller text */
-            color: #666;
+            font-size: 16px;
+            color: var(--text-light);
             font-weight: 500;
+        }
+        
+        /* Active Filters */
+        .active-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: var(--neutral);
+            border-radius: 8px;
+            align-items: center;
+        }
+        
+        .active-filters-title {
+            font-weight: 600;
+            color: var(--text);
+            margin-right: 8px;
+            font-size: 14px;
+        }
+        
+        .active-filter {
+            background: var(--neutral-dark);
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+        
+        .remove-filter {
+            cursor: pointer;
+            color: var(--text-light);
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+        
+        .remove-filter:hover {
+            color: #dc3545;
+        }
+        
+        .clear-all-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-left: auto;
+        }
+        
+        .clear-all-btn:hover {
+            background: #c82333;
         }
         
         /* ✅ PERFECT 1:1 RATIO E-COMMERCE PRODUCT CARDS - 4 PER ROW */
         #products-list {
             display: grid;
-            grid-template-columns: repeat(4, 1fr); /* 4 products per row */
-            gap: 15px; /* Reduced gap */
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
             padding: 8px;
         }
 
@@ -567,22 +717,31 @@
             display: flex;
             flex-direction: column;
             height: 100%;
+            background: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
         }
 
         /* PERFECT 1:1 RATIO IMAGE BOX */
         .product-img-box {
             width: 100%;
-            aspect-ratio: 1 / 1; /* This creates the 1:1 ratio */
+            aspect-ratio: 1 / 1;
             overflow: hidden;
-            border-radius: 8px;
-            background: #f8f9fa; /* Light background for loading state */
+            border-radius: 8px 8px 0 0;
+            background: var(--neutral);
             position: relative;
         }
 
         .product-img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Ensures image fills container without distortion */
+            object-fit: cover;
             transition: transform 0.3s ease;
         }
 
@@ -590,10 +749,14 @@
             transform: scale(1.05);
         }
 
+        .product-info {
+            padding: 12px;
+        }
+
         .product-description {
-            margin-top: 8px; /* Reduced margin */
-            font-size: 13px; /* Smaller text */
-            color: #333;
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--text);
             line-height: 1.4;
             flex-grow: 1;
             display: -webkit-box;
@@ -603,18 +766,18 @@
         }
 
         .product-rate {
-            margin-top: 5px; /* Reduced margin */
-            font-size: 15px; /* Smaller text */
+            margin-top: 5px;
+            font-size: 15px;
             font-weight: bold;
-            color: #b8860b;
+            color: var(--accent);
         }
 
         .details-btn {
             display: inline-block;
-            margin-top: 6px; /* Reduced margin */
-            padding: 6px 12px; /* Reduced padding */
-            font-size: 13px; /* Smaller text */
-            background: #b8860b;
+            margin-top: 6px;
+            padding: 6px 12px;
+            font-size: 13px;
+            background: var(--accent);
             color: white;
             border-radius: 5px;
             text-decoration: none;
@@ -624,96 +787,101 @@
         }
 
         .details-btn:hover {
-            background: #a3780a;
+            background: var(--accent-dark);
         }
         
         .no-products {
             text-align: center;
-            padding: 40px 15px; /* Reduced padding */
+            padding: 40px 15px;
             grid-column: 1 / -1;
         }
         
         .no-products i {
-            font-size: 40px; /* Smaller icon */
-            color: #ddd;
-            margin-bottom: 15px; /* Reduced margin */
+            font-size: 40px;
+            color: var(--border);
+            margin-bottom: 15px;
         }
         
         .no-products h3 {
-            font-size: 20px; /* Smaller text */
-            color: #666;
-            margin-bottom: 10px; /* Reduced margin */
+            font-size: 20px;
+            color: var(--text-light);
+            margin-bottom: 10px;
         }
         
         .no-products p {
-            color: #888;
-            margin-bottom: 15px; /* Reduced margin */
-            font-size: 14px; /* Smaller text */
+            color: var(--text-light);
+            margin-bottom: 15px;
+            font-size: 14px;
         }
         
         .loading-products {
             text-align: center;
-            padding: 40px; /* Reduced padding */
+            padding: 40px;
             grid-column: 1 / -1;
-            color: #666;
+            color: var(--text-light);
         }
         
-        /* Features Section - Home Page jaise - SINGLE ROW */
+        /* Features Section - Improved Colors */
         .features {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 features in a row */
-            gap: 25px; /* Reduced gap */
-            margin: 40px 0; /* Reduced margin */
-            padding: 40px 0; /* Reduced padding */
-            background-color: #f9f9f9;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin: 40px 0;
+            padding: 40px 0;
+            background: linear-gradient(135deg, var(--neutral) 0%, var(--neutral-dark) 100%);
         }
         
         .feature {
             text-align: center;
-            padding: 25px 15px; /* Reduced padding */
-            background: white;
+            padding: 25px 15px;
+            background: var(--white);
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+
+        .feature:hover {
+            transform: translateY(-2px);
         }
         
         .feature i {
-            font-size: 35px; /* Smaller icons */
-            color: #b8860b;
-            margin-bottom: 15px; /* Reduced margin */
+            font-size: 35px;
+            color: var(--accent);
+            margin-bottom: 15px;
         }
         
         .feature h3 {
-            margin-bottom: 12px; /* Reduced margin */
-            font-size: 18px; /* Smaller text */
-            color: #333;
+            margin-bottom: 12px;
+            font-size: 18px;
+            color: var(--primary);
         }
         
         .feature p {
-            font-size: 14px; /* Smaller text */
-            color: #666;
+            font-size: 14px;
+            color: var(--text-light);
             line-height: 1.5;
         }
         
-        /* Footer - Home Page jaise */
+        /* Footer - Improved Colors */
         footer {
-            background-color: #222;
-            color: #ddd;
-            padding: 40px 0 15px; /* Reduced padding */
+            background-color: var(--primary-dark);
+            color: var(--neutral);
+            padding: 40px 0 15px;
         }
         
         .footer-content {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 25px; /* Reduced gap */
-            margin-bottom: 25px; /* Reduced margin */
+            gap: 25px;
+            margin-bottom: 25px;
         }
         
         .footer-column h3 {
             color: white;
-            margin-bottom: 15px; /* Reduced margin */
-            font-size: 16px; /* Smaller text */
-            padding-bottom: 6px; /* Reduced padding */
-            border-bottom: 2px solid #b8860b;
+            margin-bottom: 15px;
+            font-size: 16px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid var(--accent);
             display: inline-block;
         }
         
@@ -722,59 +890,69 @@
         }
         
         .footer-links li {
-            margin-bottom: 8px; /* Reduced margin */
+            margin-bottom: 8px;
         }
         
         .footer-links a {
-            color: #ddd;
+            color: var(--neutral);
             text-decoration: none;
-            font-size: 13px; /* Smaller text */
+            font-size: 13px;
             transition: color 0.3s;
         }
         
         .footer-links a:hover {
-            color: #b8860b;
+            color: var(--accent-light);
         }
         
         .social-links {
             display: flex;
-            gap: 10px; /* Reduced gap */
-            margin-top: 12px; /* Reduced margin */
+            gap: 10px;
+            margin-top: 12px;
         }
         
         .social-links a {
             color: white;
-            background: #444;
-            width: 32px; /* Smaller buttons */
+            background: var(--primary-light);
+            width: 32px;
             height: 32px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: background 0.3s;
-            font-size: 13px; /* Smaller icons */
+            font-size: 13px;
         }
         
         .social-links a:hover {
-            background: #b8860b;
+            background: var(--accent);
         }
         
         .copyright {
             text-align: center;
-            padding-top: 20px; /* Reduced padding */
-            border-top: 1px solid #444;
-            font-size: 12px; /* Smaller text */
-            color: #999;
+            padding-top: 20px;
+            border-top: 1px solid var(--primary-light);
+            font-size: 12px;
+            color: var(--neutral);
         }
 
         /* Responsive Design */
         @media (max-width: 1024px) {
+            .main-layout {
+                flex-direction: column;
+            }
+            
+            .filters-sidebar {
+                flex: none;
+                width: 100%;
+                position: static;
+            }
+            
             #products-list {
-                grid-template-columns: repeat(3, 1fr); /* 3 products per row on tablets */
+                grid-template-columns: repeat(3, 1fr);
             }
             
             .features {
-                grid-template-columns: repeat(3, 1fr); /* Keep 3 in a row */
+                grid-template-columns: repeat(3, 1fr);
             }
             
             .footer-content {
@@ -788,7 +966,7 @@
 
         @media (max-width: 768px) {
             body {
-                padding-top: 100px; /* Adjusted for mobile header */
+                padding-top: 100px;
             }
             
             .main-content {
@@ -802,25 +980,25 @@
             .trust-info {
                 order: 3;
                 flex-basis: 100%;
-                margin-top: 8px; /* Reduced margin */
+                margin-top: 8px;
                 padding: 0;
             }
             
             .search-container {
                 order: 4;
                 flex-basis: 100%;
-                margin: 8px 0 0; /* Reduced margin */
+                margin: 8px 0 0;
                 max-width: 100%;
             }
             
             .features {
-                grid-template-columns: 1fr; /* Stack on mobile */
-                padding: 30px 0; /* Reduced padding */
-                margin: 30px 0; /* Reduced margin */
+                grid-template-columns: 1fr;
+                padding: 30px 0;
+                margin: 30px 0;
             }
             
             .uses-top-bar {
-                display: block; /* Always show on mobile */
+                display: block;
             }
             
             .profile-name {
@@ -837,21 +1015,21 @@
             }
             
             #products-list {
-                grid-template-columns: repeat(2, 1fr); /* 2 products per row on mobile */
+                grid-template-columns: repeat(2, 1fr);
             }
             
             .page-header h1 {
-                font-size: 28px; /* Smaller on mobile */
+                font-size: 28px;
             }
         }
 
         @media (max-width: 480px) {
             body {
-                padding-top: 190px; /* Further adjustment for very small screens */
+                padding-top: 190px;
             }
             
             #products-list {
-                grid-template-columns: repeat(2, 1fr); /* Keep 2 products per row */
+                grid-template-columns: repeat(2, 1fr);
             }
             
             .footer-content {
@@ -863,12 +1041,12 @@
             }
             
             .page-header {
-                padding: 8px 0; /* Even more compact on mobile */
+                padding: 8px 0;
                 margin-bottom: 3px;
             }
             
             .page-header h1 {
-                font-size: 24px; /* Even smaller on very small screens */
+                font-size: 24px;
             }
         }
     </style>
@@ -970,7 +1148,6 @@
     </header>
 
     <!-- Desktop Uses Top Bar with Mega Menu - HOME PAGE JAISE -->
-    <!-- This is outside the main header so it stays visible -->
     <div class="uses-top-bar">
         <div class="container uses-container" id="dynamicUsesContainer">
             <!-- Dynamic uses will be loaded here -->
@@ -994,9 +1171,72 @@
                 </div>
             </div>
             
-            <!-- Main Layout with Products Only -->
+            <!-- Active Filters Display -->
+            <div class="active-filters" id="activeFilters" style="display: none;">
+                <span class="active-filters-title">Active Filters:</span>
+                <!-- Active filters will show here -->
+            </div>
+            
+            <!-- Main Layout with Sidebar and Products -->
             <div class="main-layout">
-                <!-- Products Section - Full width now -->
+                <!-- Left Filters Sidebar -->
+                <div class="filters-sidebar">
+                    <!-- Stone Types Filter -->
+                    <div class="filter-section">
+                        <h3 class="filter-title">
+                            <i class="fas fa-gem"></i>
+                            Stone Types
+                        </h3>
+                        <div class="filter-tags" id="stoneTypeFilters">
+                            <div class="loading-products">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <p>Loading stone types...</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Price Range Filter -->
+                    <div class="filter-section">
+                        <h3 class="filter-title">
+                            <i class="fas fa-pound-sign"></i>
+                            Price Range
+                        </h3>
+                        <div class="filter-tags" id="priceFilters">
+                            <div class="filter-tag" data-filter="price" data-value="0-500">
+                                Under £500
+                                <span class="filter-count">0</span>
+                            </div>
+                            <div class="filter-tag" data-filter="price" data-value="500-1000">
+                                £500 - £1000
+                                <span class="filter-count">0</span>
+                            </div>
+                            <div class="filter-tag" data-filter="price" data-value="1000-2000">
+                                £1000 - £2000
+                                <span class="filter-count">0</span>
+                            </div>
+                            <div class="filter-tag" data-filter="price" data-value="2000+">
+                                Over £2000
+                                <span class="filter-count">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Colors Filter -->
+                    <div class="filter-section">
+                        <h3 class="filter-title">
+                            <i class="fas fa-palette"></i>
+                            Colors
+                        </h3>
+                        <div class="filter-tags" id="colorFilters">
+                            <div class="loading-products">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <p>Loading colors...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Products Section -->
                 <div class="products-section">
                     <div class="products-header">
                         <div class="products-count" id="productsCount">
@@ -1122,7 +1362,7 @@
         });
     </script>
 
-    <!-- Firebase Script -->
+    <!-- Firebase Script with Filters -->
     <script type="module">
         // ✅ CORRECT FIREBASE IMPORT FROM YOUR CONFIG
         import { 
@@ -1136,6 +1376,11 @@
             filteredProducts: [],
             currentUsage: null,
             currentStoneName: null,
+            filters: {
+                stoneTypes: [],
+                priceRanges: [],
+                colors: []
+            },
             user: null
         };
 
@@ -1165,6 +1410,7 @@
             initializeSearch();
             initializeUserProfile();
             initializeMegaMenu();
+            initializeFilters();
         }
 
         // Initialize search functionality
@@ -1361,6 +1607,7 @@
                 console.log('🔄 Starting page initialization...');
                 await loadProductsFromFirestore();
                 updatePageTitle();
+                generateQuickFilters();
                 applyAutoFilter();
                 generateUsesNavigation();
                 console.log('✅ Page initialization completed successfully!');
@@ -1423,6 +1670,7 @@
                     });
                     appState.products = updatedProducts;
                     console.log('🔄 Products updated in real-time:', updatedProducts.length);
+                    generateQuickFilters();
                     applyAutoFilter();
                     generateUsesNavigation();
                 });
@@ -1489,11 +1737,234 @@
                     product.stone_name.toLowerCase().replace(/\s+/g, '-') === appState.currentStoneName.toLowerCase()
                 );
                 console.log(`✅ After stone name filter (${appState.currentStoneName}):`, filteredProducts.length);
+                
+                // Auto-select the stone type in filters
+                if (!appState.filters.stoneTypes.includes(appState.currentStoneName)) {
+                    appState.filters.stoneTypes = [appState.currentStoneName];
+                }
+            }
+            
+            appState.filteredProducts = filteredProducts;
+            applyManualFilters();
+        }
+
+        // ✅ QUICK FILTERS GENERATION
+        function generateQuickFilters() {
+            generateStoneTypeFilters();
+            generateColorFilters();
+            updatePriceFilterCounts();
+        }
+
+        function generateStoneTypeFilters() {
+            const stoneTypeFilters = document.getElementById('stoneTypeFilters');
+            if (!stoneTypeFilters) return;
+            
+            let productsToFilter = getBaseFilteredProducts();
+            
+            const uniqueStoneTypes = [...new Set(productsToFilter
+                .filter(product => product.stone_name && product.stone_name.trim() !== '')
+                .map(product => product.stone_name.trim())
+            )].sort();
+            
+            console.log('Available stone types:', uniqueStoneTypes);
+            
+            if (uniqueStoneTypes.length === 0) {
+                stoneTypeFilters.innerHTML = '<div style="color:#666; padding:10px;">No stone types available</div>';
+                return;
+            }
+            
+            stoneTypeFilters.innerHTML = uniqueStoneTypes.map(stoneType => {
+                const count = productsToFilter.filter(product => 
+                    product.stone_name && product.stone_name.trim() === stoneType
+                ).length;
+                
+                const isActive = appState.filters.stoneTypes.includes(stoneType);
+                
+                return `
+                    <div class="filter-tag ${isActive ? 'active' : ''}" 
+                         data-filter="stoneType" 
+                         data-value="${stoneType}">
+                        ${stoneType}
+                        <span class="filter-count">${count}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function generateColorFilters() {
+            const colorFilters = document.getElementById('colorFilters');
+            if (!colorFilters) return;
+            
+            let productsToFilter = getBaseFilteredProducts();
+            
+            const uniqueColors = [...new Set(productsToFilter
+                .filter(product => product.color && product.color.trim() !== '')
+                .map(product => product.color.trim())
+            )].sort();
+            
+            console.log('Available colors:', uniqueColors);
+            
+            if (uniqueColors.length === 0) {
+                colorFilters.innerHTML = '<div style="color:#666; padding:10px;">No colors available</div>';
+                return;
+            }
+            
+            colorFilters.innerHTML = uniqueColors.map(color => {
+                const count = productsToFilter.filter(product => 
+                    product.color && product.color.trim() === color
+                ).length;
+                
+                const isActive = appState.filters.colors.includes(color);
+                
+                return `
+                    <div class="filter-tag ${isActive ? 'active' : ''}" 
+                         data-filter="color" 
+                         data-value="${color}">
+                        ${color}
+                        <span class="filter-count">${count}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updatePriceFilterCounts() {
+            const priceFilters = document.getElementById('priceFilters');
+            if (!priceFilters) return;
+            
+            let productsToFilter = getBaseFilteredProducts();
+            
+            // Update counts for each price range
+            const priceRanges = [
+                { value: '0-500', min: 0, max: 500 },
+                { value: '500-1000', min: 500, max: 1000 },
+                { value: '1000-2000', min: 1000, max: 2000 },
+                { value: '2000+', min: 2000, max: Infinity }
+            ];
+            
+            priceRanges.forEach(range => {
+                const count = productsToFilter.filter(product => {
+                    const price = product.price || 0;
+                    return price >= range.min && price <= range.max;
+                }).length;
+                
+                const filterTag = priceFilters.querySelector(`[data-value="${range.value}"] .filter-count`);
+                if (filterTag) {
+                    filterTag.textContent = count;
+                }
+            });
+        }
+
+        // ✅ FILTERS INITIALIZATION
+        function initializeFilters() {
+            // Stone type filters
+            document.querySelectorAll('[data-filter="stoneType"]').forEach(tag => {
+                tag.addEventListener('click', function() {
+                    const value = this.getAttribute('data-value');
+                    toggleStoneTypeFilter(value);
+                });
+            });
+            
+            // Color filters
+            document.querySelectorAll('[data-filter="color"]').forEach(tag => {
+                tag.addEventListener('click', function() {
+                    const value = this.getAttribute('data-value');
+                    toggleColorFilter(value);
+                });
+            });
+            
+            // Price filters
+            document.querySelectorAll('[data-filter="price"]').forEach(tag => {
+                tag.addEventListener('click', function() {
+                    const value = this.getAttribute('data-value');
+                    togglePriceFilter(value);
+                });
+            });
+        }
+
+        function toggleStoneTypeFilter(stoneType) {
+            const index = appState.filters.stoneTypes.indexOf(stoneType);
+            if (index > -1) {
+                appState.filters.stoneTypes.splice(index, 1);
+            } else {
+                appState.filters.stoneTypes.push(stoneType);
+            }
+            applyManualFilters();
+        }
+
+        function toggleColorFilter(color) {
+            const index = appState.filters.colors.indexOf(color);
+            if (index > -1) {
+                appState.filters.colors.splice(index, 1);
+            } else {
+                appState.filters.colors.push(color);
+            }
+            applyManualFilters();
+        }
+
+        function togglePriceFilter(priceRange) {
+            const index = appState.filters.priceRanges.indexOf(priceRange);
+            if (index > -1) {
+                appState.filters.priceRanges.splice(index, 1);
+            } else {
+                appState.filters.priceRanges.push(priceRange);
+            }
+            applyManualFilters();
+        }
+
+        function getBaseFilteredProducts() {
+            let filteredProducts = [...appState.products];
+            
+            // Filter by usage if specified in URL
+            if (appState.currentUsage) {
+                filteredProducts = filteredProducts.filter(product => 
+                    product.uses && 
+                    product.uses.toLowerCase().replace(/\s+/g, '-') === appState.currentUsage.toLowerCase()
+                );
+            }
+            
+            return filteredProducts;
+        }
+
+        function applyManualFilters() {
+            let filteredProducts = getBaseFilteredProducts();
+            
+            console.log('Applying manual filters:', appState.filters);
+            
+            // Filter by stone types
+            if (appState.filters.stoneTypes.length > 0) {
+                filteredProducts = filteredProducts.filter(product => 
+                    product.stone_name && 
+                    appState.filters.stoneTypes.includes(product.stone_name.trim())
+                );
+            }
+            
+            // Filter by colors
+            if (appState.filters.colors.length > 0) {
+                filteredProducts = filteredProducts.filter(product => 
+                    product.color && 
+                    appState.filters.colors.includes(product.color.trim())
+                );
+            }
+            
+            // Filter by price ranges
+            if (appState.filters.priceRanges.length > 0) {
+                filteredProducts = filteredProducts.filter(product => {
+                    const price = product.price || 0;
+                    return appState.filters.priceRanges.some(range => {
+                        if (range === '0-500') return price >= 0 && price <= 500;
+                        if (range === '500-1000') return price >= 500 && price <= 1000;
+                        if (range === '1000-2000') return price >= 1000 && price <= 2000;
+                        if (range === '2000+') return price >= 2000;
+                        return false;
+                    });
+                });
             }
             
             appState.filteredProducts = filteredProducts;
             displayProducts();
             updateProductsCount();
+            updateActiveFilters();
+            updateFilterTags();
         }
 
         // ✅ PERFECT 1:1 RATIO PRODUCT CARDS
@@ -1526,9 +1997,11 @@
                                 <img src="${imageUrl}" alt="Product Image" class="product-img">
                             </div>
                         </a>
-                        <p class="product-description">${description}</p>
-                        <p class="product-rate">£ ${rate}</p>
-                        <a href="${detailsLink}" class="details-btn">View Details</a>
+                        <div class="product-info">
+                            <p class="product-description">${description}</p>
+                            <p class="product-rate">£ ${rate}</p>
+                            <a href="${detailsLink}" class="details-btn">View Details</a>
+                        </div>
                     </div>
                 `;
 
@@ -1555,16 +2028,122 @@
             const productsCount = document.getElementById('productsCount');
             if (!productsCount) return;
             
-            const baseCount = appState.products.length;
+            const baseCount = getBaseFilteredProducts().length;
             const filteredCount = appState.filteredProducts.length;
             
             let countText = `Showing ${filteredCount} product${filteredCount !== 1 ? 's' : ''}`;
             
-            if (appState.currentUsage || appState.currentStoneName) {
-                countText += ` for ${appState.currentStoneName || appState.currentUsage || 'all categories'}`;
+            if (filteredCount < baseCount) {
+                countText += ` (${baseCount - filteredCount} hidden by filters)`;
             }
             
             productsCount.textContent = countText;
+        }
+
+        // ✅ UPDATE ACTIVE FILTERS
+        function updateActiveFilters() {
+            const activeFilters = document.getElementById('activeFilters');
+            const filters = [];
+            
+            // Stone type filters
+            appState.filters.stoneTypes.forEach(stoneType => {
+                filters.push(`
+                    <div class="active-filter">
+                        Stone: ${stoneType}
+                        <span class="remove-filter" data-type="stoneType" data-value="${stoneType}">×</span>
+                    </div>
+                `);
+            });
+            
+            // Color filters
+            appState.filters.colors.forEach(color => {
+                filters.push(`
+                    <div class="active-filter">
+                        Color: ${color}
+                        <span class="remove-filter" data-type="color" data-value="${color}">×</span>
+                    </div>
+                `);
+            });
+            
+            // Price filters
+            appState.filters.priceRanges.forEach(priceRange => {
+                filters.push(`
+                    <div class="active-filter">
+                        Price: ${priceRange}
+                        <span class="remove-filter" data-type="price" data-value="${priceRange}">×</span>
+                    </div>
+                `);
+            });
+            
+            if (filters.length > 0) {
+                activeFilters.innerHTML = '<span class="active-filters-title">Active Filters:</span>' + filters.join('') + 
+                    `<button class="clear-all-btn" onclick="clearAllFilters()">Clear All</button>`;
+                activeFilters.style.display = 'flex';
+                
+                // Add remove functionality
+                document.querySelectorAll('.remove-filter').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const type = this.getAttribute('data-type');
+                        const value = this.getAttribute('data-value');
+                        
+                        if (type === 'stoneType') {
+                            appState.filters.stoneTypes = appState.filters.stoneTypes.filter(s => s !== value);
+                        } else if (type === 'color') {
+                            appState.filters.colors = appState.filters.colors.filter(c => c !== value);
+                        } else if (type === 'price') {
+                            appState.filters.priceRanges = appState.filters.priceRanges.filter(p => p !== value);
+                        }
+                        
+                        applyManualFilters();
+                    });
+                });
+            } else {
+                activeFilters.style.display = 'none';
+            }
+        }
+
+        // ✅ UPDATE FILTER TAGS
+        function updateFilterTags() {
+            // Update stone type tags
+            document.querySelectorAll('[data-filter="stoneType"]').forEach(tag => {
+                const value = tag.getAttribute('data-value');
+                if (appState.filters.stoneTypes.includes(value)) {
+                    tag.classList.add('active');
+                } else {
+                    tag.classList.remove('active');
+                }
+            });
+            
+            // Update color tags
+            document.querySelectorAll('[data-filter="color"]').forEach(tag => {
+                const value = tag.getAttribute('data-value');
+                if (appState.filters.colors.includes(value)) {
+                    tag.classList.add('active');
+                } else {
+                    tag.classList.remove('active');
+                }
+            });
+            
+            // Update price tags
+            document.querySelectorAll('[data-filter="price"]').forEach(tag => {
+                const value = tag.getAttribute('data-value');
+                if (appState.filters.priceRanges.includes(value)) {
+                    tag.classList.add('active');
+                } else {
+                    tag.classList.remove('active');
+                }
+            });
+        }
+
+        // ✅ CLEAR ALL FILTERS
+        function clearAllFilters() {
+            appState.filters = {
+                stoneTypes: [],
+                priceRanges: [],
+                colors: []
+            };
+            
+            applyManualFilters();
         }
 
         // ✅ USES NAVIGATION FUNCTION
@@ -1695,7 +2274,7 @@
                     stone_name: "RED SAND STONE",
                     category: "Red Sand Stone",
                     type: "Natural",
-                    color: "green",
+                    color: "Red",
                     size: "10",
                     length: "5",
                     width: "2",
@@ -1714,9 +2293,37 @@
                     compressive_strength: "High",
                     images: ["https://i.ibb.co/HLpBc94R/51b7aaab131a.jpg"],
                     pageUrl: "product-details.html?id=1"
+                },
+                {
+                    id: 2,
+                    stone_name: "MARBLE",
+                    category: "Marble",
+                    type: "Natural",
+                    color: "White",
+                    size: "12",
+                    length: "6",
+                    width: "3",
+                    thickness: "25-35 mm",
+                    uses: "Flooring",
+                    price: 250,
+                    price_unit: "sqft",
+                    description: "Pure white marble with elegant veining patterns",
+                    density: "2.7 g/cm³",
+                    finish: "Polished",
+                    water_absorption: "Medium",
+                    rate_description: "Premium quality marble",
+                    factory_name: "marble experts",
+                    contact_number: "+91 9876543210",
+                    email: "info@marbleexperts.com",
+                    compressive_strength: "High",
+                    images: ["https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"],
+                    pageUrl: "product-details.html?id=2"
                 }
             ];
         }
+
+        // Make clearAllFilters available globally
+        window.clearAllFilters = clearAllFilters;
 
         console.log('✅ All functions defined successfully!');
     </script>
