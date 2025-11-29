@@ -1936,14 +1936,15 @@
         }
 
         function toggleColorFilter(color) {
-    const index = appState.filters.colors.indexOf(color);
-    if (index > -1) {
-        appState.filters.colors.splice(index, 1);
-    } else {
-        appState.filters.colors.push(color);
-    }
-    applyManualFilters();
-}
+            const index = appState.filters.colors.indexOf(color);
+            if (index > -1) {
+                appState.filters.colors.splice(index, 1);
+            } else {
+                appState.filters.colors.push(color);
+            }
+            applyManualFilters();
+        }
+
         function togglePriceFilter(priceRange) {
             const index = appState.filters.priceRanges.indexOf(priceRange);
             if (index > -1) {
@@ -2411,6 +2412,106 @@
                     compressive_strength: "High",
                     images: ["https://i.ibb.co/HLpBc94R/51b7aaab131a.jpg"],
                     pageUrl: "product-details.html?id=1"
+                },
+                {
+                    id: 2,
+                    stone_name: "MARBLE",
+                    category: "Marble",
+                    type: "Natural",
+                    color: "white",
+                    size: "12",
+                    length: "6",
+                    width: "3",
+                    thickness: "25-35 mm",
+                    uses: "Flooring",
+                    price: 150,
+                    price_unit: "sqft",
+                    description: "Elegant white marble with beautiful veining patterns",
+                    density: "2.6 g/cm³",
+                    finish: "Polished",
+                    water_absorption: "Medium",
+                    rate_description: "Premium quality marble at competitive prices",
+                    factory_name: "marble masters",
+                    contact_number: "+91 9876543210",
+                    email: "info@marblemasters.com",
+                    compressive_strength: "Medium",
+                    images: ["https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"],
+                    pageUrl: "product-details.html?id=2"
+                },
+                {
+                    id: 3,
+                    stone_name: "GRANITE",
+                    category: "Granite",
+                    type: "Natural",
+                    color: "black",
+                    size: "15",
+                    length: "7",
+                    width: "4",
+                    thickness: "30-40 mm",
+                    uses: "Kitchen",
+                    price: 200,
+                    price_unit: "sqft",
+                    description: "Durable black granite perfect for kitchen countertops",
+                    density: "2.7 g/cm³",
+                    finish: "Polished",
+                    water_absorption: "Very Low",
+                    rate_description: "High-quality granite with excellent durability",
+                    factory_name: "granite experts",
+                    contact_number: "+91 8765432109",
+                    email: "sales@graniteexperts.com",
+                    compressive_strength: "Very High",
+                    images: ["https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"],
+                    pageUrl: "product-details.html?id=3"
+                },
+                {
+                    id: 4,
+                    stone_name: "LIMESTONE",
+                    category: "Limestone",
+                    type: "Natural",
+                    color: "beige",
+                    size: "14",
+                    length: "8",
+                    width: "3",
+                    thickness: "20-30 mm",
+                    uses: "Wall",
+                    price: 120,
+                    price_unit: "sqft",
+                    description: "Warm beige limestone ideal for wall cladding",
+                    density: "2.3 g/cm³",
+                    finish: "Honed",
+                    water_absorption: "Medium",
+                    rate_description: "Natural limestone with consistent coloring",
+                    factory_name: "limestone specialists",
+                    contact_number: "+91 7654321098",
+                    email: "contact@limestonespecialists.com",
+                    compressive_strength: "Medium",
+                    images: ["https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"],
+                    pageUrl: "product-details.html?id=4"
+                },
+                {
+                    id: 5,
+                    stone_name: "SANDSTONE",
+                    category: "Sandstone",
+                    type: "Natural",
+                    color: "yellow",
+                    size: "16",
+                    length: "9",
+                    width: "4",
+                    thickness: "25-35 mm",
+                    uses: "Outdoor",
+                    price: 90,
+                    price_unit: "sqft",
+                    description: "Durable yellow sandstone perfect for outdoor applications",
+                    density: "2.2 g/cm³",
+                    finish: "Natural",
+                    water_absorption: "Low",
+                    rate_description: "Weather-resistant sandstone at affordable prices",
+                    factory_name: "sandstone suppliers",
+                    contact_number: "+91 6543210987",
+                    email: "info@sandstonesuppliers.com",
+                    compressive_strength: "High",
+                    images: ["https://images.unsplash.com/photo-1541140532154-b024d705b90a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"],
+                    pageUrl: "product-details.html?id=5"
                 }
             ];
         }
