@@ -527,9 +527,196 @@
             color: #999;
         }
         
-        /* Main Layout - Filters removed */
+        /* Main Layout - WITH FILTERS NOW */
         .main-layout {
-            display: block;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 25px;
+        }
+        
+        /* Filters Section */
+        .filters-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 130px;
+        }
+        
+        .filters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .filters-title {
+            font-size: 18px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .clear-filters {
+            font-size: 13px;
+            color: #b8860b;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .filter-group {
+            margin-bottom: 25px;
+        }
+        
+        .filter-title {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .filter-title span {
+            font-size: 12px;
+            color: #666;
+            font-weight: normal;
+        }
+        
+        .filter-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .filter-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        
+        .filter-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .filter-checkbox.checked {
+            background: #b8860b;
+            border-color: #b8860b;
+        }
+        
+        .filter-checkbox.checked::after {
+            content: '✓';
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .filter-label {
+            font-size: 14px;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .color-swatch {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .color-red { background-color: #e74c3c; }
+        .color-blue { background-color: #3498db; }
+        .color-green { background-color: #2ecc71; }
+        .color-black { background-color: #2c3e50; }
+        .color-white { background-color: #ecf0f1; border: 1px solid #bdc3c7; }
+        .color-brown { background-color: #a0522d; }
+        .color-gray { background-color: #7f8c8d; }
+        .color-beige { background-color: #f5deb3; }
+        
+        .price-range {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .price-inputs {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .price-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .price-input:focus {
+            outline: none;
+            border-color: #b8860b;
+        }
+        
+        .price-slider {
+            width: 100%;
+            height: 5px;
+            background: #ddd;
+            border-radius: 5px;
+            margin-top: 10px;
+            position: relative;
+        }
+        
+        .price-slider-fill {
+            position: absolute;
+            height: 100%;
+            background: #b8860b;
+            border-radius: 5px;
+        }
+        
+        .price-slider-handle {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background: #b8860b;
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .apply-filters {
+            width: 100%;
+            padding: 12px;
+            background: #b8860b;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+        
+        .apply-filters:hover {
+            background: #a3780a;
         }
         
         /* Products Section - Full width now */
@@ -556,6 +743,26 @@
             font-weight: 500;
         }
         
+        .sort-options {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .sort-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .sort-select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+        
         /* ✅ PERFECT 1:1 RATIO E-COMMERCE PRODUCT CARDS - 4 PER ROW */
         #products-list {
             display: grid;
@@ -570,6 +777,14 @@
             display: flex;
             flex-direction: column;
             height: 100%;
+            border: 1px solid #f0f0f0;
+            border-radius: 8px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
 
         /* PERFECT 1:1 RATIO IMAGE BOX */
@@ -577,7 +792,7 @@
             width: 100%;
             aspect-ratio: 1 / 1; /* This creates the 1:1 ratio */
             overflow: hidden;
-            border-radius: 8px;
+            border-radius: 8px 8px 0 0;
             background: #f8f9fa; /* Light background for loading state */
             position: relative;
         }
@@ -593,10 +808,35 @@
             transform: scale(1.05);
         }
 
+        .product-info {
+            padding: 12px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .product-category {
+            font-size: 12px;
+            color: #b8860b;
+            background: #fff9e6;
+            padding: 3px 8px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-bottom: 8px;
+            align-self: flex-start;
+        }
+
         .product-description {
             margin-top: 8px; /* Reduced margin */
             font-size: 13px; /* Smaller text */
-            color: #333;
+            color: #666;
             line-height: 1.4;
             flex-grow: 1;
             display: -webkit-box;
@@ -607,7 +847,7 @@
 
         .product-rate {
             margin-top: 5px; /* Reduced margin */
-            font-size: 15px; /* Smaller text */
+            font-size: 18px; /* Smaller text */
             font-weight: bold;
             color: #b8860b;
         }
@@ -615,7 +855,7 @@
         .details-btn {
             display: inline-block;
             margin-top: 6px; /* Reduced margin */
-            padding: 6px 12px; /* Reduced padding */
+            padding: 8px 12px; /* Reduced padding */
             font-size: 13px; /* Smaller text */
             background: #b8860b;
             color: white;
@@ -846,6 +1086,15 @@
             .page-header h1 {
                 font-size: 28px; /* Smaller on mobile */
             }
+            
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters-section {
+                position: static;
+                margin-bottom: 20px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -997,13 +1246,152 @@
                 </div>
             </div>
             
-            <!-- Main Layout with Products Only -->
+            <!-- Main Layout with Products and Filters -->
             <div class="main-layout">
-                <!-- Products Section - Full width now -->
+                <!-- Filters Section -->
+                <div class="filters-section">
+                    <div class="filters-header">
+                        <div class="filters-title">Filters</div>
+                        <button class="clear-filters" id="clearFilters">Clear All</button>
+                    </div>
+                    
+                    <!-- Price Filter -->
+                    <div class="filter-group">
+                        <div class="filter-title">
+                            Price Range
+                            <span id="priceRangeDisplay">£0 - £500</span>
+                        </div>
+                        <div class="price-range">
+                            <div class="price-inputs">
+                                <input type="number" class="price-input" id="minPrice" placeholder="Min" value="0" min="0">
+                                <input type="number" class="price-input" id="maxPrice" placeholder="Max" value="500" min="0">
+                            </div>
+                            <div class="price-slider" id="priceSlider">
+                                <div class="price-slider-fill" id="priceSliderFill"></div>
+                                <div class="price-slider-handle" id="minPriceHandle"></div>
+                                <div class="price-slider-handle" id="maxPriceHandle"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Color Filter -->
+                    <div class="filter-group">
+                        <div class="filter-title">
+                            Color
+                            <span id="colorCount">0 selected</span>
+                        </div>
+                        <div class="filter-options" id="colorFilters">
+                            <div class="filter-option" data-color="red">
+                                <div class="filter-checkbox"></div>
+                                <div class="filter-label">
+                                    <span class="color-swatch color-red"></span>
+                                    Red
+                                </div>
+                            </div>
+                            <div class="filter-option" data-color="blue">
+                                <div class="filter-checkbox"></div>
+                                <div class="filter-label">
+                                    <span class="color-swatch color-blue"></span>
+                                    Blue
+                                </div>
+                            </div>
+                            <div class="filter-option" data-color="green">
+                                <div class="filter-checkbox"></div>
+                                <div class="filter-label">
+                                    <span class="color-swatch color-green"></span>
+                                    Green
+                                </div>
+                            </div>
+                            <div class="filter-option" data-color="black">
+                                <div class="filter-checkbox"></div>
+                                <div class="filter-label">
+                                    <span class="color-swatch color-black"></span>
+                                    Black
+                                </div>
+                            </div>
+                            <div class="filter-option" data-color="white">
+                                <div class="filter-checkbox"></div>
+                                <div class="filter-label">
+                                    <span class="color-swatch color-white"></span>
+                                    White
+                                </div>
+                            </div>
+                            <div class="filter-option" data-color="brown">
+                                <div class="filter-checkbox"></div>
+                                <div class="filter-label">
+                                    <span class="color-swatch color-brown"></span>
+                                    Brown
+                                </div>
+                            </div>
+                            <div class="filter-option" data-color="gray">
+                                <div class="filter-checkbox"></div>
+                                <div class="filter-label">
+                                    <span class="color-swatch color-gray"></span>
+                                    Gray
+                                </div>
+                            </div>
+                            <div class="filter-option" data-color="beige">
+                                <div class="filter-checkbox"></div>
+                                <div class="filter-label">
+                                    <span class="color-swatch color-beige"></span>
+                                    Beige
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Type Filter -->
+                    <div class="filter-group">
+                        <div class="filter-title">
+                            Stone Type
+                            <span id="typeCount">0 selected</span>
+                        </div>
+                        <div class="filter-options" id="typeFilters">
+                            <div class="filter-option" data-type="marble">
+                                <div class="filter-checkbox"></div>
+                                <div class="filter-label">Marble</div>
+                            </div>
+                            <div class="filter-option" data-type="granite">
+                                <div class="filter-checkbox"></div>
+                                <div class="filter-label">Granite</div>
+                            </div>
+                            <div class="filter-option" data-type="limestone">
+                                <div class="filter-checkbox"></div>
+                                <div class="filter-label">Limestone</div>
+                            </div>
+                            <div class="filter-option" data-type="sandstone">
+                                <div class="filter-checkbox"></div>
+                                <div class="filter-label">Sandstone</div>
+                            </div>
+                            <div class="filter-option" data-type="slate">
+                                <div class="filter-checkbox"></div>
+                                <div class="filter-label">Slate</div>
+                            </div>
+                            <div class="filter-option" data-type="quartzite">
+                                <div class="filter-checkbox"></div>
+                                <div class="filter-label">Quartzite</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="apply-filters" id="applyFilters">Apply Filters</button>
+                </div>
+                
+                <!-- Products Section -->
                 <div class="products-section">
                     <div class="products-header">
                         <div class="products-count" id="productsCount">
                             Loading products...
+                        </div>
+                        <div class="sort-options">
+                            <span class="sort-label">Sort by:</span>
+                            <select class="sort-select" id="sortSelect">
+                                <option value="name-asc">Name (A-Z)</option>
+                                <option value="name-desc">Name (Z-A)</option>
+                                <option value="price-asc">Price (Low to High)</option>
+                                <option value="price-desc">Price (High to Low)</option>
+                                <option value="newest">Newest First</option>
+                            </select>
                         </div>
                     </div>
                     
@@ -1125,433 +1513,430 @@
         });
     </script>
 
-    <!-- Firebase Script -->
-    <script type="module">
-        // ✅ CORRECT FIREBASE IMPORT FROM YOUR CONFIG
-        import { 
-            db, auth, 
-            collection, getDocs, onSnapshot,
-            onAuthStateChanged, signOut
-        } from './firebase-config.js';
-
-        const appState = {
-            products: [],
-            filteredProducts: [],
-            currentUsage: null,
-            currentStoneName: null,
-            user: null
+    <!-- Filter and Product Management Script -->
+    <script>
+        // Filter State
+        const filterState = {
+            minPrice: 0,
+            maxPrice: 500,
+            selectedColors: [],
+            selectedTypes: [],
+            sortBy: 'name-asc'
         };
 
+        // Product Data
+        const productsData = [
+            {
+                id: 1,
+                stone_name: "RED SAND STONE",
+                category: "Red Sand Stone",
+                type: "sandstone",
+                color: "red",
+                price: 100,
+                description: "Premium red sandstone with excellent durability and natural beauty",
+                images: ["https://i.ibb.co/HLpBc94R/51b7aaab131a.jpg"],
+                pageUrl: "product-details.html?id=1",
+                uses: "Flooring"
+            },
+            {
+                id: 2,
+                stone_name: "WHITE MARBLE",
+                category: "Marble",
+                type: "marble",
+                color: "white",
+                price: 150,
+                description: "Elegant white marble with beautiful veining patterns",
+                images: ["https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"],
+                pageUrl: "product-details.html?id=2",
+                uses: "Flooring"
+            },
+            {
+                id: 3,
+                stone_name: "BLACK GRANITE",
+                category: "Granite",
+                type: "granite",
+                color: "black",
+                price: 120,
+                description: "Durable black granite perfect for kitchen countertops",
+                images: ["https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"],
+                pageUrl: "product-details.html?id=3",
+                uses: "Kitchen"
+            },
+            {
+                id: 4,
+                stone_name: "BEIGE LIMESTONE",
+                category: "Limestone",
+                type: "limestone",
+                color: "beige",
+                price: 90,
+                description: "Warm beige limestone with natural texture and appeal",
+                images: ["https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"],
+                pageUrl: "product-details.html?id=4",
+                uses: "Wall"
+            },
+            {
+                id: 5,
+                stone_name: "GRAY SLATE",
+                category: "Slate",
+                type: "slate",
+                color: "gray",
+                price: 80,
+                description: "Natural gray slate with rustic appearance and durability",
+                images: ["https://images.unsplash.com/photo-1541140532154-b024d705b90a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"],
+                pageUrl: "product-details.html?id=5",
+                uses: "Outdoor"
+            },
+            {
+                id: 6,
+                stone_name: "BROWN SANDSTONE",
+                category: "Sandstone",
+                type: "sandstone",
+                color: "brown",
+                price: 75,
+                description: "Rich brown sandstone with natural texture and warmth",
+                images: ["https://i.ibb.co/HLpBc94R/51b7aaab131a.jpg"],
+                pageUrl: "product-details.html?id=6",
+                uses: "Flooring"
+            },
+            {
+                id: 7,
+                stone_name: "GREEN QUARTZITE",
+                category: "Quartzite",
+                type: "quartzite",
+                color: "green",
+                price: 200,
+                description: "Stunning green quartzite with unique patterns and hardness",
+                images: ["https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"],
+                pageUrl: "product-details.html?id=7",
+                uses: "Bathroom"
+            },
+            {
+                id: 8,
+                stone_name: "BLUE MARBLE",
+                category: "Marble",
+                type: "marble",
+                color: "blue",
+                price: 180,
+                description: "Rare blue marble with elegant veining and luxurious appeal",
+                images: ["https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"],
+                pageUrl: "product-details.html?id=8",
+                uses: "Wall"
+            }
+        ];
+
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Initializing Category Products Page...');
-            
-            // Get URL parameters
-            const urlParams = new URLSearchParams(window.location.search);
-            appState.currentUsage = urlParams.get('usage');
-            appState.currentStoneName = urlParams.get('stone') || urlParams.get('stone_name');
-            
-            console.log('📋 URL Parameters:', {
-                usage: appState.currentUsage,
-                stone_name: appState.currentStoneName
-            });
-            
-            // Initialize the page
-            initializePage();
-            initializeAuth();
-            initializeUI();
+            initializeFilters();
+            displayProducts(productsData);
+            updateProductsCount(productsData.length);
         });
 
-        // ===== HOME PAGE JAISE FUNCTIONS =====
-        
-        // Initialize UI components
-        function initializeUI() {
-            initializeSearch();
-            initializeUserProfile();
-            initializeMegaMenu();
-        }
-
-        // Initialize search functionality
-        function initializeSearch() {
-            const searchInput = document.getElementById('searchInput');
-            const searchButton = document.getElementById('searchButton');
-            const searchResults = document.getElementById('searchResults');
+        // Initialize filter functionality
+        function initializeFilters() {
+            // Price range slider
+            const minPriceInput = document.getElementById('minPrice');
+            const maxPriceInput = document.getElementById('maxPrice');
+            const priceSlider = document.getElementById('priceSlider');
+            const priceSliderFill = document.getElementById('priceSliderFill');
+            const minPriceHandle = document.getElementById('minPriceHandle');
+            const maxPriceHandle = document.getElementById('maxPriceHandle');
+            const priceRangeDisplay = document.getElementById('priceRangeDisplay');
             
-            if (!searchInput || !searchButton || !searchResults) return;
+            let isDragging = false;
+            let activeHandle = null;
             
-            searchButton.addEventListener('click', performSearch);
-            searchInput.addEventListener('keyup', function(event) {
-                if (event.key === 'Enter') {
-                    performSearch();
+            // Update price display
+            function updatePriceDisplay() {
+                priceRangeDisplay.textContent = `£${filterState.minPrice} - £${filterState.maxPrice}`;
+            }
+            
+            // Update slider position
+            function updateSliderPosition() {
+                const sliderWidth = priceSlider.offsetWidth;
+                const minPosition = (filterState.minPrice / 500) * sliderWidth;
+                const maxPosition = (filterState.maxPrice / 500) * sliderWidth;
+                
+                minPriceHandle.style.left = `${minPosition}px`;
+                maxPriceHandle.style.left = `${maxPosition}px`;
+                priceSliderFill.style.left = `${minPosition}px`;
+                priceSliderFill.style.width = `${maxPosition - minPosition}px`;
+            }
+            
+            // Set price from input
+            function setPriceFromInput() {
+                filterState.minPrice = parseInt(minPriceInput.value) || 0;
+                filterState.maxPrice = parseInt(maxPriceInput.value) || 500;
+                
+                // Ensure min doesn't exceed max
+                if (filterState.minPrice > filterState.maxPrice) {
+                    filterState.minPrice = filterState.maxPrice;
+                    minPriceInput.value = filterState.minPrice;
                 }
-            });
+                
+                updatePriceDisplay();
+                updateSliderPosition();
+            }
             
-            searchInput.addEventListener('input', function() {
-                if (searchInput.value.length > 2) {
-                    performSearch();
+            // Set price from slider
+            function setPriceFromSlider(handle, position) {
+                const sliderWidth = priceSlider.offsetWidth;
+                const price = Math.round((position / sliderWidth) * 500);
+                
+                if (handle === 'min') {
+                    if (price < filterState.maxPrice) {
+                        filterState.minPrice = price;
+                        minPriceInput.value = price;
+                    }
                 } else {
-                    searchResults.classList.remove('active');
-                }
-            });
-            
-            function performSearch() {
-                const query = searchInput.value.trim().toLowerCase();
-                
-                if (query.length < 2) {
-                    searchResults.classList.remove('active');
-                    return;
+                    if (price > filterState.minPrice) {
+                        filterState.maxPrice = price;
+                        maxPriceInput.value = price;
+                    }
                 }
                 
-                // Show loading state
-                searchResults.innerHTML = '<div class="search-loading"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
-                searchResults.classList.add('active');
-                
-                // Simulate API delay
-                setTimeout(() => {
-                    const results = appState.products.filter(product => 
-                        (product.stone_name && product.stone_name.toLowerCase().includes(query)) ||
-                        (product.uses && product.uses.toLowerCase().includes(query)) ||
-                        (product.type && product.type.toLowerCase().includes(query)) ||
-                        (product.category && product.category.toLowerCase().includes(query))
-                    );
-                    
-                    displaySearchResults(results, query);
-                }, 300);
+                updatePriceDisplay();
+                updateSliderPosition();
             }
             
-            function displaySearchResults(results, query) {
-                searchResults.innerHTML = '';
-                
-                if (results.length === 0) {
-                    searchResults.innerHTML = '<div class="no-results">No products found for "' + query + '"</div>';
-                    return;
-                }
-                
-                results.forEach(product => {
-                    const resultItem = document.createElement('div');
-                    resultItem.className = 'search-result-item';
-                    resultItem.innerHTML = `
-                        <div class="search-result-image" style="background-image: url('${product.images?.[0] || getDefaultImage(product.category)}')"></div>
-                        <div class="search-result-content">
-                            <div class="search-result-name">${product.stone_name || 'Stone Product'}</div>
-                            <div class="search-result-category">${product.uses || 'General'} • ${product.category || 'Natural Stone'}</div>
-                        </div>
-                        <div class="search-result-price">${product.price ? '£' + product.price : 'Price on request'}</div>
-                    `;
-                    
-                    resultItem.addEventListener('click', function() {
-                        window.location.href = `product-details.html?id=${product.id}`;
-                    });
-                    
-                    searchResults.appendChild(resultItem);
-                });
-                
-                // Add "View all results" link
-                const viewAll = document.createElement('div');
-                viewAll.className = 'view-all-results';
-                viewAll.innerHTML = `<a href="search-results.html?q=${encodeURIComponent(query)}">View all ${results.length} results</a>`;
-                searchResults.appendChild(viewAll);
-            }
+            // Input event listeners
+            minPriceInput.addEventListener('input', setPriceFromInput);
+            maxPriceInput.addEventListener('input', setPriceFromInput);
             
-            // Close search results when clicking outside
-            document.addEventListener('click', function(event) {
-                if (!searchResults.contains(event.target) && event.target !== searchInput && event.target !== searchButton) {
-                    searchResults.classList.remove('active');
-                }
-            });
-        }
-
-        // Initialize user profile dropdown
-        function initializeUserProfile() {
-            const profileToggle = document.getElementById('profileToggle');
-            const profileDropdown = document.getElementById('profileDropdown');
-            const logoutBtn = document.getElementById('logoutBtn');
-            
-            if (!profileToggle || !profileDropdown) return;
-            
-            profileToggle.addEventListener('click', function(event) {
-                event.stopPropagation();
-                profileDropdown.classList.toggle('active');
+            // Mouse events for slider
+            minPriceHandle.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                activeHandle = 'min';
+                e.preventDefault();
             });
             
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function() {
-                profileDropdown.classList.remove('active');
+            maxPriceHandle.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                activeHandle = 'max';
+                e.preventDefault();
             });
             
-            // Logout functionality
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    signOut(auth).then(() => {
-                        console.log('User signed out');
-                    }).catch((error) => {
-                        console.error('Sign out error:', error);
-                    });
-                });
-            }
-        }
-
-        // Initialize mega menu functionality
-        function initializeMegaMenu() {
-            const usesTopBar = document.querySelector('.uses-top-bar');
-            const useItems = document.querySelectorAll('.use-item');
-            const container = document.querySelector('.uses-top-bar .container');
-            
-            if (!container || !usesTopBar) return;
-            
-            const containerRect = container.getBoundingClientRect();
-            
-            useItems.forEach((item, index) => {
-                const megaMenu = item.querySelector('.mega-menu');
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
                 
-                if (megaMenu) {
-                    // Set mega menu width and position
-                    megaMenu.style.width = containerRect.width + 'px';
-                    megaMenu.style.left = '0px';
+                const sliderRect = priceSlider.getBoundingClientRect();
+                let position = e.clientX - sliderRect.left;
+                
+                // Constrain position within slider bounds
+                position = Math.max(0, Math.min(position, sliderRect.width));
+                
+                setPriceFromSlider(activeHandle, position);
+            });
+            
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+                activeHandle = null;
+            });
+            
+            // Initialize slider
+            updatePriceDisplay();
+            updateSliderPosition();
+            
+            // Color filter
+            const colorOptions = document.querySelectorAll('#colorFilters .filter-option');
+            colorOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const checkbox = this.querySelector('.filter-checkbox');
+                    const color = this.getAttribute('data-color');
                     
-                    // Mouse events for mega menu
-                    item.addEventListener('mouseenter', () => {
-                        // Hide all other mega menus
-                        document.querySelectorAll('.mega-menu').forEach(menu => {
-                            if (menu !== megaMenu) {
-                                menu.style.display = 'none';
-                            }
-                        });
-                        // Show current mega menu
-                        megaMenu.style.display = 'block';
-                    });
+                    checkbox.classList.toggle('checked');
                     
-                    item.addEventListener('mouseleave', (e) => {
-                        const relatedTarget = e.relatedTarget;
-                        if (!megaMenu.contains(relatedTarget)) {
-                            setTimeout(() => {
-                                if (!item.matches(':hover') && !megaMenu.matches(':hover')) {
-                                    megaMenu.style.display = 'none';
-                                }
-                            }, 100);
+                    if (checkbox.classList.contains('checked')) {
+                        if (!filterState.selectedColors.includes(color)) {
+                            filterState.selectedColors.push(color);
                         }
-                    });
-                    
-                    // Also handle mega menu mouse events
-                    megaMenu.addEventListener('mouseenter', () => {
-                        megaMenu.style.display = 'block';
-                    });
-                    
-                    megaMenu.addEventListener('mouseleave', () => {
-                        setTimeout(() => {
-                            if (!item.matches(':hover') && !megaMenu.matches(':hover')) {
-                                megaMenu.style.display = 'none';
-                            }
-                        }, 100);
-                    });
-                }
-            });
-            
-            // Close all mega menus when clicking outside
-            document.addEventListener('click', (event) => {
-                if (!usesTopBar.contains(event.target)) {
-                    document.querySelectorAll('.mega-menu').forEach(menu => {
-                        menu.style.display = 'none';
-                    });
-                }
-            });
-        }
-
-        // ===== CATEGORY PRODUCTS SPECIFIC FUNCTIONS =====
-
-        async function initializePage() {
-            try {
-                console.log('🔄 Starting page initialization...');
-                await loadProductsFromFirestore();
-                updatePageTitle();
-                applyAutoFilter();
-                generateUsesNavigation();
-                console.log('✅ Page initialization completed successfully!');
-            } catch (error) {
-                console.error('❌ Error initializing page:', error);
-            }
-        }
-
-        async function loadProductsFromFirestore() {
-            try {
-                console.log('🔥 Loading products from Firestore...');
-                const querySnapshot = await getDocs(collection(db, "products"));
-                appState.products = [];
-                
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    console.log('📄 Firestore Document Data:', data);
-                    
-                    // ✅ FIX: Handle additional_fields array properly
-                    let processedData = { ...data };
-                    
-                    // If additional_fields exists and is an array, extract the properties
-                    if (data.additional_fields && Array.isArray(data.additional_fields)) {
-                        data.additional_fields.forEach(field => {
-                            if (field && typeof field === 'object') {
-                                processedData = { ...processedData, ...field };
-                            }
-                        });
+                    } else {
+                        filterState.selectedColors = filterState.selectedColors.filter(c => c !== color);
                     }
                     
-                    appState.products.push({
-                        id: doc.id,
-                        ...processedData
-                    });
+                    updateColorCount();
                 });
-                
-                console.log('✅ Products loaded successfully:', appState.products.length);
-                console.log('📦 Sample product data:', appState.products[0]);
-                
-                // Real-time listener
-                onSnapshot(collection(db, "products"), (snapshot) => {
-                    const updatedProducts = [];
-                    snapshot.forEach((doc) => {
-                        const data = doc.data();
-                        let processedData = { ...data };
-                        
-                        // ✅ FIX: Handle additional_fields array properly
-                        if (data.additional_fields && Array.isArray(data.additional_fields)) {
-                            data.additional_fields.forEach(field => {
-                                if (field && typeof field === 'object') {
-                                    processedData = { ...processedData, ...field };
-                                }
-                            });
+            });
+            
+            // Type filter
+            const typeOptions = document.querySelectorAll('#typeFilters .filter-option');
+            typeOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const checkbox = this.querySelector('.filter-checkbox');
+                    const type = this.getAttribute('data-type');
+                    
+                    checkbox.classList.toggle('checked');
+                    
+                    if (checkbox.classList.contains('checked')) {
+                        if (!filterState.selectedTypes.includes(type)) {
+                            filterState.selectedTypes.push(type);
                         }
-                        
-                        updatedProducts.push({
-                            id: doc.id,
-                            ...processedData
-                        });
-                    });
-                    appState.products = updatedProducts;
-                    console.log('🔄 Products updated in real-time:', updatedProducts.length);
-                    applyAutoFilter();
-                    generateUsesNavigation();
+                    } else {
+                        filterState.selectedTypes = filterState.selectedTypes.filter(t => t !== type);
+                    }
+                    
+                    updateTypeCount();
                 });
-                
-            } catch (error) {
-                console.error('❌ Error loading products from Firestore:', error);
-                console.log('🔄 Using sample data as fallback...');
-                // Fallback to sample data if Firebase fails
-                appState.products = getSampleProducts();
+            });
+            
+            // Apply filters button
+            document.getElementById('applyFilters').addEventListener('click', applyFilters);
+            
+            // Clear filters button
+            document.getElementById('clearFilters').addEventListener('click', clearFilters);
+            
+            // Sort select
+            document.getElementById('sortSelect').addEventListener('change', function() {
+                filterState.sortBy = this.value;
+                applyFilters();
+            });
+        }
+        
+        // Update color count display
+        function updateColorCount() {
+            const count = filterState.selectedColors.length;
+            document.getElementById('colorCount').textContent = `${count} selected`;
+        }
+        
+        // Update type count display
+        function updateTypeCount() {
+            const count = filterState.selectedTypes.length;
+            document.getElementById('typeCount').textContent = `${count} selected`;
+        }
+        
+        // Apply filters to products
+        function applyFilters() {
+            let filteredProducts = [...productsData];
+            
+            // Price filter
+            filteredProducts = filteredProducts.filter(product => 
+                product.price >= filterState.minPrice && product.price <= filterState.maxPrice
+            );
+            
+            // Color filter
+            if (filterState.selectedColors.length > 0) {
+                filteredProducts = filteredProducts.filter(product => 
+                    filterState.selectedColors.includes(product.color)
+                );
+            }
+            
+            // Type filter
+            if (filterState.selectedTypes.length > 0) {
+                filteredProducts = filteredProducts.filter(product => 
+                    filterState.selectedTypes.includes(product.type)
+                );
+            }
+            
+            // Sort products
+            filteredProducts = sortProducts(filteredProducts, filterState.sortBy);
+            
+            // Display filtered products
+            displayProducts(filteredProducts);
+            updateProductsCount(filteredProducts.length);
+        }
+        
+        // Sort products based on selected option
+        function sortProducts(products, sortBy) {
+            switch(sortBy) {
+                case 'name-asc':
+                    return products.sort((a, b) => a.stone_name.localeCompare(b.stone_name));
+                case 'name-desc':
+                    return products.sort((a, b) => b.stone_name.localeCompare(a.stone_name));
+                case 'price-asc':
+                    return products.sort((a, b) => a.price - b.price);
+                case 'price-desc':
+                    return products.sort((a, b) => b.price - a.price);
+                case 'newest':
+                    return products.sort((a, b) => b.id - a.id);
+                default:
+                    return products;
             }
         }
-
-        // ✅ PAGE TITLE UPDATE FUNCTION
-        function updatePageTitle() {
-            const pageTitle = document.getElementById('pageTitle');
-            const breadcrumb = document.getElementById('breadcrumb');
+        
+        // Clear all filters
+        function clearFilters() {
+            // Reset price
+            filterState.minPrice = 0;
+            filterState.maxPrice = 500;
+            document.getElementById('minPrice').value = 0;
+            document.getElementById('maxPrice').value = 500;
+            updatePriceDisplay();
+            updateSliderPosition();
             
-            if (appState.currentUsage && appState.currentStoneName) {
-                pageTitle.textContent = `${appState.currentStoneName} Stones`;
-                breadcrumb.innerHTML = `
-                    <a href="index.html">Home</a>
-                    <span>></span>
-                    <a href="category-products.html?usage=${appState.currentUsage}">${appState.currentUsage}</a>
-                    <span>></span>
-                    <span>${appState.currentStoneName}</span>
-                `;
-                
-            } else if (appState.currentUsage) {
-                pageTitle.textContent = `${appState.currentUsage} Stones`;
-                breadcrumb.innerHTML = `
-                    <a href="index.html">Home</a>
-                    <span>></span>
-                    <span>${appState.currentUsage}</span>
-                `;
-            } else {
-                pageTitle.textContent = 'All Stone Products';
-                breadcrumb.innerHTML = `
-                    <a href="index.html">Home</a>
-                    <span>></span>
-                    <span>All Products</span>
-                `;
-            }
+            // Reset colors
+            filterState.selectedColors = [];
+            document.querySelectorAll('#colorFilters .filter-checkbox').forEach(checkbox => {
+                checkbox.classList.remove('checked');
+            });
+            updateColorCount();
+            
+            // Reset types
+            filterState.selectedTypes = [];
+            document.querySelectorAll('#typeFilters .filter-checkbox').forEach(checkbox => {
+                checkbox.classList.remove('checked');
+            });
+            updateTypeCount();
+            
+            // Reset sort
+            filterState.sortBy = 'name-asc';
+            document.getElementById('sortSelect').value = 'name-asc';
+            
+            // Apply cleared filters
+            applyFilters();
         }
-
-        // ✅ FIXED AUTO FILTER FUNCTION
-        function applyAutoFilter() {
-            console.log('🔄 Applying auto filter from URL...');
-            
-            let filteredProducts = [...appState.products];
-            
-            // 1. Pehle usage filter lagao
-            if (appState.currentUsage) {
-                filteredProducts = filteredProducts.filter(product => {
-                    if (!product.uses) return false;
-                    
-                    // Normalize the usage for comparison
-                    const productUsage = product.uses.toLowerCase().replace(/\s+/g, '-');
-                    const currentUsage = appState.currentUsage.toLowerCase();
-                    
-                    return productUsage === currentUsage;
-                });
-                console.log(`✅ After usage filter (${appState.currentUsage}):`, filteredProducts.length);
-            }
-            
-            // 2. Fir stone_name filter lagao (MAIN FILTER)
-            if (appState.currentStoneName) {
-                filteredProducts = filteredProducts.filter(product => {
-                    if (!product.stone_name) return false;
-                    
-                    // Normalize the stone name for comparison
-                    const productStoneName = product.stone_name.toLowerCase().replace(/\s+/g, '-');
-                    const currentStoneName = appState.currentStoneName.toLowerCase();
-                    
-                    return productStoneName === currentStoneName;
-                });
-                console.log(`✅ After stone name filter (${appState.currentStoneName}):`, filteredProducts.length);
-            }
-            
-            appState.filteredProducts = filteredProducts;
-            displayProducts();
-            updateProductsCount();
-        }
-
-        // ✅ PERFECT 1:1 RATIO PRODUCT CARDS
-        function displayProducts() {
+        
+        // Display products in the grid
+        function displayProducts(products) {
             const productsContainer = document.getElementById("products-list");
             productsContainer.innerHTML = "";
 
-            if (!appState.filteredProducts.length) {
+            if (!products.length) {
                 productsContainer.innerHTML = `
                     <div class="no-products">
                         <i class="fas fa-box-open"></i>
                         <h3>No Products Found</h3>
                         <p>We couldn't find any products matching your criteria.</p>
-                        <a href="index.html" class="details-btn">Back to Home</a>
+                        <button class="details-btn" onclick="clearFilters()">Clear Filters</button>
                     </div>
                 `;
                 return;
             }
 
-            appState.filteredProducts.forEach(product => {
-                // ✅ FIXED: Better image handling
-                const imageUrl = product.images?.[0] || product.image || getDefaultImage(product.category);
+            products.forEach(product => {
+                const imageUrl = product.images?.[0] || getDefaultImage(product.category);
                 const description = product.description || "No description";
-                const rate = product.rate || product.price || "N/A";
-                const detailsLink = product.pageUrl || product.link || `product-details.html?id=${product.id}`;
+                const rate = product.price || "N/A";
+                const detailsLink = product.pageUrl || `product-details.html?id=${product.id}`;
 
                 const cardHTML = `
                     <div class="product-card">
                         <a href="${detailsLink}">
                             <div class="product-img-box">
-                                <img src="${imageUrl}" alt="${product.stone_name || 'Stone Product'}" class="product-img" 
+                                <img src="${imageUrl}" alt="${product.stone_name}" class="product-img" 
                                      onerror="this.src='${getDefaultImage(product.category)}'">
                             </div>
                         </a>
-                        <p class="product-description">${description}</p>
-                        <p class="product-rate">£ ${rate}</p>
-                        <a href="${detailsLink}" class="details-btn">View Details</a>
+                        <div class="product-info">
+                            <div class="product-name">${product.stone_name}</div>
+                            <div class="product-category">${product.category}</div>
+                            <p class="product-description">${description}</p>
+                            <p class="product-rate">£ ${rate}</p>
+                            <a href="${detailsLink}" class="details-btn">View Details</a>
+                        </div>
                     </div>
                 `;
 
                 productsContainer.innerHTML += cardHTML;
             });
         }
-
-        // ✅ DEFAULT IMAGE GETTER
+        
+        // Update products count
+        function updateProductsCount(count) {
+            const productsCount = document.getElementById('productsCount');
+            if (!productsCount) return;
+            
+            productsCount.textContent = `Showing ${count} product${count !== 1 ? 's' : ''}`;
+        }
+        
+        // Get default image based on category
         function getDefaultImage(category) {
             const defaultImages = {
                 'marble': 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
@@ -1559,232 +1944,34 @@
                 'limestone': 'https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
                 'sandstone': 'https://images.unsplash.com/photo-1541140532154-b024d705b90a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
                 'red sand stone': 'https://i.ibb.co/HLpBc94R/51b7aaab131a.jpg',
-                'red-sand-stone': 'https://i.ibb.co/HLpBc94R/51b7aaab131a.jpg'
+                'slate': 'https://images.unsplash.com/photo-1541140532154-b024d705b90a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                'quartzite': 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80'
             };
             
             const cat = category ? category.toLowerCase() : 'marble';
             return defaultImages[cat] || defaultImages.marble;
         }
-
-        // ✅ UPDATE PRODUCTS COUNT
-        function updateProductsCount() {
-            const productsCount = document.getElementById('productsCount');
-            if (!productsCount) return;
-            
-            const baseCount = appState.products.length;
-            const filteredCount = appState.filteredProducts.length;
-            
-            let countText = `Showing ${filteredCount} product${filteredCount !== 1 ? 's' : ''}`;
-            
-            if (appState.currentUsage || appState.currentStoneName) {
-                countText += ` for ${appState.currentStoneName || appState.currentUsage || 'all categories'}`;
-            }
-            
-            productsCount.textContent = countText;
+        
+        // Helper functions for price slider
+        function updatePriceDisplay() {
+            document.getElementById('priceRangeDisplay').textContent = `£${filterState.minPrice} - £${filterState.maxPrice}`;
         }
-
-        // ✅ USES NAVIGATION FUNCTION
-        function generateUsesNavigation() {
-            const usesContainer = document.getElementById('dynamicUsesContainer');
-            if (!usesContainer) return;
+        
+        function updateSliderPosition() {
+            const priceSlider = document.getElementById('priceSlider');
+            const priceSliderFill = document.getElementById('priceSliderFill');
+            const minPriceHandle = document.getElementById('minPriceHandle');
+            const maxPriceHandle = document.getElementById('maxPriceHandle');
             
-            usesContainer.innerHTML = '';
+            const sliderWidth = priceSlider.offsetWidth;
+            const minPosition = (filterState.minPrice / 500) * sliderWidth;
+            const maxPosition = (filterState.maxPrice / 500) * sliderWidth;
             
-            // Get unique uses from products
-            const uniqueUses = [...new Set(appState.products
-                .filter(product => product.uses && product.uses.trim() !== '')
-                .map(product => product.uses.trim())
-            )].sort();
-            
-            console.log('Unique uses for navigation:', uniqueUses);
-            
-            if (uniqueUses.length === 0) {
-                usesContainer.innerHTML = `
-                    <div class="loading-categories">
-                        <i class="fas fa-info-circle"></i>
-                        <p>No uses found</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            uniqueUses.forEach(usage => {
-                const usageKey = usage.toLowerCase().replace(/\s+/g, '-');
-                const useItem = document.createElement('div');
-                useItem.className = 'use-item';
-                
-                // Get products for this usage
-                const usageProducts = appState.products.filter(product => 
-                    product.uses && product.uses.toLowerCase() === usage.toLowerCase()
-                );
-                
-                const uniqueStoneNames = [...new Set(usageProducts
-                    .filter(product => product.stone_name)
-                    .map(product => product.stone_name)
-                )];
-                
-                console.log(`📁 ${usage} - Products: ${usageProducts.length}, Stone Names: ${uniqueStoneNames.length}`);
-                
-                if (uniqueStoneNames.length > 0) {
-                    // Usage with stone names - create mega menu
-                    useItem.innerHTML = `
-                        <div class="use-link">${usage} (${usageProducts.length})</div>
-                        <div class="mega-menu">
-                            <div class="patterns-grid">
-                                ${uniqueStoneNames.map(stoneName => {
-                                    const stoneSlug = stoneName.toLowerCase().replace(/\s+/g, '-');
-                                    // Find a product image for this stone or use default
-                                    const stoneProduct = appState.products.find(p => 
-                                        p.uses && p.uses.toLowerCase() === usage.toLowerCase() && 
-                                        p.stone_name === stoneName
-                                    );
-                                    const imageUrl = stoneProduct?.images?.[0] || getDefaultImage(stoneProduct?.category);
-                                    
-                                    return `
-                                        <a href="category-products.html?usage=${usageKey}&stone=${stoneSlug}" class="pattern-item" data-usage="${usage}" data-stone="${stoneName}">
-                                            <div class="pattern-image" style="background-image: url('${imageUrl}')"></div>
-                                            <div class="pattern-name">${stoneName}</div>
-                                        </a>
-                                    `;
-                                }).join('')}
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    // Usage with products but no stone names - simple link
-                    useItem.innerHTML = `
-                        <a href="category-products.html?usage=${usageKey}" class="use-link">${usage} (${usageProducts.length})</a>
-                    `;
-                }
-                
-                usesContainer.appendChild(useItem);
-            });
-            
-            // Reinitialize mega menu functionality
-            setTimeout(() => {
-                initializeMegaMenu();
-            }, 100);
+            minPriceHandle.style.left = `${minPosition}px`;
+            maxPriceHandle.style.left = `${maxPosition}px`;
+            priceSliderFill.style.left = `${minPosition}px`;
+            priceSliderFill.style.width = `${maxPosition - minPosition}px`;
         }
-
-        // ✅ AUTHENTICATION FUNCTIONS
-        function initializeAuth() {
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    appState.user = {
-                        uid: user.uid,
-                        email: user.email,
-                        name: user.displayName || user.email.split('@')[0]
-                    };
-                    updateUserInterface();
-                } else {
-                    appState.user = null;
-                    updateUserInterface();
-                }
-            });
-        }
-
-        function updateUserInterface() {
-            if (appState.user) {
-                // User is logged in
-                document.getElementById('userProfile').style.display = 'block';
-                document.getElementById('loginButton').style.display = 'none';
-                document.getElementById('addProductButton').style.display = 'flex';
-                
-                // Update user info
-                document.getElementById('profileName').textContent = appState.user.name;
-                document.getElementById('profileAvatar').textContent = appState.user.name.charAt(0).toUpperCase();
-                document.getElementById('dropdownUserName').textContent = appState.user.name;
-                document.getElementById('dropdownUserEmail').textContent = appState.user.email;
-            } else {
-                // User is not logged in
-                document.getElementById('userProfile').style.display = 'none';
-                document.getElementById('loginButton').style.display = 'flex';
-                document.getElementById('addProductButton').style.display = 'none';
-            }
-        }
-
-        // ✅ SAMPLE DATA FALLBACK
-        function getSampleProducts() {
-            return [
-                {
-                    id: 1,
-                    stone_name: "RED SAND STONE",
-                    category: "Red Sand Stone",
-                    type: "Natural",
-                    color: "green",
-                    size: "10",
-                    length: "5",
-                    width: "2",
-                    thickness: "20-30 mm",
-                    uses: "Flooring",
-                    price: 100,
-                    price_unit: "sqft",
-                    description: "Premium red sandstone with excellent durability and natural beauty",
-                    density: "2.4 g/cm³",
-                    finish: "Natural",
-                    water_absorption: "Low",
-                    rate_description: "Competitive pricing with bulk discounts available",
-                    factory_name: "ravi jain",
-                    contact_number: "+91 7737740207",
-                    email: "ravijain236129@gmail.com",
-                    compressive_strength: "High",
-                    images: ["https://i.ibb.co/HLpBc94R/51b7aaab131a.jpg"],
-                    pageUrl: "product-details.html?id=1"
-                },
-                {
-                    id: 2,
-                    stone_name: "MARBLE",
-                    category: "Marble",
-                    type: "Natural",
-                    color: "white",
-                    size: "12",
-                    length: "6",
-                    width: "3",
-                    thickness: "15-25 mm",
-                    uses: "Flooring",
-                    price: 150,
-                    price_unit: "sqft",
-                    description: "Elegant white marble with beautiful veining patterns",
-                    density: "2.6 g/cm³",
-                    finish: "Polished",
-                    water_absorption: "Very Low",
-                    rate_description: "Premium quality marble at competitive prices",
-                    factory_name: "marble experts",
-                    contact_number: "+91 9876543210",
-                    email: "info@marbleexperts.com",
-                    compressive_strength: "Medium",
-                    images: ["https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"],
-                    pageUrl: "product-details.html?id=2"
-                },
-                {
-                    id: 3,
-                    stone_name: "GRANITE",
-                    category: "Granite",
-                    type: "Natural",
-                    color: "black",
-                    size: "15",
-                    length: "7",
-                    width: "4",
-                    thickness: "18-30 mm",
-                    uses: "Kitchen",
-                    price: 120,
-                    price_unit: "sqft",
-                    description: "Durable black granite perfect for kitchen countertops",
-                    density: "2.7 g/cm³",
-                    finish: "Polished",
-                    water_absorption: "Extremely Low",
-                    rate_description: "Best price for premium granite",
-                    factory_name: "granite world",
-                    contact_number: "+91 8765432109",
-                    email: "sales@graniteworld.com",
-                    compressive_strength: "Very High",
-                    images: ["https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"],
-                    pageUrl: "product-details.html?id=3"
-                }
-            ];
-        }
-
-        console.log('✅ All functions defined successfully!');
     </script>
 </body>
 </html>
