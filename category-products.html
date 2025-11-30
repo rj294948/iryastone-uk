@@ -1470,7 +1470,7 @@
             }
         }
 
-        // ✅ AUTO FILTER FUNCTION
+        // ✅ FIXED AUTO FILTER FUNCTION
         function applyAutoFilter() {
             console.log('🔄 Applying auto filter from URL...');
             
@@ -1478,19 +1478,29 @@
             
             // 1. Pehle usage filter lagao
             if (appState.currentUsage) {
-                filteredProducts = filteredProducts.filter(product => 
-                    product.uses && 
-                    product.uses.toLowerCase().replace(/\s+/g, '-') === appState.currentUsage.toLowerCase()
-                );
+                filteredProducts = filteredProducts.filter(product => {
+                    if (!product.uses) return false;
+                    
+                    // Normalize the usage for comparison
+                    const productUsage = product.uses.toLowerCase().replace(/\s+/g, '-');
+                    const currentUsage = appState.currentUsage.toLowerCase();
+                    
+                    return productUsage === currentUsage;
+                });
                 console.log(`✅ After usage filter (${appState.currentUsage}):`, filteredProducts.length);
             }
             
             // 2. Fir stone_name filter lagao (MAIN FILTER)
             if (appState.currentStoneName) {
-                filteredProducts = filteredProducts.filter(product => 
-                    product.stone_name && 
-                    product.stone_name.toLowerCase().replace(/\s+/g, '-') === appState.currentStoneName.toLowerCase()
-                );
+                filteredProducts = filteredProducts.filter(product => {
+                    if (!product.stone_name) return false;
+                    
+                    // Normalize the stone name for comparison
+                    const productStoneName = product.stone_name.toLowerCase().replace(/\s+/g, '-');
+                    const currentStoneName = appState.currentStoneName.toLowerCase();
+                    
+                    return productStoneName === currentStoneName;
+                });
                 console.log(`✅ After stone name filter (${appState.currentStoneName}):`, filteredProducts.length);
             }
             
@@ -1517,16 +1527,18 @@
             }
 
             appState.filteredProducts.forEach(product => {
-                const imageUrl = product.image || product.images?.[0] || "default.jpg";
+                // ✅ FIXED: Better image handling
+                const imageUrl = product.images?.[0] || product.image || getDefaultImage(product.category);
                 const description = product.description || "No description";
                 const rate = product.rate || product.price || "N/A";
-                const detailsLink = product.pageUrl || product.link || "#";
+                const detailsLink = product.pageUrl || product.link || `product-details.html?id=${product.id}`;
 
                 const cardHTML = `
                     <div class="product-card">
                         <a href="${detailsLink}">
                             <div class="product-img-box">
-                                <img src="${imageUrl}" alt="Product Image" class="product-img">
+                                <img src="${imageUrl}" alt="${product.stone_name || 'Stone Product'}" class="product-img" 
+                                     onerror="this.src='${getDefaultImage(product.category)}'">
                             </div>
                         </a>
                         <p class="product-description">${description}</p>
@@ -1546,7 +1558,8 @@
                 'granite': 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
                 'limestone': 'https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
                 'sandstone': 'https://images.unsplash.com/photo-1541140532154-b024d705b90a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
-                'red sand stone': 'https://i.ibb.co/HLpBc94R/51b7aaab131a.jpg'
+                'red sand stone': 'https://i.ibb.co/HLpBc94R/51b7aaab131a.jpg',
+                'red-sand-stone': 'https://i.ibb.co/HLpBc94R/51b7aaab131a.jpg'
             };
             
             const cat = category ? category.toLowerCase() : 'marble';
@@ -1717,6 +1730,56 @@
                     compressive_strength: "High",
                     images: ["https://i.ibb.co/HLpBc94R/51b7aaab131a.jpg"],
                     pageUrl: "product-details.html?id=1"
+                },
+                {
+                    id: 2,
+                    stone_name: "MARBLE",
+                    category: "Marble",
+                    type: "Natural",
+                    color: "white",
+                    size: "12",
+                    length: "6",
+                    width: "3",
+                    thickness: "15-25 mm",
+                    uses: "Flooring",
+                    price: 150,
+                    price_unit: "sqft",
+                    description: "Elegant white marble with beautiful veining patterns",
+                    density: "2.6 g/cm³",
+                    finish: "Polished",
+                    water_absorption: "Very Low",
+                    rate_description: "Premium quality marble at competitive prices",
+                    factory_name: "marble experts",
+                    contact_number: "+91 9876543210",
+                    email: "info@marbleexperts.com",
+                    compressive_strength: "Medium",
+                    images: ["https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"],
+                    pageUrl: "product-details.html?id=2"
+                },
+                {
+                    id: 3,
+                    stone_name: "GRANITE",
+                    category: "Granite",
+                    type: "Natural",
+                    color: "black",
+                    size: "15",
+                    length: "7",
+                    width: "4",
+                    thickness: "18-30 mm",
+                    uses: "Kitchen",
+                    price: 120,
+                    price_unit: "sqft",
+                    description: "Durable black granite perfect for kitchen countertops",
+                    density: "2.7 g/cm³",
+                    finish: "Polished",
+                    water_absorption: "Extremely Low",
+                    rate_description: "Best price for premium granite",
+                    factory_name: "granite world",
+                    contact_number: "+91 8765432109",
+                    email: "sales@graniteworld.com",
+                    compressive_strength: "Very High",
+                    images: ["https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"],
+                    pageUrl: "product-details.html?id=3"
                 }
             ];
         }
