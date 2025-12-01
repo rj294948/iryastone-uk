@@ -7,6 +7,7 @@ import {
   collection,
   addDoc,
   getDocs,
+  getDoc,  // ✅ YEH ADD KARO (Missing tha)
   query,
   orderBy,
   doc,
@@ -14,7 +15,7 @@ import {
   updateDoc,
   where,
   serverTimestamp,
-  onSnapshot  // ✅ YEH ADD KARO
+  onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
 // Auth
@@ -66,6 +67,7 @@ export {
   collection,
   addDoc,
   getDocs,
+  getDoc,  // ✅ YEH EXPORT KARO (Missing tha)
   query,
   orderBy,
   doc,
@@ -73,7 +75,7 @@ export {
   updateDoc,
   where,
   serverTimestamp,
-  onSnapshot,  // ✅ YEH EXPORT KARO
+  onSnapshot,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
