@@ -1,12 +1,13 @@
-// firebase-config.js
+// firebase-config.js - COMPLETE UPDATED VERSION
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 
-// Firestore - onSnapshot add karo
+// Firestore - ✅ ALL NECESSARY FUNCTIONS INCLUDED
 import {
   getFirestore,
   collection,
   addDoc,
   getDocs,
+  getDoc,        // ✅ ADDED: For getting single document
   query,
   orderBy,
   doc,
@@ -14,7 +15,8 @@ import {
   updateDoc,
   where,
   serverTimestamp,
-  onSnapshot  // ✅ YEH ADD KARO
+  onSnapshot,
+  limit          // ✅ ADDED: For limiting query results
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
 // Auth
@@ -63,9 +65,11 @@ export {
   auth,
   storage,
   googleProvider,
+  // Firestore functions
   collection,
   addDoc,
   getDocs,
+  getDoc,          // ✅ EXPORTED
   query,
   orderBy,
   doc,
@@ -73,13 +77,16 @@ export {
   updateDoc,
   where,
   serverTimestamp,
-  onSnapshot,  // ✅ YEH EXPORT KARO
+  onSnapshot,
+  limit,           // ✅ EXPORTED
+  // Auth functions
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
   signInWithPopup,
   onAuthStateChanged,
   updateProfile,
+  // Storage functions
   ref,
   uploadBytes,
   uploadBytesResumable,
