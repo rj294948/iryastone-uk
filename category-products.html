@@ -18,7 +18,7 @@
             background-color: #ffffff;
             color: #333;
             line-height: 1.6;
-            padding-top: 140px; /* Adjusted for smaller header */
+            padding-top: 120px; /* Adjusted for smaller header */
             transition: padding-top 0.3s ease;
         }
         
@@ -26,7 +26,7 @@
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 15px;
+            padding: 5px 15px;
         }
         
         /* Header Styles - Home Page jaise */
@@ -39,6 +39,8 @@
             width: 100%;
             z-index: 1000;
             transition: transform 0.4s ease;
+            margin-top: 0;
+            padding-top: 0;
         }
         
         header.hidden {
@@ -50,7 +52,7 @@
         }
         
         .main-header {
-            padding: 10px 0; /* Reduced padding */
+            padding: 5px 0; /* Reduced padding */
         }
         
         .header-content {
@@ -77,7 +79,9 @@
         .trust-info {
             flex: 1;
             text-align: center;
-            padding: 0 15px; /* Reduced padding */
+            padding: 0 10px; /* Reduced padding */
+            margin-top: 0;
+            padding-top: 5px;
         }
         
         .trust-info-content {
@@ -85,10 +89,10 @@
             justify-content: center;
             align-items: center;
             flex-wrap: wrap;
-            gap: 20px; /* Reduced gap */
+            gap: 15px; /* Reduced gap */
             font-size: 13px; /* Smaller text */
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 8px 15px; /* Reduced padding */
+            padding: 5px 10px; /* Reduced padding */
             border-radius: 8px;
             border: 1px solid #e0e0e0;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -382,14 +386,19 @@
             font-weight: 600;
         }
         
-        /* Banner Text */
+        /* Banner Text - COMPACT */
         .banner-text {
             background: linear-gradient(135deg, #b8860b, #a3780a);
             color: white;
-            padding: 8px 0; /* Reduced padding */
+            padding: 2px 0; /* Reduced to 2px */
             text-align: center;
-            font-size: 14px; /* Smaller text */
+            font-size: 12px; /* Smaller text */
             font-weight: 500;
+            margin: 0;
+            line-height: 1.2; /* Reduced line height */
+            background: linear-gradient(135deg, rgba(184, 134, 11, 0.9), rgba(163, 120, 10, 0.9)), 
+                url('your-image-url.jpg') center/cover !important;
+    /* existing styles remain same */
         }
         
         /* Uses Top Bar with Mega Menu - HOME PAGE JAISE */
@@ -483,28 +492,37 @@
 
         /* ===== CATEGORY PRODUCTS SPECIFIC STYLES ===== */
         .main-content {
-            margin-top: 40px; /* Reduced margin since header is smaller */
-            padding: 30px 0; /* Reduced padding */
+            margin-top: 8px; /* GREATLY REDUCED from 20px */
+            padding: 2px 0px; /* REDUCED from 30px */
         }
         
-        /* Page Header */
+        /* Page Header - COMPACT */
         .page-header {
             text-align: center;
-            margin-bottom: 30px; /* Reduced margin */
-            padding: 30px 0; /* Reduced padding */
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-radius: 10px;
+            margin-bottom: 0px; /* GREATLY REDUCED from 30px */
+            padding: 22px 5px; /* REDUCED from 30px */
+            background: url('https://plus.unsplash.com/premium_photo-1673567871911-c8a8c63d1c2b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8c3RvbmV8ZW58MHx8MHx8fDA%3D') center/cover;
+            border-radius: 8px; /* Slightly smaller radius */
+            min-height: 60px; /* Reduced height to show more products */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            margin-top: 1px;
         }
         
         .page-header h1 {
-            font-size: 36px; /* Slightly smaller */
-            color: #333;
-            margin-bottom: 12px; /* Reduced margin */
+            font-size: 28px; /* Slightly smaller */
+            color: white;
+            margin-bottom: 5px; /* REDUCED from 12px */
+            line-height: 1.2;
         }
         
         .page-header .breadcrumb {
             color: #666;
-            font-size: 16px; /* Smaller text */
+            font-size: 14px; /* Smaller text */
         }
         
         .page-header .breadcrumb a {
@@ -514,107 +532,174 @@
         }
         
         .page-header .breadcrumb span {
-            margin: 0 10px; /* Reduced margin */
+            margin: 0 8px; /* Reduced margin */
             color: #999;
         }
         
-        /* Main Layout with Sidebar Filters */
+        /* Main Layout - WITH FILTERS */
         .main-layout {
-            display: flex;
-            gap: 25px; /* Reduced gap */
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 25px;
         }
         
-        /* Left Filters Sidebar */
-        .filters-sidebar {
-            flex: 0 0 260px; /* Slightly smaller */
+        /* Filters Section */
+        .filters-section {
             background: white;
-            padding: 20px; /* Reduced padding */
+            padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             height: fit-content;
             position: sticky;
-            top: 160px; /* Adjusted for smaller header */
+            top: 120px;
         }
         
-        .filter-section {
-            margin-bottom: 25px; /* Reduced margin */
-            padding-bottom: 20px; /* Reduced padding */
-            border-bottom: 1px solid #eee;
-        }
-        
-        .filter-section:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-        }
-        
-        .filter-title {
-            font-size: 16px; /* Smaller text */
-            font-weight: 600;
-            margin-bottom: 15px; /* Reduced margin */
-            color: #333;
-            display: flex;
-            align-items: center;
-            gap: 10px; /* Reduced gap */
-        }
-        
-        .filter-title i {
-            color: #b8860b;
-            font-size: 18px; /* Smaller icons */
-        }
-        
-        .filter-tags {
-            display: flex;
-            flex-direction: column;
-            gap: 8px; /* Reduced gap */
-        }
-        
-        .filter-tag {
-            padding: 8px 12px; /* Reduced padding */
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px; /* Smaller text */
-            font-weight: 500;
-            transition: all 0.3s;
+        .filters-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
         }
         
-        .filter-tag:hover {
-            background: #e9ecef;
+        .filters-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
         }
         
-        .filter-tag.active {
-            background: #b8860b;
-            color: white;
-            border-color: #b8860b;
+        .clear-filters {
+            color: #b8860b;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: underline;
+        }
+        
+        .filter-group {
+            margin-bottom: 25px;
+        }
+        
+        .filter-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .filter-toggle {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .filter-options {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .filter-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        
+        .filter-checkbox {
+            width: 18px;
+            height: 18px;
+            margin-right: 10px;
+            accent-color: #b8860b;
+            cursor: pointer;
+        }
+        
+        .filter-label {
+            font-size: 14px;
+            color: #555;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
         }
         
         .filter-count {
-            background: rgba(255,255,255,0.2);
-            padding: 2px 6px; /* Reduced padding */
+            font-size: 12px;
+            color: #999;
+            background: #f5f5f5;
+            padding: 2px 6px;
             border-radius: 10px;
-            font-size: 11px; /* Smaller text */
-            font-weight: 600;
+        }
+        
+        .price-range {
+    width: 100%; /* Color filter jitni width */
+}
+
+.price-inputs {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+.price-input {
+    flex: 1; /* Dono inputs equal width mein */
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.price-slider {
+    width: 100%; /* Slider ko bhi full width do */
+    margin: 10px 0;
+}
+        .color-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.3s;
+        }
+        
+        .color-option.selected {
+            border-color: #b8860b;
+            box-shadow: 0 0 0 2px rgba(184, 134, 11, 0.3);
+        }
+        
+        .color-option:hover {
+            transform: scale(1.1);
         }
         
         /* Products Section */
         .products-section {
-            flex: 1;
             background: white;
-            padding: 25px; /* Reduced padding */
+            padding: 20px; /* Reduced padding */
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            margin-bottom: 50px; /* Reduced margin */
+            margin-bottom: 40px; /* Reduced margin */
         }
         
         .products-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px; /* Reduced margin */
+            margin-bottom: 20px; /* Reduced margin */
             flex-wrap: wrap;
             gap: 15px; /* Reduced gap */
         }
@@ -625,10 +710,30 @@
             font-weight: 500;
         }
         
-        /* ✅ PERFECT 1:1 RATIO E-COMMERCE PRODUCT CARDS */
+        .sort-options {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .sort-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .sort-select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+        
+        /* ✅ PERFECT 1:1 RATIO E-COMMERCE PRODUCT CARDS - 4 PER ROW */
         #products-list {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+            grid-template-columns: repeat(4, 1fr); /* 4 products per row */
             gap: 15px; /* Reduced gap */
             padding: 8px;
         }
@@ -639,6 +744,14 @@
             display: flex;
             flex-direction: column;
             height: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
 
         /* PERFECT 1:1 RATIO IMAGE BOX */
@@ -663,7 +776,7 @@
         }
 
         .product-description {
-            margin-top: 10px;
+            margin-top: 8px; /* Reduced margin */
             font-size: 13px; /* Smaller text */
             color: #333;
             line-height: 1.4;
@@ -675,7 +788,7 @@
         }
 
         .product-rate {
-            margin-top: 6px;
+            margin-top: 5px; /* Reduced margin */
             font-size: 15px; /* Smaller text */
             font-weight: bold;
             color: #b8860b;
@@ -683,8 +796,8 @@
 
         .details-btn {
             display: inline-block;
-            margin-top: 8px;
-            padding: 7px 14px; /* Reduced padding */
+            margin-top: 6px; /* Reduced margin */
+            padding: 6px 12px; /* Reduced padding */
             font-size: 13px; /* Smaller text */
             background: #b8860b;
             color: white;
@@ -701,145 +814,90 @@
         
         .no-products {
             text-align: center;
-            padding: 60px 15px; /* Reduced padding */
+            padding: 40px 15px; /* Reduced padding */
             grid-column: 1 / -1;
         }
         
         .no-products i {
-            font-size: 50px; /* Smaller icon */
+            font-size: 40px; /* Smaller icon */
             color: #ddd;
-            margin-bottom: 20px; /* Reduced margin */
+            margin-bottom: 15px; /* Reduced margin */
         }
         
         .no-products h3 {
-            font-size: 24px; /* Smaller text */
+            font-size: 20px; /* Smaller text */
             color: #666;
-            margin-bottom: 12px; /* Reduced margin */
+            margin-bottom: 10px; /* Reduced margin */
         }
         
         .no-products p {
             color: #888;
-            margin-bottom: 20px; /* Reduced margin */
-            font-size: 15px; /* Smaller text */
+            margin-bottom: 15px; /* Reduced margin */
+            font-size: 14px; /* Smaller text */
         }
         
         .loading-products {
             text-align: center;
-            padding: 50px; /* Reduced padding */
+            padding: 40px; /* Reduced padding */
             grid-column: 1 / -1;
             color: #666;
         }
         
-        .active-filters {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px; /* Reduced gap */
-            margin-bottom: 20px; /* Reduced margin */
-            padding: 15px; /* Reduced padding */
-            background: #f8f9fa;
-            border-radius: 8px;
-            align-items: center;
-        }
-        
-        .active-filters-title {
-            font-weight: 600;
-            color: #333;
-            margin-right: 8px; /* Reduced margin */
-            font-size: 14px; /* Smaller text */
-        }
-        
-        .active-filter {
-            background: #e9ecef;
-            padding: 6px 12px; /* Reduced padding */
-            border-radius: 16px;
-            font-size: 13px; /* Smaller text */
-            display: flex;
-            align-items: center;
-            gap: 8px; /* Reduced gap */
-            font-weight: 500;
-        }
-        
-        .remove-filter {
-            cursor: pointer;
-            color: #666;
-            font-size: 14px; /* Smaller text */
-            transition: color 0.3s;
-        }
-        
-        .remove-filter:hover {
-            color: #dc3545;
-        }
-        
-        .clear-all-btn {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 6px 12px; /* Reduced padding */
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 13px; /* Smaller text */
-            margin-left: auto;
-        }
-        
-        .clear-all-btn:hover {
-            background: #c82333;
-        }
-
-        /* Features Section - Home Page jaise */
+        /* Features Section - Home Page jaise - SINGLE ROW */
         .features {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 30px; /* Reduced gap */
-            margin: 60px 0; /* Reduced margin */
-            padding: 60px 0; /* Reduced padding */
+            grid-template-columns: repeat(3, 1fr); /* 3 features in a row */
+            gap: 25px; /* Reduced gap */
+            margin: 40px 0; /* Reduced margin */
+            padding: 40px 0; /* Reduced padding */
             background-color: #f9f9f9;
         }
         
         .feature {
             text-align: center;
-            padding: 30px 20px; /* Reduced padding */
+            padding: 25px 15px; /* Reduced padding */
             background: white;
-            border-radius: 10px;
+            border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
         
         .feature i {
-            font-size: 40px; /* Smaller icons */
+            font-size: 35px; /* Smaller icons */
             color: #b8860b;
-            margin-bottom: 20px; /* Reduced margin */
+            margin-bottom: 15px; /* Reduced margin */
         }
         
         .feature h3 {
-            margin-bottom: 15px; /* Reduced margin */
-            font-size: 20px; /* Smaller text */
+            margin-bottom: 12px; /* Reduced margin */
+            font-size: 18px; /* Smaller text */
             color: #333;
         }
         
         .feature p {
-            font-size: 15px; /* Smaller text */
+            font-size: 14px; /* Smaller text */
             color: #666;
-            line-height: 1.6;
+            line-height: 1.5;
         }
         
         /* Footer - Home Page jaise */
         footer {
             background-color: #222;
             color: #ddd;
-            padding: 50px 0 15px; /* Reduced padding */
+            padding: 40px 0 15px; /* Reduced padding */
         }
         
         .footer-content {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 30px; /* Reduced gap */
-            margin-bottom: 30px; /* Reduced margin */
+            gap: 25px; /* Reduced gap */
+            margin-bottom: 25px; /* Reduced margin */
         }
         
         .footer-column h3 {
             color: white;
-            margin-bottom: 20px; /* Reduced margin */
-            font-size: 18px; /* Smaller text */
-            padding-bottom: 8px; /* Reduced padding */
+            margin-bottom: 15px; /* Reduced margin */
+            font-size: 16px; /* Smaller text */
+            padding-bottom: 6px; /* Reduced padding */
             border-bottom: 2px solid #b8860b;
             display: inline-block;
         }
@@ -849,13 +907,13 @@
         }
         
         .footer-links li {
-            margin-bottom: 10px; /* Reduced margin */
+            margin-bottom: 8px; /* Reduced margin */
         }
         
         .footer-links a {
             color: #ddd;
             text-decoration: none;
-            font-size: 14px; /* Smaller text */
+            font-size: 13px; /* Smaller text */
             transition: color 0.3s;
         }
         
@@ -865,21 +923,21 @@
         
         .social-links {
             display: flex;
-            gap: 12px; /* Reduced gap */
-            margin-top: 15px; /* Reduced margin */
+            gap: 10px; /* Reduced gap */
+            margin-top: 12px; /* Reduced margin */
         }
         
         .social-links a {
             color: white;
             background: #444;
-            width: 35px; /* Smaller buttons */
-            height: 35px;
+            width: 32px; /* Smaller buttons */
+            height: 32px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: background 0.3s;
-            font-size: 14px; /* Smaller icons */
+            font-size: 13px; /* Smaller icons */
         }
         
         .social-links a:hover {
@@ -888,30 +946,24 @@
         
         .copyright {
             text-align: center;
-            padding-top: 25px; /* Reduced padding */
+            padding-top: 20px; /* Reduced padding */
             border-top: 1px solid #444;
-            font-size: 13px; /* Smaller text */
+            font-size: 12px; /* Smaller text */
             color: #999;
         }
 
         /* Responsive Design */
         @media (max-width: 1024px) {
-            .main-layout {
-                flex-direction: column;
-            }
-            
-            .filters-sidebar {
-                flex: none;
-                width: 100%;
-                position: static;
-            }
-            
             #products-list {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                grid-template-columns: repeat(3, 1fr); /* 3 products per row on tablets */
+            }
+            
+            .main-layout {
+                grid-template-columns: 250px 1fr;
             }
             
             .features {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(3, 1fr); /* Keep 3 in a row */
             }
             
             .footer-content {
@@ -925,11 +977,11 @@
 
         @media (max-width: 768px) {
             body {
-                padding-top: 180px; /* Adjusted for mobile header */
+                padding-top: 100px; /* Adjusted for mobile header */
             }
             
             .main-content {
-                margin-top: 30px;
+                margin-top: 5px;
             }
             
             .header-content {
@@ -939,21 +991,35 @@
             .trust-info {
                 order: 3;
                 flex-basis: 100%;
-                margin-top: 10px; /* Reduced margin */
+                margin-top: 8px; /* Reduced margin */
                 padding: 0;
             }
             
             .search-container {
                 order: 4;
                 flex-basis: 100%;
-                margin: 10px 0 0; /* Reduced margin */
+                margin: 8px 0 0; /* Reduced margin */
                 max-width: 100%;
             }
             
-            .features {
+            .main-layout {
                 grid-template-columns: 1fr;
-                padding: 40px 0; /* Reduced padding */
-                margin: 40px 0; /* Reduced margin */
+                gap: 20px;
+            }
+            
+            .filters-section {
+                position: static;
+                order: 2;
+            }
+            
+            .products-section {
+                order: 1;
+            }
+            
+            .features {
+                grid-template-columns: 1fr; /* Stack on mobile */
+                padding: 30px 0; /* Reduced padding */
+                margin: 30px 0; /* Reduced margin */
             }
             
             .uses-top-bar {
@@ -974,11 +1040,11 @@
             }
             
             #products-list {
-                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+                grid-template-columns: repeat(2, 1fr); /* 2 products per row on mobile */
             }
             
-            .filters-sidebar {
-                top: 180px; /* Adjusted for mobile */
+            .page-header h1 {
+                font-size: 24px; /* Smaller on mobile */
             }
         }
 
@@ -988,7 +1054,7 @@
             }
             
             #products-list {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(2, 1fr); /* Keep 2 products per row */
             }
             
             .footer-content {
@@ -999,12 +1065,14 @@
                 grid-template-columns: 1fr;
             }
             
-            .filter-tags {
-                justify-content: center;
+            .page-header {
+                padding: 8px 0; /* Even more compact on mobile */
+                margin-bottom: 3px;
+                min-height: 50px;
             }
             
-            .filters-sidebar {
-                top: 190px; /* Further adjustment for very small screens */
+            .page-header h1 {
+                font-size: 22px; /* Even smaller on very small screens */
             }
         }
     </style>
@@ -1097,7 +1165,7 @@
             </div>
         </div>
 
-        <!-- Banner Text -->
+        <!-- Banner Text - COMPACT -->
         <div class="banner-text">
             <div class="container">
                 Premium Natural Stone Collections - Sandstone, Marble & Limestone for UK Homes & Commercial Projects
@@ -1120,7 +1188,7 @@
     <!-- ===== MAIN CONTENT ===== -->
     <div class="main-content">
         <div class="container">
-            <!-- Page Header -->
+            <!-- Page Header - COMPACT -->
             <div class="page-header">
                 <h1 id="pageTitle">Stone Products</h1>
                 <div class="breadcrumb" id="breadcrumb">
@@ -1130,99 +1198,48 @@
                 </div>
             </div>
             
-            <!-- Active Filters Display -->
-            <div class="active-filters" id="activeFilters" style="display: none;">
-                <span class="active-filters-title">Active Filters:</span>
-                <!-- Active filters will show here -->
-            </div>
-            
-            <!-- Main Layout with Sidebar and Products -->
+            <!-- Main Layout with Filters and Products -->
             <div class="main-layout">
-                <!-- Left Filters Sidebar -->
-                <div class="filters-sidebar">
-                    <!-- Sort Options -->
-                    <div class="filter-section">
-                        <h3 class="filter-title">
-                            <i class="fas fa-sort"></i>
-                            Sort By
-                        </h3>
-                        <div class="filter-tags" id="sortOptions">
-                            <div class="filter-tag active" data-sort="name">
-                                Name A-Z
-                            </div>
-                            <div class="filter-tag" data-sort="price-low">
-                                Price Low to High
-                            </div>
-                            <div class="filter-tag" data-sort="price-high">
-                                Price High to Low
-                            </div>
-                        </div>
+                <!-- Filters Section -->
+                <div class="filters-section">
+                    <div class="filters-header">
+                        <div class="filters-title">Filters</div>
+                        <button class="clear-filters" id="clearFilters">Clear All</button>
                     </div>
                     
-                    <!-- Stone Types Filter -->
-                    <div class="filter-section">
-                        <h3 class="filter-title">
-                            <i class="fas fa-gem"></i>
-                            Stone Types
-                        </h3>
-                        <div class="filter-tags" id="stoneTypeFilters">
-                            <div class="loading-products">
+                    <!-- Color Filter -->
+                    <div class="filter-group">
+                        <div class="filter-title">
+                            Color
+                            <button class="filter-toggle" data-target="colorOptions">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </div>
+                        <div class="filter-options" id="colorOptions">
+                            <!-- Color options will be dynamically loaded here -->
+                            <div class="loading-filters">
                                 <i class="fas fa-spinner fa-spin"></i>
-                                <p>Loading stone types...</p>
+                                <span>Loading colors...</span>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Categories Filter -->
-                    <div class="filter-section">
-                        <h3 class="filter-title">
-                            <i class="fas fa-layer-group"></i>
-                            Categories
-                        </h3>
-                        <div class="filter-tags" id="categoryFilters">
-                            <div class="loading-products">
-                                <i class="fas fa-spinner fa-spin"></i>
-                                <p>Loading categories...</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Colors Filter -->
-                    <div class="filter-section">
-                        <h3 class="filter-title">
-                            <i class="fas fa-palette"></i>
-                            Colors
-                        </h3>
-                        <div class="filter-tags" id="colorFilters">
-                            <div class="loading-products">
-                                <i class="fas fa-spinner fa-spin"></i>
-                                <p>Loading colors...</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Price Range Filter -->
-                    <div class="filter-section">
-                        <h3 class="filter-title">
-                            <i class="fas fa-pound-sign"></i>
+                    <!-- Price Filter -->
+                    <div class="filter-group">
+                        <div class="filter-title">
                             Price Range
-                        </h3>
-                        <div class="filter-tags" id="priceFilters">
-                            <div class="filter-tag" data-filter="price" data-value="0-500">
-                                Under £500
-                                <span class="filter-count">0</span>
+                            <button class="filter-toggle" data-target="priceRange">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </div>
+                        <div class="price-range" id="priceRange">
+                            <div class="price-inputs">
+                                <input type="number" class="price-input" id="minPrice" placeholder="Min" min="0">
+                                <input type="number" class="price-input" id="maxPrice" placeholder="Max" min="0">
                             </div>
-                            <div class="filter-tag" data-filter="price" data-value="500-1000">
-                                £500 - £1000
-                                <span class="filter-count">0</span>
-                            </div>
-                            <div class="filter-tag" data-filter="price" data-value="1000-2000">
-                                £1000 - £2000
-                                <span class="filter-count">0</span>
-                            </div>
-                            <div class="filter-tag" data-filter="price" data-value="2000+">
-                                Over £2000
-                                <span class="filter-count">0</span>
+                            <input type="range" class="price-slider" id="priceSlider" min="0" max="1000" step="10">
+                            <div class="price-display">
+                                Price: £<span id="minPriceDisplay">0</span> - £<span id="maxPriceDisplay">1000</span>
                             </div>
                         </div>
                     </div>
@@ -1234,9 +1251,18 @@
                         <div class="products-count" id="productsCount">
                             Loading products...
                         </div>
+                        <div class="sort-options">
+                            <span class="sort-label">Sort by:</span>
+                            <select class="sort-select" id="sortSelect">
+                                <option value="default">Default</option>
+                                <option value="price-low">Price: Low to High</option>
+                                <option value="price-high">Price: High to Low</option>
+                                <option value="name">Name: A to Z</option>
+                            </select>
+                        </div>
                     </div>
                     
-                    <!-- ✅ PERFECT 1:1 RATIO PRODUCT CARDS -->
+                    <!-- ✅ PERFECT 1:1 RATIO PRODUCT CARDS - 4 PER ROW -->
                     <div id="products-list"></div>
                 </div>
             </div>
@@ -1315,24 +1341,23 @@
         </div>
     </footer>
 
-    <!-- Smart Scroll Behavior Script -->
+    <!-- Smart Scroll Behavior Script - HEADER ALWAYS HIDDEN EXCEPT AT TOP -->
     <script>
-        // Smart Scroll Behavior for Header
+        // Smart Scroll Behavior for Header - Always hidden except at top
         document.addEventListener('DOMContentLoaded', function() {
             const header = document.getElementById('mainHeader');
-            const usesTopBar = document.querySelector('.uses-top-bar');
             let lastScrollY = window.scrollY;
             let ticking = false;
             
             function updateHeader() {
                 const currentScrollY = window.scrollY;
                 
-                if (currentScrollY > lastScrollY && currentScrollY > 100) {
-                    // Scrolling down - hide header
+                // Always hide header when scrolled down from top
+                if (currentScrollY > 50) {
                     header.classList.add('hidden');
                     header.classList.remove('visible');
                 } else {
-                    // Scrolling up - show header
+                    // Only show when at the very top
                     header.classList.remove('hidden');
                     header.classList.add('visible');
                 }
@@ -1350,7 +1375,7 @@
             
             window.addEventListener('scroll', onScroll, { passive: true });
             
-            // Initialize header as visible
+            // Initialize header as visible (at top)
             header.classList.add('visible');
         });
     </script>
@@ -1369,18 +1394,17 @@
             filteredProducts: [],
             currentUsage: null,
             currentStoneName: null,
+            user: null,
             filters: {
-                stoneTypes: [],
-                categories: [],
                 colors: [],
-                priceRanges: [],
-                sortBy: 'name'
+                minPrice: 0,
+                maxPrice: 1000
             },
-            user: null
+            sortOption: 'default'
         };
 
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Initializing Category Products Page...');
+            console.log('🚀 Initializing Category Products Page with Filters...');
             
             // Get URL parameters
             const urlParams = new URLSearchParams(window.location.search);
@@ -1405,6 +1429,8 @@
             initializeSearch();
             initializeUserProfile();
             initializeMegaMenu();
+            initializeFilters();
+            initializeSorting();
         }
 
         // Initialize search functionality
@@ -1594,6 +1620,363 @@
             });
         }
 
+        // ===== FILTER SYSTEM FUNCTIONS =====
+
+        // Initialize filters
+        function initializeFilters() {
+            // Initialize filter toggles
+            const filterToggles = document.querySelectorAll('.filter-toggle');
+            filterToggles.forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    const targetId = this.getAttribute('data-target');
+                    const target = document.getElementById(targetId);
+                    if (target) {
+                        target.style.display = target.style.display === 'none' ? 'block' : 'none';
+                        this.querySelector('i').classList.toggle('fa-chevron-down');
+                        this.querySelector('i').classList.toggle('fa-chevron-up');
+                    }
+                });
+            });
+
+            // Initialize price slider
+            const priceSlider = document.getElementById('priceSlider');
+            const minPriceInput = document.getElementById('minPrice');
+            const maxPriceInput = document.getElementById('maxPrice');
+            const minPriceDisplay = document.getElementById('minPriceDisplay');
+            const maxPriceDisplay = document.getElementById('maxPriceDisplay');
+
+            if (priceSlider && minPriceInput && maxPriceInput) {
+                // Set initial values
+                priceSlider.value = appState.filters.maxPrice;
+                minPriceInput.value = appState.filters.minPrice;
+                maxPriceInput.value = appState.filters.maxPrice;
+                minPriceDisplay.textContent = appState.filters.minPrice;
+                maxPriceDisplay.textContent = appState.filters.maxPrice;
+
+                // Update price display when slider changes
+                priceSlider.addEventListener('input', function() {
+                    appState.filters.maxPrice = parseInt(this.value);
+                    maxPriceInput.value = appState.filters.maxPrice;
+                    maxPriceDisplay.textContent = appState.filters.maxPrice;
+                    applyFilters();
+                });
+
+                // Update filters when price inputs change
+                minPriceInput.addEventListener('change', function() {
+                    appState.filters.minPrice = parseInt(this.value) || 0;
+                    minPriceDisplay.textContent = appState.filters.minPrice;
+                    applyFilters();
+                });
+
+                maxPriceInput.addEventListener('change', function() {
+                    appState.filters.maxPrice = parseInt(this.value) || 1000;
+                    priceSlider.value = appState.filters.maxPrice;
+                    maxPriceDisplay.textContent = appState.filters.maxPrice;
+                    applyFilters();
+                });
+            }
+
+            // Clear filters button
+            const clearFiltersBtn = document.getElementById('clearFilters');
+            if (clearFiltersBtn) {
+                clearFiltersBtn.addEventListener('click', function() {
+                    clearAllFilters();
+                });
+            }
+        }
+
+        // Initialize sorting
+        function initializeSorting() {
+            const sortSelect = document.getElementById('sortSelect');
+            if (sortSelect) {
+                sortSelect.addEventListener('change', function() {
+                    appState.sortOption = this.value;
+                    applyFilters();
+                });
+            }
+        }
+
+        // Generate filter options from products
+        function generateFilterOptions() {
+            console.log('🔄 Generating filter options...');
+            
+            // Generate color options with grouping similar colors
+            const colorOptions = document.getElementById('colorOptions');
+            if (colorOptions) {
+                colorOptions.innerHTML = '';
+                
+                const groupedColors = groupSimilarColors(appState.products);
+                
+                Object.keys(groupedColors).forEach(colorGroup => {
+                    const count = groupedColors[colorGroup].count;
+                    const option = document.createElement('div');
+                    option.className = 'filter-option';
+                    option.innerHTML = `
+                        <input type="checkbox" class="filter-checkbox" id="color-${colorGroup}" data-color="${colorGroup}">
+                        <label for="color-${colorGroup}" class="filter-label">
+                            ${colorGroup}
+                            <span class="filter-count">${count}</span>
+                        </label>
+                    `;
+                    
+                    option.querySelector('input').addEventListener('change', function() {
+                        if (this.checked) {
+                            appState.filters.colors.push(colorGroup);
+                        } else {
+                            appState.filters.colors = appState.filters.colors.filter(c => c !== colorGroup);
+                        }
+                        applyFilters();
+                    });
+                    
+                    colorOptions.appendChild(option);
+                });
+            }
+        }
+
+        // Group similar colors together
+        function groupSimilarColors(products) {
+            const colorGroups = {};
+            
+            products.forEach(product => {
+                if (product.color && product.color.trim() !== '') {
+                    const originalColor = product.color.trim();
+                    const normalizedColor = normalizeColor(originalColor);
+                    
+                    if (!colorGroups[normalizedColor]) {
+                        colorGroups[normalizedColor] = {
+                            count: 0,
+                            originalColors: new Set()
+                        };
+                    }
+                    
+                    colorGroups[normalizedColor].count++;
+                    colorGroups[normalizedColor].originalColors.add(originalColor);
+                }
+            });
+            
+            // Convert to simple count object for display
+            const result = {};
+            Object.keys(colorGroups).forEach(group => {
+                result[group] = colorGroups[group].count;
+            });
+            
+            console.log('Grouped colors:', result);
+            return result;
+        }
+
+        // Normalize color names (group similar colors)
+        function normalizeColor(color) {
+            const colorLower = color.toLowerCase();
+            
+            // Red variations
+            if (colorLower.includes('red') || colorLower.includes('crimson') || colorLower.includes('scarlet')) {
+                return 'Red';
+            }
+            // Blue variations
+            if (colorLower.includes('blue') || colorLower.includes('navy') || colorLower.includes('azure')) {
+                return 'Blue';
+            }
+            // Black variations
+            if (colorLower.includes('black') || colorLower.includes('onyx') || colorLower.includes('ebony') || colorLower.includes('dark')) {
+                return 'Black';
+            }
+            // White variations
+            if (colorLower.includes('white') || colorLower.includes('ivory') || colorLower.includes('pearl')) {
+                return 'White';
+            }
+            // Green variations
+            if (colorLower.includes('green') || colorLower.includes('emerald') || colorLower.includes('olive')) {
+                return 'Green';
+            }
+            // Yellow variations
+            if (colorLower.includes('yellow') || colorLower.includes('gold') || colorLower.includes('amber')) {
+                return 'Yellow';
+            }
+            // Brown variations
+            if (colorLower.includes('brown') || colorLower.includes('tan') || colorLower.includes('beige')) {
+                return 'Brown';
+            }
+            // Gray variations
+            if (colorLower.includes('gray') || colorLower.includes('grey') || colorLower.includes('silver')) {
+                return 'Gray';
+            }
+            
+            // Capitalize first letter for other colors
+            return color.charAt(0).toUpperCase() + color.slice(1).toLowerCase();
+        }
+
+        // Apply all filters
+        function applyFilters() {
+            console.log('🔄 Applying filters...', appState.filters);
+            
+            let filteredProducts = [...appState.products];
+            
+            // Apply URL filters first
+            if (appState.currentUsage) {
+                filteredProducts = filteredProducts.filter(product => 
+                    product.uses && 
+                    product.uses.toLowerCase().replace(/\s+/g, '-') === appState.currentUsage.toLowerCase()
+                );
+            }
+            
+            if (appState.currentStoneName) {
+                filteredProducts = filteredProducts.filter(product => 
+                    product.stone_name && 
+                    product.stone_name.toLowerCase().replace(/\s+/g, '-') === appState.currentStoneName.toLowerCase()
+                );
+            }
+            
+            // Apply color filters
+            if (appState.filters.colors.length > 0) {
+                filteredProducts = filteredProducts.filter(product => {
+                    if (!product.color) return false;
+                    const normalizedColor = normalizeColor(product.color);
+                    return appState.filters.colors.includes(normalizedColor);
+                });
+            }
+            
+            // Apply price filters
+            filteredProducts = filteredProducts.filter(product => {
+                const price = parseFloat(product.price) || 0;
+                return price >= appState.filters.minPrice && price <= appState.filters.maxPrice;
+            });
+            
+            // Apply sorting
+            filteredProducts = sortProducts(filteredProducts, appState.sortOption);
+            
+            appState.filteredProducts = filteredProducts;
+            displayProducts();
+            updateProductsCount();
+            updateFilterCounts();
+        }
+
+        // Sort products based on selected option
+        function sortProducts(products, sortOption) {
+            const sortedProducts = [...products];
+            
+            switch(sortOption) {
+                case 'price-low':
+                    return sortedProducts.sort((a, b) => {
+                        const priceA = parseFloat(a.price) || 0;
+                        const priceB = parseFloat(b.price) || 0;
+                        return priceA - priceB;
+                    });
+                    
+                case 'price-high':
+                    return sortedProducts.sort((a, b) => {
+                        const priceA = parseFloat(a.price) || 0;
+                        const priceB = parseFloat(b.price) || 0;
+                        return priceB - priceA;
+                    });
+                    
+                case 'name':
+                    return sortedProducts.sort((a, b) => {
+                        const nameA = (a.stone_name || '').toLowerCase();
+                        const nameB = (b.stone_name || '').toLowerCase();
+                        return nameA.localeCompare(nameB);
+                    });
+                    
+                default:
+                    return sortedProducts;
+            }
+        }
+
+        // Clear all filters
+        function clearAllFilters() {
+            console.log('🔄 Clearing all filters...');
+            
+            // Reset filter state
+            appState.filters = {
+                colors: [],
+                minPrice: 0,
+                maxPrice: 1000
+            };
+            
+            // Reset UI elements
+            const checkboxes = document.querySelectorAll('.filter-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            const priceSlider = document.getElementById('priceSlider');
+            const minPriceInput = document.getElementById('minPrice');
+            const maxPriceInput = document.getElementById('maxPrice');
+            const minPriceDisplay = document.getElementById('minPriceDisplay');
+            const maxPriceDisplay = document.getElementById('maxPriceDisplay');
+            
+            if (priceSlider && minPriceInput && maxPriceInput) {
+                priceSlider.value = 1000;
+                minPriceInput.value = 0;
+                maxPriceInput.value = 1000;
+                minPriceDisplay.textContent = '0';
+                maxPriceDisplay.textContent = '1000';
+            }
+            
+            // Reset sort option
+            const sortSelect = document.getElementById('sortSelect');
+            if (sortSelect) {
+                sortSelect.value = 'default';
+                appState.sortOption = 'default';
+            }
+            
+            // Reapply filters (which will now be empty)
+            applyFilters();
+        }
+
+        // Update filter counts based on current filtered products
+        function updateFilterCounts() {
+            // Update color counts
+            const colorOptions = document.querySelectorAll('#colorOptions .filter-option');
+            colorOptions.forEach(option => {
+                const checkbox = option.querySelector('input');
+                const color = checkbox.getAttribute('data-color');
+                const countSpan = option.querySelector('.filter-count');
+                
+                if (color && countSpan) {
+                    const count = appState.products.filter(p => {
+                        if (!p.color) return false;
+                        const normalizedColor = normalizeColor(p.color);
+                        return normalizedColor === color && isProductInCurrentFilter(p, { colors: [color] });
+                    }).length;
+                    
+                    countSpan.textContent = count;
+                }
+            });
+        }
+
+        // Helper function to check if a product would be in current filter
+        function isProductInCurrentFilter(product, additionalFilter = {}) {
+            const combinedFilters = { ...appState.filters, ...additionalFilter };
+            
+            // Check color
+            if (combinedFilters.colors.length > 0) {
+                if (!product.color) return false;
+                const normalizedColor = normalizeColor(product.color);
+                if (!combinedFilters.colors.includes(normalizedColor)) {
+                    return false;
+                }
+            }
+            
+            // Check price
+            const price = parseFloat(product.price) || 0;
+            if (price < combinedFilters.minPrice || price > combinedFilters.maxPrice) {
+                return false;
+            }
+            
+            // Check URL filters
+            if (appState.currentUsage && 
+                (!product.uses || product.uses.toLowerCase().replace(/\s+/g, '-') !== appState.currentUsage.toLowerCase())) {
+                return false;
+            }
+            
+            if (appState.currentStoneName && 
+                (!product.stone_name || product.stone_name.toLowerCase().replace(/\s+/g, '-') !== appState.currentStoneName.toLowerCase())) {
+                return false;
+            }
+            
+            return true;
+        }
+
         // ===== CATEGORY PRODUCTS SPECIFIC FUNCTIONS =====
 
         async function initializePage() {
@@ -1601,11 +1984,9 @@
                 console.log('🔄 Starting page initialization...');
                 await loadProductsFromFirestore();
                 updatePageTitle();
-                generateQuickFilters();
                 applyAutoFilter();
-                initializeSorting();
                 generateUsesNavigation();
-                initializeFilters();
+                generateFilterOptions();
                 console.log('✅ Page initialization completed successfully!');
             } catch (error) {
                 console.error('❌ Error initializing page:', error);
@@ -1666,9 +2047,9 @@
                     });
                     appState.products = updatedProducts;
                     console.log('🔄 Products updated in real-time:', updatedProducts.length);
-                    generateQuickFilters();
                     applyAutoFilter();
                     generateUsesNavigation();
+                    generateFilterOptions();
                 });
                 
             } catch (error) {
@@ -1714,351 +2095,7 @@
         // ✅ AUTO FILTER FUNCTION
         function applyAutoFilter() {
             console.log('🔄 Applying auto filter from URL...');
-            
-            let filteredProducts = [...appState.products];
-            
-            // 1. Pehle usage filter lagao
-            if (appState.currentUsage) {
-                filteredProducts = filteredProducts.filter(product => 
-                    product.uses && 
-                    product.uses.toLowerCase().replace(/\s+/g, '-') === appState.currentUsage.toLowerCase()
-                );
-                console.log(`✅ After usage filter (${appState.currentUsage}):`, filteredProducts.length);
-            }
-            
-            // 2. Fir stone_name filter lagao (MAIN FILTER)
-            if (appState.currentStoneName) {
-                filteredProducts = filteredProducts.filter(product => 
-                    product.stone_name && 
-                    product.stone_name.toLowerCase().replace(/\s+/g, '-') === appState.currentStoneName.toLowerCase()
-                );
-                console.log(`✅ After stone name filter (${appState.currentStoneName}):`, filteredProducts.length);
-                
-                // Auto-select the stone type in filters
-                if (!appState.filters.stoneTypes.includes(appState.currentStoneName)) {
-                    appState.filters.stoneTypes = [appState.currentStoneName];
-                }
-            }
-            
-            appState.filteredProducts = filteredProducts;
-            displayProducts();
-            updateProductsCount();
-            updateActiveFilters();
-        }
-
-        // ✅ QUICK FILTERS GENERATION
-        function generateQuickFilters() {
-            generateStoneTypeFilters();
-            generateCategoryFilters();
-            generateColorFilters();
-            updatePriceFilterCounts();
-        }
-
-        function generateStoneTypeFilters() {
-            const stoneTypeFilters = document.getElementById('stoneTypeFilters');
-            if (!stoneTypeFilters) return;
-            
-            let productsToFilter = getBaseFilteredProducts();
-            
-            const uniqueStoneTypes = [...new Set(productsToFilter
-                .filter(product => product.stone_name && product.stone_name.trim() !== '')
-                .map(product => product.stone_name.trim())
-            )].sort();
-            
-            console.log('Available stone types:', uniqueStoneTypes);
-            
-            if (uniqueStoneTypes.length === 0) {
-                stoneTypeFilters.innerHTML = '<div style="color:#666; padding:10px;">No stone types available</div>';
-                return;
-            }
-            
-            stoneTypeFilters.innerHTML = uniqueStoneTypes.map(stoneType => {
-                const count = productsToFilter.filter(product => 
-                    product.stone_name && product.stone_name.trim() === stoneType
-                ).length;
-                
-                const isActive = appState.filters.stoneTypes.includes(stoneType);
-                
-                return `
-                    <div class="filter-tag ${isActive ? 'active' : ''}" 
-                         data-filter="stoneType" 
-                         data-value="${stoneType}">
-                        ${stoneType}
-                        <span class="filter-count">${count}</span>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function generateCategoryFilters() {
-            const categoryFilters = document.getElementById('categoryFilters');
-            if (!categoryFilters) return;
-            
-            let productsToFilter = getBaseFilteredProducts();
-            
-            const uniqueCategories = [...new Set(productsToFilter
-                .filter(product => product.category && product.category.trim() !== '')
-                .map(product => product.category.trim())
-            )].sort();
-            
-            console.log('Available categories:', uniqueCategories);
-            
-            if (uniqueCategories.length === 0) {
-                categoryFilters.innerHTML = '<div style="color:#666; padding:10px;">No categories available</div>';
-                return;
-            }
-            
-            categoryFilters.innerHTML = uniqueCategories.map(category => {
-                const count = productsToFilter.filter(product => 
-                    product.category && product.category.trim() === category
-                ).length;
-                
-                const isActive = appState.filters.categories.includes(category);
-                
-                return `
-                    <div class="filter-tag ${isActive ? 'active' : ''}" 
-                         data-filter="category" 
-                         data-value="${category}">
-                        ${category}
-                        <span class="filter-count">${count}</span>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function generateColorFilters() {
-            const colorFilters = document.getElementById('colorFilters');
-            if (!colorFilters) return;
-            
-            let productsToFilter = getBaseFilteredProducts();
-            
-            const uniqueColors = [...new Set(productsToFilter
-                .filter(product => product.color && product.color.trim() !== '')
-                .map(product => product.color.trim())
-            )].sort();
-            
-            console.log('Available colors:', uniqueColors);
-            
-            if (uniqueColors.length === 0) {
-                colorFilters.innerHTML = '<div style="color:#666; padding:10px;">No colors available</div>';
-                return;
-            }
-            
-            colorFilters.innerHTML = uniqueColors.map(color => {
-                const count = productsToFilter.filter(product => 
-                    product.color && product.color.trim() === color
-                ).length;
-                
-                const isActive = appState.filters.colors.includes(color);
-                
-                return `
-                    <div class="filter-tag ${isActive ? 'active' : ''}" 
-                         data-filter="color" 
-                         data-value="${color}">
-                        ${color}
-                        <span class="filter-count">${count}</span>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function updatePriceFilterCounts() {
-            const priceFilters = document.getElementById('priceFilters');
-            if (!priceFilters) return;
-            
-            let productsToFilter = getBaseFilteredProducts();
-            
-            // Update counts for each price range
-            const priceRanges = [
-                { value: '0-500', min: 0, max: 500 },
-                { value: '500-1000', min: 500, max: 1000 },
-                { value: '1000-2000', min: 1000, max: 2000 },
-                { value: '2000+', min: 2000, max: Infinity }
-            ];
-            
-            priceRanges.forEach(range => {
-                const count = productsToFilter.filter(product => {
-                    const price = product.price || 0;
-                    return price >= range.min && price <= range.max;
-                }).length;
-                
-                const filterTag = priceFilters.querySelector(`[data-value="${range.value}"] .filter-count`);
-                if (filterTag) {
-                    filterTag.textContent = count;
-                }
-            });
-        }
-
-        // ✅ FILTERS INITIALIZATION
-        function initializeFilters() {
-            // Sort options
-            document.querySelectorAll('[data-sort]').forEach(tag => {
-                tag.addEventListener('click', function() {
-                    document.querySelectorAll('[data-sort]').forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    appState.filters.sortBy = this.getAttribute('data-sort');
-                    applyManualFilters();
-                });
-            });
-            
-            // Stone type filters
-            document.querySelectorAll('[data-filter="stoneType"]').forEach(tag => {
-                tag.addEventListener('click', function() {
-                    const value = this.getAttribute('data-value');
-                    toggleStoneTypeFilter(value);
-                });
-            });
-            
-            // Category filters
-            document.querySelectorAll('[data-filter="category"]').forEach(tag => {
-                tag.addEventListener('click', function() {
-                    const value = this.getAttribute('data-value');
-                    toggleCategoryFilter(value);
-                });
-            });
-            
-            // Color filters
-            document.querySelectorAll('[data-filter="color"]').forEach(tag => {
-                tag.addEventListener('click', function() {
-                    const value = this.getAttribute('data-value');
-                    toggleColorFilter(value);
-                });
-            });
-            
-            // Price filters
-            document.querySelectorAll('[data-filter="price"]').forEach(tag => {
-                tag.addEventListener('click', function() {
-                    const value = this.getAttribute('data-value');
-                    togglePriceFilter(value);
-                });
-            });
-        }
-
-        function toggleStoneTypeFilter(stoneType) {
-            const index = appState.filters.stoneTypes.indexOf(stoneType);
-            if (index > -1) {
-                appState.filters.stoneTypes.splice(index, 1);
-            } else {
-                appState.filters.stoneTypes.push(stoneType);
-            }
-            applyManualFilters();
-        }
-
-        function toggleCategoryFilter(category) {
-            const index = appState.filters.categories.indexOf(category);
-            if (index > -1) {
-                appState.filters.categories.splice(index, 1);
-            } else {
-                appState.filters.categories.push(category);
-            }
-            applyManualFilters();
-        }
-
-        function toggleColorFilter(color) {
-            const index = appState.filters.colors.indexOf(color);
-            if (index > -1) {
-                appState.filters.colors.splice(index, 1);
-            } else {
-                appState.filters.colors.push(color);
-            }
-            applyManualFilters();
-        }
-
-        function togglePriceFilter(priceRange) {
-            const index = appState.filters.priceRanges.indexOf(priceRange);
-            if (index > -1) {
-                appState.filters.priceRanges.splice(index, 1);
-            } else {
-                appState.filters.priceRanges.push(priceRange);
-            }
-            applyManualFilters();
-        }
-
-        function getBaseFilteredProducts() {
-            let filteredProducts = [...appState.products];
-            
-            // Filter by usage if specified in URL
-            if (appState.currentUsage) {
-                filteredProducts = filteredProducts.filter(product => 
-                    product.uses && 
-                    product.uses.toLowerCase().replace(/\s+/g, '-') === appState.currentUsage.toLowerCase()
-                );
-            }
-            
-            return filteredProducts;
-        }
-
-        function applyManualFilters() {
-            let filteredProducts = getBaseFilteredProducts();
-            
-            console.log('Applying manual filters:', appState.filters);
-            
-            // Filter by stone types
-            if (appState.filters.stoneTypes.length > 0) {
-                filteredProducts = filteredProducts.filter(product => 
-                    product.stone_name && 
-                    appState.filters.stoneTypes.includes(product.stone_name.trim())
-                );
-            }
-            
-            // Filter by categories
-            if (appState.filters.categories.length > 0) {
-                filteredProducts = filteredProducts.filter(product => 
-                    product.category && 
-                    appState.filters.categories.includes(product.category.trim())
-                );
-            }
-            
-            // Filter by colors
-            if (appState.filters.colors.length > 0) {
-                filteredProducts = filteredProducts.filter(product => 
-                    product.color && 
-                    appState.filters.colors.includes(product.color.trim())
-                );
-            }
-            
-            // Filter by price ranges
-            if (appState.filters.priceRanges.length > 0) {
-                filteredProducts = filteredProducts.filter(product => {
-                    const price = product.price || 0;
-                    return appState.filters.priceRanges.some(range => {
-                        if (range === '0-500') return price >= 0 && price <= 500;
-                        if (range === '500-1000') return price >= 500 && price <= 1000;
-                        if (range === '1000-2000') return price >= 1000 && price <= 2000;
-                        if (range === '2000+') return price >= 2000;
-                        return false;
-                    });
-                });
-            }
-            
-            // Sort products
-            filteredProducts = sortProducts(filteredProducts);
-            
-            appState.filteredProducts = filteredProducts;
-            displayProducts();
-            updateProductsCount();
-            updateActiveFilters();
-            updateFilterTags();
-        }
-
-        // ✅ SORTING FUNCTION
-        function sortProducts(products) {
-            switch (appState.filters.sortBy) {
-                case 'name':
-                    return products.sort((a, b) => (a.stone_name || '').localeCompare(b.stone_name || ''));
-                case 'price-low':
-                    return products.sort((a, b) => (a.price || 0) - (b.price || 0));
-                case 'price-high':
-                    return products.sort((a, b) => (b.price || 0) - (a.price || 0));
-                default:
-                    return products;
-            }
-        }
-
-        // ✅ INITIALIZE SORTING
-        function initializeSorting() {
-            // Already handled in initializeFilters
+            applyFilters();
         }
 
         // ✅ PERFECT 1:1 RATIO PRODUCT CARDS
@@ -2067,7 +2104,14 @@
             productsContainer.innerHTML = "";
 
             if (!appState.filteredProducts.length) {
-                productsContainer.innerHTML = "<p>No products found.</p>";
+                productsContainer.innerHTML = `
+                    <div class="no-products">
+                        <i class="fas fa-box-open"></i>
+                        <h3>No Products Found</h3>
+                        <p>We couldn't find any products matching your criteria.</p>
+                        <a href="index.html" class="details-btn">Back to Home</a>
+                    </div>
+                `;
                 return;
             }
 
@@ -2113,170 +2157,20 @@
             const productsCount = document.getElementById('productsCount');
             if (!productsCount) return;
             
-            const baseCount = getBaseFilteredProducts().length;
+            const baseCount = appState.products.length;
             const filteredCount = appState.filteredProducts.length;
             
             let countText = `Showing ${filteredCount} product${filteredCount !== 1 ? 's' : ''}`;
             
+            if (appState.currentUsage || appState.currentStoneName) {
+                countText += ` for ${appState.currentStoneName || appState.currentUsage || 'all categories'}`;
+            }
+            
             if (filteredCount < baseCount) {
-                countText += ` (${baseCount - filteredCount} hidden by filters)`;
+                countText += ` (filtered from ${baseCount})`;
             }
             
             productsCount.textContent = countText;
-        }
-
-        // ✅ UPDATE ACTIVE FILTERS
-        function updateActiveFilters() {
-            const activeFilters = document.getElementById('activeFilters');
-            const filters = [];
-            
-            // Stone type filters
-            appState.filters.stoneTypes.forEach(stoneType => {
-                filters.push(`
-                    <div class="active-filter">
-                        Stone: ${stoneType}
-                        <span class="remove-filter" data-type="stoneType" data-value="${stoneType}">×</span>
-                    </div>
-                `);
-            });
-            
-            // Category filters
-            appState.filters.categories.forEach(category => {
-                filters.push(`
-                    <div class="active-filter">
-                        Category: ${category}
-                        <span class="remove-filter" data-type="category" data-value="${category}">×</span>
-                    </div>
-                `);
-            });
-            
-            // Color filters
-            appState.filters.colors.forEach(color => {
-                filters.push(`
-                    <div class="active-filter">
-                        Color: ${color}
-                        <span class="remove-filter" data-type="color" data-value="${color}">×</span>
-                    </div>
-                `);
-            });
-            
-            // Price filters
-            appState.filters.priceRanges.forEach(priceRange => {
-                filters.push(`
-                    <div class="active-filter">
-                        Price: ${priceRange}
-                        <span class="remove-filter" data-type="price" data-value="${priceRange}">×</span>
-                    </div>
-                `);
-            });
-            
-            if (filters.length > 0) {
-                activeFilters.innerHTML = '<span class="active-filters-title">Active Filters:</span>' + filters.join('') + 
-                    `<button class="clear-all-btn" onclick="clearAllFilters()">Clear All</button>`;
-                activeFilters.style.display = 'flex';
-                
-                // Add remove functionality
-                document.querySelectorAll('.remove-filter').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const type = this.getAttribute('data-type');
-                        const value = this.getAttribute('data-value');
-                        
-                        if (type === 'stoneType') {
-                            appState.filters.stoneTypes = appState.filters.stoneTypes.filter(s => s !== value);
-                        } else if (type === 'category') {
-                            appState.filters.categories = appState.filters.categories.filter(c => c !== value);
-                        } else if (type === 'color') {
-                            appState.filters.colors = appState.filters.colors.filter(c => c !== value);
-                        } else if (type === 'price') {
-                            appState.filters.priceRanges = appState.filters.priceRanges.filter(p => p !== value);
-                        }
-                        
-                        applyManualFilters();
-                    });
-                });
-            } else {
-                activeFilters.style.display = 'none';
-            }
-        }
-
-        // ✅ UPDATE FILTER TAGS
-        function updateFilterTags() {
-            // Update sort options
-            document.querySelectorAll('[data-sort]').forEach(tag => {
-                const value = tag.getAttribute('data-sort');
-                if (appState.filters.sortBy === value) {
-                    tag.classList.add('active');
-                } else {
-                    tag.classList.remove('active');
-                }
-            });
-            
-            // Update stone type tags
-            document.querySelectorAll('[data-filter="stoneType"]').forEach(tag => {
-                const value = tag.getAttribute('data-value');
-                if (appState.filters.stoneTypes.includes(value)) {
-                    tag.classList.add('active');
-                } else {
-                    tag.classList.remove('active');
-                }
-            });
-            
-            // Update category tags
-            document.querySelectorAll('[data-filter="category"]').forEach(tag => {
-                const value = tag.getAttribute('data-value');
-                if (appState.filters.categories.includes(value)) {
-                    tag.classList.add('active');
-                } else {
-                    tag.classList.remove('active');
-                }
-            });
-            
-            // Update color tags
-            document.querySelectorAll('[data-filter="color"]').forEach(tag => {
-                const value = tag.getAttribute('data-value');
-                if (appState.filters.colors.includes(value)) {
-                    tag.classList.add('active');
-                } else {
-                    tag.classList.remove('active');
-                }
-            });
-            
-            // Update price tags
-            document.querySelectorAll('[data-filter="price"]').forEach(tag => {
-                const value = tag.getAttribute('data-value');
-                if (appState.filters.priceRanges.includes(value)) {
-                    tag.classList.add('active');
-                } else {
-                    tag.classList.remove('active');
-                }
-            });
-        }
-
-        // ✅ CLEAR ALL FILTERS
-        function clearAllFilters() {
-            appState.filters = {
-                stoneTypes: [],
-                categories: [],
-                colors: [],
-                priceRanges: [],
-                sortBy: 'name'
-            };
-            
-            // Reset sorting
-            document.querySelectorAll('[data-sort]').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.getAttribute('data-sort') === 'name') {
-                    btn.classList.add('active');
-                }
-            });
-            
-            applyManualFilters();
-        }
-
-        // ✅ ADD TO CART FUNCTION
-        function addToCart(productId) {
-            console.log('Adding product to cart:', productId);
-            alert('Product added to cart!');
         }
 
         // ✅ USES NAVIGATION FUNCTION
@@ -2407,7 +2301,7 @@
                     stone_name: "RED SAND STONE",
                     category: "Red Sand Stone",
                     type: "Natural",
-                    color: "green",
+                    color: "Red",
                     size: "10",
                     length: "5",
                     width: "2",
@@ -2426,12 +2320,84 @@
                     compressive_strength: "High",
                     images: ["https://i.ibb.co/HLpBc94R/51b7aaab131a.jpg"],
                     pageUrl: "product-details.html?id=1"
+                },
+                {
+                    id: 2,
+                    stone_name: "WHITE MARBLE",
+                    category: "Marble",
+                    type: "Natural",
+                    color: "White",
+                    size: "12",
+                    length: "6",
+                    width: "3",
+                    thickness: "25-35 mm",
+                    uses: "Flooring",
+                    price: 150,
+                    price_unit: "sqft",
+                    description: "Elegant white marble with fine veining for luxurious interiors",
+                    density: "2.7 g/cm³",
+                    finish: "Polished",
+                    water_absorption: "Medium",
+                    rate_description: "Premium quality marble at competitive prices",
+                    factory_name: "marble works",
+                    contact_number: "+91 9876543210",
+                    email: "info@marbleworks.com",
+                    compressive_strength: "Medium",
+                    images: ["https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"],
+                    pageUrl: "product-details.html?id=2"
+                },
+                {
+                    id: 3,
+                    stone_name: "BLACK GRANITE",
+                    category: "Granite",
+                    type: "Natural",
+                    color: "Black",
+                    size: "15",
+                    length: "7",
+                    width: "4",
+                    thickness: "30-40 mm",
+                    uses: "Countertop",
+                    price: 200,
+                    price_unit: "sqft",
+                    description: "Durable black granite perfect for kitchen countertops",
+                    density: "2.8 g/cm³",
+                    finish: "Polished",
+                    water_absorption: "Very Low",
+                    rate_description: "High-end granite with excellent durability",
+                    factory_name: "granite experts",
+                    contact_number: "+91 8765432109",
+                    email: "sales@graniteexperts.com",
+                    compressive_strength: "Very High",
+                    images: ["https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"],
+                    pageUrl: "product-details.html?id=3"
+                },
+                {
+                    id: 4,
+                    stone_name: "BEIGE LIMESTONE",
+                    category: "Limestone",
+                    type: "Natural",
+                    color: "Beige",
+                    size: "11",
+                    length: "5.5",
+                    width: "2.5",
+                    thickness: "22-32 mm",
+                    uses: "Wall Cladding",
+                    price: 80,
+                    price_unit: "sqft",
+                    description: "Warm beige limestone ideal for exterior and interior walls",
+                    density: "2.5 g/cm³",
+                    finish: "Honed",
+                    water_absorption: "Medium",
+                    rate_description: "Affordable limestone with natural appeal",
+                    factory_name: "limestone quarry",
+                    contact_number: "+91 7654321098",
+                    email: "contact@limestonequarry.com",
+                    compressive_strength: "Medium",
+                    images: ["https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"],
+                    pageUrl: "product-details.html?id=4"
                 }
             ];
         }
-
-        // Make clearAllFilters available globally
-        window.clearAllFilters = clearAllFilters;
 
         console.log('✅ All functions defined successfully!');
     </script>
