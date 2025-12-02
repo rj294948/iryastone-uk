@@ -457,17 +457,19 @@
             background: #b8860b;
         }
         
-        /* Mega Menu Styles */
+        /* Mega Menu Styles - UPDATED FOR FULL WIDTH */
         .mega-menu {
             position: absolute;
             top: 100%;
             left: 0; 
-            width: 100%; 
+            width: 100vw; /* Full viewport width */
             background: white;
             z-index: 1000;
             box-shadow: 0 5px 20px rgba(0,0,0,0.15);
             display: none; 
             padding: 25px 0;
+            transform: translateX(-50%); /* Center align */
+            left: 50%; /* Center align */
         }
         
         .use-item:hover .mega-menu {
@@ -479,6 +481,8 @@
             grid-template-columns: repeat(6, 1fr);
             gap: 15px;
             padding: 0 15px;
+            max-width: 1200px; /* Match container width */
+            margin: 0 auto; /* Center the grid */
         }
         
         .pattern-item {
@@ -615,7 +619,7 @@
         .mobile-pattern-image {
             width: 100%;
             height: 80px;
-            background-size: contain; /* Changed to contain for 100% display */
+            background-size: contain; /* Full image show */
             background-position: center;
             background-repeat: no-repeat;
             border-radius: 5px;
@@ -831,13 +835,13 @@
         .use-category-image {
             width: 100%;
             height: 200px;
-            background-size: contain; /* Changed from cover to contain */
+            background-size: contain; /* Full image show without cropping */
             background-position: center;
             background-repeat: no-repeat;
             border-radius: 10px;
             margin-bottom: 15px;
             transition: transform 0.3s;
-            background-color: #f8f9fa; /* Background color for transparent images */
+            background-color: #f8f9fa; /* Background color for better visibility */
         }
 
         .use-category-link:hover .use-category-image {
@@ -1065,6 +1069,13 @@
             
             .use-category-image {
                 height: 180px;
+            }
+            
+            /* Mega menu full width on mobile */
+            .mega-menu {
+                width: 100vw;
+                left: 50%;
+                transform: translateX(-50%);
             }
         }
 
@@ -1558,17 +1569,8 @@
                             usesContainer.appendChild(useItem);
                         });
                         
-                        // Close mega menu when clicking outside
-                        document.addEventListener('click', function(event) {
-                            const usesTopBar = document.getElementById('desktopUsesBar');
-                            const megaMenus = document.querySelectorAll('.mega-menu');
-                            
-                            if (!usesTopBar.contains(event.target)) {
-                                megaMenus.forEach(menu => {
-                                    menu.style.display = 'none';
-                                });
-                            }
-                        });
+                        // Initialize mega menu functionality
+                        initializeMegaMenu();
                     }
                     
                     // Function to update categories section with 100% images
@@ -1617,6 +1619,76 @@
                             
                             categoriesGrid.appendChild(categoryItem);
                         });
+                    }
+                    
+                    // Initialize mega menu functionality - UPDATED FOR FULL WIDTH
+                    function initializeMegaMenu() {
+                        console.log('🔄 Initializing Mega Menu...');
+                        
+                        const usesTopBar = document.querySelector('.uses-top-bar');
+                        const useItems = document.querySelectorAll('.use-item');
+                        
+                        if (!usesTopBar) {
+                            console.log('❌ Mega Menu container not found');
+                            return;
+                        }
+                        
+                        useItems.forEach((item) => {
+                            const megaMenu = item.querySelector('.mega-menu');
+                            
+                            if (megaMenu) {
+                                // Mouse enter - show menu
+                                item.addEventListener('mouseenter', () => {
+                                    // Hide all other mega menus
+                                    document.querySelectorAll('.mega-menu').forEach(menu => {
+                                        if (menu !== megaMenu) {
+                                            menu.style.display = 'none';
+                                        }
+                                    });
+                                    // Show current mega menu
+                                    megaMenu.style.display = 'block';
+                                });
+                                
+                                // Mouse leave - hide menu after delay
+                                item.addEventListener('mouseleave', (e) => {
+                                    const relatedTarget = e.relatedTarget;
+                                    if (!megaMenu.contains(relatedTarget)) {
+                                        setTimeout(() => {
+                                            if (!item.matches(':hover') && !megaMenu.matches(':hover')) {
+                                                megaMenu.style.display = 'none';
+                                            }
+                                        }, 100);
+                                    }
+                                });
+                                
+                                // Mega menu mouse events
+                                megaMenu.addEventListener('mouseenter', () => {
+                                    megaMenu.style.display = 'block';
+                                });
+                                
+                                megaMenu.addEventListener('mouseleave', () => {
+                                    setTimeout(() => {
+                                        if (!item.matches(':hover') && !megaMenu.matches(':hover')) {
+                                            megaMenu.style.display = 'none';
+                                        }
+                                    }, 100);
+                                });
+                            }
+                        });
+                        
+                        // Close all mega menus when clicking outside
+                        document.addEventListener('click', (event) => {
+                            const usesTopBar = document.querySelector('.uses-top-bar');
+                            const megaMenus = document.querySelectorAll('.mega-menu');
+                            
+                            if (!usesTopBar.contains(event.target)) {
+                                megaMenus.forEach(menu => {
+                                    menu.style.display = 'none';
+                                });
+                            }
+                        });
+                        
+                        console.log('✅ Mega Menu initialization complete');
                     }
                     
                     // Function to generate mobile uses menu (sidebar)
