@@ -1,26 +1,20 @@
-// auth.js - FIXED POPUP VERSION for Firebase 12.5.0
+// ===========================
+// auth.js - FINAL FIXED VERSION (Firebase 12.5.0)
+// ===========================
 
-// ===========================
 // Firebase Core
-// ===========================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-analytics.js";
 
-// ===========================
 // Firestore
-// ===========================
 import {
   getFirestore,
-  collection,
-  addDoc,
   doc,
   setDoc,
   serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
-// ===========================
-// Auth
-// ===========================
+// Firebase Auth
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -47,29 +41,47 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+getAnalytics(app);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Google Provider
+// Google provider (popup safe)
 const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({
+  prompt: "select_account",
+});
 
-// ==============================================================
-//                    AUTH MANAGER
-// ==============================================================
+// ======================================================================
+//                AUTH MANAGER (LATEST, STABLE, POPUP SAFE)
+// ======================================================================
 class AuthManager {
   constructor() {
     this.currentUser = null;
-    this.initAuthListener();
+    this.setupAuthListener();
   }
 
-  initAuthListener() {
+  // Realtime login listener
+  setupAuthListener() {
     onAuthStateChanged(auth, (user) => {
       this.currentUser = user;
       this.updateUI(user);
+
+      // Save login session in localStorage
+      if (user) {
+        localStorage.setItem("authUser", JSON.stringify({
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+        }));
+      } else {
+        localStorage.removeItem("authUser");
+      }
     });
   }
 
+  // ===========================
+  // Email Password Signup
+  // ===========================
   async signUp(email, password, displayName) {
     try {
       const userCredential = await createUserWithEmailAndPassword(
@@ -80,15 +92,17 @@ class AuthManager {
 
       await updateProfile(userCredential.user, { displayName });
 
-      await this.createUserDocument(userCredential.user, displayName);
+      await this.saveUserToFirestore(userCredential.user);
 
       return { success: true, user: userCredential.user };
     } catch (error) {
-      console.error(error);
-      return { success: false, error: this.getErrorMessage(error) };
+      return { success: false, error: this.errorMessage(error) };
     }
   }
 
+  // ===========================
+  // Email Login
+  // ===========================
   async signIn(email, password) {
     try {
       const userCredential = await signInWithEmailAndPassword(
@@ -96,56 +110,66 @@ class AuthManager {
         email,
         password
       );
+
       return { success: true, user: userCredential.user };
     } catch (error) {
-      console.error(error);
-      return { success: false, error: this.getErrorMessage(error) };
+      return { success: false, error: this.errorMessage(error) };
     }
   }
 
-  // FIXED POPUP GOOGLE LOGIN
+  // ===========================
+  // GOOGLE POPUP LOGIN (FIXED)
+  // ===========================
   async signInWithGoogle() {
     try {
       const result = await signInWithPopup(auth, googleProvider);
 
-      await this.createUserDocument(result.user, result.user.displayName);
+      await this.saveUserToFirestore(result.user);
 
       return { success: true, user: result.user };
     } catch (error) {
       console.error("Google Login Error:", error);
-      return { success: false, error: this.getErrorMessage(error) };
+      return { success: false, error: this.errorMessage(error) };
     }
   }
 
+  // ===========================
+  // Logout
+  // ===========================
   async logout() {
     try {
       await signOut(auth);
       return { success: true };
     } catch (error) {
-      return { success: false, error: this.getErrorMessage(error) };
+      return { success: false, error: this.errorMessage(error) };
     }
   }
 
-  // FIXED — no duplicates
-  async createUserDocument(user, displayName) {
+  // ===========================
+  // Save/Update User Firestore
+  // ===========================
+  async saveUserToFirestore(user) {
     try {
-      const userDoc = {
-        uid: user.uid,
-        email: user.email,
-        displayName: displayName,
-        createdAt: serverTimestamp(),
-        lastLogin: serverTimestamp(),
-      };
-
-      await setDoc(doc(db, "users", user.uid), userDoc, { merge: true });
-
-      console.log("User document updated/created");
+      await setDoc(
+        doc(db, "users", user.uid),
+        {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName || "User",
+          photoURL: user.photoURL || null,
+          lastLogin: serverTimestamp(),
+          createdAt: serverTimestamp(),
+        },
+        { merge: true }
+      );
     } catch (error) {
-      console.error("Error creating user document:", error);
+      console.error("Firestore save error:", error);
     }
   }
 
-  // ================= UI UPDATE =================
+  // ===========================
+  // Update UI
+  // ===========================
   updateUI(user) {
     const loginBtn = document.getElementById("loginButton");
     const userProfile = document.getElementById("userProfile");
@@ -155,46 +179,43 @@ class AuthManager {
     const dropdownUserEmail = document.getElementById("dropdownUserEmail");
 
     if (user) {
-      if (userProfile) userProfile.style.display = "block";
       if (loginBtn) loginBtn.style.display = "none";
+      if (userProfile) userProfile.style.display = "block";
 
       const name = user.displayName || "User";
 
-      if (profileAvatar)
-        profileAvatar.textContent = name.charAt(0).toUpperCase();
+      if (profileAvatar) profileAvatar.textContent = name.charAt(0);
       if (profileName) profileName.textContent = name;
       if (dropdownUserName) dropdownUserName.textContent = name;
       if (dropdownUserEmail) dropdownUserEmail.textContent = user.email;
     } else {
-      if (userProfile) userProfile.style.display = "none";
       if (loginBtn) loginBtn.style.display = "flex";
+      if (userProfile) userProfile.style.display = "none";
     }
   }
 
-  getErrorMessage(error) {
-    switch (error.code) {
-      case "auth/invalid-email":
-        return "Invalid email format.";
-      case "auth/user-disabled":
-        return "This account is disabled.";
-      case "auth/user-not-found":
-        return "Account not found.";
-      case "auth/wrong-password":
-        return "Incorrect password.";
-      case "auth/email-already-in-use":
-        return "Email already exists.";
-      case "auth/weak-password":
-        return "Password must be 6+ characters.";
-      case "auth/network-request-failed":
-        return "Network error.";
-      case "auth/too-many-requests":
-        return "Too many attempts. Try again later.";
-      default:
-        return error.message || "Something went wrong.";
-    }
+  // ===========================
+  // Error Handler
+  // ===========================
+  errorMessage(error) {
+    const messages = {
+      "auth/invalid-email": "Invalid email format.",
+      "auth/user-disabled": "Your account is disabled.",
+      "auth/user-not-found": "No account found with this email.",
+      "auth/wrong-password": "Incorrect password.",
+      "auth/email-already-in-use": "Email already registered.",
+      "auth/weak-password": "Password must be at least 6 characters.",
+      "auth/network-request-failed": "Network error.",
+      "auth/too-many-requests": "Too many attempts. Try later.",
+      "auth/popup-blocked": "Popup blocked by browser.",
+      "auth/popup-closed-by-user": "Popup closed before login.",
+      "auth/unauthorized-domain": "Domain not allowed in Firebase Auth.",
+    };
+
+    return messages[error.code] || error.message;
   }
 }
 
-// EXPORT
+// Export globally
 const authManager = new AuthManager();
 export { authManager };
