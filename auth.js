@@ -1,5 +1,5 @@
 // ===========================
-// auth.js - FINAL FIXED VERSION (Firebase 12.5.0)
+// auth.js - FINAL FIXED FOR GITHUB PAGES (Firebase 12.5.0)
 // ===========================
 
 // Firebase Core
@@ -45,10 +45,13 @@ getAnalytics(app);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Google provider (popup safe)
+// ===========================
+// GOOGLE PROVIDER (FIXED REDIRECT)
+// ===========================
 const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({
   prompt: "select_account",
+  redirect_uri: "https://rj294948.github.io/RJSTONE.UK/__/auth/handler"
 });
 
 // ======================================================================
@@ -66,7 +69,6 @@ class AuthManager {
       this.currentUser = user;
       this.updateUI(user);
 
-      // Save login session in localStorage
       if (user) {
         localStorage.setItem("authUser", JSON.stringify({
           uid: user.uid,
@@ -79,16 +81,12 @@ class AuthManager {
     });
   }
 
-  // ===========================
-  // Check if user logged in (ADDED FIX)
-  // ===========================
+  // Check login
   isAuthenticated() {
     return this.currentUser !== null;
   }
 
-  // ===========================
-  // Email Password Signup
-  // ===========================
+  // Email Signup
   async signUp(email, password, displayName) {
     try {
       const userCredential = await createUserWithEmailAndPassword(
@@ -107,9 +105,7 @@ class AuthManager {
     }
   }
 
-  // ===========================
   // Email Login
-  // ===========================
   async signIn(email, password) {
     try {
       const userCredential = await signInWithEmailAndPassword(
@@ -124,11 +120,16 @@ class AuthManager {
     }
   }
 
-  // ===========================
-  // GOOGLE POPUP LOGIN (100% FIXED)
-  // ===========================
+  // GOOGLE LOGIN FIXED
   async signInWithGoogle() {
     try {
+
+      // Force correct redirect every time
+      googleProvider.setCustomParameters({
+        prompt: "select_account",
+        redirect_uri: "https://rj294948.github.io/RJSTONE.UK/__/auth/handler"
+      });
+
       const result = await signInWithPopup(auth, googleProvider);
 
       await this.saveUserToFirestore(result.user);
@@ -140,9 +141,7 @@ class AuthManager {
     }
   }
 
-  // ===========================
   // Logout
-  // ===========================
   async logout() {
     try {
       await signOut(auth);
@@ -152,9 +151,7 @@ class AuthManager {
     }
   }
 
-  // ===========================
-  // Save/Update User Firestore
-  // ===========================
+  // Save User Firestore
   async saveUserToFirestore(user) {
     try {
       await setDoc(
@@ -174,9 +171,7 @@ class AuthManager {
     }
   }
 
-  // ===========================
-  // Update UI
-  // ===========================
+  // UI Update
   updateUI(user) {
     const loginBtn = document.getElementById("loginButton");
     const userProfile = document.getElementById("userProfile");
@@ -201,22 +196,20 @@ class AuthManager {
     }
   }
 
-  // ===========================
   // Error Handler
-  // ===========================
   errorMessage(error) {
     const messages = {
       "auth/invalid-email": "Invalid email format.",
       "auth/user-disabled": "Your account is disabled.",
-      "auth/user-not-found": "No account found with this email.",
+      "auth/user-not-found": "Email not registered.",
       "auth/wrong-password": "Incorrect password.",
       "auth/email-already-in-use": "Email already registered.",
-      "auth/weak-password": "Password must be at least 6 characters.",
+      "auth/weak-password": "Password is too weak.",
       "auth/network-request-failed": "Network error.",
-      "auth/too-many-requests": "Too many attempts. Try later.",
       "auth/popup-blocked": "Popup blocked by browser.",
-      "auth/popup-closed-by-user": "Popup closed before login.",
-      "auth/unauthorized-domain": "Domain not allowed in Firebase Auth.",
+      "auth/popup-closed-by-user": "Popup closed early.",
+      "auth/too-many-requests": "Too many attempts. Try again later.",
+      "auth/unauthorized-domain": "Domain not allowed in Firebase.",
     };
 
     return messages[error.code] || error.message;
