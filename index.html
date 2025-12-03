@@ -27,7 +27,7 @@
             background-color: #ffffff;
             color: #333;
             line-height: 1.6;
-            padding-top: 120px;
+            padding-top: 165px; /* Fixed for header + uses bar */
             transition: padding-top 0.3s ease;
         }
         
@@ -38,7 +38,7 @@
             padding: 5px 15px;
         }
         
-        /* Header Styles - New Compact Style */
+        /* Header Styles - Fixed position */
         header {
             background-color: #fff;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -46,7 +46,7 @@
             top: 0;
             left: 0;
             width: 100%;
-            z-index: 1000;
+            z-index: 1001;
             transition: transform 0.4s ease;
             margin-top: 0;
             padding-top: 0;
@@ -62,12 +62,16 @@
         
         .main-header {
             padding: 5px 0;
+            height: 60px;
+            display: flex;
+            align-items: center;
         }
         
         .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            width: 100%;
         }
         
         .logo {
@@ -86,6 +90,7 @@
         }
         
         .trust-info {
+            height: 40px;
             flex: 1;
             text-align: center;
             padding: 0 10px;
@@ -170,7 +175,7 @@
             border-radius: 8px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.15);
             min-width: 180px;
-            z-index: 1000;
+            z-index: 1002;
             display: none;
             border: 1px solid #e0e0e0;
         }
@@ -318,7 +323,7 @@
             box-shadow: 0 8px 25px rgba(0,0,0,0.15);
             max-height: 350px;
             overflow-y: auto;
-            z-index: 1001;
+            z-index: 1003;
             display: none;
             margin-top: 5px;
         }
@@ -417,137 +422,152 @@
             font-weight: 500;
             margin: 0;
             line-height: 1.2;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
-        /* Desktop Uses Top Bar with Mega Menu - STICKY POSITION */
+        /* Desktop Uses Top Bar with Mega Menu - FIXED POSITION */
         .uses-top-bar {
-            position: sticky;
-            top: 0;
+            position: fixed;
+            top: 125px; /* Header height (60+40+25=125px) */
+            left: 0;
+            width: 100%;
             background: #333;
             padding: 0;
-            z-index: 999;
-            transition: top 0.3s ease;
+            z-index: 1000;
+            height: 45px;
+            display: flex;
+            align-items: center;
         }
         
         .uses-container {
             display: flex;
             justify-content: space-between;
             flex-wrap: wrap;
+            width: 100%;
         }
         
         .use-item {
-    flex: 1;
-    min-width: 110px;
-    position: relative;
-    overflow: visible;
-}
+            flex: 1;
+            min-width: 110px;
+            position: relative;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-.use-link {
-    display: block;
-    color: white;
-    text-decoration: none;
-    padding: 12px 8px;
-    font-size: 13px;
-    font-weight: 500;
-    text-align: center;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    position: relative;
-    z-index: 2;
-}
+        .use-link {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 12px 8px;
+            font-size: 13px;
+            font-weight: 500;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
         
         .use-link:hover {
             background: #b8860b;
         }
         
-        /* Mega Menu Styles - UPDATED FOR FULL WIDTH */
-      .mega-menu {
-        position: fixed;
-        top: 120px;
-        left: 0;
-        width: 100%;
-        height: auto;
-        max-height: calc(100vh - 120px);
-        overflow-y: auto;
-        margin-left: 0;
-        transform: none;
-    }
-}
-
-        
-        .use-item:hover .mega-menu {
-            display: block;
+        /* Mega Menu Styles - FIXED POSITIONING */
+        .mega-menu {
+            position: fixed;
+            top: 170px; /* Header (125px) + Uses Bar (45px) = 170px */
+            left: 0;
+            width: 100%;
+            background: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            z-index: 999;
+            display: none;
+            padding: 20px 0;
+            border-top: 1px solid #e0e0e0;
+            max-height: calc(100vh - 170px);
+            overflow-y: auto;
         }
         
-       .patterns-grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 15px;
-    padding: 0 15px;
-    max-width: 1200px;
-    margin: 0 auto;
-    width: 100%;
-    overflow: visible;
-}
+        .patterns-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
+            padding: 0 15px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
         
         .pattern-item {
-    text-align: center;
-    cursor: pointer;
-    text-decoration: none;
-    color: #333;
-    display: block;
-    width: 100%;
-    overflow: hidden;
-}
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+            display: block;
+            width: 100%;
+            overflow: hidden;
+        }
 
-.pattern-image {
-    width: 100%;
-    height: 160px;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    border-radius: 6px;
-    margin-bottom: 8px;
-    transition: transform 0.3s ease;
-    box-sizing: border-box;
-   
-}
+        .pattern-image {
+            width: 100%;
+            height: 160px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            transition: transform 0.3s ease;
+            box-sizing: border-box;
+        }
 
-.pattern-item:hover .pattern-image {
-    transform: scale(1.05);
-}
-.patterns-grid .pattern-image {
-    background-color: #ffffff !important;
-    background-size: contain !important;
-    background-position: center !important;
-    background-repeat: no-repeat !important;
-    min-height: 160px;
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-}
+        .pattern-item:hover .pattern-image {
+            transform: scale(1.05);
+        }
+        
+        .patterns-grid .pattern-image {
+            background-color: #ffffff !important;
+            background-size: contain !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
+            min-height: 160px;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
 
-.pattern-name {
-    font-size: 13px;
-    color: #333;
-    font-weight: 500;
-    padding: 0 5px;
-    text-align: center;
-    word-wrap: break-word;
-    white-space: normal;
-}
-/* White layer overlay on hover */
-.pattern-item:hover .pattern-image::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 6px;
-    pointer-events: none;
-}     
+        .pattern-name {
+            font-size: 13px;
+            color: #333;
+            font-weight: 500;
+            padding: 0 5px;
+            text-align: center;
+            word-wrap: break-word;
+            white-space: normal;
+        }
+
+        /* White layer overlay on hover */
+        .pattern-item:hover .pattern-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            pointer-events: none;
+        }     
+        
         /* ===== MOBILE SIDEBAR MENU ===== */
         .mobile-uses-menu {
             position: fixed;
@@ -654,7 +674,7 @@
         .mobile-pattern-image {
             width: 100%;
             height: 80px;
-            background-size: contain; /* Full image show */
+            background-size: contain;
             background-position: center;
             background-repeat: no-repeat;
             border-radius: 5px;
@@ -820,7 +840,7 @@
             line-height: 1.5;
         }
         
-        /* Uses Categories Section - UPDATED FOR 100% IMAGES */
+        /* Uses Categories Section */
         .uses-categories {
             padding: 50px 0;
             background: white;
@@ -870,13 +890,13 @@
         .use-category-image {
             width: 100%;
             height: 200px;
-            background-size: contain; /* Full image show without cropping */
+            background-size: contain;
             background-position: center;
             background-repeat: no-repeat;
             border-radius: 10px;
             margin-bottom: 15px;
             transition: transform 0.3s;
-            background-color: #f8f9fa; /* Background color for better visibility */
+            background-color: #f8f9fa;
         }
 
         .use-category-link:hover .use-category-image {
@@ -940,7 +960,7 @@
             line-height: 1.5;
         }
         
-        /* Footer - New Compact Style */
+        /* Footer */
         footer {
             background-color: #222;
             color: #ddd;
@@ -1036,10 +1056,10 @@
                 grid-template-columns: repeat(2, 1fr);
             }
             
-            patterns-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
+            .patterns-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
 
         @media (max-width: 768px) {
             body {
@@ -1059,6 +1079,7 @@
                 flex-basis: 100%;
                 margin-top: 8px;
                 padding: 0;
+                height: auto;
             }
             
             .search-container {
@@ -1091,7 +1112,11 @@
             }
             
             .uses-top-bar {
-                display: none; /* Hide desktop uses bar on mobile */
+                display: none;
+            }
+            
+            .mega-menu {
+                display: none !important;
             }
             
             .profile-name {
@@ -1106,11 +1131,14 @@
                 height: 180px;
             }
             
-            /* Mega menu full width on mobile */
-            .mega-menu {
-                width: 100vw;
-                left: 50%;
-                transform: translateX(-50%);
+            .banner-text {
+                height: auto;
+                padding: 8px 0;
+            }
+            
+            .main-header {
+                height: auto;
+                padding: 10px 0;
             }
         }
 
@@ -1166,7 +1194,7 @@
         </div>
     </div>
 
-    <!-- ===== HEADER - NEW COMPACT STYLE ===== -->
+    <!-- ===== HEADER ===== -->
     <header id="mainHeader">
         <div class="trust-info">
             <div class="trust-info-content">
@@ -1251,7 +1279,7 @@
             </div>
         </div>
 
-        <!-- Banner Text - COMPACT -->
+        <!-- Banner Text -->
         <div class="banner-text">
             <div class="container">
                 Premium Natural Stone Collections - Sandstone, Marble & Limestone for UK Homes & Commercial Projects
@@ -1259,7 +1287,7 @@
         </div>
     </header>
 
-    <!-- Desktop Uses Top Bar with Mega Menu - BELOW HEADER -->
+    <!-- Desktop Uses Top Bar with Mega Menu -->
     <div class="uses-top-bar" id="desktopUsesBar">
         <div class="container uses-container" id="dynamicUsesContainer">
             <!-- Dynamic uses will be loaded here -->
@@ -1344,7 +1372,7 @@
         </section>
     </div>
 
-    <!-- ===== FOOTER - NEW COMPACT STYLE ===== -->
+    <!-- ===== FOOTER ===== -->
     <footer>
         <div class="container">
             <div class="footer-content">
@@ -1656,95 +1684,108 @@
                         });
                     }
                     
-                    // Initialize mega menu functionality - UPDATED FOR FULL WIDTH
-                   // Initialize mega menu functionality - FIXED FOR FULL WIDTH
-function initializeMegaMenu() {
-    console.log('🔄 Initializing Mega Menu...');
-    
-    const usesTopBar = document.querySelector('.uses-top-bar');
-    const useItems = document.querySelectorAll('.use-item');
-    
-    if (!usesTopBar) {
-        console.log('❌ Mega Menu container not found');
-        return;
-    }
-    
-    useItems.forEach((item) => {
-        const megaMenu = item.querySelector('.mega-menu');
-        
-        if (megaMenu) {
-            // Calculate correct position
-            function positionMegaMenu() {
-                const rect = item.getBoundingClientRect();
-                const containerWidth = usesTopBar.offsetWidth;
-                
-                // Center the mega menu relative to the use item
-                megaMenu.style.width = '100vw';
-                megaMenu.style.left = '0';
-                megaMenu.style.marginLeft = '50%';
-                megaMenu.style.transform = 'translateX(-50%)';
-            }
-            
-            // Mouse enter - show menu
-            item.addEventListener('mouseenter', () => {
-                // Position correctly first
-                positionMegaMenu();
-                
-                // Hide all other mega menus
-                document.querySelectorAll('.mega-menu').forEach(menu => {
-                    if (menu !== megaMenu) {
-                        menu.style.display = 'none';
-                    }
-                });
-                // Show current mega menu
-                megaMenu.style.display = 'block';
-            });
-            
-            // Mouse leave - hide menu after delay
-            item.addEventListener('mouseleave', (e) => {
-                const relatedTarget = e.relatedTarget;
-                if (!megaMenu.contains(relatedTarget)) {
-                    setTimeout(() => {
-                        if (!item.matches(':hover') && !megaMenu.matches(':hover')) {
-                            megaMenu.style.display = 'none';
+                    // Initialize mega menu functionality - FIXED VERSION
+                    function initializeMegaMenu() {
+                        console.log('🔄 Initializing Mega Menu...');
+                        
+                        const usesTopBar = document.getElementById('desktopUsesBar');
+                        const useItems = document.querySelectorAll('.use-item');
+                        let activeMegaMenu = null;
+                        let hideTimeout = null;
+                        
+                        if (!usesTopBar || useItems.length === 0) {
+                            console.log('❌ Mega Menu elements not found');
+                            return;
                         }
-                    }, 150);
-                }
-            });
-            
-            // Mega menu mouse events
-            megaMenu.addEventListener('mouseenter', () => {
-                megaMenu.style.display = 'block';
-            });
-            
-            megaMenu.addEventListener('mouseleave', () => {
-                setTimeout(() => {
-                    if (!item.matches(':hover') && !megaMenu.matches(':hover')) {
-                        megaMenu.style.display = 'none';
+                        
+                        // Hide all mega menus
+                        function hideAllMegaMenus() {
+                            document.querySelectorAll('.mega-menu').forEach(menu => {
+                                menu.style.display = 'none';
+                            });
+                            activeMegaMenu = null;
+                        }
+                        
+                        // Show specific mega menu
+                        function showMegaMenu(menu) {
+                            hideAllMegaMenus();
+                            menu.style.display = 'block';
+                            activeMegaMenu = menu;
+                            
+                            // Clear any pending hide timeout
+                            if (hideTimeout) {
+                                clearTimeout(hideTimeout);
+                                hideTimeout = null;
+                            }
+                        }
+                        
+                        // Initialize event listeners for each use item
+                        useItems.forEach((item) => {
+                            const megaMenu = item.querySelector('.mega-menu');
+                            
+                            if (megaMenu) {
+                                // Mouse enter - show menu immediately
+                                item.addEventListener('mouseenter', () => {
+                                    showMegaMenu(megaMenu);
+                                });
+                                
+                                // Mouse leave - hide after delay
+                                item.addEventListener('mouseleave', (e) => {
+                                    // Check if mouse is going to mega menu
+                                    const relatedTarget = e.relatedTarget;
+                                    const isGoingToMegaMenu = megaMenu.contains(relatedTarget);
+                                    
+                                    if (!isGoingToMegaMenu) {
+                                        hideTimeout = setTimeout(() => {
+                                            if (activeMegaMenu === megaMenu && !megaMenu.matches(':hover')) {
+                                                hideAllMegaMenus();
+                                            }
+                                        }, 100);
+                                    }
+                                });
+                                
+                                // Mega menu mouse events
+                                megaMenu.addEventListener('mouseenter', () => {
+                                    // Clear any pending hide timeout
+                                    if (hideTimeout) {
+                                        clearTimeout(hideTimeout);
+                                        hideTimeout = null;
+                                    }
+                                });
+                                
+                                megaMenu.addEventListener('mouseleave', (e) => {
+                                    // Check if mouse is going back to use item
+                                    const relatedTarget = e.relatedTarget;
+                                    const isGoingToUseItem = item.contains(relatedTarget);
+                                    
+                                    if (!isGoingToUseItem) {
+                                        hideTimeout = setTimeout(() => {
+                                            hideAllMegaMenus();
+                                        }, 100);
+                                    }
+                                });
+                            }
+                        });
+                        
+                        // Hide mega menus when clicking outside
+                        document.addEventListener('click', (event) => {
+                            const isClickInside = usesTopBar.contains(event.target) || 
+                                                 (activeMegaMenu && activeMegaMenu.contains(event.target));
+                            
+                            if (!isClickInside && activeMegaMenu) {
+                                hideAllMegaMenus();
+                            }
+                        });
+                        
+                        // Hide on scroll
+                        window.addEventListener('scroll', function() {
+                            if (activeMegaMenu) {
+                                hideAllMegaMenus();
+                            }
+                        });
+                        
+                        console.log('✅ Mega Menu initialization complete');
                     }
-                }, 150);
-            });
-        }
-    });
-    
-    // Recalculate on window resize
-    window.addEventListener('resize', function() {
-        document.querySelectorAll('.mega-menu').forEach(menu => {
-            menu.style.display = 'none';
-        });
-    });
-    
-    // Close all mega menus when clicking outside
-    document.addEventListener('click', (event) => {
-        if (!usesTopBar.contains(event.target)) {
-            document.querySelectorAll('.mega-menu').forEach(menu => {
-                menu.style.display = 'none';
-            });
-        }
-    });
-    
-    console.log('✅ Mega Menu initialization complete');
-}
                     
                     // Function to generate mobile uses menu (sidebar)
                     function generateMobileUsesMenu() {
@@ -2087,4 +2128,4 @@ function initializeMegaMenu() {
         }
     </script>
 </body>
-</html> 
+</html>
