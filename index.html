@@ -1676,49 +1676,76 @@ function initializeMegaMenu() {
         const megaMenu = item.querySelector('.mega-menu');
         
         if (megaMenu) {
-            function positionMegaMenu() {
-                // 🛑 CORE AUTO-FIT LOGIC 🛑
-                if (mainContainer) {
-                    const mainContainerRect = mainContainer.getBoundingClientRect();
-                    const usesTopBarRect = usesTopBar.getBoundingClientRect();
-                    
-                    // 1. Set Width: Match the main container's width
-                    megaMenu.style.width = `${mainContainerRect.width}px`;
-                    
-                    // 2. Set Left Position: Align mega menu's left edge with mainContainer's left edge
-                    const newLeft = mainContainerRect.left - usesTopBarRect.left;
-                    
-                    megaMenu.style.left = `${newLeft}px`;
-                    
-                    // 3. Clean up conflicting styles
-                    megaMenu.style.marginLeft = '0';
-                    megaMenu.style.transform = 'none';
-                    
-                } else {
-                    // Fallback (only takes up 100% of the small parent item)
-                    megaMenu.style.width = '100%'; 
-                    megaMenu.style.left = '0';
-                    megaMenu.style.marginLeft = '0';
-                    megaMenu.style.transform = 'none';
-                }
-            }
+          function initializeMegaMenu() {
+    console.log('🔄 Initializing Mega Menu (Auto-Fit to Container, Refactored)...');
+    
+    const usesTopBar = document.querySelector('.uses-top-bar');
+    const useItems = document.querySelectorAll('.use-item');
+    
+    if (!usesTopBar) {
+        console.log('❌ Mega Menu container (.uses-top-bar) not found');
+        return;
+    }
+    
+    // यह एलिमेंट आपकी मुख्य सामग्री की चौड़ाई को परिभाषित करता है।
+    const mainContainer = usesTopBar.querySelector('.container'); 
+    
+    /**
+     * @function positionMegaMenu
+     * @description Calculates and sets the width and left position of the mega menu 
+     * to align perfectly under the main content container.
+     * @param {HTMLElement} megaMenu - The specific mega menu element to position.
+     */
+    function positionMegaMenu(megaMenu) {
+        // 🛑 CORE AUTO-FIT LOGIC 🛑
+        if (mainContainer) {
+            const mainContainerRect = mainContainer.getBoundingClientRect();
+            const usesTopBarRect = usesTopBar.getBoundingClientRect();
+            
+            // 1. Set Width: Match the main container's width
+            megaMenu.style.width = `${mainContainerRect.width}px`;
+            
+            // 2. Set Left Position: Align mega menu's left edge with mainContainer's left edge
+            const newLeft = mainContainerRect.left - usesTopBarRect.left;
+            
+            megaMenu.style.left = `${newLeft}px`;
+            
+            // 3. Clean up conflicting styles
+            megaMenu.style.marginLeft = '0';
+            megaMenu.style.transform = 'none';
+            
+        } else {
+            // Fallback (only takes up 100% of the small parent item)
+            megaMenu.style.width = '100%'; 
+            megaMenu.style.left = '0';
+            megaMenu.style.marginLeft = '0';
+            megaMenu.style.transform = 'none';
+            console.warn('⚠️ .container not found. Using fallback positioning.');
+        }
+    }
+
+    useItems.forEach((item) => {
+        const megaMenu = item.querySelector('.mega-menu');
+        
+        if (megaMenu) {
             
             // Mouse enter: Call positionMegaMenu every time
             item.addEventListener('mouseenter', () => {
-                positionMegaMenu(); // Recalculates position before showing
-                
-                // Hide all other mega menus
+                // Ensure only one mega menu is open at a time
                 document.querySelectorAll('.mega-menu').forEach(menu => {
                     if (menu !== megaMenu) {
                         menu.style.display = 'none';
                     }
                 });
+
+                // Recalculates position before showing
+                positionMegaMenu(megaMenu); 
+                
                 // Show current mega menu
                 megaMenu.style.display = 'block';
             });
             
-            // ... (rest of the mouseleave/click outside listeners)
-            
+            // Mouse leave - hide menu after delay
             item.addEventListener('mouseleave', (e) => {
                 const relatedTarget = e.relatedTarget;
                 if (!megaMenu.contains(relatedTarget)) {
@@ -1730,6 +1757,7 @@ function initializeMegaMenu() {
                 }
             });
             
+            // Mega menu mouse events
             megaMenu.addEventListener('mouseenter', () => {
                 megaMenu.style.display = 'block';
             });
@@ -1744,7 +1772,9 @@ function initializeMegaMenu() {
         }
     });
     
-    // 💡 IMPORTANT: On resize, hide all menus so positionMegaMenu is called again on next 'mouseenter'
+    // 💡 IMPORTANT: On resize, hide all menus.
+    // Hiding on resize is the safest way to ensure positionMegaMenu is called 
+    // again correctly on the next mouseenter.
     window.addEventListener('resize', function() {
         document.querySelectorAll('.mega-menu').forEach(menu => {
             menu.style.display = 'none';
