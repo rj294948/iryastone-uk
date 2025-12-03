@@ -2005,10 +2005,17 @@ function initializeMegaMenu() {
                     }
                     
                     // Initialize UI components
-                    function initializeUI() {
-                        initializeSearch();
-                        initializeUserProfile();
-                    }
+                 // Initialize UI components
+                    function initializeUI() {
+                        // Add actual UI initialization logic here
+                    } // <--- CLOSE initializeUI()
+                    
+                }); // <--- CLOSE DOMContentLoaded listener
+                
+            } // <--- CLOSE if (typeof firebase !== 'undefined')
+        } catch (error) {
+            console.error('Error initializing Firebase:', error);
+        } // <--- CLOSE try/catch
                     
                     // Initialize search functionality
                     function initializeSearch() {
