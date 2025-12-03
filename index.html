@@ -428,10 +428,10 @@
             justify-content: center;
         }
         
-        /* Desktop Uses Top Bar with Mega Menu - FIXED POSITION */
+        /* Desktop Uses Top Bar with Mega Menu - DYNAMIC TOP */
         .uses-top-bar {
             position: fixed;
-            top: 125px; /* Header height (60+40+25=125px) */
+            top: 125px; /* Default: Header ke niche */
             left: 0;
             width: 100%;
             background: #333;
@@ -440,6 +440,12 @@
             height: 45px;
             display: flex;
             align-items: center;
+            transition: top 0.4s ease; /* Smooth transition */
+        }
+        
+        /* When header is hidden, uses bar moves to top */
+        header.hidden + .uses-top-bar {
+            top: 0; /* Header hide hone par top position par */
         }
         
         .uses-container {
@@ -482,10 +488,10 @@
             background: #b8860b;
         }
         
-        /* Mega Menu Styles - FIXED POSITIONING */
+        /* Mega Menu Styles - DYNAMIC TOP */
         .mega-menu {
             position: fixed;
-            top: 170px; /* Header (125px) + Uses Bar (45px) = 170px */
+            top: 170px; /* Default: Header (125px) + Uses Bar (45px) = 170px */
             left: 0;
             width: 100%;
             background: white;
@@ -496,6 +502,12 @@
             border-top: 1px solid #e0e0e0;
             max-height: calc(100vh - 170px);
             overflow-y: auto;
+            transition: top 0.4s ease; /* Smooth transition */
+        }
+        
+        /* When header is hidden, mega menu also moves up */
+        header.hidden + .uses-top-bar .mega-menu {
+            top: 45px; /* Uses bar ke niche (45px uses bar height) */
         }
         
         .patterns-grid {
@@ -1112,11 +1124,11 @@
             }
             
             .uses-top-bar {
-                display: none;
+                display: none; /* Mobile par uses bar hide */
             }
             
             .mega-menu {
-                display: none !important;
+                display: none !important; /* Mobile par mega menu hide */
             }
             
             .profile-name {
@@ -1139,6 +1151,16 @@
             .main-header {
                 height: auto;
                 padding: 10px 0;
+            }
+            
+            /* Mobile par header hide hone ka effect */
+            header.hidden {
+                transform: translateY(-100%);
+            }
+            
+            /* Mobile par uses bar nahi hoga */
+            header.hidden + .uses-top-bar {
+                display: none;
             }
         }
 
@@ -1891,19 +1913,34 @@
                         }, 100);
                     }
                     
-                    // Initialize scroll behavior
+                    // Initialize scroll behavior - UPDATED FOR USES BAR MOVEMENT
                     function initializeScrollBehavior() {
                         const header = document.getElementById('mainHeader');
+                        const usesBar = document.getElementById('desktopUsesBar');
                         let lastScrollY = window.scrollY;
                         let ticking = false;
                         
                         function updateHeader() {
                             const currentScrollY = window.scrollY;
                             
-                            if (currentScrollY > 50) {
+                            if (currentScrollY > lastScrollY && currentScrollY > 50) {
+                                // Scrolling down - hide header
                                 header.classList.add('hidden');
                                 header.classList.remove('visible');
-                            } else {
+                                
+                                // Hide all mega menus when scrolling
+                                document.querySelectorAll('.mega-menu').forEach(menu => {
+                                    menu.style.display = 'none';
+                                });
+                                
+                            } else if (currentScrollY < lastScrollY) {
+                                // Scrolling up - show header
+                                header.classList.remove('hidden');
+                                header.classList.add('visible');
+                            }
+                            
+                            // Special case: when at top of page
+                            if (currentScrollY <= 50) {
                                 header.classList.remove('hidden');
                                 header.classList.add('visible');
                             }
