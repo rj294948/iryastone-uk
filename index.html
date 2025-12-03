@@ -432,7 +432,7 @@
             justify-content: center;
         }
         
-        /* Desktop Uses Top Bar with Mega Menu - DYNAMIC TOP */
+        /* Desktop Uses Top Bar with Mega Menu - FIXED FOR PROPER ROW LAYOUT */
         .uses-top-bar {
             position: fixed;
             top: 125px; /* Default: Header ke niche */
@@ -445,6 +445,8 @@
             display: flex;
             align-items: center;
             transition: top 0.4s ease; /* Smooth transition */
+            overflow-x: auto; /* Horizontal scroll agar links zyada ho */
+            white-space: nowrap; /* Links ek line mein rahen */
         }
         
         /* When header is hidden, uses bar moves to top */
@@ -454,26 +456,27 @@
         
         .uses-container {
             display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
+            justify-content: flex-start; /* Links left align */
+            flex-wrap: nowrap; /* No wrapping - single row */
             width: 100%;
+            min-width: max-content; /* Container width based on content */
         }
         
         .use-item {
-            flex: 1;
-            min-width: 110px;
+            flex-shrink: 0; /* Prevent items from shrinking */
             position: relative;
             height: 45px;
             display: flex;
             align-items: center;
             justify-content: center;
+            min-width: 120px; /* Minimum width for each item */
         }
 
         .use-link {
             display: block;
             color: white;
             text-decoration: none;
-            padding: 12px 8px;
+            padding: 12px 15px;
             font-size: 13px;
             font-weight: 500;
             text-align: center;
@@ -486,6 +489,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            white-space: nowrap; /* Text ek line mein */
+            overflow: hidden; /* Overflow hide */
+            text-overflow: ellipsis; /* ... agar text lamba ho */
         }
         
         .use-link:hover {
@@ -1318,6 +1324,15 @@
             .patterns-grid {
                 grid-template-columns: repeat(3, 1fr);
             }
+            
+            /* Uses bar for tablet */
+            .uses-top-bar {
+                overflow-x: auto;
+            }
+            
+            .use-item {
+                min-width: 110px;
+            }
         }
 
         /* Desktop View - No changes, original layout */
@@ -1658,7 +1673,7 @@
                     // Initialize authentication
                     initializeAuth();
                     
-                    // Initialize scroll behavior
+                    // Initialize scroll behavior - FIXED VERSION
                     initializeScrollBehavior();
                     
                     // Initialize mobile menu
@@ -1747,7 +1762,7 @@
                         return uniqueUses;
                     }
                     
-                    // Function to generate desktop uses navigation
+                    // Function to generate desktop uses navigation - FIXED FOR SINGLE ROW
                     function generateUsesNavigation() {
                         const usesContainer = document.getElementById('dynamicUsesContainer');
                         if (!usesContainer) return;
@@ -1785,7 +1800,7 @@
                             
                             if (uniqueStoneNames.length > 0) {
                                 useItem.innerHTML = `
-                                    <div class="use-link">${usage} (${usageProducts.length})</div>
+                                    <div class="use-link" title="${usage}">${usage} (${usageProducts.length})</div>
                                     <div class="mega-menu">
                                         <div class="patterns-grid">
                                             ${uniqueStoneNames.map(stoneName => {
@@ -1809,7 +1824,7 @@
                                 `;
                             } else {
                                 useItem.innerHTML = `
-                                    <a href="category-products.html?usage=${usageKey}" class="use-link">${usage} (${usageProducts.length})</a>
+                                    <a href="category-products.html?usage=${usageKey}" class="use-link" title="${usage}">${usage} (${usageProducts.length})</a>
                                 `;
                             }
                             
@@ -2075,36 +2090,33 @@
                         }, 100);
                     }
                     
-                    // Initialize scroll behavior - UPDATED FOR USES BAR MOVEMENT
+                    // Initialize scroll behavior - COMPLETELY REWRITTEN FOR PROPER HEADER SHOW/HIDE
                     function initializeScrollBehavior() {
                         const header = document.getElementById('mainHeader');
-                        const usesBar = document.getElementById('desktopUsesBar');
                         let lastScrollY = window.scrollY;
                         let ticking = false;
+                        let isHeaderHidden = false;
                         
                         function updateHeader() {
                             const currentScrollY = window.scrollY;
                             
-                            if (currentScrollY > lastScrollY && currentScrollY > 50) {
-                                // Scrolling down - hide header
-                                header.classList.add('hidden');
-                                header.classList.remove('visible');
-                                
-                                // Hide all mega menus when scrolling
-                                document.querySelectorAll('.mega-menu').forEach(menu => {
-                                    menu.style.display = 'none';
-                                });
-                                
-                            } else if (currentScrollY < lastScrollY) {
-                                // Scrolling up - show header
-                                header.classList.remove('hidden');
-                                header.classList.add('visible');
-                            }
-                            
-                            // Special case: when at top of page
+                            // Jab page top par ho (0-50px), to header hamesha show rahe
                             if (currentScrollY <= 50) {
                                 header.classList.remove('hidden');
                                 header.classList.add('visible');
+                                isHeaderHidden = false;
+                            } 
+                            // Jab scroll down ho raha ho aur header already hidden nahi hai
+                            else if (currentScrollY > lastScrollY && !isHeaderHidden) {
+                                header.classList.add('hidden');
+                                header.classList.remove('visible');
+                                isHeaderHidden = true;
+                            } 
+                            // Jab scroll up ho raha ho aur header hidden hai
+                            else if (currentScrollY < lastScrollY && isHeaderHidden) {
+                                header.classList.remove('hidden');
+                                header.classList.add('visible');
+                                isHeaderHidden = false;
                             }
                             
                             lastScrollY = currentScrollY;
