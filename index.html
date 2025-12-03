@@ -635,6 +635,7 @@
             flex: 1;
             overflow-y: auto;
             padding: 15px;
+            max-height: calc(100vh - 70px);
         }
         
         .mobile-use-item {
@@ -706,6 +707,7 @@
             color: #333;
             font-weight: 500;
             line-height: 1.3;
+            padding: 0 5px;
         }
         
         /* Overlay for mobile menu */
@@ -836,6 +838,7 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
+            transition: background-image 1s ease-in-out;
         }
 
         .product-banner-text {
@@ -941,10 +944,11 @@
             grid-column: 1 / -1;
         }
 
-        /* Features Section */
+        /* Features Section - HORIZONTAL LAYOUT */
         .features {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
             gap: 25px;
             margin: 40px 0;
             padding: 40px 0;
@@ -953,11 +957,22 @@
         }
         
         .feature {
+            flex: 1;
             text-align: center;
             padding: 25px 15px;
             background: white;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 280px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .feature:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
         }
         
         .feature i {
@@ -976,6 +991,7 @@
             font-size: 14px;
             color: #666;
             line-height: 1.5;
+            flex-grow: 1;
         }
         
         /* Footer */
@@ -1160,11 +1176,17 @@
                 font-size: 15px;
             }
             
-            /* Features section mobile layout */
+            /* Features section mobile layout - VERTICAL */
             .features {
-                grid-template-columns: 1fr;
+                flex-direction: column;
                 padding: 25px 0;
                 margin: 25px 0;
+                gap: 15px;
+            }
+            
+            .feature {
+                min-height: auto;
+                width: 100%;
             }
             
             /* Hide desktop uses bar on mobile */
@@ -1239,6 +1261,20 @@
                 grid-template-columns: repeat(2, 1fr);
                 gap: 20px;
             }
+            
+            /* Mobile sidebar images 2x2 grid */
+            .mobile-pattern-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            
+            .mobile-pattern-image {
+                height: 70px;
+            }
+            
+            .mobile-pattern-name {
+                font-size: 11px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1276,10 +1312,6 @@
                 font-size: 24px;
             }
             
-            .mobile-pattern-grid {
-                grid-template-columns: 1fr;
-            }
-            
             .mobile-uses-menu {
                 width: 280px;
             }
@@ -1295,7 +1327,7 @@
         }
 
         /* Tablet View */
-        @media (max-width: 1024px) {
+        @media (max-width: 1024px) and (min-width: 769px) {
             .hero h1 {
                 font-size: 32px;
             }
@@ -1309,8 +1341,15 @@
                 grid-template-columns: repeat(3, 1fr);
             }
             
+            /* Features section tablet layout */
             .features {
-                grid-template-columns: repeat(3, 1fr);
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+            
+            .feature {
+                min-width: calc(50% - 20px);
+                flex: 1 0 calc(50% - 20px);
             }
             
             .footer-content {
@@ -1366,6 +1405,11 @@
                 font-size: calc(13px - (var(--item-count) * 0.5px));
                 padding: 12px calc(5px + (var(--item-count) * 0.2px));
             }
+            
+            /* Desktop features horizontal layout */
+            .features {
+                flex-direction: row;
+            }
         }
 
         /* Extra small screens */
@@ -1373,6 +1417,10 @@
             .use-link {
                 font-size: 10px;
                 padding: 12px 2px;
+            }
+            
+            .mobile-pattern-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -1524,7 +1572,7 @@
                 </div>
                 <div class="products-grid-banner">
                     <div class="product-banner-item">
-                        <div class="product-banner-image" style="background-image: url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80')"></div>
+                        <div class="product-banner-image" id="bannerImage1" style="background-image: url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80')"></div>
                         <div class="product-banner-text">
                             <h3>Premium Sandstone Collection</h3>
                             <p>Durable and elegant sandstone for flooring and wall cladding with natural texture and color variations. Perfect for both indoor and outdoor applications.</p>
@@ -1532,7 +1580,7 @@
                         </div>
                     </div>
                     <div class="product-banner-item">
-                        <div class="product-banner-image" style="background-image: url('https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80')"></div>
+                        <div class="product-banner-image" id="bannerImage2" style="background-image: url('https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80')"></div>
                         <div class="product-banner-text">
                             <h3>Kota Stone & Marble</h3>
                             <p>Natural kota stone and premium marble known for exceptional strength, durability and beautiful natural patterns. Ideal for luxury projects.</p>
@@ -1556,7 +1604,7 @@
             </div>
         </section>
 
-        <!-- Features Section -->
+        <!-- Features Section - HORIZONTAL LAYOUT -->
         <section class="features">
             <div class="container">
                 <div class="feature">
@@ -1703,6 +1751,9 @@
                             updateCategoriesSection();
                             generateMobileUsesMenu();
                             
+                            // Initialize auto-changing banner images
+                            initializeBannerSlideshow();
+                            
                         } catch (error) {
                             console.error('❌ Error loading data:', error);
                         }
@@ -1747,6 +1798,58 @@
                             console.error('Error loading products:', error);
                             throw error;
                         }
+                    }
+                    
+                    // Auto-changing banner images function
+                    function initializeBannerSlideshow() {
+                        const bannerImages = [
+                            'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+                            'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+                            'https://images.unsplash.com/photo-1581822261290-991b38693d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+                            'https://images.unsplash.com/photo-1599732597928-44f2a8d7c4d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+                            'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+                            'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+                            'https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+                            'https://images.unsplash.com/photo-1581094794323-c2113bc4c2c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'
+                        ];
+                        
+                        let currentBannerIndex = 0;
+                        const bannerElements = document.querySelectorAll('.product-banner-image');
+                        
+                        if (bannerElements.length === 0) return;
+                        
+                        // Function to change banner images
+                        function changeBannerImages() {
+                            // For first banner (always show first two images)
+                            const banner1Index = currentBannerIndex % bannerImages.length;
+                            const banner2Index = (currentBannerIndex + 1) % bannerImages.length;
+                            
+                            // Update banner images with fade effect
+                            if (bannerElements[0]) {
+                                bannerElements[0].style.opacity = '0.7';
+                                setTimeout(() => {
+                                    bannerElements[0].style.backgroundImage = `url('${bannerImages[banner1Index]}')`;
+                                    bannerElements[0].style.opacity = '1';
+                                }, 300);
+                            }
+                            
+                            if (bannerElements[1]) {
+                                bannerElements[1].style.opacity = '0.7';
+                                setTimeout(() => {
+                                    bannerElements[1].style.backgroundImage = `url('${bannerImages[banner2Index]}')`;
+                                    bannerElements[1].style.opacity = '1';
+                                }, 500);
+                            }
+                            
+                            // Increment index for next change
+                            currentBannerIndex = (currentBannerIndex + 2) % bannerImages.length;
+                        }
+                        
+                        // Initial call
+                        changeBannerImages();
+                        
+                        // Set interval to change images every 5 seconds
+                        setInterval(changeBannerImages, 5000);
                     }
                     
                     // Function to get UNIQUE USES
