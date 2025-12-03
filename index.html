@@ -91,7 +91,7 @@
         
         .trust-info {
             height: 40px;
-            flex: 1;
+            position: relative;
             text-align: center;
             padding: 0 10px;
             margin-top: 0;
@@ -110,6 +110,22 @@
             border-radius: 8px;
             border: 1px solid #e0e0e0;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        /* Mobile Menu Toggle in Trust Info Section - LEFT CORNER */
+        .trust-mobile-toggle {
+            display: none;
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #333;
+            cursor: pointer;
+            z-index: 10;
+            padding: 8px;
         }
         
         .trust-item {
@@ -256,19 +272,7 @@
             margin-bottom: 2px;
         }
 
-        /* Mobile Menu Toggle Button */
-        .mobile-menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 24px;
-            color: #333;
-            cursor: pointer;
-            padding: 8px;
-            margin-left: 10px;
-        }
-
-        /* Advanced Search Styles */
+        /* Desktop Search Styles */
         .search-container {
             position: relative;
             flex: 1;
@@ -852,7 +856,7 @@
             line-height: 1.5;
         }
         
-        /* Uses Categories Section */
+        /* Uses Categories Section - UPDATED FOR MOBILE 2x2 */
         .uses-categories {
             padding: 50px 0;
             background: white;
@@ -1046,33 +1050,9 @@
             color: #999;
         }
 
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-            .hero h1 {
-                font-size: 32px;
-            }
-            
-            .products-grid-banner {
-                grid-template-columns: 1fr;
-            }
-            
-            .uses-categories-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .features {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            
-            .footer-content {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .patterns-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
+        /* ===== MOBILE SPECIFIC STYLES ===== */
+        
+        /* Mobile Header Reorganization */
         @media (max-width: 768px) {
             body {
                 padding-top: 100px;
@@ -1082,75 +1062,146 @@
                 margin-top: 5px;
             }
             
-            .header-content {
-                flex-wrap: wrap;
-            }
-            
+            /* Trust Info Section - Mobile View */
             .trust-info {
-                order: 3;
-                flex-basis: 100%;
-                margin-top: 8px;
-                padding: 0;
-                height: auto;
+                position: relative;
+                padding: 0 40px; /* Left side ke liye space for hamburger */
+                height: 35px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
             
-            .search-container {
-                order: 4;
-                flex-basis: 100%;
-                margin: 8px 0 0;
-                max-width: 100%;
-            }
-            
-            .mobile-menu-toggle {
+            /* Mobile Menu Toggle in Trust Info - LEFT CORNER */
+            .trust-mobile-toggle {
                 display: block;
+                position: absolute;
+                left: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+                background: none;
+                border: none;
+                font-size: 20px;
+                color: #333;
+                cursor: pointer;
+                z-index: 10;
+                padding: 8px;
             }
             
-            .hero {
-                padding: 40px 0;
+            .trust-info-content {
+                padding: 4px 8px;
+                gap: 10px;
+                font-size: 11px;
             }
             
-            .hero h1 {
-                font-size: 28px;
+            .trust-item {
+                padding: 4px 8px;
             }
             
-            .hero p {
+            /* Main Header Mobile Layout */
+            .header-content {
+                flex-wrap: nowrap;
+                justify-content: space-between;
+                padding: 8px 0;
+            }
+            
+            /* Logo - LEFT SIDE */
+            .logo {
+                order: 1;
+                flex: 1;
+                justify-content: flex-start;
+            }
+            
+            .logo h1 {
+                font-size: 20px;
+            }
+            
+            /* Search Container - CENTER (Logo aur User Actions ke beech) */
+            .search-container {
+                order: 2;
+                flex: 2;
+                margin: 0 10px;
+                max-width: none;
+            }
+            
+            /* User Actions - RIGHT SIDE */
+            .user-actions {
+                order: 3;
+                flex: 1;
+                justify-content: flex-end;
+                gap: 10px;
+            }
+            
+            .user-action {
+                font-size: 10px;
+            }
+            
+            .user-action i {
                 font-size: 16px;
             }
             
-            .features {
-                grid-template-columns: 1fr;
-                padding: 30px 0;
-                margin: 30px 0;
-            }
-            
-            .uses-top-bar {
-                display: none; /* Mobile par uses bar hide */
-            }
-            
-            .mega-menu {
-                display: none !important; /* Mobile par mega menu hide */
-            }
-            
+            /* Hide profile name on mobile */
             .profile-name {
                 display: none;
             }
             
-            .patterns-grid {
-                grid-template-columns: repeat(2, 1fr);
+            /* Hero Section adjustments */
+            .hero {
+                padding: 30px 0;
+            }
+            
+            .hero h1 {
+                font-size: 26px;
+            }
+            
+            .hero p {
+                font-size: 15px;
+            }
+            
+            /* Features section mobile layout */
+            .features {
+                grid-template-columns: 1fr;
+                padding: 25px 0;
+                margin: 25px 0;
+            }
+            
+            /* Hide desktop uses bar on mobile */
+            .uses-top-bar {
+                display: none;
+            }
+            
+            /* Hide mega menu on mobile */
+            .mega-menu {
+                display: none !important;
+            }
+            
+            /* Stone Applications - 2 COLUMNS ON MOBILE */
+            .uses-categories-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 15px;
             }
             
             .use-category-image {
-                height: 180px;
+                height: 140px;
+            }
+            
+            .use-category-name {
+                font-size: 14px;
+            }
+            
+            .product-count {
+                font-size: 12px;
             }
             
             .banner-text {
                 height: auto;
-                padding: 8px 0;
+                padding: 6px 0;
+                font-size: 11px;
             }
             
             .main-header {
                 height: auto;
-                padding: 10px 0;
+                padding: 8px 0;
             }
             
             /* Mobile par header hide hone ka effect */
@@ -1162,11 +1213,45 @@
             header.hidden + .uses-top-bar {
                 display: none;
             }
+            
+            /* Products banner mobile */
+            .products-grid-banner {
+                grid-template-columns: 1fr;
+            }
+            
+            .product-banner-text h3 {
+                font-size: 18px;
+            }
+            
+            .product-banner-text p {
+                font-size: 13px;
+            }
+            
+            /* Patterns grid mobile */
+            .patterns-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            /* Footer mobile */
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
         }
 
         @media (max-width: 480px) {
+            /* Stone Applications - 2 COLUMNS ON SMALL MOBILE TOO */
             .uses-categories-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px;
+            }
+            
+            .use-category-image {
+                height: 120px;
+            }
+            
+            .use-category-name {
+                font-size: 13px;
             }
             
             .footer-content {
@@ -1174,7 +1259,11 @@
             }
             
             .hero h1 {
-                font-size: 24px;
+                font-size: 22px;
+            }
+            
+            .hero p {
+                font-size: 14px;
             }
             
             .patterns-grid {
@@ -1191,6 +1280,77 @@
             
             .mobile-uses-menu {
                 width: 280px;
+            }
+            
+            .search-container {
+                flex: 1.5;
+            }
+            
+            .trust-info-content {
+                font-size: 10px;
+                gap: 8px;
+            }
+        }
+
+        /* Tablet View */
+        @media (max-width: 1024px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+            
+            .products-grid-banner {
+                grid-template-columns: 1fr;
+            }
+            
+            /* Tablet: 3 columns for stone applications */
+            .uses-categories-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .features {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .patterns-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Desktop View - No changes, original layout */
+        @media (min-width: 769px) {
+            .trust-mobile-toggle {
+                display: none;
+            }
+            
+            .mobile-menu-toggle {
+                display: none;
+            }
+            
+            /* Desktop view me original layout maintain karo */
+            .uses-categories-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            /* Desktop search bar positioning */
+            .search-container {
+                order: 2;
+                flex: 1;
+                max-width: 450px;
+                margin: 0 15px;
+            }
+            
+            .logo {
+                order: 1;
+                flex: none;
+            }
+            
+            .user-actions {
+                order: 3;
+                flex: none;
             }
         }
     </style>
@@ -1219,6 +1379,11 @@
     <!-- ===== HEADER ===== -->
     <header id="mainHeader">
         <div class="trust-info">
+            <!-- Mobile Menu Toggle Button in Trust Info Section - LEFT CORNER -->
+            <button class="trust-mobile-toggle" id="trustMobileToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            
             <div class="trust-info-content">
                 <div class="trust-item">
                     <i class="fas fa-truck"></i>
@@ -1238,21 +1403,17 @@
         <!-- Main Header -->
         <div class="main-header">
             <div class="container header-content">
+                <!-- Logo - LEFT SIDE -->
                 <div class="logo">
                     <a href="index.html" style="text-decoration: none; color: inherit;">
                         <h1>Stone<span>Craft</span></h1>
                     </a>
                 </div>
                 
-                <!-- Mobile Menu Toggle Button -->
-                <button class="mobile-menu-toggle" id="mobileMenuToggle">
-                    <i class="fas fa-bars"></i>
-                </button>
-                
-                <!-- Advanced Search -->
+                <!-- Search Container - CENTER (Between Logo and User Actions) -->
                 <div class="search-container">
                     <div class="search-input-container">
-                        <input type="text" class="search-input" id="searchInput" placeholder="Search for stones, products, categories...">
+                        <input type="text" class="search-input" id="searchInput" placeholder="Search stones...">
                         <button class="search-button" id="searchButton">
                             <i class="fas fa-search"></i>
                         </button>
@@ -1262,6 +1423,7 @@
                     </div>
                 </div>
                 
+                <!-- User Actions - RIGHT SIDE -->
                 <div class="user-actions">
                     <!-- Dynamic User Profile -->
                     <div class="user-profile" id="userProfile" style="display: none;">
@@ -1359,7 +1521,7 @@
             </div>
         </section>
 
-        <!-- Uses Categories Section -->
+        <!-- Uses Categories Section - UPDATED FOR MOBILE 2x2 -->
         <section class="uses-categories">
             <div class="container">
                 <h2 class="section-title">Stone Applications</h2>
@@ -1481,7 +1643,7 @@
                     };
                     
                     // Mobile menu elements
-                    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+                    const trustMobileToggle = document.getElementById('trustMobileToggle');
                     const mobileUsesMenu = document.getElementById('mobileUsesMenu');
                     const closeMenu = document.getElementById('closeMenu');
                     const menuOverlay = document.getElementById('menuOverlay');
@@ -1962,13 +2124,13 @@
                     
                     // Initialize mobile menu functionality
                     function initializeMobileMenu() {
-                        if (!mobileMenuToggle || !mobileUsesMenu || !closeMenu || !menuOverlay) {
+                        if (!trustMobileToggle || !mobileUsesMenu || !closeMenu || !menuOverlay) {
                             console.log('❌ Mobile menu elements not found');
                             return;
                         }
                         
-                        // Open mobile menu
-                        mobileMenuToggle.addEventListener('click', function() {
+                        // Open mobile menu from trust info hamburger
+                        trustMobileToggle.addEventListener('click', function() {
                             mobileUsesMenu.classList.add('active');
                             menuOverlay.classList.add('active');
                             document.body.style.overflow = 'hidden';
