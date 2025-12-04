@@ -29,6 +29,180 @@
             padding: 5px 15px;
         }
         
+        /* ===== MOBILE SIDEBAR MENU ===== */
+        .mobile-uses-menu {
+            position: fixed;
+            top: 0;
+            left: -320px; /* Hide off-screen */
+            width: 300px;
+            height: 100vh;
+            background: white;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.15);
+            z-index: 1100;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .mobile-uses-menu.active {
+            left: 0;
+        }
+        
+        .mobile-menu-header {
+            padding: 20px;
+            background: #333;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #444;
+        }
+        
+        .mobile-menu-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .close-menu {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .mobile-uses-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            max-height: calc(100vh - 70px);
+        }
+        
+        .mobile-use-item {
+            margin-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .mobile-use-link {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 10px;
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            font-size: 15px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+            width: 100%;
+            text-align: left;
+        }
+        
+        .mobile-use-link:hover {
+            background: #f8f9fa;
+        }
+        
+        .mobile-use-link i {
+            font-size: 12px;
+            transition: transform 0.3s;
+        }
+        
+        .mobile-mega-content {
+            padding: 10px;
+            display: none;
+            background: #f8f9fa;
+            border-radius: 6px;
+            margin: 8px 0;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .mobile-mega-content.active {
+            display: block;
+        }
+        
+        .mobile-pattern-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .mobile-pattern-item {
+            text-decoration: none;
+            color: #333;
+            display: block;
+            transition: transform 0.2s;
+        }
+        
+        .mobile-pattern-item:hover {
+            transform: scale(1.02);
+        }
+        
+        .mobile-pattern-image {
+            width: 100%;
+            height: 80px;
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            background-color: #f0f0f0;
+        }
+        
+        .mobile-pattern-name {
+            font-size: 12px;
+            text-align: center;
+            color: #333;
+            font-weight: 500;
+            line-height: 1.3;
+            padding: 0 5px;
+        }
+        
+        /* Loading State for Mobile Menu */
+        .loading-categories {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .loading-categories i {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 24px;
+            color: #b8860b;
+        }
+        
+        /* Overlay for mobile menu */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1099;
+            display: none;
+        }
+        
+        .menu-overlay.active {
+            display: block;
+        }
+        
         /* Header Styles - Same as category page */
         header {
             background-color: #fff;
@@ -82,6 +256,7 @@
             padding: 0 10px;
             margin-top: 0;
             padding-top: 5px;
+            position: relative;
         }
         
         .trust-info-content {
@@ -96,6 +271,22 @@
             border-radius: 8px;
             border: 1px solid #e0e0e0;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        /* Mobile Menu Toggle in Trust Info Section - LEFT CORNER */
+        .trust-mobile-toggle {
+            display: none;
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #333;
+            cursor: pointer;
+            z-index: 10;
+            padding: 8px;
         }
         
         .trust-item {
@@ -231,6 +422,7 @@
             color: #555;
             font-size: 11px;
             transition: color 0.3s;
+            position: relative;
         }
 
         .user-action:hover {
@@ -240,6 +432,23 @@
         .user-action i {
             font-size: 18px;
             margin-bottom: 2px;
+        }
+
+        /* Cart Badge */
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #b8860b;
+            color: white;
+            font-size: 10px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
         }
 
         /* Advanced Search Styles */
@@ -398,10 +607,10 @@
             line-height: 1.2;
         }
         
-        /* Uses Top Bar - TUP USES BAR */
+        /* Desktop Uses Top Bar - TUP USES BAR */
         .uses-top-bar {
             position: sticky;
-            top: 0;
+            top: 120px;
             background: #333;
             padding: 0;
             z-index: 999;
@@ -498,7 +707,7 @@
             text-align: center;
             margin-bottom: 0px;
             padding: 22px 5px;
-            background: url('https://plus.unsplash.com/premium_photo-1673567871911-c8a8c63d1c2b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8c3RvbmV8ZW58MHx8MHx8fDA%3D') center/cover;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://plus.unsplash.com/premium_photo-1673567871911-c8a8c63d1c2b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8c3RvbmV8ZW58MHx8MHx8fDA%3D') center/cover;
             border-radius: 8px;
             min-height: 60px;
             display: flex;
@@ -704,6 +913,77 @@
             margin-bottom: 30px;
         }
         
+        /* Quantity Selector */
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .quantity-label {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .quantity-btn {
+            width: 35px;
+            height: 35px;
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            color: #333;
+            transition: all 0.3s;
+        }
+        
+        .quantity-btn:hover {
+            background: #b8860b;
+            color: white;
+            border-color: #b8860b;
+        }
+        
+        .quantity-input {
+            width: 60px;
+            height: 35px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .unit-selector {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .unit-option {
+            padding: 8px 15px;
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .unit-option.selected {
+            background: #b8860b;
+            color: white;
+            border-color: #b8860b;
+        }
+        
         /* Specifications Table */
         .specifications {
             margin: 30px 0;
@@ -794,6 +1074,8 @@
             gap: 10px;
             transition: all 0.3s;
             font-size: 16px;
+            border: none;
+            cursor: pointer;
         }
         
         .primary-btn {
@@ -1077,18 +1359,87 @@
                 flex-wrap: wrap;
             }
             
+            /* Trust Info Section - Mobile View */
             .trust-info {
+                position: relative;
+                padding: 0 40px;
+                height: 35px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
                 order: 3;
                 flex-basis: 100%;
                 margin-top: 8px;
                 padding: 0;
             }
             
+            /* Mobile Menu Toggle in Trust Info - LEFT CORNER */
+            .trust-mobile-toggle {
+                display: block;
+                position: absolute;
+                left: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+                background: none;
+                border: none;
+                font-size: 20px;
+                color: #333;
+                cursor: pointer;
+                z-index: 10;
+                padding: 8px;
+            }
+            
+            .trust-info-content {
+                padding: 4px 8px;
+                gap: 10px;
+                font-size: 11px;
+                padding-left: 40px;
+            }
+            
+            .trust-item {
+                padding: 4px 8px;
+            }
+            
+            /* Main Header Mobile Layout */
+            .header-content {
+                flex-wrap: nowrap;
+                justify-content: space-between;
+                padding: 8px 0;
+            }
+            
+            /* Logo - LEFT SIDE */
+            .logo {
+                order: 1;
+                flex: 1;
+                justify-content: flex-start;
+            }
+            
+            .logo h1 {
+                font-size: 20px;
+            }
+            
+            /* Search Container - CENTER (Logo aur User Actions ke beech) */
             .search-container {
-                order: 4;
-                flex-basis: 100%;
-                margin: 8px 0 0;
-                max-width: 100%;
+                order: 2;
+                flex: 2;
+                margin: 0 10px;
+                max-width: none;
+            }
+            
+            /* User Actions - RIGHT SIDE */
+            .user-actions {
+                order: 3;
+                flex: 1;
+                justify-content: flex-end;
+                gap: 10px;
+            }
+            
+            .user-action {
+                font-size: 10px;
+            }
+            
+            .user-action i {
+                font-size: 16px;
             }
             
             .image-zoom-result {
@@ -1104,7 +1455,7 @@
             }
             
             .uses-top-bar {
-                display: block;
+                display: none; /* Hide desktop uses bar on mobile */
             }
             
             .profile-name {
@@ -1134,7 +1485,7 @@
 
         @media (max-width: 480px) {
             body {
-                padding-top: 190px;
+                padding-top: 100px;
             }
             
             .products-grid {
@@ -1174,13 +1525,47 @@
             .action-buttons {
                 flex-direction: column;
             }
+            
+            .trust-mobile-toggle {
+                left: 5px;
+                padding: 6px;
+            }
+            
+            .trust-info-content {
+                padding-left: 35px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- ===== HEADER - SAME AS CATEGORY PAGE ===== -->
+    <!-- Mobile Menu Overlay -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+    
+    <!-- Mobile Slide-out Menu (SIDEBAR) -->
+    <div class="mobile-uses-menu" id="mobileUsesMenu">
+        <div class="mobile-menu-header">
+            <h3>Stone Categories</h3>
+            <button class="close-menu" id="closeMenu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="mobile-uses-list" id="mobileUsesList">
+            <!-- Loading state - will be replaced with dynamic content -->
+            <div class="loading-categories">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading categories...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== HEADER - UPDATED WITH MOBILE TOGGLE ===== -->
     <header id="mainHeader">
         <div class="trust-info">
+            <!-- Mobile Menu Toggle Button in Trust Info Section - LEFT CORNER -->
+            <button class="trust-mobile-toggle" id="trustMobileToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            
             <div class="trust-info-content">
                 <div class="trust-item">
                     <i class="fas fa-truck"></i>
@@ -1234,22 +1619,14 @@
                             </div>
                             <ul class="dropdown-menu">
                                 <li><a href="dashboard.html" class="dropdown-item"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                                <li><a href="add.html" class="dropdown-item"><i class="fas fa-plus-circle"></i> Add Product</a></li>
-                                <li><a href="edit-profile.html" class="dropdown-item"><i class="fas fa-user-edit"></i> Edit Profile</a></li>
+                                <li><a href="orders.html" class="dropdown-item"><i class="fas fa-history"></i> Order History</a></li>
                                 <li><a href="wishlist.html" class="dropdown-item"><i class="fas fa-heart"></i> My Wishlist</a></li>
                                 <li><a href="billing.html" class="dropdown-item"><i class="fas fa-address-card"></i> Billing/Shipping</a></li>
-                                <li><a href="orders.html" class="dropdown-item"><i class="fas fa-history"></i> Order History</a></li>
                                 <li class="dropdown-divider"></li>
                                 <li><a href="#" class="dropdown-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
                             </ul>
                         </div>
                     </div>
-                    
-                    <!-- Add Product Button -->
-                    <a href="add.html" class="user-action" id="addProductButton" style="display: none;">
-                        <i class="fas fa-plus-circle"></i>
-                        <span>Add Product</span>
-                    </a>
                     
                     <!-- Login Button -->
                     <a href="login.html" class="user-action" id="loginButton">
@@ -1257,9 +1634,11 @@
                         <span>Sign In</span>
                     </a>
                     
-                    <a href="#" class="user-action">
+                    <!-- Cart with Badge -->
+                    <a href="cart.html" class="user-action" id="cartButton">
                         <i class="fas fa-shopping-cart"></i>
-                        <span>Cart (0)</span>
+                        <span>Cart</span>
+                        <span class="cart-badge" id="cartBadge">0</span>
                     </a>
                 </div>
             </div>
@@ -1349,7 +1728,7 @@
                     <h3>StoneCraft</h3>
                     <ul class="footer-links">
                         <li><a href="index.html">Home</a></li>
-                        <li><a href="add.html">Add Product</a></li>
+                        <li><a href="category-products.html">Products</a></li>
                         <li><a href="#">About Us</a></li>
                         <li><a href="#">Our Story</a></li>
                         <li><a href="#">Sustainability</a></li>
@@ -1443,11 +1822,87 @@
             currentProduct: null,
             allProducts: [],
             relatedProducts: [],
-            user: null
+            user: null,
+            cart: [],
+            quantity: 1,
+            selectedUnit: 'sqft'
         };
+
+        // Cart management functions
+        function loadCart() {
+            const savedCart = localStorage.getItem('stonecraft_cart');
+            if (savedCart) {
+                appState.cart = JSON.parse(savedCart);
+                updateCartBadge();
+            }
+        }
+
+        function saveCart() {
+            localStorage.setItem('stonecraft_cart', JSON.stringify(appState.cart));
+            updateCartBadge();
+        }
+
+        function updateCartBadge() {
+            const cartBadge = document.getElementById('cartBadge');
+            const totalItems = appState.cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartBadge.textContent = totalItems;
+        }
+
+        function addToCart(product, quantity, unit) {
+            const existingItem = appState.cart.find(item => 
+                item.id === product.id && item.unit === unit
+            );
+            
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                appState.cart.push({
+                    id: product.id,
+                    name: product.stone_name,
+                    price: product.price,
+                    unit: unit,
+                    quantity: quantity,
+                    image: product.images?.[0] || getDefaultImage(product.category),
+                    category: product.category
+                });
+            }
+            
+            saveCart();
+            
+            // Show success message
+            showNotification(`${quantity} ${unit} of ${product.stone_name} added to cart!`, 'success');
+        }
+
+        function showNotification(message, type) {
+            // Remove existing notification
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+            
+            // Create notification
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div style="position: fixed; top: 100px; right: 20px; background: ${type === 'success' ? '#4CAF50' : '#f44336'}; color: white; padding: 15px 20px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 2000; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
 
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Initializing Product Details Page...');
+            
+            // Load cart from localStorage
+            loadCart();
             
             // Get product ID from URL
             const urlParams = new URLSearchParams(window.location.search);
@@ -1466,12 +1921,13 @@
             initializeUI();
         });
 
-        // ===== REUSABLE FUNCTIONS FROM CATEGORY PAGE =====
+        // ===== REUSABLE FUNCTIONS =====
         
         // Initialize UI components
         function initializeUI() {
             initializeSearch();
             initializeUserProfile();
+            initializeMobileMenu();
         }
 
         // Initialize search functionality
@@ -1595,6 +2051,55 @@
             }
         }
 
+        // Initialize mobile menu
+        function initializeMobileMenu() {
+            const trustMobileToggle = document.getElementById('trustMobileToggle');
+            const mobileUsesMenu = document.getElementById('mobileUsesMenu');
+            const closeMenu = document.getElementById('closeMenu');
+            const menuOverlay = document.getElementById('menuOverlay');
+            
+            if (!trustMobileToggle || !mobileUsesMenu || !closeMenu || !menuOverlay) {
+                console.log('❌ Mobile menu elements not found');
+                return;
+            }
+            
+            // Open mobile menu from trust info hamburger
+            trustMobileToggle.addEventListener('click', function() {
+                mobileUsesMenu.classList.add('active');
+                menuOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            // Close mobile menu
+            function closeMobileMenu() {
+                mobileUsesMenu.classList.remove('active');
+                menuOverlay.classList.remove('active');
+                document.body.style.overflow = 'auto';
+                
+                // Close all expanded sections
+                document.querySelectorAll('.mobile-mega-content.active').forEach(content => {
+                    content.classList.remove('active');
+                    const icon = content.previousElementSibling.querySelector('i');
+                    if (icon) {
+                        icon.classList.remove('fa-chevron-up');
+                        icon.classList.add('fa-chevron-down');
+                    }
+                });
+            }
+            
+            closeMenu.addEventListener('click', closeMobileMenu);
+            menuOverlay.addEventListener('click', closeMobileMenu);
+            
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && mobileUsesMenu.classList.contains('active')) {
+                    closeMobileMenu();
+                }
+            });
+            
+            // Make closeMobileMenu function globally available
+            window.closeMobileMenu = closeMobileMenu;
+        }
+
         // ===== PRODUCT DETAILS SPECIFIC FUNCTIONS =====
 
         async function initializePage(productId) {
@@ -1603,7 +2108,7 @@
                 await loadAllProductsFromFirestore();
                 await loadProductDetails(productId);
                 
-                // Initialize uses navigation (TUP USES BAR)
+                // Initialize uses navigation
                 generateUsesNavigation();
                 
                 console.log('✅ Page initialization completed successfully!');
@@ -1761,6 +2266,23 @@
                             ${product.description || 'No description available.'}
                         </div>
                         
+                        <!-- Quantity Selector -->
+                        <div class="quantity-selector">
+                            <div class="quantity-label">Quantity:</div>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" id="decreaseQuantity">-</button>
+                                <input type="number" class="quantity-input" id="quantityInput" value="1" min="1">
+                                <button class="quantity-btn" id="increaseQuantity">+</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Unit Selector -->
+                        <div class="unit-selector">
+                            <div class="unit-option selected" data-unit="sqft">Square Feet</div>
+                            <div class="unit-option" data-unit="sqm">Square Meters</div>
+                            <div class="unit-option" data-unit="piece">Pieces</div>
+                        </div>
+                        
                         <!-- Specifications -->
                         <div class="specifications">
                             <h3>Specifications</h3>
@@ -1861,10 +2383,10 @@
                         
                         <!-- Action Buttons -->
                         <div class="action-buttons">
-                            <a href="#" class="action-btn primary-btn" id="inquireBtn">
-                                <i class="fas fa-envelope"></i>
-                                Inquire Now
-                            </a>
+                            <button class="action-btn primary-btn" id="addToCartBtn">
+                                <i class="fas fa-cart-plus"></i>
+                                Add to Cart
+                            </button>
                             <a href="category-products.html?usage=${product.uses ? product.uses.toLowerCase().replace(/\s+/g, '-') : ''}" class="action-btn secondary-btn">
                                 <i class="fas fa-th-large"></i>
                                 View Similar Products
@@ -1882,10 +2404,38 @@
                 initializeSmartZoom();
             }, 100);
             
-            // Add event listener for inquire button
-            document.getElementById('inquireBtn')?.addEventListener('click', function(e) {
-                e.preventDefault();
-                showInquiryForm();
+            // Add event listeners for quantity controls
+            document.getElementById('increaseQuantity')?.addEventListener('click', function() {
+                const input = document.getElementById('quantityInput');
+                input.value = parseInt(input.value) + 1;
+                appState.quantity = parseInt(input.value);
+            });
+            
+            document.getElementById('decreaseQuantity')?.addEventListener('click', function() {
+                const input = document.getElementById('quantityInput');
+                if (input.value > 1) {
+                    input.value = parseInt(input.value) - 1;
+                    appState.quantity = parseInt(input.value);
+                }
+            });
+            
+            document.getElementById('quantityInput')?.addEventListener('change', function() {
+                if (this.value < 1) this.value = 1;
+                appState.quantity = parseInt(this.value);
+            });
+            
+            // Add event listeners for unit selector
+            document.querySelectorAll('.unit-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.unit-option').forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+                    appState.selectedUnit = this.getAttribute('data-unit');
+                });
+            });
+            
+            // Add event listener for add to cart button
+            document.getElementById('addToCartBtn')?.addEventListener('click', function() {
+                addToCart(appState.currentProduct, appState.quantity, appState.selectedUnit);
             });
         }
 
@@ -2036,12 +2586,12 @@
             }
         }
 
-        // Generate TUP USES BAR navigation
+        // Generate USES BAR navigation
         function generateUsesNavigation() {
-            const usesContainer = document.getElementById('dynamicUsesContainer');
-            if (!usesContainer || appState.allProducts.length === 0) return;
+            const desktopContainer = document.getElementById('dynamicUsesContainer');
+            const mobileContainer = document.getElementById('mobileUsesList');
             
-            usesContainer.innerHTML = '';
+            if ((!desktopContainer && !mobileContainer) || appState.allProducts.length === 0) return;
             
             // Get unique uses from products
             const uniqueUses = [...new Set(appState.allProducts
@@ -2050,70 +2600,194 @@
             )].sort();
             
             if (uniqueUses.length === 0) {
-                usesContainer.innerHTML = `
-                    <div class="loading-categories">
-                        <i class="fas fa-info-circle"></i>
-                        <p>No uses found</p>
-                    </div>
-                `;
+                if (desktopContainer) {
+                    desktopContainer.innerHTML = `
+                        <div class="loading-categories">
+                            <i class="fas fa-info-circle"></i>
+                            <p>No uses found</p>
+                        </div>
+                    `;
+                }
+                if (mobileContainer) {
+                    mobileContainer.innerHTML = `
+                        <div class="loading-categories">
+                            <i class="fas fa-info-circle"></i>
+                            <p>No uses found</p>
+                        </div>
+                    `;
+                }
                 return;
             }
             
-            uniqueUses.forEach(usage => {
-                const usageKey = usage.toLowerCase().replace(/\s+/g, '-');
-                const useItem = document.createElement('div');
-                useItem.className = 'use-item';
+            // Generate desktop navigation
+            if (desktopContainer) {
+                desktopContainer.innerHTML = '';
                 
-                // Get products for this usage
-                const usageProducts = appState.allProducts.filter(product => 
-                    product.uses && product.uses.toLowerCase() === usage.toLowerCase()
-                );
-                
-                const uniqueStoneNames = [...new Set(usageProducts
-                    .filter(product => product.stone_name)
-                    .map(product => product.stone_name)
-                )];
-                
-                if (uniqueStoneNames.length > 0) {
-                    // Usage with stone names - create mega menu
-                    useItem.innerHTML = `
-                        <div class="use-link">${usage} (${usageProducts.length})</div>
-                        <div class="mega-menu">
-                            <div class="patterns-grid">
-                                ${uniqueStoneNames.map(stoneName => {
-                                    const stoneSlug = stoneName.toLowerCase().replace(/\s+/g, '-');
-                                    // Find a product image for this stone or use default
-                                    const stoneProduct = appState.allProducts.find(p => 
-                                        p.uses && p.uses.toLowerCase() === usage.toLowerCase() && 
-                                        p.stone_name === stoneName
-                                    );
-                                    const imageUrl = stoneProduct?.images?.[0] || getDefaultImage(stoneProduct?.category);
-                                    
-                                    return `
-                                        <a href="category-products.html?usage=${usageKey}&stone=${stoneSlug}" class="pattern-item" data-usage="${usage}" data-stone="${stoneName}">
-                                            <div class="pattern-image" style="background-image: url('${imageUrl}')"></div>
-                                            <div class="pattern-name">${stoneName}</div>
-                                        </a>
-                                    `;
-                                }).join('')}
+                uniqueUses.forEach(usage => {
+                    const usageKey = usage.toLowerCase().replace(/\s+/g, '-');
+                    const useItem = document.createElement('div');
+                    useItem.className = 'use-item';
+                    
+                    // Get products for this usage
+                    const usageProducts = appState.allProducts.filter(product => 
+                        product.uses && product.uses.toLowerCase() === usage.toLowerCase()
+                    );
+                    
+                    const uniqueStoneNames = [...new Set(usageProducts
+                        .filter(product => product.stone_name)
+                        .map(product => product.stone_name)
+                    )];
+                    
+                    if (uniqueStoneNames.length > 0) {
+                        // Usage with stone names - create mega menu
+                        useItem.innerHTML = `
+                            <div class="use-link">${usage} (${usageProducts.length})</div>
+                            <div class="mega-menu">
+                                <div class="patterns-grid">
+                                    ${uniqueStoneNames.map(stoneName => {
+                                        const stoneSlug = stoneName.toLowerCase().replace(/\s+/g, '-');
+                                        // Find a product image for this stone or use default
+                                        const stoneProduct = appState.allProducts.find(p => 
+                                            p.uses && p.uses.toLowerCase() === usage.toLowerCase() && 
+                                            p.stone_name === stoneName
+                                        );
+                                        const imageUrl = stoneProduct?.images?.[0] || getDefaultImage(stoneProduct?.category);
+                                        
+                                        return `
+                                            <a href="category-products.html?usage=${usageKey}&stone=${stoneSlug}" class="pattern-item" data-usage="${usage}" data-stone="${stoneName}">
+                                                <div class="pattern-image" style="background-image: url('${imageUrl}')"></div>
+                                                <div class="pattern-name">${stoneName}</div>
+                                            </a>
+                                        `;
+                                    }).join('')}
+                                </div>
                             </div>
-                        </div>
-                    `;
-                } else {
-                    // Usage with products but no stone names - simple link
-                    useItem.innerHTML = `
-                        <a href="category-products.html?usage=${usageKey}" class="use-link">${usage} (${usageProducts.length})</a>
-                    `;
-                }
+                        `;
+                    } else {
+                        // Usage with products but no stone names - simple link
+                        useItem.innerHTML = `
+                            <a href="category-products.html?usage=${usageKey}" class="use-link">${usage} (${usageProducts.length})</a>
+                        `;
+                    }
+                    
+                    desktopContainer.appendChild(useItem);
+                });
                 
-                usesContainer.appendChild(useItem);
-            });
+                // Initialize mega menu functionality
+                initializeMegaMenu();
+            }
             
-            // Initialize mega menu functionality
-            initializeMegaMenu();
+            // Generate mobile navigation
+            if (mobileContainer) {
+                mobileContainer.innerHTML = '';
+                
+                uniqueUses.forEach(usage => {
+                    const usageKey = usage.toLowerCase().replace(/\s+/g, '-');
+                    
+                    // Get products for this usage
+                    const usageProducts = appState.allProducts.filter(product => 
+                        product.uses && product.uses.toLowerCase() === usage.toLowerCase()
+                    );
+                    
+                    const uniqueStoneNames = [...new Set(usageProducts
+                        .filter(product => product.stone_name)
+                        .map(product => product.stone_name)
+                    )];
+                    
+                    const mobileUseItem = document.createElement('div');
+                    mobileUseItem.className = 'mobile-use-item';
+                    
+                    if (uniqueStoneNames.length > 0) {
+                        // Usage with stone names - create expandable section
+                        mobileUseItem.innerHTML = `
+                            <div class="mobile-use-link mobile-use-toggle" data-usage="${usageKey}">
+                                <span>${usage} (${usageProducts.length})</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="mobile-mega-content" id="mobile-content-${usageKey}">
+                                <div class="mobile-pattern-grid">
+                                    ${uniqueStoneNames.map(stoneName => {
+                                        const stoneSlug = stoneName.toLowerCase().replace(/\s+/g, '-');
+                                        const stoneProduct = appState.allProducts.find(p => 
+                                            p.uses && p.uses.toLowerCase() === usage.toLowerCase() && 
+                                            p.stone_name === stoneName
+                                        );
+                                        const imageUrl = stoneProduct?.images?.[0] || getDefaultImage(stoneProduct?.category);
+                                        
+                                        return `
+                                            <a href="category-products.html?usage=${usageKey}&stone=${stoneSlug}" class="mobile-pattern-item" onclick="closeMobileMenu()">
+                                                <div class="mobile-pattern-image" style="background-image: url('${imageUrl}'); background-size: contain;"></div>
+                                                <div class="mobile-pattern-name">${stoneName}</div>
+                                            </a>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        // Usage with products but no stone names - simple link
+                        mobileUseItem.innerHTML = `
+                            <a href="category-products.html?usage=${usageKey}" class="mobile-use-link" onclick="closeMobileMenu()">
+                                ${usage} (${usageProducts.length})
+                            </a>
+                        `;
+                    }
+                    
+                    mobileContainer.appendChild(mobileUseItem);
+                });
+                
+                // Add event listeners for mobile menu toggles
+                setTimeout(() => {
+                    initializeMobileMenuToggles();
+                }, 100);
+            }
         }
 
-        // Initialize mega menu functionality for TUP USES BAR
+        // Initialize mobile menu toggles
+        function initializeMobileMenuToggles() {
+            const mobileToggles = document.querySelectorAll('.mobile-use-toggle');
+            
+            mobileToggles.forEach(toggle => {
+                toggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const usageKey = this.getAttribute('data-usage');
+                    const content = document.getElementById(`mobile-content-${usageKey}`);
+                    const icon = this.querySelector('i');
+                    
+                    if (!content) return;
+                    
+                    // Toggle the current section
+                    if (content.classList.contains('active')) {
+                        content.classList.remove('active');
+                        if (icon) {
+                            icon.classList.remove('fa-chevron-up');
+                            icon.classList.add('fa-chevron-down');
+                        }
+                    } else {
+                        // Close all other open sections first
+                        document.querySelectorAll('.mobile-mega-content.active').forEach(openContent => {
+                            openContent.classList.remove('active');
+                            const openIcon = openContent.previousElementSibling.querySelector('i');
+                            if (openIcon) {
+                                openIcon.classList.remove('fa-chevron-up');
+                                openIcon.classList.add('fa-chevron-down');
+                            }
+                        });
+                        
+                        // Open this section
+                        content.classList.add('active');
+                        if (icon) {
+                            icon.classList.remove('fa-chevron-down');
+                            icon.classList.add('fa-chevron-up');
+                        }
+                    }
+                });
+            });
+        }
+
+        // Initialize mega menu functionality for desktop
         function initializeMegaMenu() {
             const usesTopBar = document.querySelector('.uses-top-bar');
             const container = document.querySelector('.uses-top-bar .container');
@@ -2123,7 +2797,7 @@
             const useItems = document.querySelectorAll('.use-item');
             const containerRect = container.getBoundingClientRect();
             
-            useItems.forEach((item, index) => {
+            useItems.forEach((item) => {
                 const megaMenu = item.querySelector('.mega-menu');
                 
                 if (megaMenu) {
@@ -2183,7 +2857,7 @@
             const product = appState.currentProduct;
             if (!product) return;
             
-            // Find related products based on multiple criteria (STONE NAME/TYPE BASED)
+            // Find related products based on multiple criteria
             appState.relatedProducts = appState.allProducts.filter(p => {
                 if (p.id === product.id) return false; // Exclude current product
                 
@@ -2218,7 +2892,7 @@
                 return false;
             });
             
-            // Sort by relevance (stone name matches first, then category, then type)
+            // Sort by relevance
             appState.relatedProducts.sort((a, b) => {
                 const aScore = calculateRelevanceScore(a, product);
                 const bScore = calculateRelevanceScore(b, product);
@@ -2298,16 +2972,19 @@
                 const images = product.images || [];
                 const imageUrl = images[0] || product.image || getDefaultImage(product.category);
                 const description = product.description || "No description";
-                const rate = product.rate || product.price || "N/A";
-                const detailsLink = product.pageUrl || `product-details.html?id=${product.id}`;
+                const rate = product.price || "N/A";
+                const detailsLink = `product-details.html?id=${product.id}`;
 
                 const cardHTML = `
                     <div class="product-card">
                         <a href="${detailsLink}">
                             <div class="product-img-box">
-                                <img src="${imageUrl}" alt="Product Image" class="product-img">
+                                <img src="${imageUrl}" alt="${product.stone_name || 'Stone Product'}" class="product-img">
                             </div>
                         </a>
+                        <h3 style="margin-top: 8px; font-size: 15px; color: #333; font-weight: 600;">
+                            ${product.stone_name || 'Stone Product'}
+                        </h3>
                         <p class="product-description">${description.length > 100 ? description.substring(0, 100) + '...' : description}</p>
                         <p class="product-rate">£ ${rate}</p>
                         <a href="${detailsLink}" class="details-btn">View Details</a>
@@ -2315,75 +2992,6 @@
                 `;
 
                 container.innerHTML += cardHTML;
-            });
-        }
-
-        function showInquiryForm() {
-            const product = appState.currentProduct;
-            if (!product) return;
-            
-            // Create a simple inquiry modal
-            const inquiryHTML = `
-                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; display: flex; align-items: center; justify-content: center;">
-                    <div style="background: white; padding: 30px; border-radius: 10px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                            <h3 style="margin: 0; color: #333;">Inquire About ${product.stone_name}</h3>
-                            <button id="closeInquiry" style="background: none; border: none; font-size: 20px; cursor: pointer; color: #666;">&times;</button>
-                        </div>
-                        
-                        <form id="inquiryForm">
-                            <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 5px; color: #333; font-weight: 500;">Your Name</label>
-                                <input type="text" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-                            </div>
-                            
-                            <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 5px; color: #333; font-weight: 500;">Your Email</label>
-                                <input type="email" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-                            </div>
-                            
-                            <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 5px; color: #333; font-weight: 500;">Your Phone</label>
-                                <input type="tel" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-                            </div>
-                            
-                            <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 5px; color: #333; font-weight: 500;">Quantity Required</label>
-                                <input type="text" placeholder="e.g., 100 sq ft" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-                            </div>
-                            
-                            <div style="margin-bottom: 20px;">
-                                <label style="display: block; margin-bottom: 5px; color: #333; font-weight: 500;">Message</label>
-                                <textarea rows="4" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" placeholder="Any specific requirements or questions..."></textarea>
-                            </div>
-                            
-                            <button type="submit" style="background: #b8860b; color: white; border: none; padding: 12px 25px; border-radius: 5px; font-weight: 600; cursor: pointer; width: 100%;">Submit Inquiry</button>
-                        </form>
-                    </div>
-                </div>
-            `;
-            
-            // Add modal to page
-            const modalDiv = document.createElement('div');
-            modalDiv.innerHTML = inquiryHTML;
-            document.body.appendChild(modalDiv);
-            
-            // Add event listeners
-            document.getElementById('closeInquiry').addEventListener('click', function() {
-                document.body.removeChild(modalDiv);
-            });
-            
-            document.getElementById('inquiryForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                alert('Thank you for your inquiry! We will contact you soon.');
-                document.body.removeChild(modalDiv);
-            });
-            
-            // Close modal when clicking outside
-            modalDiv.addEventListener('click', function(e) {
-                if (e.target === modalDiv) {
-                    document.body.removeChild(modalDiv);
-                }
             });
         }
 
@@ -2433,7 +3041,6 @@
                 // User is logged in
                 document.getElementById('userProfile').style.display = 'block';
                 document.getElementById('loginButton').style.display = 'none';
-                document.getElementById('addProductButton').style.display = 'flex';
                 
                 // Update user info
                 document.getElementById('profileName').textContent = appState.user.name;
@@ -2444,7 +3051,6 @@
                 // User is not logged in
                 document.getElementById('userProfile').style.display = 'none';
                 document.getElementById('loginButton').style.display = 'flex';
-                document.getElementById('addProductButton').style.display = 'none';
             }
         }
 
@@ -2477,8 +3083,7 @@
                         "https://i.ibb.co/HLpBc94R/51b7aaab131a.jpg",
                         "https://images.unsplash.com/photo-1541140532154-b024d705b90a?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
                         "https://images.unsplash.com/photo-1601553598910-aab9e5a5e658?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
-                    ],
-                    pageUrl: "product-details.html?id=1"
+                    ]
                 },
                 {
                     id: "2",
@@ -2505,8 +3110,7 @@
                     images: [
                         "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
                         "https://images.unsplash.com/photo-1568515042948-bf1c8e79f4cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
-                    ],
-                    pageUrl: "product-details.html?id=2"
+                    ]
                 },
                 {
                     id: "3",
@@ -2533,8 +3137,7 @@
                     images: [
                         "https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
                         "https://images.unsplash.com/photo-1552324190-f087066e1e48?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
-                    ],
-                    pageUrl: "product-details.html?id=3"
+                    ]
                 },
                 {
                     id: "4",
@@ -2561,8 +3164,7 @@
                     images: [
                         "https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
                         "https://images.unsplash.com/photo-1596162955779-9c3295a74120?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
-                    ],
-                    pageUrl: "product-details.html?id=4"
+                    ]
                 }
             ];
         }
