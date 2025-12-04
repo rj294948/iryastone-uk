@@ -82,6 +82,7 @@
             padding: 0 10px; /* Reduced padding */
             margin-top: 0;
             padding-top: 5px;
+            position: relative; /* Important for mobile toggle positioning */
         }
         
         .trust-info-content {
@@ -690,6 +691,21 @@
             font-weight: 500;
             line-height: 1.3;
             padding: 0 5px;
+        }
+        
+        /* Loading State for Mobile Menu */
+        .loading-categories {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .loading-categories i {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 24px;
+            color: #b8860b;
         }
         
         /* Overlay for mobile menu */
@@ -1311,6 +1327,7 @@
                 padding: 4px 8px;
                 gap: 10px;
                 font-size: 11px;
+                padding-left: 40px; /* Extra padding for hamburger icon */
             }
             
             .trust-item {
@@ -1469,6 +1486,15 @@
             .mobile-pattern-name {
                 font-size: 11px;
             }
+            
+            .trust-mobile-toggle {
+                left: 5px;
+                padding: 6px;
+            }
+            
+            .trust-info-content {
+                padding-left: 35px;
+            }
         }
     </style>
 </head>
@@ -1485,7 +1511,7 @@
             </button>
         </div>
         <div class="mobile-uses-list" id="mobileUsesList">
-            <!-- Dynamic mobile menu will be loaded here -->
+            <!-- Loading state - will be replaced with dynamic content -->
             <div class="loading-categories">
                 <i class="fas fa-spinner fa-spin"></i>
                 <p>Loading categories...</p>
@@ -1844,6 +1870,7 @@
             const mobileUsesMenu = document.getElementById('mobileUsesMenu');
             const closeMenu = document.getElementById('closeMenu');
             const menuOverlay = document.getElementById('menuOverlay');
+            const mobileUsesList = document.getElementById('mobileUsesList');
             
             // Mobile filter toggle
             const mobileFilterToggle = document.getElementById('mobileFilterToggle');
@@ -1869,6 +1896,7 @@
                     console.log('✅ Page initialization completed successfully!');
                 } catch (error) {
                     console.error('❌ Error initializing page:', error);
+                    showMobileMenuFallback();
                 }
             }
             
@@ -1936,6 +1964,10 @@
                     console.log('🔄 Using sample data as fallback...');
                     // Fallback to sample data if Firebase fails
                     appState.products = getSampleProducts();
+                    // Generate mobile menu with sample data
+                    setTimeout(() => {
+                        generateUsesNavigation();
+                    }, 100);
                 }
             }
             
@@ -2166,14 +2198,15 @@
                 productsCount.textContent = countText;
             }
             
-            // ✅ USES NAVIGATION FUNCTION
+            // ✅ USES NAVIGATION FUNCTION - FIXED FOR MOBILE MENU
             function generateUsesNavigation() {
                 const usesContainer = document.getElementById('dynamicUsesContainer');
                 const mobileUsesList = document.getElementById('mobileUsesList');
                 
-                if (!usesContainer) return;
+                if (!usesContainer && !mobileUsesList) return;
                 
-                usesContainer.innerHTML = '';
+                // Clear existing content
+                if (usesContainer) usesContainer.innerHTML = '';
                 if (mobileUsesList) mobileUsesList.innerHTML = '';
                 
                 // Get unique uses from products
@@ -2185,74 +2218,104 @@
                 console.log('Unique uses for navigation:', uniqueUses);
                 
                 if (uniqueUses.length === 0) {
-                    usesContainer.innerHTML = `
-                        <div class="loading-categories">
-                            <i class="fas fa-info-circle"></i>
-                            <p>No uses found</p>
-                        </div>
-                    `;
+                    const fallbackUses = ['Flooring', 'Wall', 'Countertop', 'Bathroom', 'Outdoor', 'Kitchen'];
+                    
+                    if (usesContainer) {
+                        usesContainer.innerHTML = `
+                            <div class="loading-categories">
+                                <i class="fas fa-info-circle"></i>
+                                <p>No uses found, showing default categories</p>
+                            </div>
+                        `;
+                        setTimeout(() => {
+                            generateDefaultUses(usesContainer, mobileUsesList, fallbackUses);
+                        }, 500);
+                    }
                     return;
                 }
                 
-                uniqueUses.forEach(usage => {
-                    const usageKey = usage.toLowerCase().replace(/\s+/g, '-');
-                    
-                    // Desktop uses navigation
-                    const useItem = document.createElement('div');
-                    useItem.className = 'use-item';
-                    
-                    // Get products for this usage
-                    const usageProducts = appState.products.filter(product => 
-                        product.uses && product.uses.toLowerCase() === usage.toLowerCase()
-                    );
-                    
-                    const uniqueStoneNames = [...new Set(usageProducts
-                        .filter(product => product.stone_name)
-                        .map(product => product.stone_name)
-                    )];
-                    
-                    console.log(`📁 ${usage} - Products: ${usageProducts.length}, Stone Names: ${uniqueStoneNames.length}`);
-                    
-                    if (uniqueStoneNames.length > 0) {
-                        // Usage with stone names - create mega menu
-                        useItem.innerHTML = `
-                            <div class="use-link">${usage} (${usageProducts.length})</div>
-                            <div class="mega-menu">
-                                <div class="patterns-grid">
-                                    ${uniqueStoneNames.map(stoneName => {
-                                        const stoneSlug = stoneName.toLowerCase().replace(/\s+/g, '-');
-                                        // Find a product image for this stone or use default
-                                        const stoneProduct = appState.products.find(p => 
-                                            p.uses && p.uses.toLowerCase() === usage.toLowerCase() && 
-                                            p.stone_name === stoneName
-                                        );
-                                        const imageUrl = stoneProduct?.images?.[0] || getDefaultImage(stoneProduct?.category);
-                                        
-                                        return `
-                                            <a href="category-products.html?usage=${usageKey}&stone=${stoneSlug}" class="pattern-item" data-usage="${usage}" data-stone="${stoneName}">
-                                                <div class="pattern-image" style="background-image: url('${imageUrl}')"></div>
-                                                <div class="pattern-name">${stoneName}</div>
-                                            </a>
-                                        `;
-                                    }).join('')}
+                // Generate desktop navigation
+                if (usesContainer) {
+                    uniqueUses.forEach(usage => {
+                        const usageKey = usage.toLowerCase().replace(/\s+/g, '-');
+                        
+                        // Desktop uses navigation
+                        const useItem = document.createElement('div');
+                        useItem.className = 'use-item';
+                        
+                        // Get products for this usage
+                        const usageProducts = appState.products.filter(product => 
+                            product.uses && product.uses.toLowerCase() === usage.toLowerCase()
+                        );
+                        
+                        const uniqueStoneNames = [...new Set(usageProducts
+                            .filter(product => product.stone_name)
+                            .map(product => product.stone_name)
+                        )];
+                        
+                        console.log(`📁 ${usage} - Products: ${usageProducts.length}, Stone Names: ${uniqueStoneNames.length}`);
+                        
+                        if (uniqueStoneNames.length > 0) {
+                            // Usage with stone names - create mega menu
+                            useItem.innerHTML = `
+                                <div class="use-link">${usage} (${usageProducts.length})</div>
+                                <div class="mega-menu">
+                                    <div class="patterns-grid">
+                                        ${uniqueStoneNames.map(stoneName => {
+                                            const stoneSlug = stoneName.toLowerCase().replace(/\s+/g, '-');
+                                            // Find a product image for this stone or use default
+                                            const stoneProduct = appState.products.find(p => 
+                                                p.uses && p.uses.toLowerCase() === usage.toLowerCase() && 
+                                                p.stone_name === stoneName
+                                            );
+                                            const imageUrl = stoneProduct?.images?.[0] || getDefaultImage(stoneProduct?.category);
+                                            
+                                            return `
+                                                <a href="category-products.html?usage=${usageKey}&stone=${stoneSlug}" class="pattern-item" data-usage="${usage}" data-stone="${stoneName}">
+                                                    <div class="pattern-image" style="background-image: url('${imageUrl}')"></div>
+                                                    <div class="pattern-name">${stoneName}</div>
+                                                </a>
+                                            `;
+                                        }).join('')}
+                                    </div>
                                 </div>
-                            </div>
-                        `;
-                    } else {
-                        // Usage with products but no stone names - simple link
-                        useItem.innerHTML = `
-                            <a href="category-products.html?usage=${usageKey}" class="use-link">${usage} (${usageProducts.length})</a>
-                        `;
-                    }
+                            `;
+                        } else {
+                            // Usage with products but no stone names - simple link
+                            useItem.innerHTML = `
+                                <a href="category-products.html?usage=${usageKey}" class="use-link">${usage} (${usageProducts.length})</a>
+                            `;
+                        }
+                        
+                        usesContainer.appendChild(useItem);
+                    });
                     
-                    usesContainer.appendChild(useItem);
-                    
-                    // Mobile uses menu
-                    if (mobileUsesList) {
+                    // Reinitialize mega menu functionality
+                    setTimeout(() => {
+                        initializeMegaMenu();
+                    }, 100);
+                }
+                
+                // Generate mobile navigation
+                if (mobileUsesList) {
+                    uniqueUses.forEach(usage => {
+                        const usageKey = usage.toLowerCase().replace(/\s+/g, '-');
+                        
+                        // Get products for this usage
+                        const usageProducts = appState.products.filter(product => 
+                            product.uses && product.uses.toLowerCase() === usage.toLowerCase()
+                        );
+                        
+                        const uniqueStoneNames = [...new Set(usageProducts
+                            .filter(product => product.stone_name)
+                            .map(product => product.stone_name)
+                        )];
+                        
                         const mobileUseItem = document.createElement('div');
                         mobileUseItem.className = 'mobile-use-item';
                         
                         if (uniqueStoneNames.length > 0) {
+                            // Usage with stone names - create expandable section
                             mobileUseItem.innerHTML = `
                                 <div class="mobile-use-link mobile-use-toggle" data-usage="${usageKey}">
                                     <span>${usage} (${usageProducts.length})</span>
@@ -2269,7 +2332,7 @@
                                             const imageUrl = stoneProduct?.images?.[0] || getDefaultImage(stoneProduct?.category);
                                             
                                             return `
-                                                <a href="category-products.html?usage=${usageKey}&stone=${stoneSlug}" class="mobile-pattern-item">
+                                                <a href="category-products.html?usage=${usageKey}&stone=${stoneSlug}" class="mobile-pattern-item" onclick="closeMobileMenu()">
                                                     <div class="mobile-pattern-image" style="background-image: url('${imageUrl}'); background-size: contain;"></div>
                                                     <div class="mobile-pattern-name">${stoneName}</div>
                                                 </a>
@@ -2279,53 +2342,99 @@
                                 </div>
                             `;
                         } else {
+                            // Usage with products but no stone names - simple link
                             mobileUseItem.innerHTML = `
-                                <a href="category-products.html?usage=${usageKey}" class="mobile-use-link">
+                                <a href="category-products.html?usage=${usageKey}" class="mobile-use-link" onclick="closeMobileMenu()">
                                     ${usage} (${usageProducts.length})
                                 </a>
                             `;
                         }
                         
                         mobileUsesList.appendChild(mobileUseItem);
-                    }
-                });
-                
-                // Reinitialize mega menu functionality
-                setTimeout(() => {
-                    initializeMegaMenu();
-                }, 100);
-                
-                // Add event listeners for mobile menu toggles
-                setTimeout(() => {
-                    const mobileToggles = document.querySelectorAll('.mobile-use-toggle');
-                    mobileToggles.forEach(toggle => {
-                        toggle.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            const usageKey = this.getAttribute('data-usage');
-                            const content = document.getElementById(`mobile-content-${usageKey}`);
-                            const icon = this.querySelector('i');
-                            
-                            if (content.classList.contains('active')) {
-                                content.classList.remove('active');
-                                icon.classList.remove('fa-chevron-up');
-                                icon.classList.add('fa-chevron-down');
-                            } else {
-                                document.querySelectorAll('.mobile-mega-content.active').forEach(openContent => {
-                                    openContent.classList.remove('active');
-                                    const openIcon = openContent.previousElementSibling.querySelector('i');
-                                    if (openIcon) {
-                                        openIcon.classList.remove('fa-chevron-up');
-                                        openIcon.classList.add('fa-chevron-down');
-                                    }
-                                });
-                                
-                                content.classList.add('active');
-                                icon.classList.remove('fa-chevron-down');
-                                icon.classList.add('fa-chevron-up');
-                            }
-                        });
                     });
+                    
+                    // Add event listeners for mobile menu toggles
+                    setTimeout(() => {
+                        initializeMobileMenuToggles();
+                    }, 100);
+                }
+            }
+            
+            // Generate default uses when no data is available
+            function generateDefaultUses(desktopContainer, mobileContainer, usesList) {
+                // Desktop
+                if (desktopContainer) {
+                    desktopContainer.innerHTML = '';
+                    usesList.forEach(usage => {
+                        const usageKey = usage.toLowerCase().replace(/\s+/g, '-');
+                        const useItem = document.createElement('div');
+                        useItem.className = 'use-item';
+                        useItem.innerHTML = `
+                            <a href="category-products.html?usage=${usageKey}" class="use-link">${usage}</a>
+                        `;
+                        desktopContainer.appendChild(useItem);
+                    });
+                }
+                
+                // Mobile
+                if (mobileContainer) {
+                    mobileContainer.innerHTML = '';
+                    usesList.forEach(usage => {
+                        const usageKey = usage.toLowerCase().replace(/\s+/g, '-');
+                        const mobileUseItem = document.createElement('div');
+                        mobileUseItem.className = 'mobile-use-item';
+                        mobileUseItem.innerHTML = `
+                            <a href="category-products.html?usage=${usageKey}" class="mobile-use-link" onclick="closeMobileMenu()">
+                                ${usage}
+                            </a>
+                        `;
+                        mobileContainer.appendChild(mobileUseItem);
+                    });
+                }
+                
+                // Reinitialize mega menu for desktop
+                setTimeout(() => {
+                    if (desktopContainer) initializeMegaMenu();
                 }, 100);
+            }
+            
+            // Show fallback content in mobile menu
+            function showMobileMenuFallback() {
+                const mobileUsesList = document.getElementById('mobileUsesList');
+                if (!mobileUsesList) return;
+                
+                mobileUsesList.innerHTML = `
+                    <div class="mobile-use-item">
+                        <a href="category-products.html?usage=flooring" class="mobile-use-link" onclick="closeMobileMenu()">
+                            Flooring Stones
+                        </a>
+                    </div>
+                    <div class="mobile-use-item">
+                        <a href="category-products.html?usage=wall" class="mobile-use-link" onclick="closeMobileMenu()">
+                            Wall Stones
+                        </a>
+                    </div>
+                    <div class="mobile-use-item">
+                        <a href="category-products.html?usage=bathroom" class="mobile-use-link" onclick="closeMobileMenu()">
+                            Bathroom Stones
+                        </a>
+                    </div>
+                    <div class="mobile-use-item">
+                        <a href="category-products.html?usage=outdoor" class="mobile-use-link" onclick="closeMobileMenu()">
+                            Outdoor Stones
+                        </a>
+                    </div>
+                    <div class="mobile-use-item">
+                        <a href="category-products.html?usage=kitchen" class="mobile-use-link" onclick="closeMobileMenu()">
+                            Kitchen Stones
+                        </a>
+                    </div>
+                    <div class="mobile-use-item">
+                        <a href="category-products.html?usage=countertop" class="mobile-use-link" onclick="closeMobileMenu()">
+                            Countertop Stones
+                        </a>
+                    </div>
+                `;
             }
             
             // ===== UI FUNCTIONS =====
@@ -3065,6 +3174,7 @@
                     menuOverlay.classList.remove('active');
                     document.body.style.overflow = 'auto';
                     
+                    // Close all expanded sections
                     document.querySelectorAll('.mobile-mega-content.active').forEach(content => {
                         content.classList.remove('active');
                         const icon = content.previousElementSibling.querySelector('i');
@@ -3082,6 +3192,43 @@
                     if (e.key === 'Escape' && mobileUsesMenu.classList.contains('active')) {
                         closeMobileMenu();
                     }
+                });
+                
+                // Make closeMobileMenu function globally available for onclick handlers
+                window.closeMobileMenu = closeMobileMenu;
+            }
+            
+            // Initialize mobile menu toggles for expandable sections
+            function initializeMobileMenuToggles() {
+                const mobileToggles = document.querySelectorAll('.mobile-use-toggle');
+                
+                mobileToggles.forEach(toggle => {
+                    toggle.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const usageKey = this.getAttribute('data-usage');
+                        const content = document.getElementById(`mobile-content-${usageKey}`);
+                        const icon = this.querySelector('i');
+                        
+                        if (content.classList.contains('active')) {
+                            content.classList.remove('active');
+                            icon.classList.remove('fa-chevron-up');
+                            icon.classList.add('fa-chevron-down');
+                        } else {
+                            // Close other open sections
+                            document.querySelectorAll('.mobile-mega-content.active').forEach(openContent => {
+                                openContent.classList.remove('active');
+                                const openIcon = openContent.previousElementSibling.querySelector('i');
+                                if (openIcon) {
+                                    openIcon.classList.remove('fa-chevron-up');
+                                    openIcon.classList.add('fa-chevron-down');
+                                }
+                            });
+                            
+                            content.classList.add('active');
+                            icon.classList.remove('fa-chevron-down');
+                            icon.classList.add('fa-chevron-up');
+                        }
+                    });
                 });
             }
             
