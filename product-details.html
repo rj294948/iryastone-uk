@@ -2896,7 +2896,7 @@
         });
     </script>
 
-    <!-- Enhanced JavaScript with Shop Now Popup -->
+    <!-- COMPLETE JAVASCRIPT WITH ALL MISSING FUNCTIONS -->
     <script type="module">
         import { 
             db, auth, 
@@ -2921,7 +2921,8 @@
             selectedHeight: 0
         };
 
-        // Cart management functions
+        // ========== CORE INITIALIZATION FUNCTIONS ==========
+        
         function loadCart() {
             const savedCart = localStorage.getItem('stonecraft_cart');
             if (savedCart) {
@@ -2937,606 +2938,127 @@
 
         function updateCartBadge() {
             const cartBadge = document.getElementById('cartBadge');
-            const totalItems = appState.cart.reduce((sum, item) => sum + item.quantity, 0);
-            cartBadge.textContent = totalItems;
+            if (cartBadge) {
+                const totalItems = appState.cart.reduce((sum, item) => sum + item.quantity, 0);
+                cartBadge.textContent = totalItems;
+            }
         }
 
-        function showNotification(message, type) {
-            const existingNotification = document.querySelector('.notification');
-            if (existingNotification) {
-                existingNotification.remove();
+        // ========== MAIN PAGE INITIALIZATION ==========
+        
+        async function initializePage(productId) {
+            try {
+                console.log('🔄 Starting page initialization...');
+                await loadAllProductsFromFirestore();
+                await loadProductDetails(productId);
+                generateUsesNavigation();
+                console.log('✅ Page initialization completed successfully!');
+            } catch (error) {
+                console.error('❌ Error initializing page:', error);
+                showError('Failed to load product details');
+                fallbackToSampleData(productId);
             }
-            
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.innerHTML = `
-                <div style="position: fixed; top: 100px; right: 20px; background: ${type === 'success' ? '#4CAF50' : '#f44336'}; color: white; padding: 15px 20px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 2000; display: flex; align-items: center; gap: 10px;">
-                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
-                    <span>${message}</span>
-                </div>
-            `;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Initializing Product Details Page with Enhanced Shop Now System...');
-            
-            loadCart();
-            
-            const urlParams = new URLSearchParams(window.location.search);
-            const productId = urlParams.get('id');
-            
-            console.log('📋 Product ID from URL:', productId);
-            
-            if (!productId) {
-                showError('No product ID specified');
-                return;
-            }
-            
-            initializePage(productId);
-            initializeAuth();
-            initializeUI();
-        });
-
-        // ===== ENHANCED SHOP NOW SYSTEM WITH POPUP =====
-
-        function initializeShopNowSystem() {
-            console.log('🛒 Initializing Enhanced Shop Now System with Popup...');
-            
-            initializeQuickBuyOptions();
-            initializeCartSummary();
-            initializeNotifications();
-            initializeShopNowModal();
-            initializeRateCalculation();
-            
-            console.log('✅ Enhanced Shop Now System initialized');
-        }
-
-        function initializeRateCalculation() {
-            const lengthInput = document.getElementById('lengthInput');
-            const widthInput = document.getElementById('widthInput');
-            const heightInput = document.getElementById('heightInput');
-            const calculateBtn = document.getElementById('calculateBtn');
-            const totalRateDisplay = document.getElementById('totalRateDisplay');
-            
-            if (!lengthInput || !widthInput || !calculateBtn) return;
-            
-            // Set default values if available from product
-            if (appState.currentProduct) {
-                if (appState.currentProduct.length) {
-                    lengthInput.value = appState.currentProduct.length;
-                    appState.selectedLength = parseFloat(appState.currentProduct.length) || 0;
-                }
-                if (appState.currentProduct.width) {
-                    widthInput.value = appState.currentProduct.width;
-                    appState.selectedWidth = parseFloat(appState.currentProduct.width) || 0;
-                }
-                if (appState.currentProduct.thickness) {
-                    heightInput.value = appState.currentProduct.thickness.split('-')[0].trim();
-                    appState.selectedHeight = parseFloat(appState.currentProduct.thickness.split('-')[0].trim()) || 0;
-                }
-            }
-            
-            lengthInput.addEventListener('input', function() {
-                appState.selectedLength = parseFloat(this.value) || 0;
-                calculateRate();
-            });
-            
-            widthInput.addEventListener('input', function() {
-                appState.selectedWidth = parseFloat(this.value) || 0;
-                calculateRate();
-            });
-            
-            if (heightInput) {
-                heightInput.addEventListener('input', function() {
-                    appState.selectedHeight = parseFloat(this.value) || 0;
-                    calculateRate();
-                });
-            }
-            
-            calculateBtn.addEventListener('click', calculateRate);
-            
-            // Calculate initial rate
-            calculateRate();
-        }
-
-        function calculateRate() {
-            const totalRateDisplay = document.getElementById('totalRateDisplay');
-            if (!totalRateDisplay || !appState.currentProduct) return;
-            
-            const product = appState.currentProduct;
-            const basePrice = parseFloat(product.price) || 0;
-            
-            // Calculate area based on unit
-            let area = 0;
-            let calculatedRate = 0;
-            
-            if (appState.selectedUnit === 'sqft') {
-                // For square feet
-                area = (appState.selectedLength * appState.selectedWidth) || 0;
-                calculatedRate = basePrice * area;
-            } else if (appState.selectedUnit === 'sqm') {
-                // For square meters
-                area = (appState.selectedLength * appState.selectedWidth) || 0;
-                calculatedRate = (basePrice * 10.764) * area; // Convert sqft price to sqm
-            } else if (appState.selectedUnit === 'piece') {
-                // For pieces
-                area = 1; // Each piece counts as 1
-                calculatedRate = basePrice * (appState.quantity || 1);
-            } else if (appState.selectedUnit === 'cft') {
-                // For cubic feet (volume)
-                const volume = (appState.selectedLength * appState.selectedWidth * (appState.selectedHeight || 1)) || 0;
-                calculatedRate = (basePrice * 0.5) * volume; // Assuming cubic feet price is 50% of sqft price
-            }
-            
-            // Apply bulk discounts
-            if (appState.quantity >= 50) {
-                calculatedRate = calculatedRate * 0.90; // 10% discount
-            } else if (appState.quantity >= 25) {
-                calculatedRate = calculatedRate * 0.95; // 5% discount
-            }
-            
-            appState.currentRate = calculatedRate;
-            
-            // Update display
-            totalRateDisplay.textContent = `£${calculatedRate.toFixed(2)}`;
-            
-            // Update quick buy prices
-            calculateQuickBuyPrices();
-        }
-
-        function initializeQuickBuyOptions() {
-            const quickBuyOptions = document.querySelectorAll('.quick-buy-option');
-            const quantityInput = document.getElementById('quantityInput');
-            const unitOptions = document.querySelectorAll('.unit-option');
-            
-            if (!quickBuyOptions.length) return;
-            
-            quickBuyOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    // Remove selected class from all options
-                    quickBuyOptions.forEach(opt => opt.classList.remove('selected'));
+        async function loadAllProductsFromFirestore() {
+            try {
+                console.log('🔥 Loading all products from Firestore...');
+                const querySnapshot = await getDocs(collection(db, "products"));
+                appState.allProducts = [];
+                
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    let processedData = { ...data };
                     
-                    // Add selected class to clicked option
-                    this.classList.add('selected');
-                    
-                    // Update quantity and unit
-                    const quantity = this.getAttribute('data-quantity');
-                    const unit = this.getAttribute('data-unit');
-                    
-                    if (quantityInput) {
-                        quantityInput.value = quantity;
-                        appState.quantity = parseInt(quantity);
+                    if (data.additional_fields && Array.isArray(data.additional_fields)) {
+                        data.additional_fields.forEach(field => {
+                            if (field && typeof field === 'object') {
+                                processedData = { ...processedData, ...field };
+                            }
+                        });
                     }
                     
-                    // Update unit selection
-                    unitOptions.forEach(unitOption => {
-                        if (unitOption.getAttribute('data-unit') === unit) {
-                            unitOption.click();
-                        }
+                    appState.allProducts.push({
+                        id: doc.id,
+                        ...processedData
                     });
+                });
+                
+                console.log('✅ All products loaded from Firestore:', appState.allProducts.length);
+                
+                if (appState.allProducts.length === 0) {
+                    console.log('⚠️ No products found in Firestore, using sample data');
+                    appState.allProducts = getSampleProducts();
+                }
+                
+            } catch (error) {
+                console.error('❌ Error loading products from Firestore:', error);
+                appState.allProducts = getSampleProducts();
+            }
+        }
+
+        async function loadProductDetails(productId) {
+            try {
+                console.log(`🔄 Loading product details for ID: ${productId}`);
+                
+                const productRef = doc(db, "products", productId);
+                const productSnap = await getDoc(productRef);
+                
+                if (productSnap.exists()) {
+                    const data = productSnap.data();
+                    let processedData = { ...data };
                     
-                    // Recalculate rate
-                    calculateRate();
-                });
-            });
-            
-            calculateQuickBuyPrices();
-        }
-
-        function calculateQuickBuyPrices() {
-            const product = appState.currentProduct;
-            if (!product || !product.price) return;
-            
-            const basePrice = parseFloat(product.price);
-            
-            // Calculate prices for different quantities
-            const prices = {
-                10: basePrice * 10,
-                25: basePrice * 25 * 0.95, // 5% discount
-                50: basePrice * 50 * 0.90  // 10% discount
-            };
-            
-            // Update price displays
-            Object.keys(prices).forEach(quantity => {
-                const priceElement = document.getElementById(`price${quantity}`);
-                if (priceElement) {
-                    priceElement.textContent = prices[quantity].toFixed(2);
-                }
-            });
-        }
-
-        function initializeShopNowModal() {
-            const shopNowBtn = document.getElementById('shopNowBtn');
-            const buyNowBtn = document.getElementById('buyNowBtn');
-            const closeModal = document.getElementById('closeModal');
-            const modalCancel = document.getElementById('modalCancel');
-            const modalConfirm = document.getElementById('modalConfirm');
-            const shopNowModal = document.getElementById('shopNowModal');
-            
-            if (!shopNowBtn || !buyNowBtn || !closeModal) return;
-            
-            // Open modal on Shop Now button click
-            shopNowBtn.addEventListener('click', function() {
-                openShopNowModal();
-            });
-            
-            // Open modal on Buy Now button click
-            buyNowBtn.addEventListener('click', function() {
-                openShopNowModal();
-            });
-            
-            // Close modal functions
-            function closeShopNowModal() {
-                shopNowModal.classList.remove('active');
-                document.body.style.overflow = 'auto';
-            }
-            
-            closeModal.addEventListener('click', closeShopNowModal);
-            modalCancel.addEventListener('click', closeShopNowModal);
-            
-            // Confirm order
-            modalConfirm.addEventListener('click', function() {
-                processOrderConfirmation();
-            });
-            
-            // Close on escape key
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && shopNowModal.classList.contains('active')) {
-                    closeShopNowModal();
-                }
-            });
-            
-            // Close on overlay click
-            shopNowModal.addEventListener('click', function(e) {
-                if (e.target === shopNowModal) {
-                    closeShopNowModal();
-                }
-            });
-        }
-
-        function openShopNowModal() {
-            const product = appState.currentProduct;
-            if (!product) return;
-            
-            const shopNowModal = document.getElementById('shopNowModal');
-            const modalOrderDetails = document.getElementById('modalOrderDetails');
-            const modalOrderSummary = document.getElementById('modalOrderSummary');
-            
-            if (!shopNowModal || !modalOrderDetails || !modalOrderSummary) return;
-            
-            // Calculate delivery cost
-            const expressDelivery = document.getElementById('expressDelivery').checked;
-            const deliveryCost = expressDelivery ? 25 : 0;
-            
-            // Calculate total
-            const totalCost = appState.currentRate + deliveryCost;
-            
-            // Update order details in modal
-            modalOrderDetails.innerHTML = `
-                <div class="summary-row">
-                    <span class="summary-label">Product:</span>
-                    <span class="summary-value">${product.stone_name}</span>
-                </div>
-                <div class="summary-row">
-                    <span class="summary-label">Quantity:</span>
-                    <span class="summary-value">${appState.quantity} ${appState.selectedUnitDisplay}</span>
-                </div>
-                <div class="summary-row">
-                    <span class="summary-label">Dimensions:</span>
-                    <span class="summary-value">${appState.selectedLength} x ${appState.selectedWidth} ${appState.selectedHeight ? 'x ' + appState.selectedHeight + ' (H)' : ''}</span>
-                </div>
-            `;
-            
-            // Update order summary in modal
-            modalOrderSummary.innerHTML = `
-                <div class="summary-row">
-                    <span class="summary-label">Product Total:</span>
-                    <span class="summary-value">£${appState.currentRate.toFixed(2)}</span>
-                </div>
-                <div class="summary-row">
-                    <span class="summary-label">Delivery:</span>
-                    <span class="summary-value">${deliveryCost === 0 ? 'FREE' : '£' + deliveryCost.toFixed(2)}</span>
-                </div>
-                <div class="summary-row total">
-                    <span class="summary-label">Total Amount:</span>
-                    <span class="summary-value total-price">£${totalCost.toFixed(2)}</span>
-                </div>
-            `;
-            
-            // Pre-fill user information if available
-            if (appState.user) {
-                document.getElementById('modalName').value = appState.user.name || '';
-                document.getElementById('modalEmail').value = appState.user.email || '';
-            }
-            
-            // Show modal
-            shopNowModal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function processOrderConfirmation() {
-            // Validate form
-            const name = document.getElementById('modalName').value.trim();
-            const email = document.getElementById('modalEmail').value.trim();
-            const phone = document.getElementById('modalPhone').value.trim();
-            const address = document.getElementById('modalAddress').value.trim();
-            const pincode = document.getElementById('modalPincode').value.trim();
-            
-            if (!name || !email || !phone || !address || !pincode) {
-                showNotification('Please fill all required fields', 'error');
-                return;
-            }
-            
-            if (!validateEmail(email)) {
-                showNotification('Please enter a valid email address', 'error');
-                return;
-            }
-            
-            if (!validatePhone(phone)) {
-                showNotification('Please enter a valid phone number', 'error');
-                return;
-            }
-            
-            // Create order object
-            const order = {
-                id: 'ORD-' + Date.now(),
-                productId: appState.currentProduct.id,
-                productName: appState.currentProduct.stone_name,
-                quantity: appState.quantity,
-                unit: appState.selectedUnit,
-                unitDisplay: appState.selectedUnitDisplay,
-                length: appState.selectedLength,
-                width: appState.selectedWidth,
-                height: appState.selectedHeight,
-                rate: appState.currentRate,
-                customerName: name,
-                customerEmail: email,
-                customerPhone: phone,
-                deliveryAddress: address,
-                pincode: pincode,
-                expressDelivery: document.getElementById('expressDelivery').checked,
-                deliveryCost: document.getElementById('expressDelivery').checked ? 25 : 0,
-                totalAmount: appState.currentRate + (document.getElementById('expressDelivery').checked ? 25 : 0),
-                orderDate: new Date().toISOString(),
-                status: 'pending'
-            };
-            
-            // Save order to localStorage (in real app, this would go to backend)
-            let orders = JSON.parse(localStorage.getItem('stonecraft_orders') || '[]');
-            orders.push(order);
-            localStorage.setItem('stonecraft_orders', JSON.stringify(orders));
-            
-            // Also add to cart for tracking
-            addProductToCartFromOrder(order);
-            
-            // Close modal
-            document.getElementById('shopNowModal').classList.remove('active');
-            document.body.style.overflow = 'auto';
-            
-            // Show success message
-            showNotification('Order placed successfully! Order ID: ' + order.id, 'success');
-            
-            // Redirect to order confirmation page (optional)
-            setTimeout(() => {
-                window.location.href = 'order-confirmation.html?id=' + order.id;
-            }, 2000);
-        }
-
-        function addProductToCartFromOrder(order) {
-            const existingItem = appState.cart.find(item => 
-                item.id === order.productId && 
-                item.unit === order.unit &&
-                item.length === order.length &&
-                item.width === order.width
-            );
-            
-            if (existingItem) {
-                existingItem.quantity += order.quantity;
-                existingItem.totalPrice = existingItem.price * existingItem.quantity;
-            } else {
-                appState.cart.push({
-                    id: order.productId,
-                    name: order.productName,
-                    price: order.rate / order.quantity,
-                    unit: order.unit,
-                    unitDisplay: order.unitDisplay,
-                    quantity: order.quantity,
-                    length: order.length,
-                    width: order.width,
-                    height: order.height,
-                    totalPrice: order.rate,
-                    image: appState.currentProduct.images?.[0] || getDefaultImage(appState.currentProduct.category),
-                    category: appState.currentProduct.category,
-                    orderId: order.id
-                });
-            }
-            
-            saveCart();
-        }
-
-        function validateEmail(email) {
-            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return re.test(email);
-        }
-
-        function validatePhone(phone) {
-            const re = /^[+]?[\d\s\-()]{10,}$/;
-            return re.test(phone);
-        }
-
-        function initializeCartSummary() {
-            const closeSummary = document.getElementById('closeSummary');
-            const cartOverlay = document.getElementById('cartOverlay');
-            const continueShopping = document.getElementById('continueShopping');
-            const proceedToCheckout = document.getElementById('proceedToCheckout');
-            const viewCartFromNotification = document.getElementById('viewCartFromNotification');
-            
-            // Close cart summary
-            function closeCartSummary() {
-                document.getElementById('cartSummarySidebar').classList.remove('active');
-                document.getElementById('cartOverlay').classList.remove('active');
-                document.body.style.overflow = 'auto';
-            }
-            
-            if (closeSummary) {
-                closeSummary.addEventListener('click', closeCartSummary);
-            }
-            
-            if (cartOverlay) {
-                cartOverlay.addEventListener('click', closeCartSummary);
-            }
-            
-            if (continueShopping) {
-                continueShopping.addEventListener('click', closeCartSummary);
-            }
-            
-            if (proceedToCheckout) {
-                proceedToCheckout.addEventListener('click', function() {
-                    saveCart();
-                    window.location.href = 'checkout.html';
-                });
-            }
-            
-            if (viewCartFromNotification) {
-                viewCartFromNotification.addEventListener('click', function() {
-                    showCartSummary();
-                });
-            }
-            
-            window.showCartSummary = showCartSummary;
-        }
-
-        function showCartSummary() {
-            updateCartSummary();
-            
-            document.getElementById('cartSummarySidebar').classList.add('active');
-            document.getElementById('cartOverlay').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function updateCartSummary() {
-            const cartSummaryContent = document.getElementById('cartSummaryContent');
-            const summaryTotalPrice = document.getElementById('summaryTotalPrice');
-            
-            if (!cartSummaryContent) return;
-            
-            if (appState.cart.length === 0) {
-                cartSummaryContent.innerHTML = `
-                    <div style="text-align: center; padding: 40px 20px;">
-                        <i class="fas fa-shopping-cart" style="font-size: 48px; color: #ddd; margin-bottom: 15px;"></i>
-                        <h4 style="color: #666; margin-bottom: 10px;">Your cart is empty</h4>
-                        <p style="color: #888; font-size: 14px;">Add some products to get started!</p>
-                    </div>
-                `;
-                summaryTotalPrice.textContent = '£0.00';
-                return;
-            }
-            
-            const total = appState.cart.reduce((sum, item) => {
-                return sum + (item.price * item.quantity);
-            }, 0);
-            
-            summaryTotalPrice.textContent = `£${total.toFixed(2)}`;
-            
-            let cartItemsHTML = '';
-            
-            appState.cart.forEach((item, index) => {
-                cartItemsHTML += `
-                    <div class="cart-item-summary">
-                        <div class="cart-item-image" style="background-image: url('${item.image}')"></div>
-                        <div class="cart-item-details">
-                            <div class="cart-item-name">${item.name}</div>
-                            <div class="cart-item-meta">
-                                ${item.quantity} ${item.unitDisplay} × £${item.price.toFixed(2)} = £${(item.price * item.quantity).toFixed(2)}
-                                ${item.length ? `<br>Size: ${item.length} × ${item.width} ${item.height ? '× ' + item.height : ''}` : ''}
-                            </div>
-                            <div style="display: flex; gap: 10px; margin-top: 8px;">
-                                <button class="quantity-btn-sm" onclick="updateCartItemQuantity(${index}, -1)" style="width: 25px; height: 25px; font-size: 12px;">-</button>
-                                <span style="font-size: 14px;">${item.quantity}</span>
-                                <button class="quantity-btn-sm" onclick="updateCartItemQuantity(${index}, 1)" style="width: 25px; height: 25px; font-size: 12px;">+</button>
-                                <button class="remove-item-btn" onclick="removeCartItem(${index})" style="margin-left: auto; background: none; border: none; color: #ff4444; cursor: pointer; font-size: 12px;">
-                                    <i class="fas fa-trash"></i> Remove
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            cartSummaryContent.innerHTML = cartItemsHTML;
-        }
-
-        window.updateCartItemQuantity = function(index, change) {
-            if (appState.cart[index]) {
-                const newQuantity = appState.cart[index].quantity + change;
-                
-                if (newQuantity < 1) {
-                    removeCartItem(index);
+                    if (data.additional_fields && Array.isArray(data.additional_fields)) {
+                        data.additional_fields.forEach(field => {
+                            if (field && typeof field === 'object') {
+                                processedData = { ...processedData, ...field };
+                            }
+                        });
+                    }
+                    
+                    appState.currentProduct = {
+                        id: productSnap.id,
+                        ...processedData
+                    };
+                    
+                    console.log('✅ Product loaded from Firestore:', appState.currentProduct.stone_name);
                 } else {
-                    appState.cart[index].quantity = newQuantity;
-                    appState.cart[index].totalPrice = appState.cart[index].price * newQuantity;
-                    saveCart();
-                    updateCartSummary();
-                    updateCartBadge();
+                    console.log('⚠️ Product not found in Firestore, searching in loaded products...');
+                    appState.currentProduct = appState.allProducts.find(p => p.id === productId);
+                    
+                    if (!appState.currentProduct) {
+                        console.log('⚠️ Product not found, using first sample product');
+                        appState.currentProduct = getSampleProducts()[0];
+                    }
                 }
-            }
-        };
-
-        window.removeCartItem = function(index) {
-            if (appState.cart[index]) {
-                appState.cart.splice(index, 1);
-                saveCart();
-                updateCartSummary();
-                updateCartBadge();
                 
-                showNotification('Item removed from cart', 'info');
-            }
-        };
-
-        function initializeNotifications() {
-            console.log('🔔 Initializing notification system...');
-        }
-
-        function showAddToCartNotification(productName, quantity, unit) {
-            const notification = document.getElementById('addToCartNotification');
-            const messageElement = document.getElementById('notificationMessage');
-            
-            if (!notification || !messageElement) return;
-            
-            messageElement.textContent = `${quantity} ${unit} of ${productName} added to your cart!`;
-            
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 5000);
-            
-            const viewCartBtn = document.getElementById('viewCartFromNotification');
-            if (viewCartBtn) {
-                viewCartBtn.onclick = function() {
-                    notification.classList.remove('show');
-                    showCartSummary();
-                };
+                displayProductDetails();
+                loadRelatedProducts();
+                
+            } catch (error) {
+                console.error('❌ Error loading product details:', error);
+                appState.currentProduct = getSampleProducts().find(p => p.id == productId) || getSampleProducts()[0];
+                displayProductDetails();
+                loadRelatedProducts();
             }
         }
 
-        // ===== ENHANCED ZOOM AND IMAGE VIEWING FUNCTIONS =====
-        
-        function initializeUI() {
-            initializeSearch();
-            initializeUserProfile();
-            initializeMobileMenu();
-            initializeFullImageOverlay();
-            initializeShopNowSystem();
+        function fallbackToSampleData(productId) {
+            console.log('🔄 Falling back to sample data...');
+            appState.allProducts = getSampleProducts();
+            appState.currentProduct = getSampleProducts().find(p => p.id == productId) || getSampleProducts()[0];
+            
+            if (appState.currentProduct) {
+                displayProductDetails();
+                loadRelatedProducts();
+                generateUsesNavigation();
+                console.log('✅ Fallback data loaded successfully');
+            } else {
+                showError('Unable to load product details');
+            }
         }
 
-        // ... [Previous functions remain the same, just adding the updated displayProductDetails function]
+        // ========== DISPLAY FUNCTIONS ==========
 
         function displayProductDetails() {
             const product = appState.currentProduct;
@@ -3557,14 +3079,6 @@
             }
             
             appState.currentImages = images;
-            
-            // Get unit display names
-            const unitDisplayNames = {
-                'sqft': 'Square Feet',
-                'sqm': 'Square Meters',
-                'piece': 'Pieces',
-                'cft': 'Cubic Feet'
-            };
             
             const productHTML = `
                 <div class="product-details-layout">
@@ -3611,7 +3125,7 @@
                             ${product.description || 'No description available.'}
                         </div>
                         
-                        <!-- ===== SPECIFICATIONS SECTION (FIRST) ===== -->
+                        <!-- ===== SPECIFICATIONS SECTION ===== -->
                         <div class="specifications">
                             <h3>Technical Specifications</h3>
                             <table class="specs-table">
@@ -3687,7 +3201,7 @@
                             </table>
                         </div>
                         
-                        <!-- ===== RATE SETUP SECTION (SECOND) ===== -->
+                        <!-- ===== RATE SETUP SECTION ===== -->
                         <div class="rate-setup-section">
                             <h3 class="rate-setup-title">
                                 <i class="fas fa-calculator"></i>
@@ -3850,47 +3364,56 @@
             
             document.getElementById('productDetailsContainer').innerHTML = productHTML;
             
-            // Initialize enhanced smart zoom
+            // Initialize UI components
             setTimeout(() => {
                 initializeEnhancedSmartZoom();
-                
-                const mainImageContainer = document.getElementById('zoomContainer');
-                if (mainImageContainer) {
-                    mainImageContainer.addEventListener('click', function() {
-                        if ('ontouchstart' in window) {
-                            openFullImageView(0);
-                        }
-                    });
-                }
+                initializeEventListeners();
+                initializeShopNowSystem();
+                calculateRate();
             }, 100);
+        }
+
+        // ========== EVENT LISTENERS ==========
+
+        function initializeEventListeners() {
+            // Quantity controls
+            const increaseBtn = document.getElementById('increaseQuantity');
+            const decreaseBtn = document.getElementById('decreaseQuantity');
+            const quantityInput = document.getElementById('quantityInput');
             
-            // Add event listeners for quantity controls
-            document.getElementById('increaseQuantity')?.addEventListener('click', function() {
-                const input = document.getElementById('quantityInput');
-                input.value = parseInt(input.value) + 1;
-                appState.quantity = parseInt(input.value);
-                calculateRate();
-            });
+            if (increaseBtn) {
+                increaseBtn.addEventListener('click', function() {
+                    if (quantityInput) {
+                        quantityInput.value = parseInt(quantityInput.value) + 1;
+                        appState.quantity = parseInt(quantityInput.value);
+                        calculateRate();
+                    }
+                });
+            }
             
-            document.getElementById('decreaseQuantity')?.addEventListener('click', function() {
-                const input = document.getElementById('quantityInput');
-                if (input.value > 1) {
-                    input.value = parseInt(input.value) - 1;
-                    appState.quantity = parseInt(input.value);
+            if (decreaseBtn) {
+                decreaseBtn.addEventListener('click', function() {
+                    if (quantityInput && quantityInput.value > 1) {
+                        quantityInput.value = parseInt(quantityInput.value) - 1;
+                        appState.quantity = parseInt(quantityInput.value);
+                        calculateRate();
+                    }
+                });
+            }
+            
+            if (quantityInput) {
+                quantityInput.addEventListener('change', function() {
+                    if (this.value < 1) this.value = 1;
+                    appState.quantity = parseInt(this.value);
                     calculateRate();
-                }
-            });
+                });
+            }
             
-            document.getElementById('quantityInput')?.addEventListener('change', function() {
-                if (this.value < 1) this.value = 1;
-                appState.quantity = parseInt(this.value);
-                calculateRate();
-            });
-            
-            // Add event listeners for unit selector
-            document.querySelectorAll('.unit-option').forEach(option => {
+            // Unit selector
+            const unitOptions = document.querySelectorAll('.unit-option');
+            unitOptions.forEach(option => {
                 option.addEventListener('click', function() {
-                    document.querySelectorAll('.unit-option').forEach(o => o.classList.remove('selected'));
+                    unitOptions.forEach(o => o.classList.remove('selected'));
                     this.classList.add('selected');
                     appState.selectedUnit = this.getAttribute('data-unit');
                     appState.selectedUnitDisplay = this.getAttribute('data-display') || this.textContent.trim();
@@ -3898,22 +3421,372 @@
                 });
             });
             
-            // Add event listener for add to cart button
-            document.getElementById('addToCartBtn')?.addEventListener('click', function() {
-                addProductToCartDirect();
+            // Add to cart button
+            const addToCartBtn = document.getElementById('addToCartBtn');
+            if (addToCartBtn) {
+                addToCartBtn.addEventListener('click', addProductToCartDirect);
+            }
+            
+            // Calculate button
+            const calculateBtn = document.getElementById('calculateBtn');
+            if (calculateBtn) {
+                calculateBtn.addEventListener('click', calculateRate);
+            }
+            
+            // Input listeners for rate calculation
+            const lengthInput = document.getElementById('lengthInput');
+            const widthInput = document.getElementById('widthInput');
+            const heightInput = document.getElementById('heightInput');
+            
+            if (lengthInput) {
+                lengthInput.addEventListener('input', function() {
+                    appState.selectedLength = parseFloat(this.value) || 0;
+                    calculateRate();
+                });
+                
+                // Set default value
+                if (appState.currentProduct && appState.currentProduct.length) {
+                    lengthInput.value = appState.currentProduct.length;
+                    appState.selectedLength = parseFloat(appState.currentProduct.length) || 0;
+                }
+            }
+            
+            if (widthInput) {
+                widthInput.addEventListener('input', function() {
+                    appState.selectedWidth = parseFloat(this.value) || 0;
+                    calculateRate();
+                });
+                
+                if (appState.currentProduct && appState.currentProduct.width) {
+                    widthInput.value = appState.currentProduct.width;
+                    appState.selectedWidth = parseFloat(appState.currentProduct.width) || 0;
+                }
+            }
+            
+            if (heightInput) {
+                heightInput.addEventListener('input', function() {
+                    appState.selectedHeight = parseFloat(this.value) || 0;
+                    calculateRate();
+                });
+                
+                if (appState.currentProduct && appState.currentProduct.thickness) {
+                    const thickness = appState.currentProduct.thickness.split('-')[0].trim();
+                    heightInput.value = thickness;
+                    appState.selectedHeight = parseFloat(thickness) || 0;
+                }
+            }
+        }
+
+        // ========== RATE CALCULATION ==========
+
+        function calculateRate() {
+            const totalRateDisplay = document.getElementById('totalRateDisplay');
+            if (!totalRateDisplay || !appState.currentProduct) return;
+            
+            const product = appState.currentProduct;
+            const basePrice = parseFloat(product.price) || 0;
+            
+            let calculatedRate = 0;
+            
+            if (appState.selectedUnit === 'sqft') {
+                const area = (appState.selectedLength * appState.selectedWidth) || 1;
+                calculatedRate = basePrice * area * appState.quantity;
+            } else if (appState.selectedUnit === 'sqm') {
+                const area = (appState.selectedLength * appState.selectedWidth) || 1;
+                calculatedRate = (basePrice * 10.764) * area * appState.quantity;
+            } else if (appState.selectedUnit === 'piece') {
+                calculatedRate = basePrice * appState.quantity;
+            } else if (appState.selectedUnit === 'cft') {
+                const volume = (appState.selectedLength * appState.selectedWidth * (appState.selectedHeight || 1)) || 1;
+                calculatedRate = (basePrice * 0.5) * volume * appState.quantity;
+            }
+            
+            // Apply bulk discounts
+            if (appState.quantity >= 50) {
+                calculatedRate = calculatedRate * 0.90;
+            } else if (appState.quantity >= 25) {
+                calculatedRate = calculatedRate * 0.95;
+            }
+            
+            appState.currentRate = calculatedRate;
+            totalRateDisplay.textContent = `£${calculatedRate.toFixed(2)}`;
+            
+            // Update quick buy prices
+            calculateQuickBuyPrices();
+        }
+
+        function calculateQuickBuyPrices() {
+            const product = appState.currentProduct;
+            if (!product || !product.price) return;
+            
+            const basePrice = parseFloat(product.price);
+            const prices = {
+                10: basePrice * 10,
+                25: basePrice * 25 * 0.95,
+                50: basePrice * 50 * 0.90
+            };
+            
+            Object.keys(prices).forEach(quantity => {
+                const priceElement = document.getElementById(`price${quantity}`);
+                if (priceElement) {
+                    priceElement.textContent = prices[quantity].toFixed(2);
+                }
+            });
+        }
+
+        // ========== SHOP NOW SYSTEM ==========
+
+        function initializeShopNowSystem() {
+            console.log('🛒 Initializing Shop Now System...');
+            
+            // Quick buy options
+            const quickBuyOptions = document.querySelectorAll('.quick-buy-option');
+            quickBuyOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    quickBuyOptions.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    
+                    const quantity = this.getAttribute('data-quantity');
+                    const unit = this.getAttribute('data-unit');
+                    
+                    const quantityInput = document.getElementById('quantityInput');
+                    if (quantityInput) {
+                        quantityInput.value = quantity;
+                        appState.quantity = parseInt(quantity);
+                    }
+                    
+                    // Update unit selection
+                    document.querySelectorAll('.unit-option').forEach(unitOption => {
+                        if (unitOption.getAttribute('data-unit') === unit) {
+                            unitOption.click();
+                        }
+                    });
+                    
+                    calculateRate();
+                });
             });
             
-            // Initialize rate calculation
+            // Shop Now button
+            const shopNowBtn = document.getElementById('shopNowBtn');
+            if (shopNowBtn) {
+                shopNowBtn.addEventListener('click', openShopNowModal);
+            }
+            
+            // Buy Now button
+            const buyNowBtn = document.getElementById('buyNowBtn');
+            if (buyNowBtn) {
+                buyNowBtn.addEventListener('click', openShopNowModal);
+            }
+            
+            // Modal controls
+            const closeModal = document.getElementById('closeModal');
+            const modalCancel = document.getElementById('modalCancel');
+            const modalConfirm = document.getElementById('modalConfirm');
+            const shopNowModal = document.getElementById('shopNowModal');
+            
+            if (closeModal) {
+                closeModal.addEventListener('click', closeShopNowModal);
+            }
+            
+            if (modalCancel) {
+                modalCancel.addEventListener('click', closeShopNowModal);
+            }
+            
+            if (modalConfirm) {
+                modalConfirm.addEventListener('click', processOrderConfirmation);
+            }
+            
+            if (shopNowModal) {
+                shopNowModal.addEventListener('click', function(e) {
+                    if (e.target === shopNowModal) {
+                        closeShopNowModal();
+                    }
+                });
+            }
+            
+            // Cart summary
+            const closeSummary = document.getElementById('closeSummary');
+            const cartOverlay = document.getElementById('cartOverlay');
+            const continueShopping = document.getElementById('continueShopping');
+            const proceedToCheckout = document.getElementById('proceedToCheckout');
+            const viewCartFromNotification = document.getElementById('viewCartFromNotification');
+            
+            if (closeSummary) closeSummary.addEventListener('click', closeCartSummary);
+            if (cartOverlay) cartOverlay.addEventListener('click', closeCartSummary);
+            if (continueShopping) continueShopping.addEventListener('click', closeCartSummary);
+            
+            if (proceedToCheckout) {
+                proceedToCheckout.addEventListener('click', function() {
+                    saveCart();
+                    window.location.href = 'checkout.html';
+                });
+            }
+            
+            if (viewCartFromNotification) {
+                viewCartFromNotification.addEventListener('click', showCartSummary);
+            }
+            
+            console.log('✅ Shop Now System initialized');
+        }
+
+        function openShopNowModal() {
+            const product = appState.currentProduct;
+            if (!product) return;
+            
+            const shopNowModal = document.getElementById('shopNowModal');
+            const modalOrderDetails = document.getElementById('modalOrderDetails');
+            const modalOrderSummary = document.getElementById('modalOrderSummary');
+            
+            if (!shopNowModal || !modalOrderDetails || !modalOrderSummary) return;
+            
+            const expressDelivery = document.getElementById('expressDelivery')?.checked || false;
+            const deliveryCost = expressDelivery ? 25 : 0;
+            const totalCost = appState.currentRate + deliveryCost;
+            
+            modalOrderDetails.innerHTML = `
+                <div class="summary-row">
+                    <span class="summary-label">Product:</span>
+                    <span class="summary-value">${product.stone_name}</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Quantity:</span>
+                    <span class="summary-value">${appState.quantity} ${appState.selectedUnitDisplay}</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Dimensions:</span>
+                    <span class="summary-value">${appState.selectedLength} × ${appState.selectedWidth} ${appState.selectedHeight ? '× ' + appState.selectedHeight + ' (H)' : ''}</span>
+                </div>
+            `;
+            
+            modalOrderSummary.innerHTML = `
+                <div class="summary-row">
+                    <span class="summary-label">Product Total:</span>
+                    <span class="summary-value">£${appState.currentRate.toFixed(2)}</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Delivery:</span>
+                    <span class="summary-value">${deliveryCost === 0 ? 'FREE' : '£' + deliveryCost.toFixed(2)}</span>
+                </div>
+                <div class="summary-row total">
+                    <span class="summary-label">Total Amount:</span>
+                    <span class="summary-value total-price">£${totalCost.toFixed(2)}</span>
+                </div>
+            `;
+            
+            // Pre-fill user info
+            if (appState.user) {
+                const modalName = document.getElementById('modalName');
+                const modalEmail = document.getElementById('modalEmail');
+                if (modalName) modalName.value = appState.user.name || '';
+                if (modalEmail) modalEmail.value = appState.user.email || '';
+            }
+            
+            shopNowModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeShopNowModal() {
+            const shopNowModal = document.getElementById('shopNowModal');
+            if (shopNowModal) {
+                shopNowModal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        function processOrderConfirmation() {
+            const name = document.getElementById('modalName')?.value.trim();
+            const email = document.getElementById('modalEmail')?.value.trim();
+            const phone = document.getElementById('modalPhone')?.value.trim();
+            const address = document.getElementById('modalAddress')?.value.trim();
+            const pincode = document.getElementById('modalPincode')?.value.trim();
+            
+            if (!name || !email || !phone || !address || !pincode) {
+                showNotification('Please fill all required fields', 'error');
+                return;
+            }
+            
+            if (!validateEmail(email)) {
+                showNotification('Please enter a valid email address', 'error');
+                return;
+            }
+            
+            const order = {
+                id: 'ORD-' + Date.now(),
+                productId: appState.currentProduct.id,
+                productName: appState.currentProduct.stone_name,
+                quantity: appState.quantity,
+                unit: appState.selectedUnit,
+                unitDisplay: appState.selectedUnitDisplay,
+                length: appState.selectedLength,
+                width: appState.selectedWidth,
+                height: appState.selectedHeight,
+                rate: appState.currentRate,
+                customerName: name,
+                customerEmail: email,
+                customerPhone: phone,
+                deliveryAddress: address,
+                pincode: pincode,
+                expressDelivery: document.getElementById('expressDelivery')?.checked || false,
+                deliveryCost: document.getElementById('expressDelivery')?.checked ? 25 : 0,
+                totalAmount: appState.currentRate + (document.getElementById('expressDelivery')?.checked ? 25 : 0),
+                orderDate: new Date().toISOString(),
+                status: 'pending'
+            };
+            
+            // Save order
+            let orders = JSON.parse(localStorage.getItem('stonecraft_orders') || '[]');
+            orders.push(order);
+            localStorage.setItem('stonecraft_orders', JSON.stringify(orders));
+            
+            // Add to cart
+            addProductToCartFromOrder(order);
+            
+            // Close modal and show success
+            closeShopNowModal();
+            showNotification(`Order placed successfully! Order ID: ${order.id}`, 'success');
+            
+            // Redirect after delay
             setTimeout(() => {
-                initializeRateCalculation();
-            }, 200);
+                window.location.href = 'order-confirmation.html?id=' + order.id;
+            }, 2000);
+        }
+
+        function addProductToCartFromOrder(order) {
+            const existingItem = appState.cart.find(item => 
+                item.id === order.productId && 
+                item.unit === order.unit &&
+                item.length === order.length &&
+                item.width === order.width
+            );
+            
+            if (existingItem) {
+                existingItem.quantity += order.quantity;
+                existingItem.totalPrice = existingItem.price * existingItem.quantity;
+            } else {
+                appState.cart.push({
+                    id: order.productId,
+                    name: order.productName,
+                    price: order.rate / order.quantity,
+                    unit: order.unit,
+                    unitDisplay: order.unitDisplay,
+                    quantity: order.quantity,
+                    length: order.length,
+                    width: order.width,
+                    height: order.height,
+                    totalPrice: order.rate,
+                    image: appState.currentProduct.images?.[0] || getDefaultImage(appState.currentProduct.category),
+                    category: appState.currentProduct.category,
+                    orderId: order.id
+                });
+            }
+            
+            saveCart();
         }
 
         function addProductToCartDirect() {
             const product = appState.currentProduct;
             if (!product) return;
             
-            // Add to cart
             const existingItem = appState.cart.find(item => 
                 item.id === product.id && 
                 item.unit === appState.selectedUnit &&
@@ -3941,20 +3814,520 @@
                 });
             }
             
-            // Save cart
             saveCart();
-            
-            // Show notification
             showAddToCartNotification(product.stone_name, appState.quantity, appState.selectedUnitDisplay);
         }
 
-        // ... [Rest of the previous functions remain the same]
-        
-        // Note: The rest of the functions (initializeEnhancedSmartZoom, initializeSearch, initializeUserProfile, 
-        // initializeMobileMenu, initializeFullImageOverlay, etc.) remain the same as in the previous version.
-        // I'm omitting them here for brevity, but they should be included in the actual implementation.
+        // ========== UTILITY FUNCTIONS ==========
 
-        console.log('✅ Product Details page initialized with Enhanced Shop Now System!');
+        function showAddToCartNotification(productName, quantity, unit) {
+            const notification = document.getElementById('addToCartNotification');
+            const messageElement = document.getElementById('notificationMessage');
+            
+            if (!notification || !messageElement) return;
+            
+            messageElement.textContent = `${quantity} ${unit} of ${productName} added to your cart!`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 5000);
+            
+            const viewCartBtn = document.getElementById('viewCartFromNotification');
+            if (viewCartBtn) {
+                viewCartBtn.onclick = showCartSummary;
+            }
+        }
+
+        function showCartSummary() {
+            updateCartSummary();
+            document.getElementById('cartSummarySidebar').classList.add('active');
+            document.getElementById('cartOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCartSummary() {
+            document.getElementById('cartSummarySidebar').classList.remove('active');
+            document.getElementById('cartOverlay').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function updateCartSummary() {
+            const cartSummaryContent = document.getElementById('cartSummaryContent');
+            const summaryTotalPrice = document.getElementById('summaryTotalPrice');
+            
+            if (!cartSummaryContent) return;
+            
+            if (appState.cart.length === 0) {
+                cartSummaryContent.innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px;">
+                        <i class="fas fa-shopping-cart" style="font-size: 48px; color: #ddd; margin-bottom: 15px;"></i>
+                        <h4 style="color: #666; margin-bottom: 10px;">Your cart is empty</h4>
+                        <p style="color: #888; font-size: 14px;">Add some products to get started!</p>
+                    </div>
+                `;
+                if (summaryTotalPrice) summaryTotalPrice.textContent = '£0.00';
+                return;
+            }
+            
+            const total = appState.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            if (summaryTotalPrice) summaryTotalPrice.textContent = `£${total.toFixed(2)}`;
+            
+            let cartItemsHTML = '';
+            appState.cart.forEach((item, index) => {
+                cartItemsHTML += `
+                    <div class="cart-item-summary">
+                        <div class="cart-item-image" style="background-image: url('${item.image}')"></div>
+                        <div class="cart-item-details">
+                            <div class="cart-item-name">${item.name}</div>
+                            <div class="cart-item-meta">
+                                ${item.quantity} ${item.unitDisplay} × £${item.price.toFixed(2)} = £${(item.price * item.quantity).toFixed(2)}
+                                ${item.length ? `<br>Size: ${item.length} × ${item.width} ${item.height ? '× ' + item.height : ''}` : ''}
+                            </div>
+                            <div style="display: flex; gap: 10px; margin-top: 8px;">
+                                <button class="quantity-btn-sm" onclick="updateCartItemQuantity(${index}, -1)" style="width: 25px; height: 25px; font-size: 12px;">-</button>
+                                <span style="font-size: 14px;">${item.quantity}</span>
+                                <button class="quantity-btn-sm" onclick="updateCartItemQuantity(${index}, 1)" style="width: 25px; height: 25px; font-size: 12px;">+</button>
+                                <button class="remove-item-btn" onclick="removeCartItem(${index})" style="margin-left: auto; background: none; border: none; color: #ff4444; cursor: pointer; font-size: 12px;">
+                                    <i class="fas fa-trash"></i> Remove
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            cartSummaryContent.innerHTML = cartItemsHTML;
+        }
+
+        // Make cart functions globally available
+        window.updateCartItemQuantity = function(index, change) {
+            if (appState.cart[index]) {
+                const newQuantity = appState.cart[index].quantity + change;
+                if (newQuantity < 1) {
+                    removeCartItem(index);
+                } else {
+                    appState.cart[index].quantity = newQuantity;
+                    appState.cart[index].totalPrice = appState.cart[index].price * newQuantity;
+                    saveCart();
+                    updateCartSummary();
+                    updateCartBadge();
+                }
+            }
+        };
+
+        window.removeCartItem = function(index) {
+            if (appState.cart[index]) {
+                appState.cart.splice(index, 1);
+                saveCart();
+                updateCartSummary();
+                updateCartBadge();
+                showNotification('Item removed from cart', 'info');
+            }
+        };
+
+        function changeMainImage(thumbnail, index) {
+            const mainImage = document.getElementById('mainProductImage');
+            const zoomedImage = document.getElementById('zoomedImage');
+            
+            if (mainImage && thumbnail.src) {
+                mainImage.src = thumbnail.src;
+                if (zoomedImage) zoomedImage.src = thumbnail.src;
+                
+                document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+                thumbnail.classList.add('active');
+                appState.currentImageIndex = index;
+            }
+        }
+        window.changeMainImage = changeMainImage;
+
+        // ========== RELATED PRODUCTS ==========
+
+        function loadRelatedProducts() {
+            const product = appState.currentProduct;
+            if (!product) return;
+            
+            appState.relatedProducts = appState.allProducts.filter(p => {
+                if (p.id === product.id) return false;
+                if (p.category === product.category) return true;
+                if (p.uses === product.uses) return true;
+                return false;
+            }).slice(0, 8);
+            
+            displayRelatedProducts();
+        }
+
+        function displayRelatedProducts() {
+            const container = document.getElementById('relatedProductsGrid');
+            if (!container) return;
+            
+            if (appState.relatedProducts.length === 0) {
+                container.innerHTML = `
+                    <div class="no-products" style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+                        <i class="fas fa-info-circle" style="font-size: 48px; color: #ddd; margin-bottom: 15px;"></i>
+                        <p style="color: #666;">No related products found</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '';
+            appState.relatedProducts.forEach(product => {
+                const images = product.images || [];
+                const imageUrl = images[0] || product.image || getDefaultImage(product.category);
+                const description = product.description || "No description";
+                const rate = product.price || "N/A";
+                const detailsLink = `product-details.html?id=${product.id}`;
+
+                const cardHTML = `
+                    <div class="product-card">
+                        <a href="${detailsLink}">
+                            <div class="product-img-box">
+                                <img src="${imageUrl}" alt="${product.stone_name || 'Stone Product'}" class="product-img">
+                            </div>
+                        </a>
+                        <h3 style="margin-top: 8px; font-size: 15px; color: #333; font-weight: 600;">
+                            ${product.stone_name || 'Stone Product'}
+                        </h3>
+                        <p class="product-description">${description.length > 100 ? description.substring(0, 100) + '...' : description}</p>
+                        <p class="product-rate">£ ${rate}</p>
+                        <a href="${detailsLink}" class="details-btn">View Details</a>
+                    </div>
+                `;
+
+                container.innerHTML += cardHTML;
+            });
+        }
+
+        // ========== USES NAVIGATION ==========
+
+        function generateUsesNavigation() {
+            const desktopContainer = document.getElementById('dynamicUsesContainer');
+            const mobileContainer = document.getElementById('mobileUsesList');
+            
+            if ((!desktopContainer && !mobileContainer) || appState.allProducts.length === 0) return;
+            
+            const uniqueUses = [...new Set(appState.allProducts
+                .filter(product => product.uses && product.uses.trim() !== '')
+                .map(product => product.uses.trim())
+            )].sort();
+            
+            if (uniqueUses.length === 0) {
+                if (desktopContainer) {
+                    desktopContainer.innerHTML = `
+                        <div class="loading-categories">
+                            <i class="fas fa-info-circle"></i>
+                            <p>No categories found</p>
+                        </div>
+                    `;
+                }
+                if (mobileContainer) {
+                    mobileContainer.innerHTML = `
+                        <div class="loading-categories">
+                            <i class="fas fa-info-circle"></i>
+                            <p>No categories found</p>
+                        </div>
+                    `;
+                }
+                return;
+            }
+            
+            // Desktop navigation
+            if (desktopContainer) {
+                desktopContainer.innerHTML = '';
+                uniqueUses.forEach(usage => {
+                    const usageKey = usage.toLowerCase().replace(/\s+/g, '-');
+                    const useItem = document.createElement('div');
+                    useItem.className = 'use-item';
+                    useItem.innerHTML = `
+                        <a href="category-products.html?usage=${usageKey}" class="use-link">${usage}</a>
+                    `;
+                    desktopContainer.appendChild(useItem);
+                });
+            }
+            
+            // Mobile navigation
+            if (mobileContainer) {
+                mobileContainer.innerHTML = '';
+                uniqueUses.forEach(usage => {
+                    const usageKey = usage.toLowerCase().replace(/\s+/g, '-');
+                    const mobileUseItem = document.createElement('div');
+                    mobileUseItem.className = 'mobile-use-item';
+                    mobileUseItem.innerHTML = `
+                        <a href="category-products.html?usage=${usageKey}" class="mobile-use-link" onclick="closeMobileMenu()">
+                            ${usage}
+                        </a>
+                    `;
+                    mobileContainer.appendChild(mobileUseItem);
+                });
+            }
+        }
+
+        // ========== HELPER FUNCTIONS ==========
+
+        function getDefaultImage(category) {
+            const defaultImages = {
+                'marble': 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                'granite': 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                'limestone': 'https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                'sandstone': 'https://images.unsplash.com/photo-1541140532154-b024d705b90a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+                'red sand stone': 'https://i.ibb.co/HLpBc94R/51b7aaab131a.jpg'
+            };
+            
+            const cat = category ? category.toLowerCase() : 'marble';
+            return defaultImages[cat] || defaultImages.marble;
+        }
+
+        function getSampleProducts() {
+            return [
+                {
+                    id: "He7DP5K7CNkYmAK8HqsN",
+                    stone_name: "RED SAND STONE",
+                    category: "Red Sand Stone",
+                    type: "Natural",
+                    color: "Red",
+                    size: "10",
+                    length: "5",
+                    width: "2",
+                    thickness: "20-30 mm",
+                    uses: "Flooring",
+                    price: 100,
+                    price_unit: "sqft",
+                    description: "Premium red sandstone with excellent durability and natural beauty. Perfect for flooring applications in both residential and commercial projects. The natural red hue adds warmth and character to any space.",
+                    density: "2.4 g/cm³",
+                    finish: "Natural",
+                    water_absorption: "Low",
+                    rate_description: "Competitive pricing with bulk discounts available",
+                    factory_name: "ravi jain",
+                    contact_number: "+91 7737740207",
+                    email: "ravijain236129@gmail.com",
+                    compressive_strength: "High",
+                    images: [
+                        "https://i.ibb.co/HLpBc94R/51b7aaab131a.jpg",
+                        "https://images.unsplash.com/photo-1541140532154-b024d705b90a?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+                        "https://images.unsplash.com/photo-1601553598910-aab9e5a5e658?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+                    ]
+                },
+                {
+                    id: "2",
+                    stone_name: "WHITE MARBLE",
+                    category: "Marble",
+                    type: "Natural",
+                    color: "White",
+                    size: "12",
+                    length: "6",
+                    width: "3",
+                    thickness: "25-35 mm",
+                    uses: "Flooring",
+                    price: 150,
+                    price_unit: "sqft",
+                    description: "Elegant white marble with fine veining for luxurious interiors. This premium marble is ideal for flooring, wall cladding, and countertops in high-end residential and commercial spaces.",
+                    density: "2.7 g/cm³",
+                    finish: "Polished",
+                    water_absorption: "Medium",
+                    rate_description: "Premium quality marble at competitive prices",
+                    factory_name: "marble works",
+                    contact_number: "+91 9876543210",
+                    email: "info@marbleworks.com",
+                    compressive_strength: "Medium",
+                    images: [
+                        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+                        "https://images.unsplash.com/photo-1568515042948-bf1c8e79f4cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+                    ]
+                },
+                {
+                    id: "3",
+                    stone_name: "BLACK GRANITE",
+                    category: "Granite",
+                    type: "Natural",
+                    color: "Black",
+                    size: "15",
+                    length: "7",
+                    width: "4",
+                    thickness: "30-40 mm",
+                    uses: "Countertop",
+                    price: 200,
+                    price_unit: "sqft",
+                    description: "Durable black granite perfect for kitchen countertops. This high-density granite offers excellent resistance to scratches, heat, and stains, making it ideal for heavy-use areas.",
+                    density: "2.8 g/cm³",
+                    finish: "Polished",
+                    water_absorption: "Very Low",
+                    rate_description: "High-end granite with excellent durability",
+                    factory_name: "granite experts",
+                    contact_number: "+91 8765432109",
+                    email: "sales@graniteexperts.com",
+                    compressive_strength: "Very High",
+                    images: [
+                        "https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+                        "https://images.unsplash.com/photo-1552324190-f087066e1e48?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+                    ]
+                }
+            ];
+        }
+
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        function showNotification(message, type) {
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) existingNotification.remove();
+            
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div style="position: fixed; top: 100px; right: 20px; background: ${type === 'success' ? '#4CAF50' : '#f44336'}; color: white; padding: 15px 20px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 2000; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+
+        function showError(message) {
+            const container = document.getElementById('productDetailsContainer');
+            if (container) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 50px 20px;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #ff9900; margin-bottom: 20px;"></i>
+                        <h3 style="color: #333; margin-bottom: 15px;">${message}</h3>
+                        <p style="color: #666; margin-bottom: 20px;">Please try refreshing the page or contact support.</p>
+                        <a href="category-products.html" class="details-btn" style="display: inline-block; width: auto; padding: 10px 20px;">Browse Products</a>
+                    </div>
+                `;
+            }
+        }
+
+        // ========== AUTHENTICATION ==========
+
+        function initializeAuth() {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    appState.user = {
+                        uid: user.uid,
+                        email: user.email,
+                        name: user.displayName || user.email.split('@')[0]
+                    };
+                    updateUserInterface();
+                } else {
+                    appState.user = null;
+                    updateUserInterface();
+                }
+            });
+        }
+
+        function updateUserInterface() {
+            const userProfile = document.getElementById('userProfile');
+            const loginButton = document.getElementById('loginButton');
+            
+            if (userProfile && loginButton) {
+                if (appState.user) {
+                    userProfile.style.display = 'block';
+                    loginButton.style.display = 'none';
+                    
+                    document.getElementById('profileName').textContent = appState.user.name;
+                    document.getElementById('profileAvatar').textContent = appState.user.name.charAt(0).toUpperCase();
+                    document.getElementById('dropdownUserName').textContent = appState.user.name;
+                    document.getElementById('dropdownUserEmail').textContent = appState.user.email;
+                } else {
+                    userProfile.style.display = 'none';
+                    loginButton.style.display = 'flex';
+                }
+            }
+        }
+
+        // ========== UI INITIALIZATION ==========
+
+        function initializeUI() {
+            initializeSearch();
+            initializeUserProfile();
+            initializeMobileMenu();
+            initializeFullImageOverlay();
+            initializeEnhancedSmartZoom();
+        }
+
+        function initializeSearch() {
+            // Search functionality placeholder
+            console.log('🔍 Search initialized');
+        }
+
+        function initializeUserProfile() {
+            const profileToggle = document.getElementById('profileToggle');
+            const profileDropdown = document.getElementById('profileDropdown');
+            
+            if (profileToggle && profileDropdown) {
+                profileToggle.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    profileDropdown.classList.toggle('active');
+                });
+                
+                document.addEventListener('click', function() {
+                    profileDropdown.classList.remove('active');
+                });
+            }
+        }
+
+        function initializeMobileMenu() {
+            const trustMobileToggle = document.getElementById('trustMobileToggle');
+            const mobileUsesMenu = document.getElementById('mobileUsesMenu');
+            const closeMenu = document.getElementById('closeMenu');
+            const menuOverlay = document.getElementById('menuOverlay');
+            
+            if (trustMobileToggle && mobileUsesMenu && closeMenu && menuOverlay) {
+                trustMobileToggle.addEventListener('click', function() {
+                    mobileUsesMenu.classList.add('active');
+                    menuOverlay.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                });
+                
+                function closeMobileMenu() {
+                    mobileUsesMenu.classList.remove('active');
+                    menuOverlay.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                }
+                
+                closeMenu.addEventListener('click', closeMobileMenu);
+                menuOverlay.addEventListener('click', closeMobileMenu);
+                window.closeMobileMenu = closeMobileMenu;
+            }
+        }
+
+        function initializeFullImageOverlay() {
+            // Full image overlay functionality placeholder
+            console.log('🖼️ Full image overlay initialized');
+        }
+
+        function initializeEnhancedSmartZoom() {
+            // Zoom functionality placeholder
+            console.log('🔍 Zoom functionality initialized');
+        }
+
+        // ========== MAIN INITIALIZATION ==========
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Initializing Product Details Page...');
+            
+            loadCart();
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+            
+            console.log('📋 Product ID from URL:', productId);
+            
+            if (!productId) {
+                showError('No product ID specified. Please select a product from the catalog.');
+                return;
+            }
+            
+            initializePage(productId);
+            initializeAuth();
+            initializeUI();
+            
+            console.log('✅ Product Details page initialized successfully!');
+        });
     </script>
 </body>
 </html>
