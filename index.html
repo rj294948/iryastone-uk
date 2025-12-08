@@ -3,2485 +3,572 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StoneCraft UK - Premium Natural Stone & Marble Suppliers</title>
-    <meta name="description" content="UK's leading supplier of premium natural stone, marble, sandstone & limestone. Free UK delivery. Trusted by homeowners & professionals.">
+    <title>IndianStoneCo | Premium Natural Stone from India to UK</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
-    
-    <!-- Firebase CDN - Corrected Version -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
-    
-    <style>
-        /* ===== HOME PAGE WITH NEW HEADER STYLE ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-color: #ffffff;
-            color: #333;
-            line-height: 1.6;
-            padding-top: 165px; /* Fixed for header + uses bar */
-            transition: padding-top 0.3s ease;
-        }
-        
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 5px 15px;
-        }
-        
-        /* Header Styles - Fixed position */
-        header {
-            background-color: #fff;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1001;
-            transition: transform 0.4s ease;
-            margin-top: 0;
-            padding-top: 0;
-        }
-        
-        header.hidden {
-            transform: translateY(-100%);
-        }
-        
-        header.visible {
-            transform: translateY(0);
-        }
-        
-        .main-header {
-            padding: 5px 0;
-            height: 60px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-        }
-        
-        .logo h1 {
-            font-size: 24px;
-            color: #333;
-            font-weight: 700;
-        }
-        
-        .logo span {
-            color: #b8860b;
-        }
-        
-        .trust-info {
-            height: 40px;
-            position: relative;
-            text-align: center;
-            padding: 0 10px;
-            margin-top: 0;
-            padding-top: 5px;
-        }
-        
-        .trust-info-content {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            font-size: 13px;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 5px 10px;
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        }
-        
-        /* Mobile Menu Toggle in Trust Info Section - LEFT CORNER */
-        .trust-mobile-toggle {
-            display: none;
-            position: absolute;
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            font-size: 20px;
-            color: #333;
-            cursor: pointer;
-            z-index: 10;
-            padding: 8px;
-        }
-        
-        .trust-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            white-space: nowrap;
-            padding: 5px 10px;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 6px;
-        }
-        
-        .trust-item i {
-            color: #b8860b;
-            font-size: 14px;
-        }
-
-        /* User Profile Styles */
-        .user-profile {
-            position: relative;
-        }
-
-        .profile-toggle {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 6px 10px;
-            border-radius: 6px;
-            transition: background-color 0.3s;
-        }
-
-        .profile-toggle:hover {
-            background: #f8f9fa;
-        }
-
-        .profile-avatar {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: #b8860b;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 12px;
-        }
-
-        .profile-name {
-            font-size: 12px;
-            font-weight: 500;
-            color: #333;
-        }
-
-        .profile-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-            min-width: 180px;
-            z-index: 1002;
-            display: none;
-            border: 1px solid #e0e0e0;
-        }
-
-        .profile-dropdown.active {
-            display: block;
-        }
-
-        .dropdown-header {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-            background: #f8f9fa;
-            border-radius: 8px 8px 0 0;
-        }
-
-        .dropdown-header .user-email {
-            font-size: 11px;
-            color: #666;
-            margin-top: 4px;
-        }
-
-        .dropdown-menu {
-            list-style: none;
-            padding: 6px 0;
-        }
-
-        .dropdown-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            color: #333;
-            text-decoration: none;
-            font-size: 13px;
-            transition: all 0.3s;
-        }
-
-        .dropdown-item:hover {
-            background: #f8f9fa;
-            color: #b8860b;
-        }
-
-        .dropdown-item i {
-            width: 14px;
-            text-align: center;
-            color: #666;
-            font-size: 13px;
-        }
-
-        .dropdown-divider {
-            height: 1px;
-            background: #eee;
-            margin: 6px 0;
-        }
-
-        .user-actions {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .user-action {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: #555;
-            font-size: 11px;
-            transition: color 0.3s;
-        }
-
-        .user-action:hover {
-            color: #b8860b;
-        }
-
-        .user-action i {
-            font-size: 18px;
-            margin-bottom: 2px;
-        }
-
-        /* Desktop Search Styles */
-        .search-container {
-            position: relative;
-            flex: 1;
-            max-width: 450px;
-            margin: 0 15px;
-        }
-
-        .search-input-container {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 10px 40px 10px 15px;
-            border: 2px solid #e1e5e9;
-            border-radius: 20px;
-            font-size: 13px;
-            background-color: #f8f9fa;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: #b8860b;
-            background-color: white;
-        }
-
-        .search-button {
-            position: absolute;
-            right: 6px;
-            background: #b8860b;
-            color: white;
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-        }
-
-        .search-results {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            max-height: 350px;
-            overflow-y: auto;
-            z-index: 1003;
-            display: none;
-            margin-top: 5px;
-        }
-
-        .search-results.active {
-            display: block;
-        }
-
-        .search-result-item {
-            display: flex;
-            align-items: center;
-            padding: 10px 12px;
-            border-bottom: 1px solid #f0f0f0;
-            cursor: pointer;
-        }
-
-        .search-result-item:hover {
-            background: #f8f9fa;
-        }
-
-        .search-result-item:last-child {
-            border-bottom: none;
-        }
-
-        .search-result-image {
-            width: 45px;
-            height: 45px;
-            border-radius: 6px;
-            background-size: cover;
-            background-position: center;
-            margin-right: 12px;
-            flex-shrink: 0;
-        }
-
-        .search-result-content {
-            flex: 1;
-        }
-
-        .search-result-name {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 3px;
-            font-size: 13px;
-        }
-
-        .search-result-category {
-            font-size: 11px;
-            color: #b8860b;
-            background: #fff9e6;
-            padding: 2px 6px;
-            border-radius: 10px;
-            display: inline-block;
-        }
-
-        .search-result-price {
-            font-weight: 700;
-            color: #b8860b;
-            font-size: 13px;
-        }
-
-        .no-results {
-            padding: 15px;
-            text-align: center;
-            color: #666;
-            font-size: 13px;
-        }
-
-        .search-loading {
-            padding: 12px;
-            text-align: center;
-            color: #666;
-            font-size: 13px;
-        }
-
-        .view-all-results {
-            padding: 10px 12px;
-            text-align: center;
-            background: #f8f9fa;
-            border-top: 1px solid #e9ecef;
-            font-size: 13px;
-        }
-
-        .view-all-results a {
-            color: #b8860b;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        
-        /* Banner Text - COMPACT */
-        .banner-text {
-            background: linear-gradient(135deg, #b8860b, #a3780a);
-            color: white;
-            padding: 2px 0;
-            text-align: center;
-            font-size: 12px;
-            font-weight: 500;
-            margin: 0;
-            line-height: 1.2;
-            height: 25px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        /* Desktop Uses Top Bar with Mega Menu - NO SLIDING, AUTO ADJUST */
-        .uses-top-bar {
-            position: fixed;
-            top: 125px; /* Default: Header ke niche */
-            left: 0;
-            width: 100%;
-            background: #333;
-            padding: 0;
-            z-index: 1000;
-            height: 45px;
-            display: flex;
-            align-items: center;
-            transition: top 0.4s ease; /* Smooth transition */
-        }
-        
-        /* When header is hidden, uses bar moves to top */
-        header.hidden + .uses-top-bar {
-            top: 0; /* Header hide hone par top position par */
-        }
-        
-        .uses-container {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-        }
-        
-        .use-item {
-            flex: 1;
-            position: relative;
-            height: 45px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-
-        .use-link {
-            display: block;
-            color: white;
-            text-decoration: none;
-            padding: 12px 5px;
-            font-size: 12px;
-            font-weight: 500;
-            text-align: center;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            position: relative;
-            z-index: 2;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .use-link:hover {
-            background: #b8860b;
-        }
-        
-        /* Mega Menu Styles - DYNAMIC TOP */
-        .mega-menu {
-            position: fixed;
-            top: 170px; /* Default: Header (125px) + Uses Bar (45px) = 170px */
-            left: 0;
-            width: 100%;
-            background: white;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            z-index: 999;
-            display: none;
-            padding: 20px 0;
-            border-top: 1px solid #e0e0e0;
-            max-height: calc(100vh - 170px);
-            overflow-y: auto;
-            transition: top 0.4s ease; /* Smooth transition */
-        }
-        
-        /* When header is hidden, mega menu also moves up */
-        header.hidden + .uses-top-bar .mega-menu {
-            top: 45px; /* Uses bar ke niche (45px uses bar height) */
-        }
-        
-        .patterns-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 15px;
-            padding: 0 15px;
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-        }
-        
-        .pattern-item {
-            text-align: center;
-            cursor: pointer;
-            text-decoration: none;
-            color: #333;
-            display: block;
-            width: 100%;
-            overflow: hidden;
-        }
-
-        .pattern-image {
-            width: 100%;
-            height: 160px;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            border-radius: 6px;
-            margin-bottom: 8px;
-            transition: transform 0.3s ease;
-            box-sizing: border-box;
-        }
-
-        .pattern-item:hover .pattern-image {
-            transform: scale(1.05);
-        }
-        
-        .patterns-grid .pattern-image {
-            background-color: #ffffff !important;
-            background-size: contain !important;
-            background-position: center !important;
-            background-repeat: no-repeat !important;
-            min-height: 160px;
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-        }
-
-        .pattern-name {
-            font-size: 13px;
-            color: #333;
-            font-weight: 500;
-            padding: 0 5px;
-            text-align: center;
-            word-wrap: break-word;
-            white-space: normal;
-        }
-
-        /* White layer overlay on hover */
-        .pattern-item:hover .pattern-image::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 6px;
-            pointer-events: none;
-        }     
-        
-        /* ===== MOBILE SIDEBAR MENU ===== */
-        .mobile-uses-menu {
-            position: fixed;
-            top: 0;
-            left: -320px; /* Hide off-screen */
-            width: 300px;
-            height: 100vh;
-            background: white;
-            box-shadow: 2px 0 15px rgba(0,0,0,0.15);
-            z-index: 1100;
-            transition: left 0.3s ease;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .mobile-uses-menu.active {
-            left: 0;
-        }
-        
-        .mobile-menu-header {
-            padding: 20px;
-            background: #333;
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #444;
-        }
-        
-        .mobile-menu-header h3 {
-            margin: 0;
-            font-size: 18px;
-            font-weight: 600;
-        }
-        
-        .close-menu {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 22px;
-            cursor: pointer;
-            padding: 5px;
-        }
-        
-        .mobile-uses-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px;
-            max-height: calc(100vh - 70px);
-        }
-        
-        .mobile-use-item {
-            margin-bottom: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .mobile-use-link {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 10px;
-            text-decoration: none;
-            color: #333;
-            font-weight: 500;
-            font-size: 15px;
-            cursor: pointer;
-            border-radius: 6px;
-            transition: background-color 0.3s;
-        }
-        
-        .mobile-use-link:hover {
-            background: #f8f9fa;
-        }
-        
-        .mobile-use-link i {
-            font-size: 12px;
-            transition: transform 0.3s;
-        }
-        
-        .mobile-mega-content {
-            padding: 10px;
-            display: none;
-            background: #f8f9fa;
-            border-radius: 6px;
-            margin: 8px 0;
-        }
-        
-        .mobile-mega-content.active {
-            display: block;
-        }
-        
-        .mobile-pattern-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
-        
-        .mobile-pattern-item {
-            text-decoration: none;
-            color: #333;
-            display: block;
-        }
-        
-        .mobile-pattern-image {
-            width: 100%;
-            height: 80px;
-            background-size: contain;
-            background-position: center;
-            background-repeat: no-repeat;
-            border-radius: 5px;
-            margin-bottom: 5px;
-            background-color: #f0f0f0;
-        }
-        
-        .mobile-pattern-name {
-            font-size: 12px;
-            text-align: center;
-            color: #333;
-            font-weight: 500;
-            line-height: 1.3;
-            padding: 0 5px;
-        }
-        
-        /* Overlay for mobile menu */
-        .menu-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 1099;
-            display: none;
-        }
-        
-        .menu-overlay.active {
-            display: block;
-        }
-        
-        /* ===== MAIN CONTENT ===== */
-        .main-content {
-            margin-top: 8px;
-            padding: 2px 0px;
-        }
-        
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80');
-            background-size: cover;
-            background-position: center;
-            color: white;
-            padding: 60px 0;
-            text-align: center;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        
-        .hero h1 {
-            font-size: 36px;
-            margin-bottom: 15px;
-            line-height: 1.2;
-        }
-        
-        .hero p {
-            font-size: 18px;
-            max-width: 600px;
-            margin: 0 auto 20px;
-            opacity: 0.9;
-        }
-        
-        .btn {
-            display: inline-block;
-            background: #b8860b;
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 6px;
-            font-size: 15px;
-            cursor: pointer;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        
-        .btn:hover {
-            background: #a3780a;
-            transform: translateY(-2px);
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 2px solid #b8860b;
-            color: #b8860b;
-        }
-
-        .btn-outline:hover {
-            background: #b8860b;
-            color: white;
-        }
-        
-        /* Products Banner */
-        .products-banner {
-            padding: 50px 0;
-            background: #f9f9f9;
-            border-radius: 8px;
-            margin-bottom: 30px;
-        }
-
-        .products-banner-content {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .products-banner-content h2 {
-            font-size: 28px;
-            color: #333;
-            margin-bottom: 12px;
-        }
-
-        .products-banner-content p {
-            font-size: 16px;
-            color: #666;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .products-grid-banner {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-        }
-
-        .product-banner-item {
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
-        }
-
-        .product-banner-item:hover {
-            transform: translateY(-5px);
-        }
-
-        .product-banner-image {
-            width: 100%;
-            height: 0;
-            padding-bottom: 60%;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            transition: background-image 1s ease-in-out;
-        }
-
-        .product-banner-text {
-            padding: 20px;
-            text-align: center;
-            background: white;
-        }
-
-        .product-banner-text h3 {
-            font-size: 20px;
-            margin-bottom: 12px;
-            color: #333;
-            font-weight: 600;
-        }
-
-        .product-banner-text p {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
-        
-        /* Uses Categories Section - UPDATED FOR MOBILE 2x2 */
-        .uses-categories {
-            padding: 50px 0;
-            background: white;
-            border-radius: 8px;
-            margin-bottom: 30px;
-        }
-
-        .section-title {
-            text-align: center;
-            margin: 0 0 30px;
-            font-size: 28px;
-            color: #333;
-            position: relative;
-            padding-bottom: 12px;
-        }
-
-        .section-title:after {
-            content: '';
-            position: absolute;
-            width: 60px;
-            height: 3px;
-            background: #b8860b;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .uses-categories-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-        }
-
-        .use-category-item {
-            text-align: center;
-        }
-
-        .use-category-link {
-            display: block;
-            text-decoration: none;
-            color: #333;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .use-category-image {
-            width: 100%;
-            height: 200px;
-            background-size: contain;
-            background-position: center;
-            background-repeat: no-repeat;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            transition: transform 0.3s;
-            background-color: #f8f9fa;
-        }
-
-        .use-category-link:hover .use-category-image {
-            transform: scale(1.05);
-        }
-
-        .use-category-name {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            flex-grow: 1;
-        }
-
-        .product-count {
-            font-size: 13px;
-            color: #b8860b;
-            font-weight: 500;
-        }
-
-        .loading-categories {
-            text-align: center;
-            padding: 30px;
-            color: #666;
-            grid-column: 1 / -1;
-        }
-
-        /* Features Section - HORIZONTAL LAYOUT */
-        .features {
-            display: flex;
-            justify-content: center;
-            align-items: stretch;
-            gap: 25px;
-            margin: 40px 0;
-            padding: 40px 0;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-        }
-        
-        .feature {
-            flex: 1;
-            text-align: center;
-            padding: 25px 15px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            min-height: 280px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .feature:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-        }
-        
-        .feature i {
-            font-size: 35px;
-            color: #b8860b;
-            margin-bottom: 15px;
-        }
-        
-        .feature h3 {
-            margin-bottom: 12px;
-            font-size: 18px;
-            color: #333;
-        }
-        
-        .feature p {
-            font-size: 14px;
-            color: #666;
-            line-height: 1.5;
-            flex-grow: 1;
-        }
-        
-        /* Footer */
-        footer {
-            background-color: #222;
-            color: #ddd;
-            padding: 40px 0 15px;
-            margin-top: 40px;
-        }
-        
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 25px;
-            margin-bottom: 25px;
-        }
-        
-        .footer-column h3 {
-            color: white;
-            margin-bottom: 15px;
-            font-size: 16px;
-            padding-bottom: 6px;
-            border-bottom: 2px solid #b8860b;
-            display: inline-block;
-        }
-        
-        .footer-links {
-            list-style: none;
-        }
-        
-        .footer-links li {
-            margin-bottom: 8px;
-        }
-        
-        .footer-links a {
-            color: #ddd;
-            text-decoration: none;
-            font-size: 13px;
-            transition: color 0.3s;
-        }
-        
-        .footer-links a:hover {
-            color: #b8860b;
-        }
-        
-        .social-links {
-            display: flex;
-            gap: 10px;
-            margin-top: 12px;
-        }
-        
-        .social-links a {
-            color: white;
-            background: #444;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.3s;
-            font-size: 13px;
-        }
-        
-        .social-links a:hover {
-            background: #b8860b;
-        }
-        
-        .copyright {
-            text-align: center;
-            padding-top: 20px;
-            border-top: 1px solid #444;
-            font-size: 12px;
-            color: #999;
-        }
-
-        /* ===== MOBILE SPECIFIC STYLES ===== */
-        
-        /* Mobile Header Reorganization */
-        @media (max-width: 768px) {
-            body {
-                padding-top: 100px;
-            }
-            
-            .main-content {
-                margin-top: 5px;
-            }
-            
-            /* Trust Info Section - Mobile View */
-            .trust-info {
-                position: relative;
-                padding: 0 40px; /* Left side ke liye space for hamburger */
-                height: 35px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            
-            /* Mobile Menu Toggle in Trust Info - LEFT CORNER */
-            .trust-mobile-toggle {
-                display: block;
-                position: absolute;
-                left: 10px;
-                top: 50%;
-                transform: translateY(-50%);
-                background: none;
-                border: none;
-                font-size: 20px;
-                color: #333;
-                cursor: pointer;
-                z-index: 10;
-                padding: 8px;
-            }
-            
-            .trust-info-content {
-                padding: 4px 8px;
-                gap: 10px;
-                font-size: 11px;
-            }
-            
-            .trust-item {
-                padding: 4px 8px;
-            }
-            
-            /* Main Header Mobile Layout */
-            .header-content {
-                flex-wrap: nowrap;
-                justify-content: space-between;
-                padding: 8px 0;
-            }
-            
-            /* Logo - LEFT SIDE */
-            .logo {
-                order: 1;
-                flex: 1;
-                justify-content: flex-start;
-            }
-            
-            .logo h1 {
-                font-size: 20px;
-            }
-            
-            /* Search Container - CENTER (Logo aur User Actions ke beech) */
-            .search-container {
-                order: 2;
-                flex: 2;
-                margin: 0 10px;
-                max-width: none;
-            }
-            
-            /* User Actions - RIGHT SIDE */
-            .user-actions {
-                order: 3;
-                flex: 1;
-                justify-content: flex-end;
-                gap: 10px;
-            }
-            
-            .user-action {
-                font-size: 10px;
-            }
-            
-            .user-action i {
-                font-size: 16px;
-            }
-            
-            /* Hide profile name on mobile */
-            .profile-name {
-                display: none;
-            }
-            
-            /* Hero Section adjustments */
-            .hero {
-                padding: 30px 0;
-            }
-            
-            .hero h1 {
-                font-size: 26px;
-            }
-            
-            .hero p {
-                font-size: 15px;
-            }
-            
-            /* Features section mobile layout - VERTICAL */
-            .features {
-                flex-direction: column;
-                padding: 25px 0;
-                margin: 25px 0;
-                gap: 15px;
-            }
-            
-            .feature {
-                min-height: auto;
-                width: 100%;
-            }
-            
-            /* Hide desktop uses bar on mobile */
-            .uses-top-bar {
-                display: none;
-            }
-            
-            /* Hide mega menu on mobile */
-            .mega-menu {
-                display: none !important;
-            }
-            
-            /* Stone Applications - 2 COLUMNS ON MOBILE */
-            .uses-categories-grid {
-                grid-template-columns: repeat(2, 1fr) !important;
-                gap: 15px;
-            }
-            
-            .use-category-image {
-                height: 140px;
-            }
-            
-            .use-category-name {
-                font-size: 14px;
-            }
-            
-            .product-count {
-                font-size: 12px;
-            }
-            
-            .banner-text {
-                height: auto;
-                padding: 6px 0;
-                font-size: 11px;
-            }
-            
-            .main-header {
-                height: auto;
-                padding: 8px 0;
-            }
-            
-            /* Mobile par header hide hone ka effect */
-            header.hidden {
-                transform: translateY(-100%);
-            }
-            
-            /* Mobile par uses bar nahi hoga */
-            header.hidden + .uses-top-bar {
-                display: none;
-            }
-            
-            /* Products banner mobile */
-            .products-grid-banner {
-                grid-template-columns: 1fr;
-            }
-            
-            .product-banner-text h3 {
-                font-size: 18px;
-            }
-            
-            .product-banner-text p {
-                font-size: 13px;
-            }
-            
-            /* Patterns grid mobile */
-            .patterns-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            /* Footer mobile */
-            .footer-content {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 20px;
-            }
-            
-            /* Mobile sidebar images 2x2 grid */
-            .mobile-pattern-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 8px;
-            }
-            
-            .mobile-pattern-image {
-                height: 70px;
-            }
-            
-            .mobile-pattern-name {
-                font-size: 11px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            /* Stone Applications - 2 COLUMNS ON SMALL MOBILE TOO */
-            .uses-categories-grid {
-                grid-template-columns: repeat(2, 1fr) !important;
-                gap: 10px;
-            }
-            
-            .use-category-image {
-                height: 120px;
-            }
-            
-            .use-category-name {
-                font-size: 13px;
-            }
-            
-            .footer-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .hero h1 {
-                font-size: 22px;
-            }
-            
-            .hero p {
-                font-size: 14px;
-            }
-            
-            .patterns-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .section-title {
-                font-size: 24px;
-            }
-            
-            .mobile-uses-menu {
-                width: 280px;
-            }
-            
-            .search-container {
-                flex: 1.5;
-            }
-            
-            .trust-info-content {
-                font-size: 10px;
-                gap: 8px;
-            }
-        }
-
-        /* Tablet View */
-        @media (max-width: 1024px) and (min-width: 769px) {
-            .hero h1 {
-                font-size: 32px;
-            }
-            
-            .products-grid-banner {
-                grid-template-columns: 1fr;
-            }
-            
-            /* Tablet: 3 columns for stone applications */
-            .uses-categories-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            
-            /* Features section tablet layout */
-            .features {
-                flex-wrap: wrap;
-                gap: 20px;
-            }
-            
-            .feature {
-                min-width: calc(50% - 20px);
-                flex: 1 0 calc(50% - 20px);
-            }
-            
-            .footer-content {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .patterns-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            
-            /* Uses bar for tablet - font size adjust */
-            .use-link {
-                font-size: 11px;
-                padding: 12px 3px;
-            }
-        }
-
-        /* Desktop View - No changes, original layout */
-        @media (min-width: 769px) {
-            .trust-mobile-toggle {
-                display: none;
-            }
-            
-            .mobile-menu-toggle {
-                display: none;
-            }
-            
-            /* Desktop view me original layout maintain karo */
-            .uses-categories-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            
-            /* Desktop search bar positioning */
-            .search-container {
-                order: 2;
-                flex: 1;
-                max-width: 450px;
-                margin: 0 15px;
-            }
-            
-            .logo {
-                order: 1;
-                flex: none;
-            }
-            
-            .user-actions {
-                order: 3;
-                flex: none;
-            }
-            
-            /* Dynamic font size for uses bar based on number of items */
-            .use-link {
-                font-size: calc(13px - (var(--item-count) * 0.5px));
-                padding: 12px calc(5px + (var(--item-count) * 0.2px));
-            }
-            
-            /* Desktop features horizontal layout */
-            .features {
-                flex-direction: row;
-            }
-        }
-
-        /* Extra small screens */
-        @media (max-width: 360px) {
-            .use-link {
-                font-size: 10px;
-                padding: 12px 2px;
-            }
-            
-            .mobile-pattern-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Mobile Menu Overlay -->
-    <div class="menu-overlay" id="menuOverlay"></div>
-    
-    <!-- Mobile Slide-out Menu (SIDEBAR) -->
-    <div class="mobile-uses-menu" id="mobileUsesMenu">
-        <div class="mobile-menu-header">
-            <h3>Stone Categories</h3>
-            <button class="close-menu" id="closeMenu">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="mobile-uses-list" id="mobileUsesList">
-            <!-- Dynamic mobile menu will be loaded here -->
-            <div class="loading-categories">
-                <i class="fas fa-spinner fa-spin"></i>
-                <p>Loading categories...</p>
+    <!-- Compact Header -->
+    <header class="compact-header">
+        <div class="header-top">
+            <div class="header-info">
+                <span><i class="fas fa-phone-alt"></i> +44 1234 567890</span>
+                <span><i class="fas fa-envelope"></i> info@indianstoneco.co.uk</span>
+            </div>
+            <div class="header-actions">
+                <a href="login.html">My Account</a>
+                <a href="wishlist.html">Wishlist</a>
+                <a href="cart.html">Cart (<span id="header-cart-count">0</span>)</a>
             </div>
         </div>
-    </div>
-
-    <!-- ===== HEADER ===== -->
-    <header id="mainHeader">
-        <div class="trust-info">
-            <!-- Mobile Menu Toggle Button in Trust Info Section - LEFT CORNER -->
-            <button class="trust-mobile-toggle" id="trustMobileToggle">
+        
+        <!-- Main Navigation - Compact -->
+        <nav class="main-nav">
+            <div class="nav-brand">
+                <i class="fas fa-gem"></i>
+                <span>IndianStoneCo</span>
+            </div>
+            
+            <div class="nav-menu">
+                <a href="index.html" class="active">Home</a>
+                <div class="dropdown">
+                    <a href="products.html">Products <i class="fas fa-chevron-down"></i></a>
+                    <div class="dropdown-content">
+                        <a href="products.html?category=marble">Marble</a>
+                        <a href="products.html?category=sandstone">Sandstone</a>
+                        <a href="products.html?category=granite">Granite</a>
+                        <a href="products.html?category=limestone">Limestone</a>
+                    </div>
+                </div>
+                <a href="products.html?category=flooring">Flooring</a>
+                <a href="products.html?category=wall-cladding">Wall Cladding</a>
+                <a href="products.html?category=kitchen">Kitchen</a>
+                <a href="products.html?category=bathroom">Bathroom</a>
+                <a href="#shipping">Shipping</a>
+            </div>
+            
+            <div class="nav-cta">
+                <a href="checkout.html" class="btn-quote">Get Free Quote</a>
+            </div>
+            
+            <button class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
             </button>
-            
-            <div class="trust-info-content">
-                <div class="trust-item">
-                    <i class="fas fa-truck"></i>
-                    <span>Free UK Delivery</span>
-                </div>
-                <div class="trust-item">
-                    <i class="fas fa-star"></i>
-                    <span>Rated 4.8/5</span>
-                </div>
-                <div class="trust-item">
-                    <i class="fas fa-award"></i>
-                    <span>BSF Member</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Header -->
-        <div class="main-header">
-            <div class="container header-content">
-                <!-- Logo - LEFT SIDE -->
-                <div class="logo">
-                    <a href="index.html" style="text-decoration: none; color: inherit;">
-                        <h1>Stone<span>Craft</span></h1>
-                    </a>
-                </div>
-                
-                <!-- Search Container - CENTER (Between Logo and User Actions) -->
-                <div class="search-container">
-                    <div class="search-input-container">
-                        <input type="text" class="search-input" id="searchInput" placeholder="Search stones...">
-                        <button class="search-button" id="searchButton">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                    <div class="search-results" id="searchResults">
-                        <!-- Search results will be dynamically loaded here -->
-                    </div>
-                </div>
-                
-                <!-- User Actions - RIGHT SIDE -->
-                <div class="user-actions">
-                    <!-- Dynamic User Profile -->
-                    <div class="user-profile" id="userProfile" style="display: none;">
-                        <button class="profile-toggle" id="profileToggle">
-                            <div class="profile-avatar" id="profileAvatar">U</div>
-                            <span class="profile-name" id="profileName">User</span>
-                            <i class="fas fa-chevron-down" style="font-size: 11px;"></i>
-                        </button>
-                        <div class="profile-dropdown" id="profileDropdown">
-                            <div class="dropdown-header">
-                                <div class="profile-name" id="dropdownUserName">User Name</div>
-                                <div class="user-email" id="dropdownUserEmail">user@example.com</div>
-                            </div>
-                            <ul class="dropdown-menu">
-                                <li><a href="dashboard.html" class="dropdown-item"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                                <li><a href="edit-profile.html" class="dropdown-item"><i class="fas fa-user-edit"></i> Edit Profile</a></li>
-                                <li><a href="wishlist.html" class="dropdown-item"><i class="fas fa-heart"></i> My Wishlist</a></li>
-                                <li><a href="billing.html" class="dropdown-item"><i class="fas fa-address-card"></i> Billing/Shipping</a></li>
-                                <li><a href="orders.html" class="dropdown-item"><i class="fas fa-history"></i> Order History</a></li>
-                                <li class="dropdown-divider"></li>
-                                <li><a href="#" class="dropdown-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <!-- Login Button -->
-                    <a href="login.html" class="user-action" id="loginButton">
-                        <i class="fas fa-user"></i>
-                        <span>Sign In</span>
-                    </a>
-                    
-                    <a href="#" class="user-action">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span>Cart (0)</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Banner Text -->
-        <div class="banner-text">
-            <div class="container">
-                Premium Natural Stone Collections - Sandstone, Marble & Limestone for UK Homes & Commercial Projects
-            </div>
-        </div>
+        </nav>
     </header>
 
-    <!-- Desktop Uses Top Bar with Mega Menu -->
-    <div class="uses-top-bar" id="desktopUsesBar">
-        <div class="container uses-container" id="dynamicUsesContainer">
-            <!-- Dynamic uses will be loaded here -->
-            <div class="loading-categories">
-                <i class="fas fa-spinner fa-spin"></i>
-                <p>Loading navigation...</p>
+    <!-- Sliding Banner Section -->
+    <section class="hero-banner">
+        <div class="swiper banner-swiper">
+            <div class="swiper-wrapper">
+                <!-- Banner 1 -->
+                <div class="swiper-slide banner-slide" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1543857778-c4a1a569e388?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80');">
+                    <div class="banner-content">
+                        <h1 class="banner-title">Premium Italian Marble</h1>
+                        <p class="banner-subtitle">Direct from India to UK Homes</p>
+                        <p class="banner-desc">Luxury marble flooring & wall cladding with 20-year warranty</p>
+                        <div class="banner-stats">
+                            <div class="stat">
+                                <i class="fas fa-truck"></i>
+                                <span>Free UK Delivery</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>VAT Included</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-pound-sign"></i>
+                                <span>30/70 Payment</span>
+                            </div>
+                        </div>
+                        <a href="products.html?category=marble" class="btn-banner">
+                            <span>Explore Collection</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Banner 2 -->
+                <div class="swiper-slide banner-slide" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80');">
+                    <div class="banner-content">
+                        <h1 class="banner-title">Natural Sandstone</h1>
+                        <p class="banner-subtitle">Authentic Rajasthan Stone</p>
+                        <p class="banner-desc">Weather-resistant sandstone for outdoor & garden projects</p>
+                        <div class="banner-stats">
+                            <div class="stat">
+                                <i class="fas fa-sun"></i>
+                                <span>Weather Resistant</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-leaf"></i>
+                                <span>Natural Finish</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-tags"></i>
+                                <span>Best Price Guarantee</span>
+                            </div>
+                        </div>
+                        <a href="products.html?category=sandstone" class="btn-banner">
+                            <span>View Sandstone</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Banner 3 -->
+                <div class="swiper-slide banner-slide" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1481277542470-605612bd2d61?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80');">
+                    <div class="banner-content">
+                        <h1 class="banner-title">Granite Countertops</h1>
+                        <p class="banner-subtitle">Kitchen & Bathroom Solutions</p>
+                        <p class="banner-desc">Heat-resistant granite worktops with custom sizing</p>
+                        <div class="banner-stats">
+                            <div class="stat">
+                                <i class="fas fa-fire"></i>
+                                <span>Heat Resistant</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-ruler-combined"></i>
+                                <span>Custom Sizing</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-clock"></i>
+                                <span>21-Day Delivery</span>
+                            </div>
+                        </div>
+                        <a href="products.html?category=kitchen" class="btn-banner">
+                            <span>Shop Granite</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Banner Navigation -->
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-pagination"></div>
+        </div>
+        
+        <!-- Trust Badges -->
+        <div class="trust-badges">
+            <div class="badge">
+                <i class="fas fa-check-circle"></i>
+                <span>100% Natural Stone</span>
+            </div>
+            <div class="badge">
+                <i class="fas fa-ship"></i>
+                <span>India to UK Direct</span>
+            </div>
+            <div class="badge">
+                <i class="fas fa-pound-sign"></i>
+                <span>No Hidden Charges</span>
+            </div>
+            <div class="badge">
+                <i class="fas fa-award"></i>
+                <span>Quality Certified</span>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- ===== MAIN CONTENT ===== -->
-    <div class="main-content">
-        <!-- Hero Section -->
-        <section class="hero">
-            <div class="container">
-                <h1>Premium Natural Stone & Marble</h1>
-                <p>UK's leading supplier of premium natural stone, marble, sandstone & limestone. Trusted by homeowners & professionals.</p>
-                <a href="#products" class="btn">Explore Collections</a>
-            </div>
-        </section>
-
-        <!-- Products Banner -->
-        <section class="products-banner" id="products">
-            <div class="container">
-                <div class="products-banner-content">
-                    <h2>Featured Stone Collections</h2>
-                    <p>Discover our premium range of natural stones perfect for all your construction and decoration needs</p>
+    <!-- Quick Categories -->
+    <section class="quick-categories">
+        <h2 class="section-title">Shop by Stone Type</h2>
+        <p class="section-subtitle">Premium natural stone sourced directly from Indian quarries</p>
+        
+        <div class="category-grid-compact">
+            <div class="cat-card" onclick="window.location='products.html?category=marble'">
+                <div class="cat-icon">
+                    <i class="fas fa-mountain"></i>
                 </div>
-                <div class="products-grid-banner">
-                    <div class="product-banner-item">
-                        <div class="product-banner-image" id="bannerImage1" style="background-image: url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80')"></div>
-                        <div class="product-banner-text">
-                            <h3>Premium Sandstone Collection</h3>
-                            <p>Durable and elegant sandstone for flooring and wall cladding with natural texture and color variations. Perfect for both indoor and outdoor applications.</p>
-                            <a href="category-products.html?usage=flooring" class="btn">View Collection</a>
-                        </div>
-                    </div>
-                    <div class="product-banner-item">
-                        <div class="product-banner-image" id="bannerImage2" style="background-image: url('https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80')"></div>
-                        <div class="product-banner-text">
-                            <h3>Kota Stone & Marble</h3>
-                            <p>Natural kota stone and premium marble known for exceptional strength, durability and beautiful natural patterns. Ideal for luxury projects.</p>
-                            <a href="category-products.html?usage=countertops" class="btn">Explore Stones</a>
-                        </div>
-                    </div>
+                <div class="cat-content">
+                    <h3>Marble</h3>
+                    <p>Elegant flooring & wall cladding</p>
+                    <span class="cat-price">From £35/m²</span>
                 </div>
             </div>
-        </section>
-
-        <!-- Uses Categories Section - UPDATED FOR MOBILE 2x2 -->
-        <section class="uses-categories">
-            <div class="container">
-                <h2 class="section-title">Stone Applications</h2>
-                <div class="uses-categories-grid" id="dynamicCategories">
-                    <div class="loading-categories">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <p>Loading categories...</p>
-                    </div>
+            
+            <div class="cat-card" onclick="window.location='products.html?category=sandstone'">
+                <div class="cat-icon">
+                    <i class="fas fa-sun"></i>
+                </div>
+                <div class="cat-content">
+                    <h3>Sandstone</h3>
+                    <p>Outdoor & garden paving</p>
+                    <span class="cat-price">From £28/m²</span>
                 </div>
             </div>
-        </section>
+            
+            <div class="cat-card" onclick="window.location='products.html?category=granite'">
+                <div class="cat-icon">
+                    <i class="fas fa-gem"></i>
+                </div>
+                <div class="cat-content">
+                    <h3>Granite</h3>
+                    <p>Countertops & work surfaces</p>
+                    <span class="cat-price">From £42/m²</span>
+                </div>
+            </div>
+            
+            <div class="cat-card" onclick="window.location='products.html?category=limestone'">
+                <div class="cat-icon">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <div class="cat-content">
+                    <h3>Limestone</h3>
+                    <p>Traditional flooring stone</p>
+                    <span class="cat-price">From £32/m²</span>
+                </div>
+            </div>
+        </div>
+    </section>
 
-        <!-- Features Section - HORIZONTAL LAYOUT -->
-        <section class="features">
-            <div class="container">
-                <div class="feature">
+    <!-- Featured Products - Space Optimized -->
+    <section class="featured-products-compact">
+        <div class="section-header-compact">
+            <div>
+                <h2 class="section-title">Best Selling Products</h2>
+                <p class="section-subtitle">Most popular choices for UK homes</p>
+            </div>
+            <a href="products.html" class="btn-view-all">
+                View All Products <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+        
+        <div class="products-grid-compact" id="featured-products">
+            <!-- Products will load here -->
+        </div>
+        
+        <div class="view-more">
+            <a href="products.html" class="btn-outline">
+                <i class="fas fa-grid"></i> Browse Full Catalog
+            </a>
+        </div>
+    </section>
+
+    <!-- 30/70 Payment System - Visual -->
+    <section class="payment-visual">
+        <div class="payment-header">
+            <h2>Simple 30/70 Payment Plan</h2>
+            <p>Flexible payment options for UK customers</p>
+        </div>
+        
+        <div class="payment-flow">
+            <div class="flow-step">
+                <div class="step-number">1</div>
+                <div class="step-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <h4>Order & Pay 30%</h4>
+                <p>Secure deposit payment</p>
+                <div class="step-price">£450</div>
+            </div>
+            
+            <div class="flow-arrow">
+                <i class="fas fa-arrow-right"></i>
+            </div>
+            
+            <div class="flow-step">
+                <div class="step-number">2</div>
+                <div class="step-icon">
+                    <i class="fas fa-industry"></i>
+                </div>
+                <h4>Processing in India</h4>
+                <p>Cutting & quality check</p>
+                <div class="step-days">7-10 days</div>
+            </div>
+            
+            <div class="flow-arrow">
+                <i class="fas fa-arrow-right"></i>
+            </div>
+            
+            <div class="flow-step">
+                <div class="step-number">3</div>
+                <div class="step-icon">
+                    <i class="fas fa-pound-sign"></i>
+                </div>
+                <h4>Pay 70% Balance</h4>
+                <p>Before shipping</p>
+                <div class="step-price">£1,050</div>
+            </div>
+            
+            <div class="flow-arrow">
+                <i class="fas fa-arrow-right"></i>
+            </div>
+            
+            <div class="flow-step">
+                <div class="step-number">4</div>
+                <div class="step-icon">
+                    <i class="fas fa-home"></i>
+                </div>
+                <h4>UK Delivery</h4>
+                <p>Direct to your location</p>
+                <div class="step-days">10-14 days</div>
+            </div>
+        </div>
+        
+        <div class="payment-example">
+            <div class="example-card">
+                <h4>Example Order: £1,500</h4>
+                <div class="example-breakdown">
+                    <div class="breakdown-item">
+                        <span>30% Deposit</span>
+                        <span class="price">£450</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span>70% Balance</span>
+                        <span class="price">£1,050</span>
+                    </div>
+                    <div class="breakdown-total">
+                        <span>Total Price</span>
+                        <span class="price-total">£1,500</span>
+                    </div>
+                </div>
+                <p class="example-note">* All prices include 20% UK VAT</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us -->
+    <section class="benefits-section">
+        <h2 class="section-title">Why Choose IndianStoneCo?</h2>
+        
+        <div class="benefits-grid">
+            <div class="benefit-card">
+                <div class="benefit-icon">
+                    <i class="fas fa-rupee-sign"></i>
+                </div>
+                <h4>Direct from India</h4>
+                <p>No middlemen. Factory prices direct from Rajasthan quarries.</p>
+            </div>
+            
+            <div class="benefit-card">
+                <div class="benefit-icon">
                     <i class="fas fa-shipping-fast"></i>
-                    <h3>Free UK Delivery</h3>
-                    <p>Free delivery on all orders across the United Kingdom with no minimum spend required. Fast and reliable shipping.</p>
                 </div>
-                <div class="feature">
-                    <i class="fas fa-award"></i>
-                    <h3>Quality Guaranteed</h3>
-                    <p>All our stones are sourced from trusted quarries and come with quality certification and warranty.</p>
+                <h4>UK-Wide Delivery</h4>
+                <p>Doorstep delivery across United Kingdom with tracking.</p>
+            </div>
+            
+            <div class="benefit-card">
+                <div class="benefit-icon">
+                    <i class="fas fa-clipboard-check"></i>
                 </div>
-                <div class="feature">
+                <h4>Quality Assurance</h4>
+                <p>Each piece inspected before shipping. 100% natural stone.</p>
+            </div>
+            
+            <div class="benefit-card">
+                <div class="benefit-icon">
                     <i class="fas fa-headset"></i>
-                    <h3>Expert Support</h3>
-                    <p>Get expert advice from our stone specialists for your project requirements. We're here to help you choose the perfect stone.</p>
                 </div>
+                <h4>UK Support Team</h4>
+                <p>Local support with expert advice for your projects.</p>
             </div>
-        </section>
-    </div>
+        </div>
+    </section>
 
-    <!-- ===== FOOTER ===== -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-column">
-                    <h3>StoneCraft</h3>
-                    <ul class="footer-links">
-                        <li><a href="index.html">Home</a></li>
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Our Story</a></li>
-                        <li><a href="#">Sustainability</a></li>
-                        <li><a href="#">Careers</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Products</h3>
-                    <ul class="footer-links">
-                        <li><a href="category-products.html?usage=flooring">Flooring Stones</a></li>
-                        <li><a href="category-products.html?usage=wall">Wall Stones</a></li>
-                        <li><a href="category-products.html?usage=bathroom">Bathroom Stones</a></li>
-                        <li><a href="category-products.html?usage=outdoor">Outdoor Stones</a></li>
-                        <li><a href="category-products.html?usage=kitchen">Kitchen Stones</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Support</h3>
-                    <ul class="footer-links">
-                        <li><a href="#">Contact Us</a></li>
-                        <li><a href="#">Delivery Info</a></li>
-                        <li><a href="#">Returns Policy</a></li>
-                        <li><a href="#">Installation Guide</a></li>
-                        <li><a href="#">FAQ</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Legal</h3>
-                    <ul class="footer-links">
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms of Service</a></li>
-                        <li><a href="#">Cookie Policy</a></li>
-                        <li><a href="#">Disclaimer</a></li>
-                        <li><a href="#">Sitemap</a></li>
-                    </ul>
+    <!-- Quick Quote Form -->
+    <section class="quick-quote">
+        <div class="quote-container">
+            <div class="quote-content">
+                <h2>Need a Custom Quote?</h2>
+                <p>Get free expert advice and pricing for your project</p>
+            </div>
+            <div class="quote-form">
+                <input type="email" placeholder="Your Email Address">
+                <button class="btn-quote-submit">
+                    <span>Get Free Quote</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Compact Footer -->
+    <footer class="compact-footer">
+        <div class="footer-main">
+            <div class="footer-col">
+                <h4>IndianStoneCo</h4>
+                <p class="footer-desc">Premium natural stone from India to UK homes since 2010.</p>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-pinterest-p"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
                 </div>
             </div>
-            <div class="copyright">
-                <p>&copy; 2024 StoneCraft UK. All rights reserved. | Registered in England No: 12345678</p>
+            
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <a href="products.html">All Products</a>
+                <a href="products.html?category=marble">Marble Collection</a>
+                <a href="products.html?category=sandstone">Sandstone</a>
+                <a href="products.html?category=kitchen">Kitchen Stones</a>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Information</h4>
+                <a href="shipping.html">Shipping Info</a>
+                <a href="returns.html">Returns Policy</a>
+                <a href="#payment">Payment Options</a>
+                <a href="#measure">Measurement Guide</a>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <p><i class="fas fa-phone"></i> +44 1234 567890</p>
+                <p><i class="fas fa-envelope"></i> info@indianstoneco.co.uk</p>
+                <p><i class="fas fa-map-marker-alt"></i> London Office</p>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>© 2024 IndianStoneCo. All prices include 20% UK VAT. </p>
+            <div class="footer-payments">
+                <i class="fab fa-cc-paypal" title="PayPal"></i>
+                <i class="fab fa-cc-visa" title="Visa"></i>
+                <i class="fab fa-cc-mastercard" title="MasterCard"></i>
+                <i class="fab fa-cc-amex" title="American Express"></i>
+                <i class="fas fa-university" title="Bank Transfer"></i>
             </div>
         </div>
     </footer>
 
-    <!-- Main JavaScript -->
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="products.js"></script>
+    <script src="cart.js"></script>
+    <script src="utils.js"></script>
     <script>
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyDNwzhOkQQLAQbkiNFTFEGSpWJdKaxbTRk",
-            authDomain: "iryastone-uk.firebaseapp.com",
-            projectId: "iryastone-uk",
-            storageBucket: "iryastone-uk.firebasestorage.app",
-            messagingSenderId: "110940910896",
-            appId: "1:110940910896:web:b25e92127118665e5c84f5",
-            measurementId: "G-6YM1FLYN48"
-        };
+        // Initialize Swiper Banner
+        const swiper = new Swiper('.banner-swiper', {
+            loop: true,
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            effect: 'fade',
+            fadeEffect: {
+                crossFade: true
+            },
+        });
 
-        // Initialize Firebase
-        try {
-            if (typeof firebase !== 'undefined') {
-                const app = firebase.initializeApp(firebaseConfig);
-                const analytics = firebase.analytics();
-                const db = firebase.firestore();
-                const auth = firebase.auth();
-                
-                console.log('✅ Firebase initialized successfully');
-                
-                // StoneCraft Application - Main JavaScript
-                document.addEventListener('DOMContentLoaded', function() {
-                    console.log('🚀 Initializing StoneCraft Application...');
-                    
-                    // Application State
-                    const appState = {
-                        categories: [],
-                        products: [],
-                        user: null,
-                        cart: []
-                    };
-                    
-                    // Mobile menu elements
-                    const trustMobileToggle = document.getElementById('trustMobileToggle');
-                    const mobileUsesMenu = document.getElementById('mobileUsesMenu');
-                    const closeMenu = document.getElementById('closeMenu');
-                    const menuOverlay = document.getElementById('menuOverlay');
-                    const mobileUsesList = document.getElementById('mobileUsesList');
-                    
-                    // Initialize the application
-                    initializeApp();
-                    
-                    // Initialize user interface components
-                    initializeUI();
-                    
-                    // Initialize authentication
-                    initializeAuth();
-                    
-                    // Initialize scroll behavior - FIXED: Scroll up par header show nahi hoga
-                    initializeScrollBehavior();
-                    
-                    // Initialize mobile menu
-                    initializeMobileMenu();
-                    
-                    // ===== FUNCTIONS =====
-                    
-                    async function initializeApp() {
-                        console.log('📊 Loading data from Firestore...');
-                        
-                        try {
-                            // Load Products from Firestore
-                            await loadProductsFromFirestore();
-                            
-                            console.log('✅ Data loaded successfully');
-                            console.log('📦 Products: ' + appState.products.length);
-                            
-                            // Generate dynamic navigation and categories
-                            generateUsesNavigation();
-                            updateCategoriesSection();
-                            generateMobileUsesMenu();
-                            
-                            // Initialize auto-changing banner images
-                            initializeBannerSlideshow();
-                            
-                        } catch (error) {
-                            console.error('❌ Error loading data:', error);
-                        }
-                        
-                        console.log('✅ StoneCraft Application initialized successfully');
-                    }
-                    
-                    // Load Products from Firestore
-                    async function loadProductsFromFirestore() {
-                        try {
-                            const querySnapshot = await db.collection("products").get();
-                            appState.products = [];
-                            
-                            querySnapshot.forEach((doc) => {
-                                const data = doc.data();
-                                appState.products.push({
-                                    id: doc.id,
-                                    ...data
-                                });
-                            });
-                            
-                            console.log('✅ Products loaded: ', appState.products.length);
-                            
-                            // Real-time listener for product changes
-                            db.collection("products").onSnapshot((snapshot) => {
-                                const updatedProducts = [];
-                                snapshot.forEach((doc) => {
-                                    const data = doc.data();
-                                    updatedProducts.push({
-                                        id: doc.id,
-                                        ...data
-                                    });
-                                });
-                                appState.products = updatedProducts;
-                                console.log('🔄 Products updated in real-time');
-                                generateUsesNavigation();
-                                updateCategoriesSection();
-                                generateMobileUsesMenu();
-                            });
-                            
-                        } catch (error) {
-                            console.error('Error loading products:', error);
-                            throw error;
-                        }
-                    }
-                    
-                    // Auto-changing banner images function
-                    function initializeBannerSlideshow() {
-                        const bannerImages = [
-                            'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-                            'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-                            'https://images.unsplash.com/photo-1581822261290-991b38693d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-                            'https://images.unsplash.com/photo-1599732597928-44f2a8d7c4d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-                            'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-                            'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-                            'https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-                            'https://images.unsplash.com/photo-1581094794323-c2113bc4c2c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'
-                        ];
-                        
-                        let currentBannerIndex = 0;
-                        const bannerElements = document.querySelectorAll('.product-banner-image');
-                        
-                        if (bannerElements.length === 0) return;
-                        
-                        // Function to change banner images
-                        function changeBannerImages() {
-                            // For first banner (always show first two images)
-                            const banner1Index = currentBannerIndex % bannerImages.length;
-                            const banner2Index = (currentBannerIndex + 1) % bannerImages.length;
-                            
-                            // Update banner images with fade effect
-                            if (bannerElements[0]) {
-                                bannerElements[0].style.opacity = '0.7';
-                                setTimeout(() => {
-                                    bannerElements[0].style.backgroundImage = `url('${bannerImages[banner1Index]}')`;
-                                    bannerElements[0].style.opacity = '1';
-                                }, 300);
-                            }
-                            
-                            if (bannerElements[1]) {
-                                bannerElements[1].style.opacity = '0.7';
-                                setTimeout(() => {
-                                    bannerElements[1].style.backgroundImage = `url('${bannerImages[banner2Index]}')`;
-                                    bannerElements[1].style.opacity = '1';
-                                }, 500);
-                            }
-                            
-                            // Increment index for next change
-                            currentBannerIndex = (currentBannerIndex + 2) % bannerImages.length;
-                        }
-                        
-                        // Initial call
-                        changeBannerImages();
-                        
-                        // Set interval to change images every 5 seconds
-                        setInterval(changeBannerImages, 5000);
-                    }
-                    
-                    // Function to get UNIQUE USES
-                    function getUniqueUses() {
-                        const usesMap = new Map();
-                        
-                        appState.products.forEach(product => {
-                            if (product.uses && product.uses.trim() !== '') {
-                                const useKey = product.uses.toLowerCase().trim();
-                                const useValue = product.uses.trim();
-                                
-                                if (!usesMap.has(useKey)) {
-                                    usesMap.set(useKey, useValue);
-                                }
-                            }
-                        });
-                        
-                        const uniqueUses = Array.from(usesMap.values()).sort();
-                        console.log('🎯 Unique Uses:', uniqueUses);
-                        return uniqueUses;
-                    }
-                    
-                    // Function to generate desktop uses navigation - FIXED: No sliding, auto adjust
-                    function generateUsesNavigation() {
-                        const usesContainer = document.getElementById('dynamicUsesContainer');
-                        if (!usesContainer) return;
-                        
-                        usesContainer.innerHTML = '';
-                        
-                        const uniqueUses = getUniqueUses();
-                        console.log('🔄 Generating desktop navigation for:', uniqueUses.length);
-                        
-                        if (uniqueUses.length === 0) {
-                            usesContainer.innerHTML = `
-                                <div class="loading-categories">
-                                    <i class="fas fa-info-circle"></i>
-                                    <p>No uses found. Add products to see navigation.</p>
-                                </div>
-                            `;
-                            return;
-                        }
-                        
-                        // Set CSS variable for item count to adjust font size dynamically
-                        usesContainer.style.setProperty('--item-count', uniqueUses.length);
-                        
-                        uniqueUses.forEach(usage => {
-                            const usageKey = usage.toLowerCase().replace(/\s+/g, '-');
-                            const useItem = document.createElement('div');
-                            useItem.className = 'use-item';
-                            
-                            const usageProducts = appState.products.filter(product => 
-                                product.uses && product.uses.toLowerCase() === usage.toLowerCase()
-                            );
-                            
-                            const uniqueStoneNames = [...new Set(usageProducts
-                                .filter(product => product.stone_name)
-                                .map(product => product.stone_name)
-                            )];
-                            
-                            console.log(`📁 ${usage} - Products: ${usageProducts.length}, Stone Names: ${uniqueStoneNames.length}`);
-                            
-                            if (uniqueStoneNames.length > 0) {
-                                useItem.innerHTML = `
-                                    <div class="use-link" title="${usage}">${usage} (${usageProducts.length})</div>
-                                    <div class="mega-menu">
-                                        <div class="patterns-grid">
-                                            ${uniqueStoneNames.map(stoneName => {
-                                                const stoneSlug = stoneName.toLowerCase().replace(/\s+/g, '-');
-                                                const stoneProduct = appState.products.find(p => 
-                                                    p.uses && p.uses.toLowerCase() === usage.toLowerCase() && 
-                                                    p.stone_name === stoneName
-                                                );
-                                                const imageUrl = stoneProduct?.images?.[0] || 
-                                                    'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80';
-                                                
-                                                return `
-                                                    <a href="category-products.html?usage=${usageKey}&stone=${stoneSlug}" class="pattern-item" data-usage="${usage}" data-stone="${stoneName}">
-                                                        <div class="pattern-image" style="background-image: url('${imageUrl}')"></div>
-                                                        <div class="pattern-name">${stoneName}</div>
-                                                    </a>
-                                                `;
-                                            }).join('')}
-                                        </div>
-                                    </div>
-                                `;
-                            } else {
-                                useItem.innerHTML = `
-                                    <a href="category-products.html?usage=${usageKey}" class="use-link" title="${usage}">${usage} (${usageProducts.length})</a>
-                                `;
-                            }
-                            
-                            usesContainer.appendChild(useItem);
-                        });
-                        
-                        // Calculate and adjust font sizes dynamically based on number of items
-                        adjustUsesBarFontSize(uniqueUses.length);
-                        
-                        // Initialize mega menu functionality
-                        initializeMegaMenu();
-                    }
-                    
-                    // Function to adjust font size based on number of items
-                    function adjustUsesBarFontSize(itemCount) {
-                        const useLinks = document.querySelectorAll('.use-link');
-                        const containerWidth = document.querySelector('.uses-container').offsetWidth;
-                        const availableWidth = containerWidth / itemCount;
-                        
-                        // Calculate optimal font size
-                        let fontSize = 12;
-                        let padding = 5;
-                        
-                        if (itemCount > 10) {
-                            fontSize = 11;
-                            padding = 3;
-                        }
-                        
-                        if (itemCount > 15) {
-                            fontSize = 10;
-                            padding = 2;
-                        }
-                        
-                        if (availableWidth < 100) {
-                            fontSize = Math.max(10, fontSize - 1);
-                            padding = Math.max(2, padding - 1);
-                        }
-                        
-                        // Apply to all links
-                        useLinks.forEach(link => {
-                            link.style.fontSize = fontSize + 'px';
-                            link.style.padding = '12px ' + padding + 'px';
-                        });
-                    }
-                    
-                    // Function to update categories section with 100% images
-                    function updateCategoriesSection() {
-                        const categoriesGrid = document.getElementById('dynamicCategories');
-                        if (!categoriesGrid) return;
-                        
-                        categoriesGrid.innerHTML = '';
-                        
-                        const uniqueUses = getUniqueUses();
-                        console.log('🔄 Updating categories section:', uniqueUses.length);
-                        
-                        if (uniqueUses.length === 0) {
-                            categoriesGrid.innerHTML = `
-                                <div class="loading-categories">
-                                    <i class="fas fa-info-circle"></i>
-                                    <p>No categories found. Add products to see categories.</p>
-                                </div>
-                            `;
-                            return;
-                        }
-                        
-                        uniqueUses.forEach(usage => {
-                            const categoryItem = document.createElement('div');
-                            categoryItem.className = 'use-category-item';
-                            
-                            const productCount = appState.products.filter(product => 
-                                product.uses && product.uses.toLowerCase() === usage.toLowerCase()
-                            ).length;
-                            
-                            const usageProduct = appState.products.find(p => 
-                                p.uses && p.uses.toLowerCase() === usage.toLowerCase()
-                            );
-                            const imageUrl = usageProduct?.images?.[0] || 
-                                'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80';
-                            
-                            const usageSlug = usage.toLowerCase().replace(/\s+/g, '-');
-                            
-                            categoryItem.innerHTML = `
-                                <a href="category-products.html?usage=${usageSlug}" class="use-category-link">
-                                    <div class="use-category-image" style="background-image: url('${imageUrl}'); background-size: contain;"></div>
-                                    <div class="use-category-name">${usage}</div>
-                                    <div class="product-count">${productCount} Products</div>
-                                </a>
-                            `;
-                            
-                            categoriesGrid.appendChild(categoryItem);
-                        });
-                    }
-                    
-                    // Initialize mega menu functionality - FIXED VERSION
-                    function initializeMegaMenu() {
-                        console.log('🔄 Initializing Mega Menu...');
-                        
-                        const usesTopBar = document.getElementById('desktopUsesBar');
-                        const useItems = document.querySelectorAll('.use-item');
-                        let activeMegaMenu = null;
-                        let hideTimeout = null;
-                        
-                        if (!usesTopBar || useItems.length === 0) {
-                            console.log('❌ Mega Menu elements not found');
-                            return;
-                        }
-                        
-                        // Hide all mega menus
-                        function hideAllMegaMenus() {
-                            document.querySelectorAll('.mega-menu').forEach(menu => {
-                                menu.style.display = 'none';
-                            });
-                            activeMegaMenu = null;
-                        }
-                        
-                        // Show specific mega menu
-                        function showMegaMenu(menu) {
-                            hideAllMegaMenus();
-                            menu.style.display = 'block';
-                            activeMegaMenu = menu;
-                            
-                            // Clear any pending hide timeout
-                            if (hideTimeout) {
-                                clearTimeout(hideTimeout);
-                                hideTimeout = null;
-                            }
-                        }
-                        
-                        // Initialize event listeners for each use item
-                        useItems.forEach((item) => {
-                            const megaMenu = item.querySelector('.mega-menu');
-                            
-                            if (megaMenu) {
-                                // Mouse enter - show menu immediately
-                                item.addEventListener('mouseenter', () => {
-                                    showMegaMenu(megaMenu);
-                                });
-                                
-                                // Mouse leave - hide after delay
-                                item.addEventListener('mouseleave', (e) => {
-                                    // Check if mouse is going to mega menu
-                                    const relatedTarget = e.relatedTarget;
-                                    const isGoingToMegaMenu = megaMenu.contains(relatedTarget);
-                                    
-                                    if (!isGoingToMegaMenu) {
-                                        hideTimeout = setTimeout(() => {
-                                            if (activeMegaMenu === megaMenu && !megaMenu.matches(':hover')) {
-                                                hideAllMegaMenus();
-                                            }
-                                        }, 100);
-                                    }
-                                });
-                                
-                                // Mega menu mouse events
-                                megaMenu.addEventListener('mouseenter', () => {
-                                    // Clear any pending hide timeout
-                                    if (hideTimeout) {
-                                        clearTimeout(hideTimeout);
-                                        hideTimeout = null;
-                                    }
-                                });
-                                
-                                megaMenu.addEventListener('mouseleave', (e) => {
-                                    // Check if mouse is going back to use item
-                                    const relatedTarget = e.relatedTarget;
-                                    const isGoingToUseItem = item.contains(relatedTarget);
-                                    
-                                    if (!isGoingToUseItem) {
-                                        hideTimeout = setTimeout(() => {
-                                            hideAllMegaMenus();
-                                        }, 100);
-                                    }
-                                });
-                            }
-                        });
-                        
-                        // Hide mega menus when clicking outside
-                        document.addEventListener('click', (event) => {
-                            const isClickInside = usesTopBar.contains(event.target) || 
-                                                 (activeMegaMenu && activeMegaMenu.contains(event.target));
-                            
-                            if (!isClickInside && activeMegaMenu) {
-                                hideAllMegaMenus();
-                            }
-                        });
-                        
-                        // Hide on scroll
-                        window.addEventListener('scroll', function() {
-                            if (activeMegaMenu) {
-                                hideAllMegaMenus();
-                            }
-                        });
-                        
-                        console.log('✅ Mega Menu initialization complete');
-                    }
-                    
-                    // Function to generate mobile uses menu (sidebar)
-                    function generateMobileUsesMenu() {
-                        if (!mobileUsesList) return;
-                        
-                        mobileUsesList.innerHTML = '';
-                        
-                        const uniqueUses = getUniqueUses();
-                        console.log('📱 Generating mobile menu for:', uniqueUses.length);
-                        
-                        if (uniqueUses.length === 0) {
-                            mobileUsesList.innerHTML = `
-                                <div class="loading-categories">
-                                    <i class="fas fa-info-circle"></i>
-                                    <p>No categories found</p>
-                                </div>
-                            `;
-                            return;
-                        }
-                        
-                        uniqueUses.forEach(usage => {
-                            const usageKey = usage.toLowerCase().replace(/\s+/g, '-');
-                            const mobileUseItem = document.createElement('div');
-                            mobileUseItem.className = 'mobile-use-item';
-                            
-                            const usageProducts = appState.products.filter(product => 
-                                product.uses && product.uses.toLowerCase() === usage.toLowerCase()
-                            );
-                            
-                            const uniqueStoneNames = [...new Set(usageProducts
-                                .filter(product => product.stone_name)
-                                .map(product => product.stone_name)
-                            )];
-                            
-                            if (uniqueStoneNames.length > 0) {
-                                mobileUseItem.innerHTML = `
-                                    <div class="mobile-use-link mobile-use-toggle" data-usage="${usageKey}">
-                                        <span>${usage} (${usageProducts.length})</span>
-                                        <i class="fas fa-chevron-down"></i>
-                                    </div>
-                                    <div class="mobile-mega-content" id="mobile-content-${usageKey}">
-                                        <div class="mobile-pattern-grid">
-                                            ${uniqueStoneNames.map(stoneName => {
-                                                const stoneSlug = stoneName.toLowerCase().replace(/\s+/g, '-');
-                                                const stoneProduct = appState.products.find(p => 
-                                                    p.uses && p.uses.toLowerCase() === usage.toLowerCase() && 
-                                                    p.stone_name === stoneName
-                                                );
-                                                const imageUrl = stoneProduct?.images?.[0] || 
-                                                    'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80';
-                                                
-                                                return `
-                                                    <a href="category-products.html?usage=${usageKey}&stone=${stoneSlug}" class="mobile-pattern-item">
-                                                        <div class="mobile-pattern-image" style="background-image: url('${imageUrl}'); background-size: contain;"></div>
-                                                        <div class="mobile-pattern-name">${stoneName}</div>
-                                                    </a>
-                                                `;
-                                            }).join('')}
-                                        </div>
-                                    </div>
-                                `;
-                            } else {
-                                mobileUseItem.innerHTML = `
-                                    <a href="category-products.html?usage=${usageKey}" class="mobile-use-link">
-                                        ${usage} (${usageProducts.length})
-                                    </a>
-                                `;
-                            }
-                            
-                            mobileUsesList.appendChild(mobileUseItem);
-                        });
-                        
-                        // Add event listeners for mobile menu toggles
-                        setTimeout(() => {
-                            const mobileToggles = document.querySelectorAll('.mobile-use-toggle');
-                            mobileToggles.forEach(toggle => {
-                                toggle.addEventListener('click', function(e) {
-                                    e.preventDefault();
-                                    const usageKey = this.getAttribute('data-usage');
-                                    const content = document.getElementById(`mobile-content-${usageKey}`);
-                                    const icon = this.querySelector('i');
-                                    
-                                    if (content.classList.contains('active')) {
-                                        content.classList.remove('active');
-                                        icon.classList.remove('fa-chevron-up');
-                                        icon.classList.add('fa-chevron-down');
-                                    } else {
-                                        document.querySelectorAll('.mobile-mega-content.active').forEach(openContent => {
-                                            openContent.classList.remove('active');
-                                            const openIcon = openContent.previousElementSibling.querySelector('i');
-                                            if (openIcon) {
-                                                openIcon.classList.remove('fa-chevron-up');
-                                                openIcon.classList.add('fa-chevron-down');
-                                            }
-                                        });
-                                        
-                                        content.classList.add('active');
-                                        icon.classList.remove('fa-chevron-down');
-                                        icon.classList.add('fa-chevron-up');
-                                    }
-                                });
-                            });
-                        }, 100);
-                    }
-                    
-                    // Initialize scroll behavior - FIXED: Scroll up par header show nahi hoga
-                    function initializeScrollBehavior() {
-                        const header = document.getElementById('mainHeader');
-                        let lastScrollY = window.scrollY;
-                        let ticking = false;
-                        
-                        function updateHeader() {
-                            const currentScrollY = window.scrollY;
-                            
-                            // Only hide on scroll down (not on scroll up)
-                            if (currentScrollY > lastScrollY && currentScrollY > 50) {
-                                // Scrolling down - hide header
-                                header.classList.add('hidden');
-                                header.classList.remove('visible');
-                                
-                                // Hide all mega menus when scrolling
-                                document.querySelectorAll('.mega-menu').forEach(menu => {
-                                    menu.style.display = 'none';
-                                });
-                            }
-                            // DO NOT show on scroll up - only show when at top
-                            else if (currentScrollY <= 50) {
-                                // At top of page - show header
-                                header.classList.remove('hidden');
-                                header.classList.add('visible');
-                            }
-                            
-                            lastScrollY = currentScrollY;
-                            ticking = false;
-                        }
-                        
-                        function onScroll() {
-                            if (!ticking) {
-                                requestAnimationFrame(updateHeader);
-                                ticking = true;
-                            }
-                        }
-                        
-                        window.addEventListener('scroll', onScroll, { passive: true });
-                        header.classList.add('visible');
-                    }
-                    
-                    // Initialize mobile menu functionality
-                    function initializeMobileMenu() {
-                        if (!trustMobileToggle || !mobileUsesMenu || !closeMenu || !menuOverlay) {
-                            console.log('❌ Mobile menu elements not found');
-                            return;
-                        }
-                        
-                        // Open mobile menu from trust info hamburger
-                        trustMobileToggle.addEventListener('click', function() {
-                            mobileUsesMenu.classList.add('active');
-                            menuOverlay.classList.add('active');
-                            document.body.style.overflow = 'hidden';
-                        });
-                        
-                        // Close mobile menu
-                        function closeMobileMenu() {
-                            mobileUsesMenu.classList.remove('active');
-                            menuOverlay.classList.remove('active');
-                            document.body.style.overflow = 'auto';
-                            
-                            document.querySelectorAll('.mobile-mega-content.active').forEach(content => {
-                                content.classList.remove('active');
-                                const icon = content.previousElementSibling.querySelector('i');
-                                if (icon) {
-                                    icon.classList.remove('fa-chevron-up');
-                                    icon.classList.add('fa-chevron-down');
-                                }
-                            });
-                        }
-                        
-                        closeMenu.addEventListener('click', closeMobileMenu);
-                        menuOverlay.addEventListener('click', closeMobileMenu);
-                        
-                        document.addEventListener('keydown', function(e) {
-                            if (e.key === 'Escape' && mobileUsesMenu.classList.contains('active')) {
-                                closeMobileMenu();
-                            }
-                        });
-                    }
-                    
-                    // Initialize authentication
-                    function initializeAuth() {
-                        auth.onAuthStateChanged((user) => {
-                            if (user) {
-                                appState.user = {
-                                    uid: user.uid,
-                                    email: user.email,
-                                    name: user.displayName || user.email.split('@')[0]
-                                };
-                                localStorage.setItem('stonecraft_user', JSON.stringify(appState.user));
-                                updateUserInterface();
-                            } else {
-                                appState.user = null;
-                                localStorage.removeItem('stonecraft_user');
-                                updateUserInterface();
-                            }
-                        });
-                    }
-                    
-                    // Update UI based on user authentication
-                    function updateUserInterface() {
-                        if (appState.user) {
-                            document.getElementById('userProfile').style.display = 'block';
-                            document.getElementById('loginButton').style.display = 'none';
-                            
-                            document.getElementById('profileName').textContent = appState.user.name;
-                            document.getElementById('profileAvatar').textContent = appState.user.name.charAt(0).toUpperCase();
-                            document.getElementById('dropdownUserName').textContent = appState.user.name;
-                            document.getElementById('dropdownUserEmail').textContent = appState.user.email;
-                        } else {
-                            document.getElementById('userProfile').style.display = 'none';
-                            document.getElementById('loginButton').style.display = 'flex';
-                        }
-                    }
-                    
-                    // Initialize UI components
-                    function initializeUI() {
-                        initializeSearch();
-                        initializeUserProfile();
-                    }
-                    
-                    // Initialize search functionality
-                    function initializeSearch() {
-                        const searchInput = document.getElementById('searchInput');
-                        const searchButton = document.getElementById('searchButton');
-                        const searchResults = document.getElementById('searchResults');
-                        
-                        if (!searchInput || !searchButton || !searchResults) return;
-                        
-                        searchButton.addEventListener('click', performSearch);
-                        searchInput.addEventListener('keyup', function(event) {
-                            if (event.key === 'Enter') {
-                                performSearch();
-                            }
-                        });
-                        
-                        searchInput.addEventListener('input', function() {
-                            if (searchInput.value.length > 2) {
-                                performSearch();
-                            } else {
-                                searchResults.classList.remove('active');
-                            }
-                        });
-                        
-                        function performSearch() {
-                            const query = searchInput.value.trim().toLowerCase();
-                            
-                            if (query.length < 2) {
-                                searchResults.classList.remove('active');
-                                return;
-                            }
-                            
-                            searchResults.innerHTML = '<div class="search-loading"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
-                            searchResults.classList.add('active');
-                            
-                            setTimeout(() => {
-                                const results = appState.products.filter(product => 
-                                    (product.stone_name && product.stone_name.toLowerCase().includes(query)) ||
-                                    (product.uses && product.uses.toLowerCase().includes(query)) ||
-                                    (product.type && product.type.toLowerCase().includes(query))
-                                );
-                                
-                                displaySearchResults(results, query);
-                            }, 300);
-                        }
-                        
-                        function displaySearchResults(results, query) {
-                            searchResults.innerHTML = '';
-                            
-                            if (results.length === 0) {
-                                searchResults.innerHTML = '<div class="no-results">No products found for "' + query + '"</div>';
-                                return;
-                            }
-                            
-                            results.forEach(product => {
-                                const resultItem = document.createElement('div');
-                                resultItem.className = 'search-result-item';
-                                resultItem.innerHTML = `
-                                    <div class="search-result-image" style="background-image: url('${product.images?.[0] || 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80'}')"></div>
-                                    <div class="search-result-content">
-                                        <div class="search-result-name">${product.stone_name || 'Stone Product'}</div>
-                                        <div class="search-result-category">${product.uses || 'General'} • ${product.type || 'Natural Stone'}</div>
-                                    </div>
-                                    <div class="search-result-price">${product.price ? '£' + product.price : 'Price on request'}</div>
-                                `;
-                                
-                                resultItem.addEventListener('click', function() {
-                                    window.location.href = `product-details.html?id=${product.id}`;
-                                });
-                                
-                                searchResults.appendChild(resultItem);
-                            });
-                            
-                            const viewAll = document.createElement('div');
-                            viewAll.className = 'view-all-results';
-                            viewAll.innerHTML = `<a href="search-results.html?q=${encodeURIComponent(query)}">View all ${results.length} results</a>`;
-                            searchResults.appendChild(viewAll);
-                        }
-                        
-                        document.addEventListener('click', function(event) {
-                            if (!searchResults.contains(event.target) && event.target !== searchInput && event.target !== searchButton) {
-                                searchResults.classList.remove('active');
-                            }
-                        });
-                    }
-                    
-                    // Initialize user profile dropdown
-                    function initializeUserProfile() {
-                        const profileToggle = document.getElementById('profileToggle');
-                        const profileDropdown = document.getElementById('profileDropdown');
-                        const logoutBtn = document.getElementById('logoutBtn');
-                        
-                        if (!profileToggle || !profileDropdown) return;
-                        
-                        profileToggle.addEventListener('click', function(event) {
-                            event.stopPropagation();
-                            profileDropdown.classList.toggle('active');
-                        });
-                        
-                        document.addEventListener('click', function() {
-                            profileDropdown.classList.remove('active');
-                        });
-                        
-                        if (logoutBtn) {
-                            logoutBtn.addEventListener('click', function(event) {
-                                event.preventDefault();
-                                auth.signOut().then(() => {
-                                    console.log('User signed out');
-                                }).catch((error) => {
-                                    console.error('Sign out error:', error);
-                                });
-                            });
-                        }
-                    }
-                    
-                    console.log('✅ StoneCraft Application ready');
-                });
-            } else {
-                console.error('❌ Firebase is not available. Check CDN links.');
+        // Mobile Menu Toggle
+        document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
+            document.querySelector('.nav-menu').classList.toggle('active');
+        });
+
+        // Load featured products
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFeaturedProductsCompact();
+            updateCartCount();
+            
+            // Update header cart count
+            const headerCartCount = document.getElementById('header-cart-count');
+            if (headerCartCount) {
+                updateHeaderCartCount();
             }
-        } catch (error) {
-            console.error('❌ Error initializing Firebase:', error);
+        });
+
+        async function updateHeaderCartCount() {
+            if (!currentUser) {
+                document.getElementById('header-cart-count').textContent = '0';
+                return;
+            }
+
+            try {
+                const snapshot = await cartCollection
+                    .where('userId', '==', currentUser.uid)
+                    .get();
+                
+                document.getElementById('header-cart-count').textContent = snapshot.size;
+            } catch (error) {
+                console.error('Error updating cart count:', error);
+            }
+        }
+
+        // Load compact featured products
+        async function loadFeaturedProductsCompact() {
+            const container = document.getElementById('featured-products');
+            if (!container) return;
+
+            container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+            try {
+                const snapshot = await productsCollection
+                    .where('featured', '==', true)
+                    .limit(6)
+                    .get();
+
+                if (snapshot.empty) {
+                    container.innerHTML = '<p class="no-products">No featured products found</p>';
+                    return;
+                }
+
+                container.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const product = { id: doc.id, ...doc.data() };
+                    container.appendChild(createProductCardCompact(product));
+                });
+            } catch (error) {
+                console.error('Error loading products:', error);
+                container.innerHTML = '<p class="error">Failed to load products</p>';
+            }
+        }
+
+        function createProductCardCompact(product) {
+            const card = document.createElement('div');
+            card.className = 'product-card-compact';
+            card.innerHTML = `
+                <div class="product-img-compact" onclick="viewProduct('${product.id}')">
+                    ${product.image ? 
+                        `<img src="${product.image}" alt="${product.name}" loading="lazy">` : 
+                        `<div class="img-placeholder"><i class="fas fa-mountain"></i></div>`}
+                    ${product.stock < 10 ? '<span class="stock-badge">Low Stock</span>' : ''}
+                </div>
+                <div class="product-info-compact">
+                    <h4 class="product-title">${product.name}</h4>
+                    <p class="product-category">${product.category}</p>
+                    <div class="product-price-compact">
+                        <span class="current-price">£${product.priceGBP}</span>
+                        <span class="price-unit">/m²</span>
+                    </div>
+                    <div class="product-actions-compact">
+                        <button class="btn-action" onclick="viewProduct('${product.id}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn-action" onclick="addToCart('${product.id}')">
+                            <i class="fas fa-cart-plus"></i>
+                        </button>
+                        <button class="btn-action" onclick="addToWishlist('${product.id}')">
+                            <i class="far fa-heart"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        function addToWishlist(productId) {
+            if (!currentUser) {
+                showNotification('Please login to add to wishlist', 'info');
+                window.location.href = 'login.html';
+                return;
+            }
+            showNotification('Added to wishlist', 'success');
+            // Implement wishlist functionality
         }
     </script>
 </body>
