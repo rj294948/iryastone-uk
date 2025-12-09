@@ -11,9 +11,6 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     
-    <!-- Main CSS -->
-    <link rel="stylesheet" href="style.css">
-    
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
@@ -37,599 +34,29 @@
         
         console.log("Firebase initialized successfully");
     </script>
-</head>
-<body>
-    <!-- Auto-hide Header (Small Height) -->
-    <header class="auto-hide-header" id="mainHeader">
-        <div class="header-container">
-            <!-- Logo -->
-            <div class="header-logo">
-                <i class="fas fa-gem"></i>
-                <span>IRYA STONE</span>
-            </div>
-            
-            <!-- Search System -->
-            <div class="header-search">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search stones..." id="searchInput">
-                    <div class="search-dropdown" id="searchResults">
-                        <!-- Search results will appear here -->
-                    </div>
-                </div>
-            </div>
-            
-            <!-- User Quick Links -->
-            <div class="header-links">
-                <a href="cart.html" class="header-link">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span class="cart-badge">0</span>
-                </a>
-                <a href="wishlist.html" class="header-link">
-                    <i class="far fa-heart"></i>
-                </a>
-                <a href="login.html" class="header-link">
-                    <i class="far fa-user"></i>
-                </a>
-            </div>
-            
-            <!-- Mobile Menu Button -->
-            <button class="mobile-menu-btn">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
-        
-        <!-- Mobile Navigation (Auto swipe up) -->
-        <nav class="mobile-nav" id="mobileNav">
-            <a href="#sandstone" class="mobile-nav-link">
-                <i class="fas fa-sun"></i>
-                <span>Sandstone</span>
-            </a>
-            <a href="#kota" class="mobile-nav-link">
-                <i class="fas fa-layer-group"></i>
-                <span>Kota Stone</span>
-            </a>
-            <a href="products.html" class="mobile-nav-link">
-                <i class="fas fa-th-large"></i>
-                <span>All Products</span>
-            </a>
-            <a href="contact.html" class="mobile-nav-link">
-                <i class="fas fa-phone"></i>
-                <span>Contact</span>
-            </a>
-        </nav>
-    </header>
-
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Infinity Symbol Section with Rotating Images -->
-        <section class="infinity-section">
-            <!-- Background Images that auto rotate -->
-            <div class="infinity-background">
-                <div class="bg-slide active" style="background-image: url('https://images.unsplash.com/photo-1543857778-c4a1a569e388?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80');"></div>
-                <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80');"></div>
-                <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1481277542470-605612bd2d61?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80');"></div>
-            </div>
-            
-            <!-- Infinity Symbol Container -->
-            <div class="infinity-container">
-                <!-- Infinity Symbol -->
-                <div class="infinity-symbol">
-                    <div class="infinity-loop infinity-loop-1"></div>
-                    <div class="infinity-loop infinity-loop-2"></div>
-                    
-                    <!-- Center Circle with Rotating Images -->
-                    <div class="infinity-center">
-                        <div class="center-circle">
-                            <div class="circle-content">
-                                <h2>IRYA STONE</h2>
-                                <p>Premium Indian Natural Stone</p>
-                            </div>
-                            
-                            <!-- Rotating Images inside Circle -->
-                            <div class="rotating-images">
-                                <div class="rotating-image active">
-                                    <img src="https://images.unsplash.com/photo-1543857778-c4a1a569e388?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" alt="Stone 1">
-                                </div>
-                                <div class="rotating-image">
-                                    <img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" alt="Stone 2">
-                                </div>
-                                <div class="rotating-image">
-                                    <img src="https://images.unsplash.com/photo-1481277542470-605612bd2d61?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" alt="Stone 3">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Triangles on Both Sides of Infinity -->
-                <div class="side-triangles">
-                    <!-- Left Triangle - Sandstone -->
-                    <div class="stone-triangle triangle-left" id="sandstoneTriangle">
-                        <div class="triangle-content">
-                            <div class="triangle-icon">
-                                <i class="fas fa-sun"></i>
-                            </div>
-                            <h3>SANDSTONE</h3>
-                            <p class="triangle-desc">Natural sandstone for outdoor & indoor applications</p>
-                            <div class="triangle-products">
-                                <span class="product-name">Raj Green</span>
-                                <span class="product-name">Autumn Brown</span>
-                                <span class="product-name">Mint Fossil</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Right Triangle - Kota Stone -->
-                    <div class="stone-triangle triangle-right" id="kotaTriangle">
-                        <div class="triangle-content">
-                            <div class="triangle-icon">
-                                <i class="fas fa-layer-group"></i>
-                            </div>
-                            <h3>KOTA STONE</h3>
-                            <p class="triangle-desc">Natural limestone flooring with elegant shades</p>
-                            <div class="triangle-products">
-                                <span class="product-name">Kota Blue</span>
-                                <span class="product-name">Kota Brown</span>
-                                <span class="product-name">Natural Kota</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Categories Section -->
-        <section class="categories-section">
-            <div class="container">
-                <div class="categories-grid">
-                    <!-- Sandstone Category -->
-                    <div class="category-card" id="sandstone">
-                        <div class="category-header">
-                            <i class="fas fa-sun"></i>
-                            <h3>Sandstone</h3>
-                        </div>
-                        <div class="category-products" id="sandstoneProducts">
-                            <!-- Sandstone products will load here -->
-                            <div class="loading">
-                                <div class="spinner"></div>
-                                <p>Loading Sandstone...</p>
-                            </div>
-                        </div>
-                        <a href="products.html?category=sandstone" class="category-link">
-                            View All Sandstone <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                    
-                    <!-- Kota Stone Category -->
-                    <div class="category-card" id="kota">
-                        <div class="category-header">
-                            <i class="fas fa-layer-group"></i>
-                            <h3>Kota Stone</h3>
-                        </div>
-                        <div class="category-products" id="kotaProducts">
-                            <!-- Kota Stone products will load here -->
-                            <div class="loading">
-                                <div class="spinner"></div>
-                                <p>Loading Kota Stone...</p>
-                            </div>
-                        </div>
-                        <a href="products.html?category=kota-stone" class="category-link">
-                            View All Kota Stone <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Featured Products Banner -->
-        <section class="featured-banner">
-            <div class="banner-slider">
-                <div class="banner-slide active">
-                    <div class="banner-content">
-                        <h2>Direct from India to UK</h2>
-                        <p>30/70 Payment System • Free UK Delivery • VAT Included</p>
-                    </div>
-                </div>
-                <div class="banner-slide">
-                    <div class="banner-content">
-                        <h2>Premium Quality Stone</h2>
-                        <p>100% Natural • Weather Resistant • Easy Maintenance</p>
-                    </div>
-                </div>
-                <div class="banner-slide">
-                    <div class="banner-content">
-                        <h2>Expert Advice Available</h2>
-                        <p>Free Consultation • Project Planning • Installation Support</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- All Products Grid -->
-        <section class="all-products">
-            <div class="container">
-                <div class="section-header">
-                    <h2>All Stone Products</h2>
-                    <p>Browse our complete collection</p>
-                </div>
-                <div class="products-grid" id="allProducts">
-                    <!-- All products will load here -->
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer class="main-footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <div class="footer-logo">
-                        <i class="fas fa-gem"></i>
-                        <h3>IRYA STONE</h3>
-                    </div>
-                    <p>Premium natural stone from Indian quarries to UK homes</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Contact</h4>
-                    <p><i class="fas fa-phone"></i> +44 1234 567890</p>
-                    <p><i class="fas fa-envelope"></i> info@iryastone.co.uk</p>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Main JavaScript -->
-    <script>
-        // Auto-hide Header Logic
-        let lastScrollTop = 0;
-        const header = document.getElementById('mainHeader');
-        const mobileNav = document.getElementById('mobileNav');
-        
-        window.addEventListener('scroll', function() {
-            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            
-            if (scrollTop > lastScrollTop && scrollTop > 100) {
-                // Scroll down - hide header
-                header.classList.add('header-hidden');
-                mobileNav.classList.remove('nav-show');
-            } else {
-                // Scroll up - show header
-                header.classList.remove('header-hidden');
-            }
-            
-            lastScrollTop = scrollTop;
-        });
-
-        // Mobile Menu Toggle
-        document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
-            mobileNav.classList.toggle('nav-show');
-        });
-
-        // Auto Rotate Background Images
-        function initBackgroundSlider() {
-            const slides = document.querySelectorAll('.bg-slide');
-            const rotatingImages = document.querySelectorAll('.rotating-image');
-            let currentSlide = 0;
-            
-            function showNextSlide() {
-                // Background slides
-                slides[currentSlide].classList.remove('active');
-                currentSlide = (currentSlide + 1) % slides.length;
-                slides[currentSlide].classList.add('active');
-                
-                // Rotating center images
-                rotatingImages.forEach(img => img.classList.remove('active'));
-                rotatingImages[currentSlide].classList.add('active');
-            }
-            
-            // Change slide every 4 seconds
-            setInterval(showNextSlide, 4000);
-        }
-
-        // Auto Swipe Banner
-        function initBannerSlider() {
-            const bannerSlides = document.querySelectorAll('.banner-slide');
-            let currentBanner = 0;
-            
-            function showNextBanner() {
-                bannerSlides[currentBanner].classList.remove('active');
-                currentBanner = (currentBanner + 1) % bannerSlides.length;
-                bannerSlides[currentBanner].classList.add('active');
-            }
-            
-            // Change banner every 5 seconds
-            setInterval(showNextBanner, 5000);
-        }
-
-        // Search System
-        const searchInput = document.getElementById('searchInput');
-        const searchResults = document.getElementById('searchResults');
-        
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase().trim();
-            
-            if (searchTerm.length === 0) {
-                searchResults.innerHTML = '';
-                searchResults.classList.remove('show');
-                return;
-            }
-            
-            // Show search results
-            searchResults.innerHTML = `
-                <div class="search-result">
-                    <i class="fas fa-search"></i>
-                    <span>Searching for "${searchTerm}"...</span>
-                </div>
-            `;
-            searchResults.classList.add('show');
-            
-            // In production, this would make API call to search products
-            setTimeout(() => {
-                searchResults.innerHTML = `
-                    <div class="search-result">
-                        <i class="fas fa-mountain"></i>
-                        <div>
-                            <strong>Raj Green Sandstone</strong>
-                            <small>Sandstone • £28.50/m²</small>
-                        </div>
-                    </div>
-                    <div class="search-result">
-                        <i class="fas fa-layer-group"></i>
-                        <div>
-                            <strong>Kota Blue Stone</strong>
-                            <small>Kota Stone • £32.50/m²</small>
-                        </div>
-                    </div>
-                    <div class="search-result">
-                        <i class="fas fa-sun"></i>
-                        <div>
-                            <strong>Autumn Brown Sandstone</strong>
-                            <small>Sandstone • £26.75/m²</small>
-                        </div>
-                    </div>
-                `;
-            }, 500);
-        });
-        
-        // Close search results when clicking outside
-        document.addEventListener('click', function(event) {
-            if (!searchInput.contains(event.target) && !searchResults.contains(event.target)) {
-                searchResults.classList.remove('show');
-            }
-        });
-
-        // Load Products from Firebase
-        async function loadProductsFromFirebase() {
-            try {
-                // Load Sandstone Products
-                await loadCategoryProducts('sandstone', 'sandstoneProducts');
-                
-                // Load Kota Stone Products  
-                await loadCategoryProducts('kota-stone', 'kotaProducts');
-                
-                // Load All Products
-                await loadAllProducts();
-                
-            } catch (error) {
-                console.error('Error loading products:', error);
-                showFallbackProducts();
-            }
-        }
-        
-        async function loadCategoryProducts(category, containerId) {
-            const container = document.getElementById(containerId);
-            if (!container || !window.firebaseDB) return;
-            
-            try {
-                const { collection, getDocs, query, where, limit } = window.firebase;
-                const db = window.firebaseDB;
-                
-                // Query products by category
-                const q = query(
-                    collection(db, "products"),
-                    where("category", "==", category),
-                    limit(4)
-                );
-                
-                const querySnapshot = await getDocs(q);
-                
-                if (querySnapshot.empty) {
-                    container.innerHTML = '<p>No products found</p>';
-                    return;
-                }
-                
-                const products = [];
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    products.push({
-                        id: doc.id,
-                        name: data.name || data.title || 'Stone Product',
-                        price: data.priceGBP || data.price || 0,
-                        image: data.imageUrl || data.images?.[0] || data.image || ''
-                    });
-                });
-                
-                // Display products
-                container.innerHTML = products.map(product => `
-                    <div class="product-item" onclick="viewProduct('${product.id}')">
-                        ${product.image ? 
-                            `<img src="${product.image}" alt="${product.name}">` : 
-                            `<div class="product-icon"><i class="fas fa-mountain"></i></div>`}
-                        <div class="product-info">
-                            <h4>${product.name}</h4>
-                            <p class="price">£${product.price}/m²</p>
-                        </div>
-                    </div>
-                `).join('');
-                
-            } catch (error) {
-                console.error(`Error loading ${category} products:`, error);
-                container.innerHTML = '<p>Failed to load products</p>';
-            }
-        }
-        
-        async function loadAllProducts() {
-            const container = document.getElementById('allProducts');
-            if (!container || !window.firebaseDB) return;
-            
-            try {
-                const { collection, getDocs, limit } = window.firebase;
-                const db = window.firebaseDB;
-                
-                // Get all products
-                const q = query(collection(db, "products"), limit(8));
-                const querySnapshot = await getDocs(q);
-                
-                if (querySnapshot.empty) {
-                    container.innerHTML = '<p>No products found</p>';
-                    return;
-                }
-                
-                const products = [];
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    products.push({
-                        id: doc.id,
-                        name: data.name || data.title || 'Stone Product',
-                        category: data.category || 'Stone',
-                        price: data.priceGBP || data.price || 0,
-                        image: data.imageUrl || data.images?.[0] || data.image || ''
-                    });
-                });
-                
-                container.innerHTML = products.map(product => `
-                    <div class="product-card" onclick="viewProduct('${product.id}')">
-                        <div class="product-img">
-                            ${product.image ? 
-                                `<img src="${product.image}" alt="${product.name}">` : 
-                                `<i class="fas fa-mountain"></i>`}
-                        </div>
-                        <div class="product-details">
-                            <h4>${product.name}</h4>
-                            <p class="product-cat">${product.category}</p>
-                            <p class="product-price">£${product.price}/m²</p>
-                        </div>
-                    </div>
-                `).join('');
-                
-            } catch (error) {
-                console.error('Error loading all products:', error);
-                container.innerHTML = '<p>Failed to load products</p>';
-            }
-        }
-        
-        function showFallbackProducts() {
-            // Fallback for Sandstone
-            document.getElementById('sandstoneProducts').innerHTML = `
-                <div class="product-item">
-                    <div class="product-icon"><i class="fas fa-mountain"></i></div>
-                    <div class="product-info">
-                        <h4>Raj Green Sandstone</h4>
-                        <p class="price">£28.50/m²</p>
-                    </div>
-                </div>
-                <div class="product-item">
-                    <div class="product-icon"><i class="fas fa-sun"></i></div>
-                    <div class="product-info">
-                        <h4>Autumn Brown</h4>
-                        <p class="price">£26.75/m²</p>
-                    </div>
-                </div>
-            `;
-            
-            // Fallback for Kota Stone
-            document.getElementById('kotaProducts').innerHTML = `
-                <div class="product-item">
-                    <div class="product-icon"><i class="fas fa-layer-group"></i></div>
-                    <div class="product-info">
-                        <h4>Kota Blue Stone</h4>
-                        <p class="price">£32.50/m²</p>
-                    </div>
-                </div>
-                <div class="product-item">
-                    <div class="product-icon"><i class="fas fa-gem"></i></div>
-                    <div class="product-info">
-                        <h4>Natural Kota</h4>
-                        <p class="price">£30.20/m²</p>
-                    </div>
-                </div>
-            `;
-            
-            // Fallback for All Products
-            document.getElementById('allProducts').innerHTML = `
-                <div class="product-card">
-                    <div class="product-img">
-                        <i class="fas fa-mountain"></i>
-                    </div>
-                    <div class="product-details">
-                        <h4>Raj Green Sandstone</h4>
-                        <p class="product-cat">Sandstone</p>
-                        <p class="product-price">£28.50/m²</p>
-                    </div>
-                </div>
-                <div class="product-card">
-                    <div class="product-img">
-                        <i class="fas fa-layer-group"></i>
-                    </div>
-                    <div class="product-details">
-                        <h4>Kota Blue Stone</h4>
-                        <p class="product-cat">Kota Stone</p>
-                        <p class="product-price">£32.50/m²</p>
-                    </div>
-                </div>
-            `;
-        }
-        
-        window.viewProduct = function(productId) {
-            window.location.href = `product-detail.html?id=${productId}`;
-        };
-
-        // Initialize everything when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            initBackgroundSlider();
-            initBannerSlider();
-            loadProductsFromFirebase();
-            
-            // Triangle hover effects
-            const triangles = document.querySelectorAll('.stone-triangle');
-            triangles.forEach(triangle => {
-                triangle.addEventListener('mouseenter', function() {
-                    this.classList.add('triangle-hover');
-                });
-                
-                triangle.addEventListener('mouseleave', function() {
-                    this.classList.remove('triangle-hover');
-                });
-                
-                // Click to scroll to category
-                triangle.addEventListener('click', function() {
-                    const category = this.id.replace('Triangle', '').toLowerCase();
-                    document.getElementById(category)?.scrollIntoView({ 
-                        behavior: 'smooth' 
-                    });
-                });
-            });
-        });
-    </script>
-
+    
     <style>
         /* ==============================================
-           IRYA STONE - Infinity + Triangle Layout
+           IRYA STONE - Sun Pattern Layout
            ============================================== */
         
         :root {
             --primary-gold: #b8860b;
+            --gold-light: #d4af37;
+            --gold-dark: #8b6914;
+            --sun-orange: #ff7b25;
+            --sun-yellow: #ffc107;
+            --sun-glow: rgba(255, 193, 7, 0.3);
             --stone-dark: #2c3e50;
             --stone-light: #f8f9fa;
-            --sand-color: #d4b483;
+            --sand-color: #e6b87b;
             --kota-blue: #3498db;
             --white: #ffffff;
             --text-dark: #333333;
             --text-light: #666666;
-            --shadow: 0 4px 12px rgba(0,0,0,0.1);
-            --transition: all 0.3s ease;
+            --shadow: 0 4px 20px rgba(0,0,0,0.15);
+            --transition: all 0.4s ease;
+            --border-color: #e0e0e0;
         }
         
         * {
@@ -643,30 +70,32 @@
             color: var(--text-dark);
             line-height: 1.6;
             overflow-x: hidden;
-            padding-top: 60px; /* Space for auto-hide header */
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding-top: 70px;
         }
         
         .container {
             width: 100%;
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 0 20px;
         }
         
         /* ==============================================
-           AUTO-HIDE HEADER
+           SUN PATTERN HEADER
            ============================================== */
         
-        .auto-hide-header {
+        .sun-header {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            background: var(--white);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
             z-index: 1000;
-            transition: transform 0.3s ease;
-            height: 60px;
+            padding: 15px 0;
+            transition: var(--transition);
         }
         
         .header-hidden {
@@ -677,207 +106,243 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 20px;
-            height: 60px;
+            padding: 0 30px;
         }
         
         .header-logo {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-weight: 600;
-            color: var(--stone-dark);
-            font-size: 1.2rem;
-        }
-        
-        .header-logo i {
-            color: var(--primary-gold);
-        }
-        
-        /* Search System */
-        .header-search {
-            flex: 1;
-            max-width: 500px;
-            margin: 0 30px;
+            gap: 15px;
             position: relative;
         }
         
-        .search-box {
-            position: relative;
-        }
-        
-        .search-box i {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-light);
-        }
-        
-        #searchInput {
-            width: 100%;
-            padding: 10px 15px 10px 45px;
-            border: 1px solid var(--border-color);
-            border-radius: 25px;
-            font-size: 0.95rem;
-            transition: var(--transition);
-        }
-        
-        #searchInput:focus {
-            outline: none;
-            border-color: var(--primary-gold);
-            box-shadow: 0 0 0 2px rgba(184, 134, 11, 0.1);
-        }
-        
-        .search-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: var(--white);
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            margin-top: 10px;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: var(--transition);
-            z-index: 1001;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        
-        .search-dropdown.show {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-        
-        .search-result {
+        .sun-logo {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--sun-orange), var(--sun-yellow));
+            border-radius: 50%;
             display: flex;
             align-items: center;
-            gap: 15px;
-            padding: 15px;
-            border-bottom: 1px solid var(--border-color);
-            cursor: pointer;
-            transition: var(--transition);
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 0 30px var(--sun-glow);
+            animation: sunGlow 3s infinite alternate;
         }
         
-        .search-result:hover {
-            background: var(--stone-light);
+        @keyframes sunGlow {
+            0% { box-shadow: 0 0 20px var(--sun-glow); }
+            100% { box-shadow: 0 0 40px rgba(255, 123, 37, 0.5); }
         }
         
-        .search-result i {
-            font-size: 1.2rem;
-            color: var(--primary-gold);
+        .sun-logo::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-gold);
+            opacity: 0.5;
+            animation: sunRotate 20s linear infinite;
         }
         
-        .search-result strong {
-            display: block;
-            margin-bottom: 3px;
+        @keyframes sunRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
-        .search-result small {
+        .sun-logo i {
+            color: var(--white);
+            font-size: 1.5rem;
+        }
+        
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .logo-text span:first-child {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--stone-dark);
+            letter-spacing: 1px;
+        }
+        
+        .logo-text span:last-child {
+            font-size: 0.8rem;
             color: var(--text-light);
-            font-size: 0.85rem;
+            letter-spacing: 2px;
         }
         
-        /* Header Links */
-        .header-links {
+        /* Sun Rays Navigation */
+        .sun-nav {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            position: relative;
+        }
+        
+        .nav-ray {
+            position: relative;
+            padding: 12px 25px;
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            text-align: center;
+            border-radius: 25px;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .nav-ray::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 193, 7, 0.1), transparent);
+            transition: left 0.6s;
+            z-index: -1;
+        }
+        
+        .nav-ray:hover::before {
+            left: 100%;
+        }
+        
+        .nav-ray:hover {
+            color: var(--sun-orange);
+            transform: translateY(-2px);
+        }
+        
+        .nav-ray.active {
+            background: linear-gradient(135deg, var(--sun-yellow), var(--sun-orange));
+            color: var(--white);
+            box-shadow: 0 5px 15px rgba(255, 123, 37, 0.3);
+        }
+        
+        .nav-ray i {
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+        
+        /* Header Actions */
+        .header-actions {
             display: flex;
             align-items: center;
             gap: 20px;
         }
         
-        .header-link {
+        .header-action {
             position: relative;
             color: var(--text-dark);
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             transition: var(--transition);
         }
         
-        .header-link:hover {
-            color: var(--primary-gold);
+        .header-action:hover {
+            color: var(--sun-orange);
+            transform: scale(1.1);
         }
         
         .cart-badge {
             position: absolute;
             top: -8px;
             right: -8px;
-            background: var(--primary-gold);
+            background: var(--sun-orange);
             color: var(--white);
             border-radius: 50%;
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 0.7rem;
             font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
         
         .mobile-menu-btn {
             display: none;
             background: none;
             border: none;
-            font-size: 1.3rem;
+            font-size: 1.5rem;
             color: var(--text-dark);
             cursor: pointer;
-        }
-        
-        /* Mobile Navigation (Auto Swipe Up) */
-        .mobile-nav {
-            position: fixed;
-            bottom: -100%;
-            left: 0;
-            right: 0;
-            background: var(--white);
-            display: flex;
-            justify-content: space-around;
-            padding: 15px 20px;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-            transition: bottom 0.3s ease;
-            z-index: 999;
-        }
-        
-        .mobile-nav.nav-show {
-            bottom: 0;
-        }
-        
-        .mobile-nav-link {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            color: var(--text-dark);
-            text-decoration: none;
-            font-size: 0.8rem;
             transition: var(--transition);
         }
         
-        .mobile-nav-link:hover,
-        .mobile-nav-link.active {
-            color: var(--primary-gold);
-        }
-        
-        .mobile-nav-link i {
-            font-size: 1.2rem;
+        .mobile-menu-btn:hover {
+            color: var(--sun-orange);
         }
         
         /* ==============================================
-           INFINITY SECTION
+           MAIN SUN PATTERN HERO
            ============================================== */
         
-        .infinity-section {
+        .sun-hero {
             position: relative;
-            height: 90vh;
-            min-height: 700px;
+            min-height: 90vh;
+            padding: 100px 0 50px;
             overflow: hidden;
-            background: var(--stone-dark);
+            background: linear-gradient(135deg, #0c2461 0%, #1e3799 100%);
         }
         
-        /* Background Images */
-        .infinity-background {
+        .sun-center {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            margin: 0 auto 100px;
+            z-index: 2;
+        }
+        
+        .sun-disk {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--sun-orange), var(--sun-yellow));
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 
+                0 0 60px var(--sun-orange),
+                0 0 120px rgba(255, 123, 37, 0.5),
+                inset 0 0 30px rgba(255, 255, 255, 0.3);
+            animation: sunPulse 4s ease-in-out infinite;
+        }
+        
+        @keyframes sunPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        .sun-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: var(--white);
+            z-index: 3;
+            width: 80%;
+        }
+        
+        .sun-content h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .sun-content p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .sun-rays {
             position: absolute;
             top: 0;
             left: 0;
@@ -886,520 +351,409 @@
             z-index: 1;
         }
         
-        .bg-slide {
+        .ray {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            opacity: 0;
-            transition: opacity 1s ease;
-        }
-        
-        .bg-slide.active {
+            top: 50%;
+            left: 50%;
+            width: 2px;
+            height: 1000px;
+            background: linear-gradient(to bottom, transparent, var(--sun-yellow), transparent);
+            transform-origin: 0 0;
             opacity: 0.3;
         }
         
-        /* Infinity Container */
-        .infinity-container {
+        /* Stone Orbit Sections */
+        .stone-orbits {
             position: relative;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2;
-        }
-        
-        /* Infinity Symbol */
-        .infinity-symbol {
-            position: relative;
-            width: 400px;
-            height: 200px;
-        }
-        
-        .infinity-loop {
-            position: absolute;
-            width: 200px;
-            height: 200px;
-            border: 3px solid var(--primary-gold);
-            border-radius: 50%;
-            box-shadow: 0 0 20px rgba(184, 134, 11, 0.3);
-        }
-        
-        .infinity-loop-1 {
-            left: 0;
-            border-right-color: transparent;
-            border-bottom-color: transparent;
-            transform: rotate(45deg);
-        }
-        
-        .infinity-loop-2 {
-            right: 0;
-            border-left-color: transparent;
-            border-top-color: transparent;
-            transform: rotate(45deg);
-        }
-        
-        /* Center Circle */
-        .infinity-center {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 3;
-        }
-        
-        .center-circle {
-            width: 250px;
-            height: 250px;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .circle-content {
-            text-align: center;
-            padding: 30px;
-            z-index: 2;
-        }
-        
-        .circle-content h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
-            color: var(--stone-dark);
-            margin-bottom: 10px;
-        }
-        
-        .circle-content p {
-            color: var(--text-light);
-            font-size: 0.9rem;
-        }
-        
-        /* Rotating Images in Center */
-        .rotating-images {
-            position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
-            height: 100%;
-        }
-        
-        .rotating-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 1s ease;
-        }
-        
-        .rotating-image.active {
-            opacity: 0.2;
-        }
-        
-        .rotating-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 50%;
-        }
-        
-        /* Side Triangles */
-        .side-triangles {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
             max-width: 1200px;
-            display: flex;
-            justify-content: space-between;
-            z-index: 2;
-            pointer-events: none;
+            margin: 0 auto;
+            height: 500px;
         }
         
-        .stone-triangle {
-            width: 300px;
-            height: 400px;
-            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        .orbit {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            animation: orbitRotate linear infinite;
+        }
+        
+        @keyframes orbitRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .orbit-1 {
+            width: 800px;
+            height: 800px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-duration: 40s;
+        }
+        
+        .orbit-2 {
+            width: 1000px;
+            height: 1000px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-duration: 60s;
+        }
+        
+        .stone-planet {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
             cursor: pointer;
-            transition: all 0.5s ease;
-            pointer-events: auto;
-            position: relative;
+            transition: var(--transition);
+            transform-origin: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             overflow: hidden;
         }
         
-        .triangle-left {
-            background: linear-gradient(135deg, var(--sand-color) 0%, #c19a6b 100%);
-            transform: translateX(-50px) rotate(-5deg);
-        }
-        
-        .triangle-right {
-            background: linear-gradient(135deg, var(--kota-blue) 0%, #2980b9 100%);
-            transform: translateX(50px) rotate(5deg);
-        }
-        
-        .stone-triangle:hover {
-            transform: scale(1.05) translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        .stone-planet:hover {
+            transform: scale(1.2);
             z-index: 10;
         }
         
-        .triangle-content {
-            position: absolute;
-            bottom: 50px;
-            left: 0;
-            right: 0;
+        .planet-sandstone {
+            background: linear-gradient(135deg, var(--sand-color), #c19a6b);
+            top: 10%;
+            left: 10%;
+        }
+        
+        .planet-kota {
+            background: linear-gradient(135deg, var(--kota-blue), #2980b9);
+            top: 10%;
+            right: 10%;
+        }
+        
+        .planet-limestone {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            bottom: 10%;
+            left: 10%;
+        }
+        
+        .planet-granite {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            bottom: 10%;
+            right: 10%;
+        }
+        
+        .planet-content {
             text-align: center;
-            padding: 20px;
-            color: var(--white);
+            padding: 15px;
+            position: relative;
+            z-index: 2;
         }
         
-        .triangle-icon {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-            opacity: 0.8;
-        }
-        
-        .triangle-content h3 {
-            font-size: 1.8rem;
+        .planet-content i {
+            font-size: 2rem;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));
         }
         
-        .triangle-desc {
-            font-size: 0.9rem;
-            opacity: 0.9;
-            margin-bottom: 20px;
-        }
-        
-        .triangle-products {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        
-        .product-name {
-            background: rgba(255,255,255,0.2);
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 0.85rem;
-            backdrop-filter: blur(5px);
+        .planet-content h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
         
         /* ==============================================
-           CATEGORIES SECTION
+           SUN PATTERN FEATURES
            ============================================== */
         
-        .categories-section {
-            padding: 80px 0;
-            background: var(--white);
-        }
-        
-        .categories-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-            gap: 40px;
-        }
-        
-        .category-card {
+        .sun-features {
+            padding: 100px 0;
             background: var(--stone-light);
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: var(--shadow);
         }
         
-        .category-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-        
-        .category-header i {
-            font-size: 2rem;
-            color: var(--primary-gold);
-        }
-        
-        .category-header h3 {
-            font-size: 1.8rem;
-            color: var(--stone-dark);
-        }
-        
-        .category-products {
+        .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
         }
         
-        .product-item {
+        .feature-sun {
             background: var(--white);
-            border-radius: 10px;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        
-        .product-item:hover {
-            transform: translateY(-5px);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
             box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
         }
         
-        .product-icon {
-            width: 50px;
-            height: 50px;
-            background: var(--primary-gold);
+        .feature-sun::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--sun-yellow), var(--sun-orange));
+        }
+        
+        .feature-sun:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--sun-yellow), var(--sun-orange));
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 2rem;
             color: var(--white);
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
+        }
+        
+        .feature-sun h3 {
             font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--stone-dark);
         }
         
-        .product-item img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        
-        .product-info h4 {
-            font-size: 1rem;
-            margin-bottom: 5px;
-        }
-        
-        .price {
-            color: var(--primary-gold);
-            font-weight: 600;
-        }
-        
-        .category-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--primary-gold);
-            text-decoration: none;
-            font-weight: 500;
-            transition: var(--transition);
-        }
-        
-        .category-link:hover {
-            gap: 15px;
+        .feature-sun p {
+            color: var(--text-light);
+            line-height: 1.8;
         }
         
         /* ==============================================
-           FEATURED BANNER
+           RADIAL PRODUCT DISPLAY
            ============================================== */
         
-        .featured-banner {
-            background: linear-gradient(135deg, var(--stone-dark) 0%, #1a252f 100%);
+        .radial-products {
+            padding: 100px 0;
+            background: var(--white);
+            position: relative;
+        }
+        
+        .radial-center {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+        
+        .radial-center h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            color: var(--stone-dark);
+            margin-bottom: 20px;
+        }
+        
+        .radial-center p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .radial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            position: relative;
+        }
+        
+        .radial-item {
+            background: var(--stone-light);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+        
+        .radial-item:hover {
+            transform: scale(1.05);
+            border-color: var(--sun-orange);
+            box-shadow: 0 15px 30px rgba(255, 123, 37, 0.15);
+        }
+        
+        .radial-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--sun-yellow), var(--sun-orange));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
             color: var(--white);
-            padding: 40px 0;
+            font-size: 1.8rem;
+        }
+        
+        .radial-item h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: var(--stone-dark);
+        }
+        
+        .radial-item p {
+            color: var(--text-light);
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+        
+        .radial-price {
+            color: var(--sun-orange);
+            font-weight: 600;
+            font-size: 1.3rem;
+        }
+        
+        /* ==============================================
+           SUN BEAM TESTIMONIALS
+           ============================================== */
+        
+        .sun-testimonials {
+            padding: 100px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--white);
+            position: relative;
             overflow: hidden;
         }
         
-        .banner-slider {
-            position: relative;
-            height: 100px;
-        }
-        
-        .banner-slide {
+        .testimonial-beam {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            opacity: 0;
-            transition: opacity 1s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            animation: beamMove 10s linear infinite;
         }
         
-        .banner-slide.active {
-            opacity: 1;
+        @keyframes beamMove {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
         
-        .banner-content {
+        .testimonial-content {
+            position: relative;
+            z-index: 2;
             text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
         }
         
-        .banner-content h2 {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-        
-        .banner-content p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-        
-        /* ==============================================
-           ALL PRODUCTS
-           ============================================== */
-        
-        .all-products {
-            padding: 80px 0;
-            background: var(--stone-light);
-        }
-        
-        .section-header {
-            text-align: center;
+        .testimonial-content h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
             margin-bottom: 50px;
         }
         
-        .section-header h2 {
-            font-size: 2.5rem;
-            color: var(--stone-dark);
-            margin-bottom: 10px;
-        }
-        
-        .section-header p {
-            color: var(--text-light);
-            font-size: 1.1rem;
-        }
-        
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 30px;
-        }
-        
-        .product-card {
-            background: var(--white);
-            border-radius: 15px;
+        .testimonial-slider {
+            position: relative;
             overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-            cursor: pointer;
-        }
-        
-        .product-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
-        }
-        
-        .product-img {
             height: 200px;
-            background: var(--stone-light);
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
         
-        .product-img img {
+        .testimonial-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1s ease;
         }
         
-        .product-img i {
-            font-size: 3rem;
-            color: var(--primary-gold);
+        .testimonial-slide.active {
+            opacity: 1;
         }
         
-        .product-details {
-            padding: 20px;
-        }
-        
-        .product-details h4 {
+        .testimonial-text {
             font-size: 1.2rem;
-            margin-bottom: 5px;
+            font-style: italic;
+            margin-bottom: 20px;
+            line-height: 1.8;
         }
         
-        .product-cat {
-            color: var(--text-light);
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-        }
-        
-        .product-price {
-            color: var(--primary-gold);
+        .testimonial-author {
             font-weight: 600;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
         
         /* ==============================================
            FOOTER
            ============================================== */
         
-        .main-footer {
+        .sun-footer {
             background: var(--stone-dark);
             color: var(--white);
-            padding: 40px 0;
+            padding: 60px 0 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .footer-sun {
+            position: absolute;
+            bottom: -100px;
+            right: -100px;
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, var(--sun-orange), var(--sun-yellow));
+            border-radius: 50%;
+            opacity: 0.1;
+            filter: blur(20px);
         }
         
         .footer-content {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 40px;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 2;
         }
         
-        .footer-logo {
-            display: flex;
-            align-items: center;
-            gap: 15px;
+        .footer-section h3 {
+            color: var(--sun-yellow);
             margin-bottom: 20px;
-        }
-        
-        .footer-logo i {
-            font-size: 2rem;
-            color: var(--primary-gold);
-        }
-        
-        .footer-logo h3 {
-            font-size: 1.5rem;
-        }
-        
-        .footer-section h4 {
-            color: var(--primary-gold);
-            margin-bottom: 20px;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
         }
         
         .footer-section p {
+            color: #ccc;
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+        
+        .footer-links a {
+            display: block;
+            color: #ccc;
+            text-decoration: none;
             margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            transition: var(--transition);
         }
         
-        /* ==============================================
-           LOADING STATES
-           ============================================== */
+        .footer-links a:hover {
+            color: var(--sun-yellow);
+            transform: translateX(5px);
+        }
         
-        .loading {
+        .copyright {
             text-align: center;
-            padding: 40px 0;
-            grid-column: 1 / -1;
-        }
-        
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--primary-gold);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: #aaa;
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 2;
         }
         
         /* ==============================================
@@ -1407,28 +761,37 @@
            ============================================== */
         
         @media (max-width: 1024px) {
-            .infinity-symbol {
+            .sun-center {
                 width: 300px;
-                height: 150px;
+                height: 300px;
             }
             
-            .center-circle {
-                width: 200px;
-                height: 200px;
+            .sun-content h1 {
+                font-size: 2.5rem;
             }
             
-            .stone-triangle {
-                width: 250px;
-                height: 350px;
+            .stone-orbits {
+                height: 400px;
             }
             
-            .categories-grid {
-                grid-template-columns: 1fr;
+            .orbit-1 {
+                width: 600px;
+                height: 600px;
+            }
+            
+            .orbit-2 {
+                width: 800px;
+                height: 800px;
+            }
+            
+            .stone-planet {
+                width: 100px;
+                height: 100px;
             }
         }
         
         @media (max-width: 768px) {
-            .header-search {
+            .sun-nav {
                 display: none;
             }
             
@@ -1436,141 +799,496 @@
                 display: block;
             }
             
-            .infinity-section {
-                height: 80vh;
-                min-height: 600px;
+            .sun-hero {
+                padding: 80px 0 30px;
             }
             
-            .infinity-symbol {
+            .sun-center {
                 width: 250px;
-                height: 125px;
-            }
-            
-            .center-circle {
-                width: 180px;
-                height: 180px;
-            }
-            
-            .circle-content h2 {
-                font-size: 1.5rem;
-            }
-            
-            .stone-triangle {
-                width: 180px;
                 height: 250px;
-                transform: none !important;
+                margin-bottom: 70px;
             }
             
-            .triangle-content h3 {
-                font-size: 1.3rem;
+            .sun-content h1 {
+                font-size: 2rem;
             }
             
-            .triangle-desc {
-                font-size: 0.8rem;
-            }
-            
-            .product-name {
-                font-size: 0.75rem;
-                padding: 3px 8px;
-            }
-            
-            .categories-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .category-products {
-                grid-template-columns: 1fr;
-            }
-            
-            .products-grid {
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            }
-            
-            .banner-content h2 {
-                font-size: 1.5rem;
-            }
-            
-            .banner-content p {
+            .sun-content p {
                 font-size: 1rem;
+            }
+            
+            .stone-orbits {
+                height: 300px;
+            }
+            
+            .orbit-1, .orbit-2 {
+                display: none;
+            }
+            
+            .stone-planet {
+                position: relative;
+                top: auto;
+                left: auto;
+                margin: 20px auto;
+                display: block;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .radial-center h2 {
+                font-size: 2.2rem;
+            }
+            
+            .testimonial-content h2 {
+                font-size: 2rem;
             }
         }
         
         @media (max-width: 576px) {
-            body {
-                padding-top: 50px;
-            }
-            
-            .auto-hide-header {
-                height: 50px;
-            }
-            
             .header-container {
-                height: 50px;
                 padding: 0 15px;
             }
             
-            .header-logo span {
-                font-size: 1rem;
+            .sun-logo {
+                width: 40px;
+                height: 40px;
             }
             
-            .infinity-section {
-                height: 70vh;
-                min-height: 500px;
-            }
-            
-            .infinity-symbol {
-                width: 200px;
-                height: 100px;
-            }
-            
-            .infinity-loop {
-                width: 100px;
-                height: 100px;
-            }
-            
-            .center-circle {
-                width: 150px;
-                height: 150px;
-            }
-            
-            .circle-content h2 {
+            .logo-text span:first-child {
                 font-size: 1.2rem;
             }
             
-            .circle-content p {
-                font-size: 0.8rem;
+            .sun-center {
+                width: 200px;
+                height: 200px;
             }
             
-            .stone-triangle {
-                width: 120px;
-                height: 180px;
+            .sun-content h1 {
+                font-size: 1.8rem;
             }
             
-            .triangle-content {
-                padding: 10px;
-                bottom: 30px;
+            .radial-center h2 {
+                font-size: 1.8rem;
             }
             
-            .triangle-content h3 {
-                font-size: 1rem;
-            }
-            
-            .triangle-desc {
-                display: none;
-            }
-            
-            .triangle-products {
-                display: none;
-            }
-            
-            .section-header h2 {
-                font-size: 2rem;
-            }
-            
-            .products-grid {
-                grid-template-columns: 1fr;
+            .feature-sun {
+                padding: 30px 20px;
             }
         }
     </style>
+</head>
+<body>
+    <!-- Sun Pattern Header -->
+    <header class="sun-header" id="mainHeader">
+        <div class="header-container">
+            <!-- Logo with Sun Icon -->
+            <div class="header-logo">
+                <div class="sun-logo">
+                    <i class="fas fa-gem"></i>
+                </div>
+                <div class="logo-text">
+                    <span>IRYA STONE</span>
+                    <span>PREMIUM NATURAL STONE</span>
+                </div>
+            </div>
+            
+            <!-- Sun Rays Navigation -->
+            <nav class="sun-nav">
+                <a href="#home" class="nav-ray active">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a href="#products" class="nav-ray">
+                    <i class="fas fa-mountain"></i> Products
+                </a>
+                <a href="#sandstone" class="nav-ray">
+                    <i class="fas fa-sun"></i> Sandstone
+                </a>
+                <a href="#kota" class="nav-ray">
+                    <i class="fas fa-layer-group"></i> Kota Stone
+                </a>
+                <a href="#about" class="nav-ray">
+                    <i class="fas fa-info-circle"></i> About
+                </a>
+                <a href="#contact" class="nav-ray">
+                    <i class="fas fa-phone"></i> Contact
+                </a>
+            </nav>
+            
+            <!-- Header Actions -->
+            <div class="header-actions">
+                <a href="search.html" class="header-action">
+                    <i class="fas fa-search"></i>
+                </a>
+                <a href="cart.html" class="header-action">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-badge">0</span>
+                </a>
+                <a href="wishlist.html" class="header-action">
+                    <i class="far fa-heart"></i>
+                </a>
+                <a href="login.html" class="header-action">
+                    <i class="far fa-user"></i>
+                </a>
+                <button class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Sun Hero Section -->
+    <main class="main-content">
+        <section class="sun-hero" id="home">
+            <!-- Sun Center -->
+            <div class="sun-center">
+                <div class="sun-disk"></div>
+                <div class="sun-content">
+                    <h1>IRYA STONE</h1>
+                    <p>Premium Natural Stone from India to UK</p>
+                    <div style="margin-top: 30px;">
+                        <button class="nav-ray active" style="background: white; color: var(--sun-orange); border: none; padding: 15px 30px; font-size: 1.1rem;">
+                            Explore Collection
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Sun Rays -->
+                <div class="sun-rays" id="sunRays"></div>
+            </div>
+            
+            <!-- Stone Orbits -->
+            <div class="stone-orbits">
+                <div class="orbit orbit-1"></div>
+                <div class="orbit orbit-2"></div>
+                
+                <!-- Stone Planets -->
+                <div class="stone-planet planet-sandstone" onclick="scrollToSection('sandstone')">
+                    <div class="planet-content">
+                        <i class="fas fa-sun"></i>
+                        <h3>Sandstone</h3>
+                    </div>
+                </div>
+                
+                <div class="stone-planet planet-kota" onclick="scrollToSection('kota')">
+                    <div class="planet-content">
+                        <i class="fas fa-layer-group"></i>
+                        <h3>Kota Stone</h3>
+                    </div>
+                </div>
+                
+                <div class="stone-planet planet-limestone">
+                    <div class="planet-content">
+                        <i class="fas fa-mountain"></i>
+                        <h3>Limestone</h3>
+                    </div>
+                </div>
+                
+                <div class="stone-planet planet-granite">
+                    <div class="planet-content">
+                        <i class="fas fa-gem"></i>
+                        <h3>Granite</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sun Pattern Features -->
+        <section class="sun-features">
+            <div class="container">
+                <div class="radial-center">
+                    <h2>Why Choose IRYA STONE?</h2>
+                    <p>Experience the brilliance of premium natural stone with our sun-inspired collection</p>
+                </div>
+                
+                <div class="features-grid">
+                    <div class="feature-sun">
+                        <div class="feature-icon">
+                            <i class="fas fa-shipping-fast"></i>
+                        </div>
+                        <h3>Direct from India</h3>
+                        <p>30/70 payment system with free UK delivery. All prices include VAT.</p>
+                    </div>
+                    
+                    <div class="feature-sun">
+                        <div class="feature-icon">
+                            <i class="fas fa-award"></i>
+                        </div>
+                        <h3>Premium Quality</h3>
+                        <p>100% natural stone with excellent weather resistance and easy maintenance.</p>
+                    </div>
+                    
+                    <div class="feature-sun">
+                        <div class="feature-icon">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <h3>Expert Support</h3>
+                        <p>Free consultation, project planning, and installation support available.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Radial Product Display -->
+        <section class="radial-products" id="products">
+            <div class="container">
+                <div class="radial-center">
+                    <h2>Featured Stone Collection</h2>
+                    <p>Discover our radiant collection of premium natural stones</p>
+                </div>
+                
+                <div class="radial-grid" id="featuredProducts">
+                    <!-- Products will load here from Firebase -->
+                    <div class="radial-item">
+                        <div class="radial-icon">
+                            <i class="fas fa-mountain"></i>
+                        </div>
+                        <h3>Raj Green Sandstone</h3>
+                        <p>Premium green sandstone for outdoor applications</p>
+                        <div class="radial-price">£28.50/m²</div>
+                    </div>
+                    
+                    <div class="radial-item">
+                        <div class="radial-icon">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <h3>Kota Blue Stone</h3>
+                        <p>Natural limestone flooring with elegant blue shades</p>
+                        <div class="radial-price">£32.50/m²</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sun Beam Testimonials -->
+        <section class="sun-testimonials">
+            <div class="testimonial-beam"></div>
+            <div class="container">
+                <div class="testimonial-content">
+                    <h2>What Our Customers Say</h2>
+                    
+                    <div class="testimonial-slider">
+                        <div class="testimonial-slide active">
+                            <div class="testimonial-text">
+                                "The quality of IRYA STONE is exceptional. The sandstone transformed our garden patio completely. The sun-inspired design is brilliant!"
+                            </div>
+                            <div class="testimonial-author">- Sarah Johnson, London</div>
+                        </div>
+                        
+                        <div class="testimonial-slide">
+                            <div class="testimonial-text">
+                                "Professional service from start to finish. The Kota stone flooring in our kitchen looks absolutely stunning. Highly recommended!"
+                            </div>
+                            <div class="testimonial-author">- Michael Brown, Manchester</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="sun-footer">
+        <div class="footer-sun"></div>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>IRYA STONE</h3>
+                    <p>Premium natural stone from Indian quarries to UK homes and businesses.</p>
+                    <p>Bringing the warmth of the sun through our stone collection.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <div class="footer-links">
+                        <a href="#home">Home</a>
+                        <a href="#products">Products</a>
+                        <a href="#sandstone">Sandstone</a>
+                        <a href="#kota">Kota Stone</a>
+                        <a href="#contact">Contact Us</a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Contact Info</h3>
+                    <p><i class="fas fa-phone"></i> +44 1234 567890</p>
+                    <p><i class="fas fa-envelope"></i> info@iryastone.co.uk</p>
+                    <p><i class="fas fa-map-marker-alt"></i> London, United Kingdom</p>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                © 2024 IRYA STONE. All rights reserved. | Premium Natural Stone Solutions
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Auto-hide Header
+        let lastScrollTop = 0;
+        const header = document.getElementById('mainHeader');
+        
+        window.addEventListener('scroll', function() {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (scrollTop > lastScrollTop && scrollTop > 100) {
+                header.classList.add('header-hidden');
+            } else {
+                header.classList.remove('header-hidden');
+            }
+            
+            lastScrollTop = scrollTop;
+        });
+
+        // Create Sun Rays
+        function createSunRays() {
+            const raysContainer = document.getElementById('sunRays');
+            const raysCount = 24;
+            
+            for (let i = 0; i < raysCount; i++) {
+                const ray = document.createElement('div');
+                ray.className = 'ray';
+                ray.style.transform = `translate(-50%, -50%) rotate(${i * (360 / raysCount)}deg)`;
+                raysContainer.appendChild(ray);
+            }
+        }
+
+        // Testimonial Slider
+        function initTestimonialSlider() {
+            const slides = document.querySelectorAll('.testimonial-slide');
+            let currentSlide = 0;
+            
+            function showNextSlide() {
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }
+            
+            setInterval(showNextSlide, 5000);
+        }
+
+        // Scroll to section
+        window.scrollToSection = function(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
+        };
+
+        // Load products from Firebase
+        async function loadProductsFromFirebase() {
+            try {
+                const container = document.getElementById('featuredProducts');
+                if (!container || !window.firebaseDB) return;
+                
+                const { collection, getDocs, query, limit } = window.firebase;
+                const db = window.firebaseDB;
+                
+                // Get featured products
+                const q = query(collection(db, "products"), limit(6));
+                const querySnapshot = await getDocs(q);
+                
+                if (querySnapshot.empty) {
+                    showFallbackProducts(container);
+                    return;
+                }
+                
+                const products = [];
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    products.push({
+                        id: doc.id,
+                        name: data.name || data.stone_name || 'Stone Product',
+                        category: data.category || 'Stone',
+                        price: data.price || '£0.00',
+                        description: data.description || 'Premium natural stone',
+                        image: data.image || ''
+                    });
+                });
+                
+                // Display products
+                container.innerHTML = products.map(product => `
+                    <div class="radial-item" onclick="viewProduct('${product.id}')">
+                        <div class="radial-icon">
+                            ${product.category.includes('sandstone') ? 
+                                '<i class="fas fa-sun"></i>' : 
+                                '<i class="fas fa-layer-group"></i>'}
+                        </div>
+                        <h3>${product.name}</h3>
+                        <p>${product.description.substring(0, 80)}...</p>
+                        <div class="radial-price">${product.price}</div>
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Error loading products:', error);
+                const container = document.getElementById('featuredProducts');
+                showFallbackProducts(container);
+            }
+        }
+
+        function showFallbackProducts(container) {
+            container.innerHTML = `
+                <div class="radial-item">
+                    <div class="radial-icon">
+                        <i class="fas fa-sun"></i>
+                    </div>
+                    <h3>Raj Green Sandstone</h3>
+                    <p>Premium green sandstone for outdoor applications with excellent durability</p>
+                    <div class="radial-price">£28.50/m²</div>
+                </div>
+                
+                <div class="radial-item">
+                    <div class="radial-icon">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <h3>Kota Blue Stone</h3>
+                    <p>Natural limestone flooring with elegant blue shades for modern interiors</p>
+                    <div class="radial-price">£32.50/m²</div>
+                </div>
+                
+                <div class="radial-item">
+                    <div class="radial-icon">
+                        <i class="fas fa-mountain"></i>
+                    </div>
+                    <h3>Autumn Brown</h3>
+                    <p>Warm brown sandstone perfect for garden paths and patio areas</p>
+                    <div class="radial-price">£26.75/m²</div>
+                </div>
+            `;
+        }
+
+        // View product details
+        window.viewProduct = function(productId) {
+            window.location.href = `product-detail.html?id=${productId}`;
+        };
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', function() {
+            createSunRays();
+            initTestimonialSlider();
+            loadProductsFromFirebase();
+            
+            // Mobile menu
+            const mobileBtn = document.querySelector('.mobile-menu-btn');
+            const sunNav = document.querySelector('.sun-nav');
+            
+            if (mobileBtn && sunNav) {
+                mobileBtn.addEventListener('click', function() {
+                    sunNav.style.display = sunNav.style.display === 'flex' ? 'none' : 'flex';
+                    sunNav.style.position = 'absolute';
+                    sunNav.style.top = '100%';
+                    sunNav.style.left = '0';
+                    sunNav.style.right = '0';
+                    sunNav.style.background = 'white';
+                    sunNav.style.flexDirection = 'column';
+                    sunNav.style.padding = '20px';
+                    sunNav.style.boxShadow = '0 10px 30px rgba(0,0,0,0.1)';
+                    sunNav.style.zIndex = '1000';
+                });
+            }
+        });
+    </script>
 </body>
 </html>
