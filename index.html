@@ -13,8 +13,10 @@
 
 <!-- Firebase SDK -->
 <script type="module">
+    // Import Firebase modules
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, query, where, limit } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
     
     const firebaseConfig = {
         apiKey: "AIzaSyDNwzhOkQQLAQbkiNFTFEGSpWJdKaxbTRk",
@@ -26,11 +28,13 @@
         measurementId: "G-6YM1FLYN48"
     };
     
+    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const auth = getAuth(app);
     
-    window.firebaseDB = db;
-    window.firebase = { collection, getDocs, query, where, limit };
+    // Make available globally
+    window.firebaseApp = { app, db, auth };
     
     console.log("Firebase initialized successfully");
 </script>
@@ -431,13 +435,14 @@ header.scrolled {
 
 .card {
     background: var(--white);
-    padding: 20px;
     border-radius: var(--border-radius);
     box-shadow: var(--shadow-sm);
     transition: var(--transition);
     border: 1px solid #f0f0f0;
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .card:hover {
@@ -462,7 +467,47 @@ header.scrolled {
     opacity: 1;
 }
 
-.card h3 {
+.product-image-container {
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+    position: relative;
+    background: var(--bg-light);
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.card:hover .product-image {
+    transform: scale(1.05);
+}
+
+.product-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--primary-gold);
+    color: var(--white);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    z-index: 2;
+    box-shadow: var(--shadow-sm);
+}
+
+.product-content {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-content h3 {
     font-size: 17px;
     font-weight: 600;
     color: var(--stone-dark);
@@ -470,11 +515,12 @@ header.scrolled {
     line-height: 1.4;
 }
 
-.card p {
+.product-content p {
     font-size: 14px;
     color: var(--text-light);
     margin-bottom: 15px;
     line-height: 1.6;
+    flex-grow: 1;
 }
 
 .price {
@@ -523,19 +569,19 @@ header.scrolled {
     border-color: var(--primary-gold);
 }
 
-/* Product Badge */
-.product-badge {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: var(--primary-gold);
-    color: var(--white);
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    z-index: 2;
-    box-shadow: var(--shadow-sm);
+/* Default product fallback */
+.default-product {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background: linear-gradient(135deg, var(--bg-light), #e0e0e0);
+}
+
+.default-product i {
+    font-size: 48px;
+    color: var(--primary-gold);
+    opacity: 0.5;
 }
 
 /* Bottom Navigation */
@@ -728,6 +774,10 @@ header.scrolled {
         font-size: 24px;
     }
     
+    .product-image-container {
+        height: 200px;
+    }
+    
     .bottom-nav {
         padding: 15px 0;
     }
@@ -825,6 +875,28 @@ header.scrolled {
     background: var(--gold-dark);
     transform: translateY(-5px);
 }
+
+/* Notification */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--primary-gold);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    box-shadow: var(--shadow-lg);
+    z-index: 9999;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    max-width: 300px;
+    display: none;
+}
+
+.notification.show {
+    transform: translateX(0);
+    display: block;
+}
 </style>
 </head>
 
@@ -835,6 +907,9 @@ header.scrolled {
 
 <!-- Loading Spinner -->
 <div class="loading-spinner" id="loadingSpinner"></div>
+
+<!-- Notification -->
+<div class="notification" id="notification"></div>
 
 <!-- Header -->
 <header id="mainHeader">
@@ -856,9 +931,9 @@ header.scrolled {
         </button>
         <button class="action-btn" style="position: relative;">
             <i class="fas fa-shopping-cart"></i>
-            <span class="cart-badge">3</span>
+            <span class="cart-badge" id="cartBadge">0</span>
         </button>
-        <button class="signin-btn">Sign In</button>
+        <button class="signin-btn" id="signinBtn">Sign In</button>
     </div>
 </header>
 
@@ -899,7 +974,7 @@ header.scrolled {
 <div class="banner">
     <h3>30% Advance, 70% After Delivery</h3>
     <p>Flexible payment plan with free UK delivery & VAT included. No hidden charges!</p>
-    <button class="banner-btn">Learn More</button>
+    <button class="banner-btn" id="bannerBtn">Learn More</button>
 </div>
 
 <!-- Sandstone Uses -->
@@ -997,53 +1072,12 @@ header.scrolled {
         </a>
     </div>
     <div class="product-grid" id="productGrid">
-        <div class="card">
-            <div class="product-badge">Best Seller</div>
-            <h3>Raj Green Sandstone</h3>
-            <p>Natural outdoor paving stone with excellent weather resistance. Perfect for garden pathways and patios.</p>
-            <div class="price">£28.50/m²</div>
-            <div class="card-actions">
-                <button class="card-btn btn-primary">Add to Cart</button>
-                <button class="card-btn btn-secondary">View Details</button>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="product-badge">Popular</div>
-            <h3>Kota Blue Stone</h3>
-            <p>Durable limestone flooring solution for indoor spaces. Natural blue shades with elegant texture.</p>
-            <div class="price">£32.75/m²</div>
-            <div class="card-actions">
-                <button class="card-btn btn-primary">Add to Cart</button>
-                <button class="card-btn btn-secondary">View Details</button>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="product-badge">New</div>
-            <h3>Autumn Brown Sandstone</h3>
-            <p>Warm brown sandstone with natural variations. Ideal for driveways and outdoor landscaping.</p>
-            <div class="price">£26.90/m²</div>
-            <div class="card-actions">
-                <button class="card-btn btn-primary">Add to Cart</button>
-                <button class="card-btn btn-secondary">View Details</button>
-            </div>
-        </div>
-
-        <div class="card">
-            <h3>Limestone Tiles</h3>
-            <p>Versatile natural stone suitable for both indoor and outdoor applications with timeless look.</p>
-            <div class="price">£29.99/m²</div>
-            <div class="card-actions">
-                <button class="card-btn btn-primary">Add to Cart</button>
-                <button class="card-btn btn-secondary">View Details</button>
-            </div>
-        </div>
+        <!-- Products will load here from Firebase -->
     </div>
 </section>
 
 <!-- Floating Action Button -->
-<button class="fab">
+<button class="fab" id="fabBtn">
     <i class="fas fa-comment-alt"></i>
 </button>
 
@@ -1071,7 +1105,43 @@ header.scrolled {
     </div>
 </div>
 
+<!-- Import Firebase Functions -->
+<script type="module">
+    // Import Firebase modules
+    import { 
+        collection, 
+        getDocs, 
+        query, 
+        where, 
+        limit,
+        orderBy,
+        getDoc,
+        doc,
+        addDoc,
+        serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+    
+    import {
+        getAuth,
+        onAuthStateChanged,
+        signOut
+    } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+    
+    // Get Firebase instances
+    const { db, auth } = window.firebaseApp;
+    
+    // Firebase functions
+    window.firebaseFunctions = {
+        collection, getDocs, query, where, limit, orderBy, getDoc, doc, addDoc, serverTimestamp
+    };
+    
+    console.log('Firebase functions loaded');
+</script>
+
 <script>
+    // Global variables
+    let cartItems = [];
+    
     // Header Hide/Show on Scroll
     let lastScrollTop = 0;
     const header = document.getElementById('mainHeader');
@@ -1127,20 +1197,33 @@ header.scrolled {
     // Load products from Firebase
     async function loadProductsFromFirebase() {
         const loadingSpinner = document.getElementById('loadingSpinner');
+        const container = document.getElementById('productGrid');
+        
+        if (!container || !window.firebaseApp || !window.firebaseFunctions) {
+            showDefaultProducts();
+            return;
+        }
+        
         try {
             loadingSpinner.style.display = 'block';
             
-            const container = document.getElementById('productGrid');
-            if (!container || !window.firebaseDB) return;
+            const { collection, getDocs, query, where, limit, orderBy } = window.firebaseFunctions;
+            const { db } = window.firebaseApp;
             
-            const { collection, getDocs, query, limit } = window.firebase;
-            const db = window.firebaseDB;
+            // Query to get active products, ordered by creation date
+            const q = query(
+                collection(db, "products"),
+                where("status", "==", "active"),
+                orderBy("created_at", "desc"),
+                limit(8)
+            );
             
-            // Get featured products
-            const q = query(collection(db, "products"), limit(6));
             const querySnapshot = await getDocs(q);
             
-            if (querySnapshot.empty) return;
+            if (querySnapshot.empty) {
+                showDefaultProducts();
+                return;
+            }
             
             const products = [];
             querySnapshot.forEach((doc) => {
@@ -1148,74 +1231,324 @@ header.scrolled {
                 products.push({
                     id: doc.id,
                     name: data.name || data.stone_name || 'Stone Product',
-                    category: data.category || 'Stone',
-                    price: data.price ? `£${parseFloat(data.price).toFixed(2)}/m²` : '£0.00/m²',
+                    stone_name: data.stone_name || '',
+                    category: data.category || '',
+                    type: data.type || 'Natural Stone',
+                    color: data.color || '',
+                    price: data.price || '£0.00',
+                    price_unit: data.price_unit || 'sqft',
                     description: data.description || 'Premium natural stone product',
                     image: data.image || '',
-                    badge: data.badge || ''
+                    size: data.size || '',
+                    thickness: data.thickness || '',
+                    finish: data.finish || 'Natural',
+                    usage: data.usage || '',
+                    density: data.density || '',
+                    compressive_strength: data.compressive_strength || '',
+                    water_absorption: data.water_absorption || '',
+                    status: data.status || 'active',
+                    created_at: data.created_at?.toDate() || null
                 });
             });
             
-            // Update product cards with animation
-            const productCards = container.querySelectorAll('.card');
-            products.forEach((product, index) => {
-                if (productCards[index]) {
-                    const card = productCards[index];
-                    const title = card.querySelector('h3');
-                    const price = card.querySelector('.price');
-                    const description = card.querySelector('p');
-                    const badge = card.querySelector('.product-badge');
-                    
-                    // Add animation delay
-                    card.style.animationDelay = `${index * 0.2}s`;
-                    
-                    if (title) title.textContent = product.name;
-                    if (price) price.textContent = product.price;
-                    if (description) {
-                        description.textContent = product.description.length > 80 
-                            ? product.description.substring(0, 80) + '...' 
-                            : product.description;
-                    }
-                    if (badge && product.badge) {
-                        badge.textContent = product.badge;
-                    } else if (badge && !product.badge) {
-                        badge.style.display = 'none';
-                    }
-                }
-            });
+            // Display products
+            displayProducts(products);
             
         } catch (error) {
             console.error('Error loading products:', error);
+            showDefaultProducts();
         } finally {
             loadingSpinner.style.display = 'none';
         }
+    }
+    
+    // Display products with images
+    function displayProducts(products) {
+        const container = document.getElementById('productGrid');
+        if (!container) return;
+        
+        container.innerHTML = products.map((product, index) => `
+            <div class="card" data-id="${product.id}">
+                <div class="product-image-container">
+                    ${product.image ? 
+                        `<img src="${product.image}" alt="${product.name}" class="product-image" loading="lazy">` :
+                        `<div class="default-product">
+                            <i class="fas fa-${product.category === 'flooring' ? 'layer-group' : 'sun'}"></i>
+                        </div>`
+                    }
+                    <div class="product-badge">${getProductBadge(product)}</div>
+                </div>
+                <div class="product-content">
+                    <h3>${product.name}</h3>
+                    <p>${product.description.length > 80 ? 
+                        product.description.substring(0, 80) + '...' : 
+                        product.description}</p>
+                    <div class="price">${formatPrice(product.price)}</div>
+                    <div class="card-actions">
+                        <button class="card-btn btn-primary" onclick="addToCart('${product.id}', '${product.name}', '${product.price}', '${product.image}')">
+                            Add to Cart
+                        </button>
+                        <button class="card-btn btn-secondary" onclick="viewProduct('${product.id}')">
+                            View Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        
+        // Add animation delays
+        const cards = container.querySelectorAll('.card');
+        cards.forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.1}s`;
+        });
+    }
+    
+    // Show default products
+    function showDefaultProducts() {
+        const container = document.getElementById('productGrid');
+        if (!container) return;
+        
+        const defaultProducts = [
+            {
+                id: 'sand1',
+                name: 'Raj Green Sandstone',
+                description: 'Natural outdoor paving stone with excellent weather resistance. Perfect for garden pathways and patios.',
+                price: '£28.50/m²',
+                image: 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=800',
+                badge: 'Best Seller'
+            },
+            {
+                id: 'kota1',
+                name: 'Kota Blue Stone',
+                description: 'Durable limestone flooring solution for indoor spaces. Natural blue shades with elegant texture.',
+                price: '£32.75/m²',
+                image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800',
+                badge: 'Popular'
+            },
+            {
+                id: 'sand2',
+                name: 'Autumn Brown Sandstone',
+                description: 'Warm brown sandstone with natural variations. Ideal for driveways and outdoor landscaping.',
+                price: '£26.90/m²',
+                image: 'https://images.unsplash.com/photo-1598300054893-ef06c8935c52?auto=format&fit=crop&w=800',
+                badge: 'New'
+            },
+            {
+                id: 'stone1',
+                name: 'Limestone Tiles',
+                description: 'Versatile natural stone suitable for both indoor and outdoor applications with timeless look.',
+                price: '£29.99/m²',
+                image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800',
+                badge: ''
+            }
+        ];
+        
+        container.innerHTML = defaultProducts.map((product, index) => `
+            <div class="card" data-id="${product.id}">
+                <div class="product-image-container">
+                    <img src="${product.image}" alt="${product.name}" class="product-image" loading="lazy">
+                    ${product.badge ? `<div class="product-badge">${product.badge}</div>` : ''}
+                </div>
+                <div class="product-content">
+                    <h3>${product.name}</h3>
+                    <p>${product.description}</p>
+                    <div class="price">${product.price}</div>
+                    <div class="card-actions">
+                        <button class="card-btn btn-primary" onclick="addToCart('${product.id}', '${product.name}', '${product.price}', '${product.image}')">
+                            Add to Cart
+                        </button>
+                        <button class="card-btn btn-secondary" onclick="viewProduct('${product.id}')">
+                            View Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    // Get product badge based on data
+    function getProductBadge(product) {
+        if (product.price && product.price.includes('£')) {
+            const price = parseFloat(product.price.replace('£', ''));
+            if (price > 40) return 'Premium';
+            if (price > 30) return 'Popular';
+        }
+        
+        // Default badges based on category
+        switch(product.category) {
+            case 'flooring':
+                return 'Flooring';
+            case 'sandstone':
+                return 'Sandstone';
+            case 'kota':
+                return 'Kota Stone';
+            default:
+                return 'Best Seller';
+        }
+    }
+    
+    // Format price properly
+    function formatPrice(price) {
+        if (!price) return '£0.00';
+        if (price.startsWith('£')) return price;
+        return `£${parseFloat(price).toFixed(2)}`;
+    }
+    
+    // Add to cart function
+    async function addToCart(productId, productName, productPrice, productImage) {
+        try {
+            // Check if Firebase is available
+            if (window.firebaseApp && window.firebaseFunctions) {
+                const { collection, addDoc, serverTimestamp } = window.firebaseFunctions;
+                const { db, auth } = window.firebaseApp;
+                
+                // Get current user
+                const user = auth.currentUser;
+                
+                if (user) {
+                    // Add to Firebase if user is logged in
+                    const cartItem = {
+                        userId: user.uid,
+                        productId: productId,
+                        productName: productName,
+                        productPrice: productPrice,
+                        productImage: productImage,
+                        quantity: 1,
+                        addedAt: serverTimestamp()
+                    };
+                    
+                    await addDoc(collection(db, "cart"), cartItem);
+                } else {
+                    // Add to localStorage if user is not logged in
+                    const cart = JSON.parse(localStorage.getItem('irya_cart') || '[]');
+                    const existingItem = cart.find(item => item.productId === productId);
+                    
+                    if (existingItem) {
+                        existingItem.quantity += 1;
+                    } else {
+                        cart.push({
+                            productId: productId,
+                            productName: productName,
+                            productPrice: productPrice,
+                            productImage: productImage,
+                            quantity: 1,
+                            addedAt: new Date().toISOString()
+                        });
+                    }
+                    
+                    localStorage.setItem('irya_cart', JSON.stringify(cart));
+                }
+            } else {
+                // Fallback to localStorage
+                const cart = JSON.parse(localStorage.getItem('irya_cart') || '[]');
+                const existingItem = cart.find(item => item.productId === productId);
+                
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    cart.push({
+                        productId: productId,
+                        productName: productName,
+                        productPrice: productPrice,
+                        productImage: productImage,
+                        quantity: 1,
+                        addedAt: new Date().toISOString()
+                    });
+                }
+                
+                localStorage.setItem('irya_cart', JSON.stringify(cart));
+            }
+            
+            // Update cart badge
+            updateCartBadge();
+            
+            // Show notification
+            showNotification(`${productName} added to cart!`);
+            
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+            showNotification('Failed to add to cart. Please try again.');
+        }
+    }
+    
+    // Update cart badge
+    function updateCartBadge() {
+        const cartBadge = document.getElementById('cartBadge');
+        if (!cartBadge) return;
+        
+        try {
+            if (window.firebaseApp && window.firebaseFunctions) {
+                // Get cart from Firebase if user is logged in
+                const { auth } = window.firebaseApp;
+                const user = auth.currentUser;
+                
+                if (user) {
+                    // In real implementation, fetch cart items from Firebase
+                    // For now, use localStorage
+                    const cart = JSON.parse(localStorage.getItem('irya_cart') || '[]');
+                    const itemCount = cart.reduce((total, item) => total + item.quantity, 0);
+                    cartBadge.textContent = itemCount;
+                    cartBadge.style.display = itemCount > 0 ? 'flex' : 'none';
+                } else {
+                    const cart = JSON.parse(localStorage.getItem('irya_cart') || '[]');
+                    const itemCount = cart.reduce((total, item) => total + item.quantity, 0);
+                    cartBadge.textContent = itemCount;
+                    cartBadge.style.display = itemCount > 0 ? 'flex' : 'none';
+                }
+            } else {
+                const cart = JSON.parse(localStorage.getItem('irya_cart') || '[]');
+                const itemCount = cart.reduce((total, item) => total + item.quantity, 0);
+                cartBadge.textContent = itemCount;
+                cartBadge.style.display = itemCount > 0 ? 'flex' : 'none';
+            }
+        } catch (error) {
+            console.error('Error updating cart badge:', error);
+        }
+    }
+    
+    // View product details
+    function viewProduct(productId) {
+        // In real implementation, redirect to product detail page
+        // window.location.href = `product-detail.html?id=${productId}`;
+        console.log('Viewing product:', productId);
+        showNotification('Redirecting to product details...');
+    }
+    
+    // Show notification
+    function showNotification(message) {
+        const notification = document.getElementById('notification');
+        if (!notification) return;
+        
+        notification.textContent = message;
+        notification.classList.add('show');
+        
+        // Hide after 3 seconds
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 3000);
     }
     
     // Search functionality
     const searchInput = document.querySelector('.search-box input');
     const searchIcon = document.querySelector('.search-box i');
     
-    searchInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            searchProducts(this.value);
-        }
-    });
-    
-    searchIcon.addEventListener('click', function() {
-        searchProducts(searchInput.value);
-    });
+    if (searchInput && searchIcon) {
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchProducts(this.value);
+            }
+        });
+        
+        searchIcon.addEventListener('click', function() {
+            searchProducts(searchInput.value);
+        });
+    }
     
     function searchProducts(query) {
         if (query.trim()) {
-            // Show loading
-            document.getElementById('loadingSpinner').style.display = 'block';
-            
-            setTimeout(() => {
-                document.getElementById('loadingSpinner').style.display = 'none';
-                alert(`Searching for: ${query}`);
-                // Here you would implement actual search logic
-                // window.location.href = `search.html?q=${encodeURIComponent(query)}`;
-            }, 1000);
+            showNotification(`Searching for: ${query}`);
+            // In real implementation, redirect to search page
+            // window.location.href = `search.html?q=${encodeURIComponent(query)}`;
         }
     }
     
@@ -1227,98 +1560,58 @@ header.scrolled {
             this.classList.add('active');
             
             const text = this.querySelector('span').textContent;
-            console.log(`Navigating to: ${text}`);
+            handleNavigation(text);
         });
     });
     
-    // Add to cart functionality
-    document.querySelectorAll('.btn-primary').forEach(button => {
-        button.addEventListener('click', function() {
-            const productName = this.closest('.card').querySelector('h3').textContent;
-            const productPrice = this.closest('.card').querySelector('.price').textContent;
-            
-            // Update cart badge
-            const cartBadge = document.querySelector('.cart-badge');
-            let count = parseInt(cartBadge.textContent);
-            count++;
-            cartBadge.textContent = count;
-            
-            // Show cart animation
-            cartBadge.style.transform = 'scale(1.5)';
-            setTimeout(() => {
-                cartBadge.style.transform = 'scale(1)';
-            }, 200);
-            
-            // Show confirmation
-            showNotification(`${productName} added to cart!`);
-        });
-    });
-    
-    // View details functionality
-    document.querySelectorAll('.btn-secondary').forEach(button => {
-        button.addEventListener('click', function() {
-            const productName = this.closest('.card').querySelector('h3').textContent;
-            console.log(`Viewing details for: ${productName}`);
-            // In real implementation, would redirect to product detail page
-        });
-    });
+    function handleNavigation(page) {
+        switch(page) {
+            case 'Home':
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                break;
+            case 'Products':
+                showNotification('Opening products page...');
+                break;
+            case 'Search':
+                searchInput.focus();
+                break;
+            case 'Account':
+                if (window.firebaseApp && window.firebaseApp.auth.currentUser) {
+                    showNotification('Opening account page...');
+                } else {
+                    window.location.href = 'sign.html';
+                }
+                break;
+            case 'Cart':
+                showNotification('Opening cart page...');
+                break;
+        }
+    }
     
     // FAB click
-    document.querySelector('.fab').addEventListener('click', function() {
+    document.getElementById('fabBtn').addEventListener('click', function() {
         showNotification('Opening chat support...');
-        // In real implementation, would open chat widget
     });
     
     // Banner button
-    document.querySelector('.banner-btn').addEventListener('click', function() {
+    document.getElementById('bannerBtn').addEventListener('click', function() {
         showNotification('Learn more about our 30/70 payment plan!');
-        // In real implementation, would scroll to payment plan section
     });
     
     // Sign in button
-    document.querySelector('.signin-btn').addEventListener('click', function() {
-        showNotification('Redirecting to sign in page...');
-        // In real implementation: window.location.href = 'login.html';
+    document.getElementById('signinBtn').addEventListener('click', function() {
+        window.location.href = 'sign.html';
     });
     
-    // Notification function
-    function showNotification(message) {
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--primary-gold);
-            color: white;
-            padding: 15px 20px;
-            border-radius: 10px;
-            box-shadow: var(--shadow-lg);
-            z-index: 9999;
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
-            max-width: 300px;
-        `;
-        notification.textContent = message;
-        document.body.appendChild(notification);
-        
-        // Show notification
-        setTimeout(() => {
-            notification.style.transform = 'translateX(0)';
-        }, 10);
-        
-        // Hide after 3 seconds
-        setTimeout(() => {
-            notification.style.transform = 'translateX(100%)';
-            setTimeout(() => {
-                notification.remove();
-            }, 300);
-        }, 3000);
-    }
-    
-    // Initialize with animations
+    // Initialize everything when DOM is loaded
     document.addEventListener('DOMContentLoaded', function() {
+        console.log('IRYA STONE Website initialized');
+        
+        // Load products
         loadProductsFromFirebase();
+        
+        // Initialize cart
+        updateCartBadge();
         
         // Add staggered animations
         const cards = document.querySelectorAll('.cat-card, .stat-item');
@@ -1328,15 +1621,73 @@ header.scrolled {
         
         // Hero text animation
         const heroText = document.querySelector('.hero-content');
-        heroText.style.opacity = '0';
-        heroText.style.transform = 'translateY(20px)';
+        if (heroText) {
+            heroText.style.opacity = '0';
+            heroText.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                heroText.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+                heroText.style.opacity = '1';
+                heroText.style.transform = 'translateY(0)';
+            }, 300);
+        }
         
-        setTimeout(() => {
-            heroText.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
-            heroText.style.opacity = '1';
-            heroText.style.transform = 'translateY(0)';
-        }, 300);
+        // Listen for auth state changes
+        if (window.firebaseApp && window.firebaseApp.auth) {
+            const { auth } = window.firebaseApp;
+            
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    console.log('User is signed in:', user.email);
+                    document.getElementById('signinBtn').textContent = 'Account';
+                    // Sync cart from localStorage to Firebase
+                    syncCartToFirebase();
+                } else {
+                    console.log('User is signed out');
+                    document.getElementById('signinBtn').textContent = 'Sign In';
+                }
+            });
+        }
     });
+    
+    // Sync localStorage cart to Firebase when user logs in
+    async function syncCartToFirebase() {
+        try {
+            const localCart = JSON.parse(localStorage.getItem('irya_cart') || '[]');
+            
+            if (localCart.length > 0 && window.firebaseApp && window.firebaseFunctions) {
+                const { collection, addDoc, serverTimestamp } = window.firebaseFunctions;
+                const { db, auth } = window.firebaseApp;
+                const user = auth.currentUser;
+                
+                if (user) {
+                    for (const item of localCart) {
+                        const cartItem = {
+                            userId: user.uid,
+                            productId: item.productId,
+                            productName: item.productName,
+                            productPrice: item.productPrice,
+                            productImage: item.productImage,
+                            quantity: item.quantity,
+                            addedAt: serverTimestamp()
+                        };
+                        
+                        await addDoc(collection(db, "cart"), cartItem);
+                    }
+                    
+                    // Clear localStorage cart
+                    localStorage.removeItem('irya_cart');
+                    updateCartBadge();
+                }
+            }
+        } catch (error) {
+            console.error('Error syncing cart:', error);
+        }
+    }
+    
+    // Make functions available globally
+    window.addToCart = addToCart;
+    window.viewProduct = viewProduct;
 </script>
 </body>
 </html>
