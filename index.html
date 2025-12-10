@@ -231,8 +231,13 @@ header.hidden {
     color: #ff4757 !important;
 }
 
-.signout-btn i {
-    color: #ff4757 !important;
+.signout-btn:hover {
+    background: #ff4757 !important;
+    color: white !important;
+}
+
+.signout-btn:hover i {
+    color: white !important;
 }
 
 /* Buttons */
@@ -499,7 +504,7 @@ header.hidden {
 
 .product-image-container {
     width: 100%;
-    height: 220px; /* Reduced height for better image focus */
+    height: 180px; /* Even smaller height */
     overflow: hidden;
     position: relative;
     background: var(--bg-light);
@@ -508,7 +513,7 @@ header.hidden {
 .product-image {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: cover; /* Changed to cover for better fit */
     transition: transform 0.5s ease;
 }
 
@@ -522,46 +527,59 @@ header.hidden {
     right: 10px;
     background: var(--primary-gold);
     color: var(--white);
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 11px;
+    padding: 4px 10px; /* Smaller padding */
+    border-radius: 15px; /* Smaller radius */
+    font-size: 10px; /* Smaller font */
     font-weight: 600;
     z-index: 2;
     box-shadow: var(--shadow-sm);
 }
 
 .product-content {
-    padding: 15px; /* Reduced padding */
+    padding: 12px; /* Even smaller padding */
     flex-grow: 1;
     display: flex;
     flex-direction: column;
 }
 
 .stone-name {
-    font-size: 16px; /* Smaller font */
+    font-size: 14px; /* Smaller font */
     font-weight: 700;
     color: var(--stone-dark);
-    margin-bottom: 4px;
+    margin-bottom: 2px; /* Smaller margin */
     font-family: 'Roboto Slab', serif;
-    line-height: 1.3;
+    line-height: 1.2; /* Tighter line height */
+    min-height: 17px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
 }
 
 .stone-category {
-    font-size: 12px; /* Smaller font */
+    font-size: 11px; /* Smaller font */
     color: var(--primary-gold);
-    margin-bottom: 8px;
+    margin-bottom: 6px; /* Smaller margin */
     font-weight: 500;
+    min-height: 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
 }
 
 .product-description {
-    font-size: 13px; /* Smaller font */
+    font-size: 11px; /* Smaller font */
     color: var(--text-light);
-    margin-bottom: 12px;
-    line-height: 1.5;
+    margin-bottom: 8px; /* Smaller margin */
+    line-height: 1.4; /* Tighter line height */
     flex-grow: 1;
-    max-height: 60px;
+    max-height: 45px; /* Smaller max height */
     overflow: hidden;
     position: relative;
+    min-height: 31px;
 }
 
 .product-description.truncated::after {
@@ -570,36 +588,36 @@ header.hidden {
     bottom: 0;
     right: 0;
     background: linear-gradient(to right, transparent, var(--white) 50%);
-    padding-left: 10px;
+    padding-left: 8px;
 }
 
 .read-more-btn {
     background: none;
     border: none;
     color: var(--primary-gold);
-    font-size: 12px;
+    font-size: 10px; /* Smaller font */
     cursor: pointer;
-    padding: 2px 0;
+    padding: 1px 0;
     text-align: left;
-    margin-top: 4px;
+    margin-top: 2px;
 }
 
 .product-specs {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 12px;
+    gap: 4px; /* Smaller gap */
+    margin-bottom: 8px; /* Smaller margin */
 }
 
 .spec-tag {
     background: var(--bg-light);
     color: var(--text-light);
-    padding: 3px 8px;
-    border-radius: 10px;
-    font-size: 11px;
+    padding: 2px 6px; /* Smaller padding */
+    border-radius: 8px; /* Smaller radius */
+    font-size: 9px; /* Smaller font */
     display: flex;
     align-items: center;
-    gap: 3px;
+    gap: 2px; /* Smaller gap */
 }
 
 .price-section {
@@ -609,27 +627,23 @@ header.hidden {
 .price {
     color: var(--primary-gold);
     font-weight: 700;
-    font-size: 18px; /* Smaller font */
-    margin-bottom: 12px;
+    font-size: 16px; /* Smaller font */
+    margin-bottom: 8px; /* Smaller margin */
     font-family: 'Roboto Slab', serif;
-}
-
-.price-unit {
-    font-size: 11px;
-    color: var(--text-light);
-    font-weight: normal;
+    line-height: 1.2;
+    min-height: 19px;
 }
 
 .card-actions {
     display: flex;
-    gap: 8px;
+    gap: 6px; /* Smaller gap */
 }
 
 .card-btn {
     flex: 1;
-    padding: 10px 12px; /* Smaller padding */
-    border-radius: 8px;
-    font-size: 13px; /* Smaller font */
+    padding: 8px 10px; /* Smaller padding */
+    border-radius: 6px; /* Smaller radius */
+    font-size: 11px; /* Smaller font */
     font-weight: 500;
     cursor: pointer;
     border: none;
@@ -637,7 +651,8 @@ header.hidden {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 4px; /* Smaller gap */
+    height: 32px; /* Fixed height */
 }
 
 .btn-primary {
@@ -721,8 +736,8 @@ header.hidden {
     color: var(--white);
     font-size: 10px;
     font-weight: 600;
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -889,13 +904,18 @@ header.hidden {
     }
     
     .product-image-container {
-        height: 200px;
+        height: 160px;
+    }
+    
+    .product-content {
+        padding: 10px;
     }
 }
 
 @media (max-width: 480px) {
     .card-actions {
         flex-direction: column;
+        gap: 4px;
     }
     
     .nav-btn {
@@ -908,21 +928,78 @@ header.hidden {
     }
     
     .product-image-container {
-        height: 180px;
+        height: 150px;
     }
     
     .stone-name {
-        font-size: 15px;
+        font-size: 13px;
     }
     
     .price {
-        font-size: 16px;
+        font-size: 14px;
     }
     
     .card-btn {
-        padding: 8px 10px;
-        font-size: 12px;
+        padding: 6px 8px;
+        font-size: 10px;
+        height: 28px;
     }
+    
+    .card {
+        min-height: 320px;
+    }
+}
+
+/* Modal for full description */
+.description-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.description-modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.description-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.description-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--text-light);
+}
+
+.description-modal-close:hover {
+    color: var(--primary-gold);
+}
+
+.description-modal-body {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-dark);
 }
 </style>
 </head>
@@ -1092,7 +1169,7 @@ let currentSort = 'newest';
 let allUsesVisible = false;
 
 // ============================================
-// AUTHENTICATION SYSTEM
+// AUTHENTICATION SYSTEM - FIXED SIGNOUT
 // ============================================
 
 class AuthSystem {
@@ -1102,11 +1179,11 @@ class AuthSystem {
     }
     
     async init() {
-        // Check if user is logged in via Firebase
-        await this.checkFirebaseAuth();
-        
-        // Also check localStorage for user data
+        // Check localStorage for user data
         this.checkLocalStorage();
+        
+        // Check Firebase auth if available
+        await this.checkFirebaseAuth();
         
         // Update UI
         this.updateAuthUI();
@@ -1167,7 +1244,17 @@ class AuthSystem {
     }
     
     getUserId() {
-        return this.currentUser ? this.currentUser.uid : 'guest';
+        if (this.isLoggedIn()) {
+            return this.currentUser.uid;
+        }
+        
+        // For guests, create a unique ID
+        let guestId = localStorage.getItem('irya_guest_id');
+        if (!guestId) {
+            guestId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('irya_guest_id', guestId);
+        }
+        return guestId;
     }
     
     getUserName() {
@@ -1429,37 +1516,6 @@ class CartSystem {
             cartBadge.style.display = count > 0 ? 'flex' : 'none';
         }
     }
-    
-    // Transfer guest cart to user cart after login
-    transferGuestCartToUser(userId) {
-        const guestId = localStorage.getItem('irya_guest_id');
-        if (!guestId) return;
-        
-        const guestCartKey = this.cartKey + guestId;
-        const userCartKey = this.cartKey + userId;
-        
-        const guestCart = JSON.parse(localStorage.getItem(guestCartKey) || '[]');
-        const userCart = JSON.parse(localStorage.getItem(userCartKey) || '[]');
-        
-        if (guestCart.length > 0) {
-            // Merge carts
-            guestCart.forEach(guestItem => {
-                const existingItem = userCart.find(userItem => userItem.id === guestItem.id);
-                if (existingItem) {
-                    existingItem.quantity += guestItem.quantity;
-                } else {
-                    userCart.push({
-                        ...guestItem,
-                        userId: userId
-                    });
-                }
-            });
-            
-            localStorage.setItem(userCartKey, JSON.stringify(userCart));
-            localStorage.removeItem(guestCartKey);
-            this.updateCartBadge();
-        }
-    }
 }
 
 // ============================================
@@ -1679,7 +1735,7 @@ async function loadProductsFromFirebase(loadMore = false) {
         // Update last visible document for pagination
         lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
         
-        // Process products - WITH DESCRIPTION
+        // Process products
         const products = [];
         querySnapshot.forEach((doc) => {
             const data = doc.data();
@@ -1756,7 +1812,7 @@ function sortProducts(products) {
     }
 }
 
-// Display products - WITH DESCRIPTION AND COMPACT DESIGN
+// Display products - ULTRA COMPACT DESIGN
 function displayProducts(products, append = false) {
     const container = document.getElementById('productGrid');
     if (!container) return;
@@ -1786,7 +1842,7 @@ function displayProducts(products, append = false) {
         const formattedPrice = formatPrice(product.price, product.price_unit);
         
         // Truncate description if too long
-        const maxDescLength = 80;
+        const maxDescLength = 60;
         let displayDescription = product.description;
         let isTruncated = false;
         
@@ -1804,33 +1860,35 @@ function displayProducts(products, append = false) {
                     ${badge ? `<div class="product-badge">${badge}</div>` : ''}
                 </div>
                 <div class="product-content">
-                    <div class="stone-name">${product.stone_name}</div>
-                    <div class="stone-category">${product.category || 'Natural Stone'}</div>
+                    <div class="stone-name" title="${product.stone_name}">${product.stone_name}</div>
+                    <div class="stone-category" title="${product.category || 'Natural Stone'}">${product.category || 'Natural Stone'}</div>
                     
-                    <div class="product-description ${isTruncated ? 'truncated' : ''}">
+                    <div class="product-description ${isTruncated ? 'truncated' : ''}" title="${product.description}">
                         ${displayDescription}
                     </div>
                     
                     ${isTruncated ? `
-                        <button class="read-more-btn" onclick="showFullDescription('${product.id}', '${product.description.replace(/'/g, "\\'")}')">
+                        <button class="read-more-btn" onclick="showFullDescription('${product.id}', '${product.description.replace(/'/g, "\\'")}', '${product.stone_name.replace(/'/g, "\\'")}')">
                             Read More
                         </button>
                     ` : ''}
                     
-                    <div class="product-specs">
-                        ${product.finish ? `<span class="spec-tag"><i class="fas fa-paint-roller"></i> ${product.finish}</span>` : ''}
-                        ${product.size ? `<span class="spec-tag"><i class="fas fa-ruler-combined"></i> ${product.size}</span>` : ''}
-                    </div>
+                    ${product.finish || product.size ? `
+                        <div class="product-specs">
+                            ${product.finish ? `<span class="spec-tag" title="${product.finish}"><i class="fas fa-paint-roller"></i> ${product.finish}</span>` : ''}
+                            ${product.size ? `<span class="spec-tag" title="${product.size}"><i class="fas fa-ruler-combined"></i> ${product.size}</span>` : ''}
+                        </div>
+                    ` : ''}
                     
                     <div class="price-section">
-                        <div class="price">
+                        <div class="price" title="${formattedPrice}">
                             ${formattedPrice}
                         </div>
                         
                         <div class="card-actions">
                             <button class="card-btn btn-primary" onclick="addToCartWithStoneName('${product.id}', '${product.stone_name.replace(/'/g, "\\'")}', '${product.stone_name.replace(/'/g, "\\'")}', ${product.price}, '${product.image.replace(/'/g, "\\'")}', '${product.category || "Natural Stone"}', '${product.price_unit}')">
                                 <i class="fas fa-cart-plus"></i>
-                                Add to Cart
+                                Add
                             </button>
                             <a href="product-detail.html?id=${product.id}" class="card-btn btn-secondary">
                                 <i class="fas fa-eye"></i>
@@ -1851,21 +1909,41 @@ function displayProducts(products, append = false) {
 }
 
 // Show full description in modal
-function showFullDescription(productId, fullDescription) {
+function showFullDescription(productId, fullDescription, productName) {
+    // Remove existing modal if any
+    const existingModal = document.getElementById('descriptionModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
     const modalHTML = `
-        <div id="descriptionModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; align-items: center; justify-content: center;">
-            <div style="background: white; padding: 20px; border-radius: 10px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <h3 style="margin: 0;">Product Description</h3>
-                    <button onclick="closeDescriptionModal()" style="background: none; border: none; font-size: 20px; cursor: pointer;">&times;</button>
+        <div class="description-modal" id="descriptionModal">
+            <div class="description-modal-content">
+                <div class="description-modal-header">
+                    <h3 style="margin: 0; font-size: 18px;">${productName || 'Product Description'}</h3>
+                    <button class="description-modal-close" onclick="closeDescriptionModal()">&times;</button>
                 </div>
-                <p>${fullDescription}</p>
-                <button onclick="closeDescriptionModal()" style="margin-top: 15px; padding: 10px 20px; background: var(--primary-gold); color: white; border: none; border-radius: 5px; cursor: pointer;">Close</button>
+                <div class="description-modal-body">
+                    <p>${fullDescription}</p>
+                </div>
+                <div style="margin-top: 20px; text-align: center;">
+                    <button onclick="closeDescriptionModal()" style="padding: 8px 20px; background: var(--primary-gold); color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                        Close
+                    </button>
+                </div>
             </div>
         </div>
     `;
     
     document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Close modal when clicking outside
+    const modal = document.getElementById('descriptionModal');
+    modal.addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeDescriptionModal();
+        }
+    });
 }
 
 function closeDescriptionModal() {
@@ -1962,7 +2040,7 @@ function formatPrice(price, unit = 'piece') {
     if (unit === 'sqft' || unit === 'm²') {
         return `£${priceNum.toFixed(2)}/${unit}`;
     } else if (unit === 'piece') {
-        return `£${priceNum.toFixed(2)} per piece`;
+        return `£${priceNum.toFixed(2)}/piece`;
     } else {
         return `£${priceNum.toFixed(2)}`;
     }
@@ -2059,9 +2137,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize cart system
     cartSystem = new CartSystem();
     cartSystem.updateCartBadge();
-    
-    // Transfer guest cart to user cart when user logs in
-    authSystem.checkFirebaseAuth();
     
     // Load stone uses from Firebase
     loadStoneUsesFromFirebase();
@@ -2160,7 +2235,6 @@ function searchProducts(query) {
     if (query.trim()) {
         showNotification(`Searching for: ${query}`);
         // In real implementation, filter products based on search
-        // You would call Firebase with search query
     }
 }
 </script>
