@@ -125,6 +125,116 @@ header.hidden {
     font-size: 14px;
 }
 
+/* User Profile Dropdown */
+.user-profile {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.profile-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, var(--primary-gold), var(--gold-dark));
+    color: var(--white);
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: var(--transition);
+    white-space: nowrap;
+    min-width: 80px;
+}
+
+.profile-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.profile-btn i {
+    font-size: 14px;
+}
+
+.profile-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-lg);
+    min-width: 200px;
+    z-index: 1001;
+    display: none;
+    margin-top: 10px;
+    overflow: hidden;
+    border: 1px solid #f0f0f0;
+}
+
+.profile-dropdown.active {
+    display: block;
+}
+
+.profile-info {
+    padding: 15px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.profile-info .user-name {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 5px;
+    color: var(--stone-dark);
+}
+
+.profile-info .user-email {
+    font-size: 12px;
+    color: var(--text-light);
+}
+
+.dropdown-menu {
+    padding: 10px 0;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    color: var(--text-dark);
+    text-decoration: none;
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background: var(--bg-light);
+    color: var(--primary-gold);
+}
+
+.dropdown-item i {
+    width: 20px;
+    text-align: center;
+    color: var(--primary-gold);
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: #f0f0f0;
+    margin: 5px 0;
+}
+
+.signout-btn {
+    color: #ff4757 !important;
+}
+
+.signout-btn i {
+    color: #ff4757 !important;
+}
+
 /* Buttons */
 .signin-btn {
     background: linear-gradient(135deg, var(--primary-gold), var(--gold-dark));
@@ -239,6 +349,10 @@ header.hidden {
     box-shadow: var(--shadow-sm);
     transition: var(--transition);
     border: 1px solid #f0f0f0;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    display: block;
 }
 
 .use-card:hover {
@@ -476,7 +590,7 @@ header.hidden {
     font-family: 'Roboto Slab', serif;
 }
 
-.rate-unit {
+.price-unit {
     font-size: 12px;
     color: var(--text-light);
     font-weight: normal;
@@ -738,6 +852,17 @@ header.hidden {
     .search-box {
         margin: 0 5px;
     }
+    
+    .profile-btn span {
+        display: none;
+    }
+    
+    .profile-btn {
+        min-width: 40px;
+        width: 40px;
+        justify-content: center;
+        padding: 10px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -795,9 +920,11 @@ header.hidden {
             <i class="fas fa-shopping-cart"></i>
             <span class="cart-badge" id="cartBadge">0</span>
         </a>
-        <a href="sign.html" class="signin-btn" id="signinBtn">
-            <i class="fas fa-user"></i> Sign In
-        </a>
+        
+        <!-- User Profile / Sign In Button -->
+        <div class="user-profile" id="userProfile">
+            <!-- Will be populated by JavaScript -->
+        </div>
     </div>
 </header>
 
@@ -815,11 +942,11 @@ header.hidden {
     <p class="subtitle">Discover the versatile applications of our premium natural stones</p>
     
     <div class="uses-grid" id="usesGrid">
-        <!-- Uses will be dynamically loaded -->
+        <!-- Uses will be dynamically loaded from Firebase -->
     </div>
     
     <div class="view-all-uses">
-        <a href="uses.html" class="view-all-btn">
+        <a href="javascript:void(0)" class="view-all-btn" id="viewAllUsesBtn">
             <i class="fas fa-eye"></i>
             View All Uses
         </a>
@@ -917,9 +1044,260 @@ let isLoading = false;
 let currentCategory = 'all';
 let currentPriceFilter = 'all';
 let currentSort = 'newest';
+let allUsesVisible = false;
 
 // ============================================
-// CART SYSTEM - INTEGRATED
+// AUTHENTICATION SYSTEM
+// ============================================
+
+class AuthSystem {
+    constructor() {
+        this.currentUser = null;
+        this.authKey = 'irya_stone_user';
+    }
+    
+    async init() {
+        // Check if user is logged in via Firebase
+        await this.checkFirebaseAuth();
+        
+        // Also check localStorage for user data
+        this.checkLocalStorage();
+        
+        // Update UI
+        this.updateAuthUI();
+    }
+    
+    async checkFirebaseAuth() {
+        try {
+            if (!firebaseAuth) return;
+            
+            firebaseAuth.onAuthStateChanged((user) => {
+                if (user) {
+                    // User is signed in with Firebase
+                    this.currentUser = {
+                        uid: user.uid,
+                        displayName: user.displayName || 'User',
+                        email: user.email,
+                        photoURL: user.photoURL,
+                        provider: user.providerId,
+                        isFirebaseUser: true
+                    };
+                    
+                    // Save to localStorage
+                    this.saveUserToLocalStorage();
+                } else {
+                    // User is signed out from Firebase
+                    this.currentUser = this.getUserFromLocalStorage();
+                }
+                
+                this.updateAuthUI();
+            });
+        } catch (error) {
+            console.error('Firebase auth error:', error);
+            this.currentUser = this.getUserFromLocalStorage();
+            this.updateAuthUI();
+        }
+    }
+    
+    checkLocalStorage() {
+        const userData = localStorage.getItem(this.authKey);
+        if (userData) {
+            this.currentUser = JSON.parse(userData);
+        }
+    }
+    
+    saveUserToLocalStorage() {
+        if (this.currentUser) {
+            localStorage.setItem(this.authKey, JSON.stringify(this.currentUser));
+        }
+    }
+    
+    getUserFromLocalStorage() {
+        const userData = localStorage.getItem(this.authKey);
+        return userData ? JSON.parse(userData) : null;
+    }
+    
+    isLoggedIn() {
+        return this.currentUser !== null;
+    }
+    
+    getUserName() {
+        return this.currentUser ? this.currentUser.displayName : 'Guest';
+    }
+    
+    getUserEmail() {
+        return this.currentUser ? this.currentUser.email : '';
+    }
+    
+    async login(email, password) {
+        try {
+            if (!firebaseAuth) {
+                // Simulate login for demo
+                this.currentUser = {
+                    uid: 'demo_user_' + Date.now(),
+                    displayName: email.split('@')[0],
+                    email: email,
+                    photoURL: null,
+                    provider: 'email',
+                    isFirebaseUser: false
+                };
+                
+                this.saveUserToLocalStorage();
+                this.updateAuthUI();
+                showNotification('Logged in successfully!');
+                return true;
+            }
+            
+            // Firebase login
+            const userCredential = await firebaseAuth.signInWithEmailAndPassword(email, password);
+            this.currentUser = {
+                uid: userCredential.user.uid,
+                displayName: userCredential.user.displayName || email.split('@')[0],
+                email: userCredential.user.email,
+                photoURL: userCredential.user.photoURL,
+                provider: userCredential.user.providerId,
+                isFirebaseUser: true
+            };
+            
+            this.saveUserToLocalStorage();
+            this.updateAuthUI();
+            showNotification('Logged in successfully!');
+            return true;
+            
+        } catch (error) {
+            console.error('Login error:', error);
+            showError('Login failed: ' + error.message);
+            return false;
+        }
+    }
+    
+    async googleLogin() {
+        try {
+            if (!firebaseAuth) {
+                // Simulate Google login for demo
+                this.currentUser = {
+                    uid: 'google_user_' + Date.now(),
+                    displayName: 'Google User',
+                    email: 'user@gmail.com',
+                    photoURL: 'https://ui-avatars.com/api/?name=Google+User&background=random',
+                    provider: 'google.com',
+                    isFirebaseUser: false
+                };
+                
+                this.saveUserToLocalStorage();
+                this.updateAuthUI();
+                showNotification('Google login successful!');
+                return true;
+            }
+            
+            // Firebase Google login would go here
+            // const provider = new firebase.auth.GoogleAuthProvider();
+            // const result = await firebaseAuth.signInWithPopup(provider);
+            
+            showNotification('Google login is not configured yet');
+            return false;
+            
+        } catch (error) {
+            console.error('Google login error:', error);
+            showError('Google login failed: ' + error.message);
+            return false;
+        }
+    }
+    
+    logout() {
+        try {
+            if (this.currentUser && this.currentUser.isFirebaseUser && firebaseAuth) {
+                firebaseAuth.signOut();
+            }
+            
+            this.currentUser = null;
+            localStorage.removeItem(this.authKey);
+            this.updateAuthUI();
+            showNotification('Logged out successfully!');
+            return true;
+        } catch (error) {
+            console.error('Logout error:', error);
+            showError('Logout failed: ' + error.message);
+            return false;
+        }
+    }
+    
+    updateAuthUI() {
+        const userProfileDiv = document.getElementById('userProfile');
+        if (!userProfileDiv) return;
+        
+        if (this.isLoggedIn()) {
+            const userName = this.getUserName();
+            const userEmail = this.getUserEmail();
+            const firstName = userName.split(' ')[0];
+            
+            userProfileDiv.innerHTML = `
+                <button class="profile-btn" id="profileDropdownBtn">
+                    <i class="fas fa-user"></i>
+                    <span>${firstName}</span>
+                    <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
+                </button>
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="profile-info">
+                        <div class="user-name">${userName}</div>
+                        <div class="user-email">${userEmail || 'No email provided'}</div>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="account.html" class="dropdown-item">
+                            <i class="fas fa-user-circle"></i>
+                            <span>My Account</span>
+                        </a>
+                        <a href="orders.html" class="dropdown-item">
+                            <i class="fas fa-box"></i>
+                            <span>My Orders</span>
+                        </a>
+                        <a href="wishlist.html" class="dropdown-item">
+                            <i class="fas fa-heart"></i>
+                            <span>Wishlist</span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="javascript:void(0)" class="dropdown-item signout-btn" onclick="authSystem.logout()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Sign Out</span>
+                        </a>
+                    </div>
+                </div>
+            `;
+            
+            // Add dropdown toggle functionality
+            setTimeout(() => {
+                const dropdownBtn = document.getElementById('profileDropdownBtn');
+                const dropdown = document.getElementById('profileDropdown');
+                
+                if (dropdownBtn && dropdown) {
+                    dropdownBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        dropdown.classList.toggle('active');
+                    });
+                    
+                    // Close dropdown when clicking outside
+                    document.addEventListener('click', () => {
+                        dropdown.classList.remove('active');
+                    });
+                    
+                    dropdown.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                    });
+                }
+            }, 100);
+            
+        } else {
+            userProfileDiv.innerHTML = `
+                <a href="sign.html" class="signin-btn">
+                    <i class="fas fa-user"></i> Sign In
+                </a>
+            `;
+        }
+    }
+}
+
+// ============================================
+// CART SYSTEM
 // ============================================
 
 class CartSystem {
@@ -937,7 +1315,7 @@ class CartSystem {
         return userId;
     }
     
-    addToCart(productId, productName, productPrice, productImage, productCategory, stoneName = '') {
+    addToCart(productId, productName, stoneName, productPrice, productImage, productCategory, priceUnit = 'piece') {
         try {
             const cart = this.getCart();
             const existingItem = cart.find(item => item.id === productId);
@@ -950,6 +1328,7 @@ class CartSystem {
                     name: productName,
                     stoneName: stoneName || productName,
                     price: productPrice,
+                    priceUnit: priceUnit,
                     image: productImage,
                     category: productCategory,
                     quantity: 1,
@@ -990,23 +1369,7 @@ class CartSystem {
             cartBadge.style.display = count > 0 ? 'flex' : 'none';
         }
     }
-    
-    removeFromCart(productId) {
-        try {
-            const cart = this.getCart();
-            const newCart = cart.filter(item => item.id !== productId);
-            localStorage.setItem(this.cartKey, JSON.stringify(newCart));
-            this.updateCartBadge();
-            return true;
-        } catch (error) {
-            console.error('Error removing from cart:', error);
-            return false;
-        }
-    }
 }
-
-// Initialize cart system
-const cartSystem = new CartSystem();
 
 // ============================================
 // FIREBASE INITIALIZATION
@@ -1038,66 +1401,125 @@ function initializeFirebase() {
 }
 
 // ============================================
-// STONE USES DATA
+// STONE USES FROM FIREBASE
 // ============================================
 
-const stoneUses = [
-    {
-        id: 1,
-        title: "Flooring & Pavement",
-        description: "Natural stone flooring adds elegance and durability to any space. Perfect for indoor floors, outdoor patios, and walkways.",
-        image: "https://images.unsplash.com/photo-1565538810643-b5bdb714032a?auto=format&fit=crop&w=800",
-        stones: ["Sandstone", "Kota Stone", "Granite", "Limestone"],
-        uses: ["Indoor flooring", "Outdoor paving", "Garden paths", "Driveways"]
-    },
-    {
-        id: 2,
-        title: "Wall Cladding",
-        description: "Transform your walls with natural stone cladding for a rustic or modern look. Excellent for both interior and exterior walls.",
-        image: "https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=800",
-        stones: ["Sandstone", "Kota Stone", "Slate", "Marble"],
-        uses: ["Feature walls", "Exterior facades", "Fireplace surrounds", "Accent walls"]
-    },
-    {
-        id: 3,
-        title: "Kitchen Countertops",
-        description: "Durable and beautiful stone surfaces for kitchens. Resistant to heat, scratches, and easy to maintain.",
-        image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w-800",
-        stones: ["Granite", "Marble", "Quartzite", "Limestone"],
-        uses: ["Kitchen tops", "Islands", "Breakfast bars", "Backsplashes"]
-    },
-    {
-        id: 4,
-        title: "Bathroom Surfaces",
-        description: "Create a spa-like atmosphere with natural stone in bathrooms. Water-resistant and easy to clean.",
-        image: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800",
-        stones: ["Marble", "Travertine", "Granite", "Limestone"],
-        uses: ["Vanity tops", "Shower walls", "Bath surrounds", "Flooring"]
-    },
-    {
-        id: 5,
-        title: "Garden & Landscape",
-        description: "Enhance outdoor spaces with natural stone features. Perfect for gardens, water features, and decorative elements.",
-        image: "https://images.unsplash.com/photo-1560743641-3914f2c45636?auto=format&fit=crop&w=800",
-        stones: ["Sandstone", "Kota Stone", "Slate", "Granite"],
-        uses: ["Garden edges", "Water features", "Retaining walls", "Decorative rocks"]
-    },
-    {
-        id: 6,
-        title: "Commercial Spaces",
-        description: "Premium stone solutions for hotels, offices, and retail spaces. Combines durability with aesthetic appeal.",
-        image: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=800",
-        stones: ["Granite", "Marble", "Limestone", "Sandstone"],
-        uses: ["Hotel lobbies", "Office flooring", "Restaurant tables", "Retail displays"]
-    }
-];
-
-function loadStoneUses() {
+async function loadStoneUsesFromFirebase() {
     const usesGrid = document.getElementById('usesGrid');
     if (!usesGrid) return;
     
-    const usesHTML = stoneUses.map(use => `
-        <div class="use-card" data-use-id="${use.id}">
+    try {
+        showLoading(true);
+        
+        if (!firebaseDB) {
+            const initialized = initializeFirebase();
+            if (!initialized) {
+                loadDefaultUses();
+                return;
+            }
+        }
+        
+        // Try to load uses from Firebase
+        const querySnapshot = await firebaseDB.collection("stone_uses").limit(6).get();
+        
+        if (!querySnapshot.empty) {
+            const uses = [];
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                uses.push({
+                    id: doc.id,
+                    title: data.title || 'Stone Use',
+                    description: data.description || '',
+                    image: data.image || getDefaultUseImage(),
+                    stones: data.stones || ['Sandstone', 'Kota Stone'],
+                    uses: data.uses || [],
+                    link: data.link || `uses-detail.html?id=${doc.id}`
+                });
+            });
+            
+            displayUses(uses);
+        } else {
+            // If no uses in Firebase, load default
+            loadDefaultUses();
+        }
+        
+    } catch (error) {
+        console.error('Error loading stone uses:', error);
+        loadDefaultUses();
+    } finally {
+        showLoading(false);
+    }
+}
+
+function loadDefaultUses() {
+    const defaultUses = [
+        {
+            id: 1,
+            title: "Flooring & Pavement",
+            description: "Natural stone flooring adds elegance and durability to any space. Perfect for indoor floors, outdoor patios, and walkways.",
+            image: "https://images.unsplash.com/photo-1565538810643-b5bdb714032a?auto=format&fit=crop&w=800",
+            stones: ["Sandstone", "Kota Stone", "Granite", "Limestone"],
+            uses: ["Indoor flooring", "Outdoor paving", "Garden paths", "Driveways"],
+            link: "uses-detail.html?id=1"
+        },
+        {
+            id: 2,
+            title: "Wall Cladding",
+            description: "Transform your walls with natural stone cladding for a rustic or modern look. Excellent for both interior and exterior walls.",
+            image: "https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=800",
+            stones: ["Sandstone", "Kota Stone", "Slate", "Marble"],
+            uses: ["Feature walls", "Exterior facades", "Fireplace surrounds", "Accent walls"],
+            link: "uses-detail.html?id=2"
+        },
+        {
+            id: 3,
+            title: "Kitchen Countertops",
+            description: "Durable and beautiful stone surfaces for kitchens. Resistant to heat, scratches, and easy to maintain.",
+            image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=800",
+            stones: ["Granite", "Marble", "Quartzite", "Limestone"],
+            uses: ["Kitchen tops", "Islands", "Breakfast bars", "Backsplashes"],
+            link: "uses-detail.html?id=3"
+        },
+        {
+            id: 4,
+            title: "Bathroom Surfaces",
+            description: "Create a spa-like atmosphere with natural stone in bathrooms. Water-resistant and easy to clean.",
+            image: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800",
+            stones: ["Marble", "Travertine", "Granite", "Limestone"],
+            uses: ["Vanity tops", "Shower walls", "Bath surrounds", "Flooring"],
+            link: "uses-detail.html?id=4"
+        },
+        {
+            id: 5,
+            title: "Garden & Landscape",
+            description: "Enhance outdoor spaces with natural stone features. Perfect for gardens, water features, and decorative elements.",
+            image: "https://images.unsplash.com/photo-1560743641-3914f2c45636?auto=format&fit=crop&w=800",
+            stones: ["Sandstone", "Kota Stone", "Slate", "Granite"],
+            uses: ["Garden edges", "Water features", "Retaining walls", "Decorative rocks"],
+            link: "uses-detail.html?id=5"
+        },
+        {
+            id: 6,
+            title: "Commercial Spaces",
+            description: "Premium stone solutions for hotels, offices, and retail spaces. Combines durability with aesthetic appeal.",
+            image: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=800",
+            stones: ["Granite", "Marble", "Limestone", "Sandstone"],
+            uses: ["Hotel lobbies", "Office flooring", "Restaurant tables", "Retail displays"],
+            link: "uses-detail.html?id=6"
+        }
+    ];
+    
+    displayUses(defaultUses);
+}
+
+function displayUses(uses) {
+    const usesGrid = document.getElementById('usesGrid');
+    if (!usesGrid) return;
+    
+    const usesToShow = allUsesVisible ? uses : uses.slice(0, 6);
+    
+    const usesHTML = usesToShow.map(use => `
+        <a href="${use.link || '#'}" class="use-card" data-use-id="${use.id}">
             <div class="use-image">
                 <img src="${use.image}" alt="${use.title}" 
                      onerror="this.src='https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=800'">
@@ -1114,10 +1536,30 @@ function loadStoneUses() {
                     <strong>Common Uses:</strong> ${use.uses.join(', ')}
                 </div>
             </div>
-        </div>
+        </a>
     `).join('');
     
     usesGrid.innerHTML = usesHTML;
+    
+    // Update view all button text
+    const viewAllBtn = document.getElementById('viewAllUsesBtn');
+    if (viewAllBtn) {
+        if (allUsesVisible) {
+            viewAllBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Show Less Uses';
+        } else {
+            viewAllBtn.innerHTML = '<i class="fas fa-eye"></i> View All Uses';
+        }
+    }
+}
+
+function getDefaultUseImage() {
+    const images = [
+        'https://images.unsplash.com/photo-1565538810643-b5bdb714032a?auto=format&fit=crop&w=800',
+        'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=800',
+        'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=800',
+        'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800'
+    ];
+    return images[Math.floor(Math.random() * images.length)];
 }
 
 // ============================================
@@ -1152,28 +1594,6 @@ async function loadProductsFromFirebase(loadMore = false) {
             query = query.where("category", "==", currentCategory);
         }
         
-        // Apply price filter
-        if (currentPriceFilter !== 'all') {
-            let priceQuery;
-            switch(currentPriceFilter) {
-                case 'low':
-                    priceQuery = firebaseDB.collection("products").where("price", "<", 30);
-                    break;
-                case 'medium':
-                    priceQuery = firebaseDB.collection("products")
-                        .where("price", ">=", 30)
-                        .where("price", "<=", 60);
-                    break;
-                case 'high':
-                    priceQuery = firebaseDB.collection("products").where("price", ">", 60);
-                    break;
-            }
-            if (priceQuery) {
-                // For simplicity, we'll filter client-side for multiple conditions
-                // In production, you'd need composite indexes
-            }
-        }
-        
         // For load more, start after last document
         if (loadMore && lastVisible) {
             query = query.startAfter(lastVisible);
@@ -1195,30 +1615,17 @@ async function loadProductsFromFirebase(loadMore = false) {
         // Update last visible document for pagination
         lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
         
-        // Process products
+        // Process products - SHOW ONLY STONE_NAME AND PRICE
         const products = [];
         querySnapshot.forEach((doc) => {
             const data = doc.data();
             
             const product = {
                 id: doc.id,
-                name: data.stone_name || data.name || 'Stone Product',
-                stone_name: data.stone_name || data.name || '',
+                stone_name: data.stone_name || data.name || 'Stone Product',
                 category: data.category || '',
-                sub_category: data.sub_category || '',
-                type: data.type || 'Natural',
-                color: data.color || '',
                 price: parseFloat(data.price) || 0,
-                price_unit: data.price_unit || 'piece',
-                description: data.description || '',
-                size: data.size || '',
-                thickness: data.thickness || '',
-                finish: data.finish || '',
-                usage: data.usage || data.uses || '',
-                factory_name: data.factory_name || '',
-                finish: data.finish || '',
-                uses: data.uses || '',
-                userId: data.userId || ''
+                price_unit: data.price_unit || 'piece'
             };
             
             // Handle images
@@ -1271,7 +1678,7 @@ function sortProducts(products) {
             products.sort((a, b) => b.price - a.price);
             break;
         case 'name':
-            products.sort((a, b) => a.name.localeCompare(b.name));
+            products.sort((a, b) => a.stone_name.localeCompare(b.stone_name));
             break;
         case 'newest':
         default:
@@ -1280,7 +1687,7 @@ function sortProducts(products) {
     }
 }
 
-// Display products
+// Display products - ONLY SHOW STONE_NAME AND PRICE
 function displayProducts(products, append = false) {
     const container = document.getElementById('productGrid');
     if (!container) return;
@@ -1306,7 +1713,7 @@ function displayProducts(products, append = false) {
         if (product.category === 'Sand Stone') badge = 'Sandstone';
         else if (product.category === 'Kota Stone') badge = 'Kota';
         
-        // Format price
+        // Format price with unit
         const formattedPrice = formatPrice(product.price, product.price_unit);
         
         return `
@@ -1321,25 +1728,14 @@ function displayProducts(products, append = false) {
                     <div class="stone-name">${product.stone_name}</div>
                     <div class="stone-category">${product.category || 'Natural Stone'}</div>
                     
-                    <p>${product.description ? (product.description.length > 120 ? 
-                        product.description.substring(0, 120) + '...' : product.description) : 
-                        'Premium quality natural stone product suitable for various applications.'}</p>
-                    
-                    <div class="product-specs">
-                        ${product.finish ? `<span class="spec-tag"><i class="fas fa-paint-roller"></i> ${product.finish}</span>` : ''}
-                        ${product.size ? `<span class="spec-tag"><i class="fas fa-ruler-combined"></i> ${product.size}</span>` : ''}
-                        ${product.thickness ? `<span class="spec-tag"><i class="fas fa-layer-group"></i> ${product.thickness}</span>` : ''}
-                        ${product.color ? `<span class="spec-tag"><i class="fas fa-palette"></i> ${product.color}</span>` : ''}
-                    </div>
-                    
-                    <div class="price-section">
+                    <!-- Only show price, no description -->
+                    <div class="price-section" style="margin-top: 20px;">
                         <div class="price">
                             ${formattedPrice}
-                            ${product.price_unit !== 'piece' ? `<span class="rate-unit">/${product.price_unit}</span>` : ''}
                         </div>
                         
                         <div class="card-actions">
-                            <button class="card-btn btn-primary" onclick="addToCartWithStoneName('${product.id}', '${product.name.replace(/'/g, "\\'")}', '${product.stone_name.replace(/'/g, "\\'")}', ${product.price}, '${product.image.replace(/'/g, "\\'")}', '${product.category || "Natural Stone"}')">
+                            <button class="card-btn btn-primary" onclick="addToCartWithStoneName('${product.id}', '${product.stone_name.replace(/'/g, "\\'")}', '${product.stone_name.replace(/'/g, "\\'")}', ${product.price}, '${product.image.replace(/'/g, "\\'")}', '${product.category || "Natural Stone"}', '${product.price_unit}')">
                                 <i class="fas fa-cart-plus"></i>
                                 Add to Cart
                             </button>
@@ -1362,14 +1758,15 @@ function displayProducts(products, append = false) {
 }
 
 // Enhanced add to cart function
-function addToCartWithStoneName(productId, productName, stoneName, productPrice, productImage, productCategory) {
+function addToCartWithStoneName(productId, productName, stoneName, productPrice, productImage, productCategory, priceUnit) {
     const success = cartSystem.addToCart(
         productId, 
         productName, 
+        stoneName, 
         productPrice, 
         productImage, 
         productCategory,
-        stoneName
+        priceUnit
     );
     
     if (success) {
@@ -1464,30 +1861,18 @@ function showDefaultProducts() {
     const products = [
         {
             id: '1',
-            name: 'Raj Green Sandstone',
             stone_name: 'Raj Green Sandstone',
-            description: 'Premium quality sandstone for outdoor flooring with natural green hues',
+            category: 'Sand Stone',
             price: 28.50,
             image: 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=800',
-            category: 'Sand Stone',
-            finish: 'Matt',
-            thickness: '22mm',
-            size: '600x400mm',
-            color: 'Green',
             price_unit: 'sqft'
         },
         {
             id: '2',
-            name: 'Kota Blue Stone',
             stone_name: 'Kota Blue Stone',
-            description: 'Natural blue limestone for indoor flooring with elegant finish',
+            category: 'Kota Stone',
             price: 32.75,
             image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800',
-            category: 'Kota Stone',
-            finish: 'Polished',
-            thickness: '18mm',
-            size: '300x300mm',
-            color: 'Blue',
             price_unit: 'sqft'
         }
     ];
@@ -1540,17 +1925,27 @@ function handleScroll() {
 // INITIALIZATION
 // ============================================
 
+// Initialize systems
+let authSystem, cartSystem;
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('IRYA STONE Website initialized');
     
-    // Initialize cart badge
+    // Initialize Firebase
+    initializeFirebase();
+    
+    // Initialize authentication system
+    authSystem = new AuthSystem();
+    authSystem.init();
+    
+    // Initialize cart system
+    cartSystem = new CartSystem();
     cartSystem.updateCartBadge();
     
-    // Load stone uses
-    loadStoneUses();
+    // Load stone uses from Firebase
+    loadStoneUsesFromFirebase();
     
-    // Initialize Firebase and load products
-    initializeFirebase();
+    // Load products from Firebase
     loadProductsFromFirebase();
     
     // Category filter change
@@ -1591,6 +1986,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // View all uses button
+    const viewAllUsesBtn = document.getElementById('viewAllUsesBtn');
+    if (viewAllUsesBtn) {
+        viewAllUsesBtn.addEventListener('click', function() {
+            allUsesVisible = !allUsesVisible;
+            loadStoneUsesFromFirebase();
+        });
+    }
+    
     // Search functionality
     const searchInput = document.getElementById('searchInput');
     const searchIcon = document.getElementById('searchIcon');
@@ -1623,10 +2027,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initial scroll check
     handleScroll();
     
-    // Make functions globally available
+    // Make systems globally available
+    window.authSystem = authSystem;
+    window.cartSystem = cartSystem;
     window.addToCartWithStoneName = addToCartWithStoneName;
     window.viewProductDetails = viewProductDetails;
-    window.cartSystem = cartSystem;
 });
 
 function searchProducts(query) {
