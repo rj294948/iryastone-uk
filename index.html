@@ -1491,7 +1491,7 @@ class AuthSystem {
 }
 
 // ============================================
-// ENHANCED FIREBASE CART SYSTEM
+// FIREBASE CART SYSTEM (Like Amazon/Flipkart)
 // ============================================
 
 class CartSystem {
@@ -1503,18 +1503,17 @@ class CartSystem {
     async init() {
         await this.loadCart();
         this.updateCartBadge();
-        return this;
     }
     
     getUserId() {
-        return window.authSystem ? window.authSystem.getUserId() : 'guest';
+        return authSystem ? authSystem.getUserId() : 'guest';
     }
     
     async loadCart() {
         try {
             const userId = this.getUserId();
             
-            if (window.authSystem && window.authSystem.isLoggedIn() && firebaseDB) {
+            if (authSystem.isLoggedIn() && firebaseDB) {
                 // Load from Firebase for logged in users
                 await this.loadFromFirebase(userId);
             } else {
@@ -1567,12 +1566,11 @@ class CartSystem {
         this.saveToLocalStorage(userId);
         
         // Save to Firebase if user is logged in
-        if (window.authSystem && window.authSystem.isLoggedIn() && firebaseDB) {
+        if (authSystem.isLoggedIn() && firebaseDB) {
             await this.saveToFirebase(userId);
         }
         
         this.updateCartBadge();
-        return this.cartItems;
     }
     
     saveToLocalStorage(userId) {
@@ -1585,10 +1583,8 @@ class CartSystem {
             await firebaseDB.collection('userCarts').doc(userId).set({
                 userId: userId,
                 items: this.cartItems,
-                updatedAt: new Date().toISOString(),
-                itemCount: this.cartItems.reduce((sum, item) => sum + item.quantity, 0),
-                totalAmount: this.cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
-            }, { merge: true });
+                updatedAt: new Date().toISOString()
+            });
         } catch (error) {
             console.error('Error saving cart to Firebase:', error);
         }
@@ -1600,7 +1596,6 @@ class CartSystem {
             
             if (existingItem) {
                 existingItem.quantity += 1;
-                existingItem.updatedAt = new Date().toISOString();
             } else {
                 this.cartItems.push({
                     id: product.id,
@@ -1610,23 +1605,14 @@ class CartSystem {
                     priceUnit: product.price_unit || 'piece',
                     image: product.image,
                     category: product.category,
-                    description: product.description,
                     quantity: 1,
                     addedAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
                     userId: this.getUserId()
                 });
             }
             
             await this.saveCart();
-            
-            // Show success notification
-            const notif = document.getElementById('notification');
-            if (notif) {
-                notif.textContent = `${product.stone_name} added to cart!`;
-                notif.classList.add('show');
-                setTimeout(() => notif.classList.remove('show'), 3000);
-            }
+            showNotification(`${product.stone_name} added to cart!`);
             
             // Animate cart button
             const cartBtn = document.querySelector('a[href="cart.html"]');
@@ -1640,64 +1626,13 @@ class CartSystem {
             return true;
         } catch (error) {
             console.error('Error adding to cart:', error);
-            const errorDiv = document.getElementById('errorMessage');
-            if (errorDiv) {
-                errorDiv.textContent = 'Failed to add to cart. Please try again.';
-                errorDiv.style.display = 'block';
-                setTimeout(() => errorDiv.style.display = 'none', 3000);
-            }
+            showError('Failed to add to cart. Please try again.');
             return false;
         }
-    }
-    
-    async updateQuantity(productId, newQuantity) {
-        try {
-            const item = this.cartItems.find(item => item.id === productId);
-            if (item) {
-                if (newQuantity <= 0) {
-                    // Remove item if quantity is 0 or less
-                    this.cartItems = this.cartItems.filter(item => item.id !== productId);
-                } else {
-                    item.quantity = newQuantity;
-                    item.updatedAt = new Date().toISOString();
-                }
-                
-                await this.saveCart();
-                return true;
-            }
-            return false;
-        } catch (error) {
-            console.error('Error updating quantity:', error);
-            return false;
-        }
-    }
-    
-    async removeFromCart(productId) {
-        try {
-            this.cartItems = this.cartItems.filter(item => item.id !== productId);
-            await this.saveCart();
-            return true;
-        } catch (error) {
-            console.error('Error removing from cart:', error);
-            return false;
-        }
-    }
-    
-    clearCart() {
-        this.cartItems = [];
-        this.saveCart();
     }
     
     getCartCount() {
         return this.cartItems.reduce((total, item) => total + item.quantity, 0);
-    }
-    
-    getTotalAmount() {
-        return this.cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-    }
-    
-    getCartItems() {
-        return this.cartItems;
     }
     
     updateCartBadge() {
@@ -1707,13 +1642,6 @@ class CartSystem {
             cartBadge.textContent = count;
             cartBadge.style.display = count > 0 ? 'flex' : 'none';
         }
-        
-        // Also update any other cart badges on the page
-        const allCartBadges = document.querySelectorAll('.cart-count-badge');
-        allCartBadges.forEach(badge => {
-            badge.textContent = count;
-            badge.style.display = count > 0 ? 'flex' : 'none';
-        });
     }
     
     async syncCartOnLogin(userId) {
@@ -1723,27 +1651,21 @@ class CartSystem {
             const localCart = JSON.parse(localStorage.getItem(localCartKey) || '[]');
             
             if (localCart.length > 0) {
-                // Load current Firebase cart
-                await this.loadFromFirebase(userId);
+                // Merge local cart with Firebase cart
+                const firebaseCart = await this.loadFromFirebase(userId);
                 
-                // Merge items (avoid duplicates by ID)
+                // Merge items
                 localCart.forEach(localItem => {
                     const existingItem = this.cartItems.find(item => item.id === localItem.id);
                     if (existingItem) {
                         existingItem.quantity += localItem.quantity;
                     } else {
-                        this.cartItems.push({
-                            ...localItem,
-                            userId: userId
-                        });
+                        this.cartItems.push(localItem);
                     }
                 });
                 
                 // Save merged cart
                 await this.saveCart();
-                
-                // Clear local cart
-                localStorage.removeItem(localCartKey);
             }
         } catch (error) {
             console.error('Error syncing cart on login:', error);
@@ -1752,52 +1674,10 @@ class CartSystem {
     
     // For guests - when they sign up, we need to transfer their cart
     async loadUserCart() {
-        if (window.authSystem && window.authSystem.isLoggedIn()) {
-            await this.syncCartOnLogin(window.authSystem.getUserId());
+        if (authSystem.isLoggedIn()) {
+            await this.syncCartOnLogin(authSystem.getUserId());
         }
     }
-}
-
-// Global cart system instance
-let cartSystem = null;
-
-// Initialize cart system
-async function initCartSystem() {
-    if (!cartSystem) {
-        cartSystem = new CartSystem();
-        await cartSystem.init();
-    }
-    return cartSystem;
-}
-
-// Quick add to cart function (for image cards)
-async function addToCartDirect(productId) {
-    try {
-        if (!cartSystem) {
-            cartSystem = await initCartSystem();
-        }
-        
-        const product = allProducts.find(p => p.id === productId);
-        if (product) {
-            await cartSystem.addToCart(product);
-        }
-    } catch (error) {
-        console.error('Error in quick add to cart:', error);
-        showError('Failed to add to cart');
-    }
-}
-
-// Initialize cart system on page load
-document.addEventListener('DOMContentLoaded', async function() {
-    // ... existing initialization code ...
-    
-    // Initialize cart system
-    cartSystem = await initCartSystem();
-    
-    // Make cart system globally available
-    window.cartSystem = cartSystem;
-    window.addToCartDirect = addToCartDirect;
-});
 }
 
 // ============================================
