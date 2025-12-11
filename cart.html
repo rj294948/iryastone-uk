@@ -11,6 +11,11 @@
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto+Slab:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
 <style>
 :root {
     --primary-gold: #c9a227;
@@ -731,7 +736,7 @@ header {
 
 <script>
 // ============================================
-// FIREBASE CONFIGURATION (SAME AS INDEX.HTML)
+// FIREBASE CONFIGURATION
 // ============================================
 
 const firebaseConfig = {
@@ -750,20 +755,390 @@ let authSystem = null;
 let cartSystem = null;
 
 // ============================================
-// FIREBASE CART SYSTEM (COPY FROM INDEX.HTML)
+// SIMPLIFIED AUTH SYSTEM FOR CART PAGE
 // ============================================
 
-class FirebaseCartSystem {
-    // COPY THE ENTIRE FirebaseCartSystem CLASS FROM MY PREVIOUS RESPONSE
-    // This includes all methods: init, addToCart, updateQuantity, removeFromCart, etc.
+class SimpleAuthSystem {
+    constructor() {
+        this.authKey = 'irya_stone_user';
+        this.currentUser = null;
+    }
+    
+    init() {
+        return new Promise((resolve) => {
+            // Check localStorage for existing user
+            const userData = localStorage.getItem(this.authKey);
+            if (userData) {
+                try {
+                    this.currentUser = JSON.parse(userData);
+                } catch (e) {
+                    this.currentUser = null;
+                }
+            }
+            
+            // Setup Firebase auth listener if available
+            if (firebaseAuth) {
+                firebaseAuth.onAuthStateChanged((user) => {
+                    if (user) {
+                        this.currentUser = {
+                            uid: user.uid,
+                            displayName: user.displayName || 'User',
+                            email: user.email,
+                            isFirebaseUser: true
+                        };
+                        localStorage.setItem(this.authKey, JSON.stringify(this.currentUser));
+                    } else if (this.currentUser && this.currentUser.isFirebaseUser) {
+                        // User logged out from Firebase but was logged in
+                        this.currentUser = null;
+                        localStorage.removeItem(this.authKey);
+                    }
+                    resolve(this);
+                });
+            } else {
+                resolve(this);
+            }
+        });
+    }
+    
+    isLoggedIn() {
+        return this.currentUser !== null && this.currentUser.isFirebaseUser;
+    }
+    
+    getUserId() {
+        if (this.isLoggedIn()) {
+            return this.currentUser.uid;
+        }
+        
+        // For guests
+        let guestId = localStorage.getItem('irya_guest_id');
+        if (!guestId) {
+            guestId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('irya_guest_id', guestId);
+        }
+        return guestId;
+    }
+    
+    getUserName() {
+        return this.currentUser ? this.currentUser.displayName : 'Guest';
+    }
+    
+    async logout() {
+        try {
+            if (this.isLoggedIn() && firebaseAuth) {
+                await firebaseAuth.signOut();
+            }
+            
+            this.currentUser = null;
+            localStorage.removeItem(this.authKey);
+            
+            // Show notification
+            showNotification('Logged out successfully!');
+            return true;
+        } catch (error) {
+            console.error('Logout error:', error);
+            showError('Logout failed: ' + error.message);
+            return false;
+        }
+    }
 }
 
 // ============================================
-// ENHANCED AUTHENTICATION SYSTEM
+// SIMPLIFIED CART SYSTEM
 // ============================================
 
-class EnhancedAuthSystem {
-    // COPY THE ENTIRE EnhancedAuthSystem CLASS FROM MY PREVIOUS RESPONSE
+class SimpleCartSystem {
+    constructor() {
+        this.localCartKey = 'irya_local_cart_';
+        this.cartItems = [];
+        this.userId = null;
+    }
+    
+    async init() {
+        // Get user ID from auth system
+        this.userId = await this.getUserId();
+        
+        // Load cart from localStorage
+        this.loadFromLocalStorage();
+        
+        // Update cart badge
+        this.updateCartBadge();
+        
+        // Setup real-time sync if user is logged in
+        if (this.isUserLoggedIn() && firebaseDB) {
+            this.setupFirebaseSync();
+        }
+        
+        return this;
+    }
+    
+    async getUserId() {
+        // Check for authenticated user
+        if (authSystem) {
+            return authSystem.getUserId();
+        }
+        
+        // Fallback: check localStorage
+        const userData = localStorage.getItem('irya_stone_user');
+        if (userData) {
+            try {
+                const user = JSON.parse(userData);
+                if (user.uid) {
+                    return user.uid;
+                }
+            } catch (e) {
+                // Continue to guest ID
+            }
+        }
+        
+        // Guest ID
+        let guestId = localStorage.getItem('irya_guest_id');
+        if (!guestId) {
+            guestId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('irya_guest_id', guestId);
+        }
+        return guestId;
+    }
+    
+    isUserLoggedIn() {
+        if (authSystem) {
+            return authSystem.isLoggedIn();
+        }
+        
+        // Check localStorage
+        const userData = localStorage.getItem('irya_stone_user');
+        if (userData) {
+            try {
+                const user = JSON.parse(userData);
+                return user.isFirebaseUser === true;
+            } catch (e) {
+                return false;
+            }
+        }
+        return false;
+    }
+    
+    loadFromLocalStorage() {
+        const cartKey = this.localCartKey + this.userId;
+        const cartData = localStorage.getItem(cartKey);
+        this.cartItems = cartData ? JSON.parse(cartData) : [];
+    }
+    
+    saveToLocalStorage() {
+        const cartKey = this.localCartKey + this.userId;
+        localStorage.setItem(cartKey, JSON.stringify(this.cartItems));
+    }
+    
+    async setupFirebaseSync() {
+        try {
+            const cartRef = firebaseDB.collection('userCarts').doc(this.userId);
+            
+            // Load existing cart from Firebase
+            const cartDoc = await cartRef.get();
+            if (cartDoc.exists) {
+                const firebaseCart = cartDoc.data().items || [];
+                this.mergeWithFirebase(firebaseCart);
+                await this.saveToFirebase();
+            } else if (this.cartItems.length > 0) {
+                // Save local cart to Firebase
+                await this.saveToFirebase();
+            }
+            
+            // Setup real-time listener
+            cartRef.onSnapshot((snapshot) => {
+                if (snapshot.exists) {
+                    const firebaseCart = snapshot.data().items || [];
+                    this.mergeWithFirebase(firebaseCart);
+                    this.saveToLocalStorage();
+                    this.updateCartBadge();
+                    
+                    // Trigger cart update event
+                    window.dispatchEvent(new CustomEvent('cartUpdated'));
+                }
+            });
+            
+        } catch (error) {
+            console.error('Firebase sync error:', error);
+        }
+    }
+    
+    mergeWithFirebase(firebaseCart) {
+        // Create maps for easy lookup
+        const localMap = new Map();
+        this.cartItems.forEach(item => {
+            localMap.set(item.id, item);
+        });
+        
+        const firebaseMap = new Map();
+        firebaseCart.forEach(item => {
+            firebaseMap.set(item.id, item);
+        });
+        
+        // Merge: take item with latest updatedAt
+        const mergedItems = [];
+        const allIds = new Set([...localMap.keys(), ...firebaseMap.keys()]);
+        
+        allIds.forEach(id => {
+            const localItem = localMap.get(id);
+            const firebaseItem = firebaseMap.get(id);
+            
+            if (localItem && firebaseItem) {
+                // Take the one with latest updatedAt
+                const localTime = new Date(localItem.updatedAt || localItem.addedAt).getTime();
+                const firebaseTime = new Date(firebaseItem.updatedAt || firebaseItem.addedAt).getTime();
+                
+                if (firebaseTime > localTime) {
+                    mergedItems.push(firebaseItem);
+                } else {
+                    mergedItems.push(localItem);
+                }
+            } else if (localItem) {
+                mergedItems.push(localItem);
+            } else {
+                mergedItems.push(firebaseItem);
+            }
+        });
+        
+        this.cartItems = mergedItems;
+    }
+    
+    async saveToFirebase() {
+        try {
+            const cartData = {
+                userId: this.userId,
+                items: this.cartItems,
+                updatedAt: new Date().toISOString(),
+                itemCount: this.getCartCount(),
+                totalAmount: this.getTotalAmount()
+            };
+            
+            await firebaseDB.collection('userCarts').doc(this.userId).set(cartData, { merge: true });
+        } catch (error) {
+            console.error('Error saving to Firebase:', error);
+        }
+    }
+    
+    async addToCart(product) {
+        try {
+            // Check if item already exists
+            const existingIndex = this.cartItems.findIndex(item => item.id === product.id);
+            
+            if (existingIndex >= 0) {
+                // Update quantity
+                this.cartItems[existingIndex].quantity += 1;
+                this.cartItems[existingIndex].updatedAt = new Date().toISOString();
+            } else {
+                // Add new item
+                this.cartItems.push({
+                    id: product.id,
+                    productId: product.id,
+                    stone_name: product.stone_name || product.name,
+                    name: product.stone_name || product.name,
+                    price: parseFloat(product.price) || 0,
+                    price_unit: product.price_unit || 'piece',
+                    image: product.image || 'https://images.unsplash.com/photo-1544931170-3ca1337cce88',
+                    category: product.category || 'Natural Stone',
+                    description: product.description || '',
+                    quantity: 1,
+                    addedAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    userId: this.userId
+                });
+            }
+            
+            // Save to localStorage
+            this.saveToLocalStorage();
+            
+            // Update UI
+            this.updateCartBadge();
+            
+            // Sync with Firebase
+            if (this.isUserLoggedIn() && firebaseDB) {
+                await this.saveToFirebase();
+            }
+            
+            return true;
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+            return false;
+        }
+    }
+    
+    async updateQuantity(productId, newQuantity) {
+        try {
+            const itemIndex = this.cartItems.findIndex(item => item.id === productId);
+            
+            if (itemIndex >= 0) {
+                if (newQuantity <= 0) {
+                    // Remove item
+                    this.cartItems.splice(itemIndex, 1);
+                } else {
+                    // Update quantity
+                    this.cartItems[itemIndex].quantity = newQuantity;
+                    this.cartItems[itemIndex].updatedAt = new Date().toISOString();
+                }
+                
+                // Save to localStorage
+                this.saveToLocalStorage();
+                
+                // Update UI
+                this.updateCartBadge();
+                
+                // Sync with Firebase
+                if (this.isUserLoggedIn() && firebaseDB) {
+                    await this.saveToFirebase();
+                }
+                
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error('Error updating quantity:', error);
+            return false;
+        }
+    }
+    
+    async removeFromCart(productId) {
+        try {
+            this.cartItems = this.cartItems.filter(item => item.id !== productId);
+            
+            // Save to localStorage
+            this.saveToLocalStorage();
+            
+            // Update UI
+            this.updateCartBadge();
+            
+            // Sync with Firebase
+            if (this.isUserLoggedIn() && firebaseDB) {
+                await this.saveToFirebase();
+            }
+            
+            return true;
+        } catch (error) {
+            console.error('Error removing from cart:', error);
+            return false;
+        }
+    }
+    
+    getCartCount() {
+        return this.cartItems.reduce((total, item) => total + item.quantity, 0);
+    }
+    
+    getTotalAmount() {
+        return this.cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    }
+    
+    getCartItems() {
+        return this.cartItems;
+    }
+    
+    updateCartBadge() {
+        const count = this.getCartCount();
+        const cartBadge = document.getElementById('cartBadge');
+        if (cartBadge) {
+            cartBadge.textContent = count;
+            cartBadge.style.display = count > 0 ? 'flex' : 'none';
+        }
+    }
 }
 
 // ============================================
@@ -922,6 +1297,7 @@ async function updateItemQuantity(productId, newQuantity) {
     try {
         await cartSystem.updateQuantity(productId, newQuantity);
         renderCartItems();
+        showNotification('Cart updated');
     } catch (error) {
         console.error('Error updating quantity:', error);
         showError('Failed to update quantity');
@@ -952,6 +1328,7 @@ async function removeItemFromCart(productId) {
 async function initializeFirebase() {
     try {
         if (typeof firebase === 'undefined') {
+            console.warn('Firebase SDK not loaded');
             return false;
         }
         
@@ -964,6 +1341,7 @@ async function initializeFirebase() {
         firebaseDB = firebase.firestore();
         firebaseAuth = firebase.auth();
         
+        console.log('Firebase initialized successfully');
         return true;
     } catch (error) {
         console.error('Firebase initialization error:', error);
@@ -984,29 +1362,31 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Initialize Firebase
         await initializeFirebase();
         
-        // Initialize systems
-        authSystem = new EnhancedAuthSystem();
+        // Initialize Authentication System
+        authSystem = new SimpleAuthSystem();
         await authSystem.init();
         
-        cartSystem = new FirebaseCartSystem();
+        // Initialize Cart System
+        cartSystem = new SimpleCartSystem();
         await cartSystem.init();
-        
-        authSystem.setCartSystem(cartSystem);
         
         // Render cart items
         renderCartItems();
         
-        // Listen for real-time updates
+        // Listen for cart updates
         window.addEventListener('cartUpdated', function() {
+            console.log('Cart updated event received');
             renderCartItems();
         });
         
         // Setup event listeners
         setupCartPageListeners();
         
+        console.log('Cart page initialized successfully');
+        
     } catch (error) {
         console.error('Cart page initialization error:', error);
-        showError('Failed to load cart');
+        showError('Failed to load cart. Please refresh the page.');
     } finally {
         showLoading(false);
     }
@@ -1025,11 +1405,22 @@ function setupCartPageListeners() {
         });
     }
     
+    // Apply promo button
+    const applyPromoBtn = document.getElementById('applyPromoBtn');
+    if (applyPromoBtn) {
+        applyPromoBtn.addEventListener('click', function() {
+            const promoCode = document.getElementById('promoCodeInput').value;
+            if (promoCode) {
+                showNotification('Promo code applied: ' + promoCode);
+            }
+        });
+    }
+    
     // Checkout button
     const checkoutBtn = document.getElementById('checkoutBtn');
     if (checkoutBtn) {
         checkoutBtn.addEventListener('click', function() {
-            if (cartSystem.getCartCount() > 0) {
+            if (cartSystem && cartSystem.getCartCount() > 0) {
                 window.location.href = 'checkout.html';
             }
         });
