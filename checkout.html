@@ -11,7 +11,10 @@
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto+Slab:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-<!-- Stripe for International Payments -->
+<!-- PayPal SDK -->
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=GBP&intent=capture"></script>
+
+<!-- Stripe for Cards -->
 <script src="https://js.stripe.com/v3/"></script>
 
 <style>
@@ -799,6 +802,19 @@ header.hidden {
 <!-- Notification -->
 <div class="notification" id="notification"></div>
 
+<!-- Payment Processing Modal -->
+<div id="paymentModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 10000; align-items: center; justify-content: center;">
+    <div style="background: white; padding: 30px; border-radius: 15px; text-align: center; max-width: 400px;">
+        <div id="paymentSpinner" class="loading-spinner" style="position: relative; top: 0; left: 0; transform: none; margin: 0 auto 20px;"></div>
+        <h3 id="paymentTitle" style="margin-bottom: 15px;">Processing Payment</h3>
+        <p id="paymentMessage">Please wait while we process your payment...</p>
+        <div id="paypalButtonContainer" style="margin-top: 20px;"></div>
+        <button id="cancelPayment" onclick="cancelPayment()" style="margin-top: 20px; padding: 10px 20px; background: #ff4757; color: white; border: none; border-radius: 8px; cursor: pointer;">
+            Cancel Payment
+        </button>
+    </div>
+</div>
+
 <!-- Header -->
 <header id="mainHeader">
     <div class="logo">
@@ -1005,7 +1021,7 @@ header.hidden {
                         </div>
                         <div class="payment-info">
                             <div class="payment-name">PayPal</div>
-                            <div class="payment-description">Pay with your PayPal account</div>
+                            <div class="payment-description">Pay with your PayPal account or card</div>
                         </div>
                         <i class="fas fa-check-circle"></i>
                     </div>
@@ -1027,6 +1043,9 @@ header.hidden {
                     <div class="stripe-card-element" id="card-element"></div>
                     <div id="card-errors" role="alert" style="color: #ff4757; font-size: 13px; margin-top: 10px;"></div>
                 </div>
+                
+                <!-- PayPal Smart Buttons Container -->
+                <div id="paypalButtonsContainer" style="margin-top: 20px; display: none;"></div>
             </div>
         </div>
         
@@ -1091,7 +1110,7 @@ header.hidden {
             
             <!-- Place Order Button -->
             <div class="action-buttons">
-                <button class="action-btn-large btn-primary" onclick="placeOrder()">
+                <button class="action-btn-large btn-primary" onclick="validateAndProcessPayment()">
                     <i class="fas fa-lock"></i>
                     Proceed to Payment
                 </button>
@@ -1145,7 +1164,7 @@ const firebaseConfig = {
 };
 
 let firebaseApp, firebaseDB, firebaseAuth;
-let stripe, cardElement;
+let stripe, cardElement, paypalButtons;
 let cartItems = [];
 let selectedPaymentMethod = 'stripe';
 let userAddress = null;
@@ -1153,9 +1172,21 @@ let isBuyNow = false;
 let currentPaymentType = 'advance';
 let lastScrollTop = 0;
 let scrollTimeout;
+let currentOrderData = null;
 
 // ============================================
-// SCROLL HIDE/SHOW FUNCTIONALITY - SIMPLIFIED
+// PAYPAL CONFIGURATION
+// ============================================
+
+const PAYPAL_CONFIG = {
+    clientId: 'YOUR_PAYPAL_CLIENT_ID', // Replace with your actual PayPal Client ID
+    currency: 'GBP',
+    intent: 'capture',
+    commit: true
+};
+
+// ============================================
+// SCROLL HIDE/SHOW FUNCTIONALITY
 // ============================================
 
 function initScrollHideShow() {
@@ -1163,37 +1194,30 @@ function initScrollHideShow() {
     const bottomNav = document.getElementById('bottomNav');
     
     window.addEventListener('scroll', function() {
-        // Clear existing timeout
         if (scrollTimeout) {
             clearTimeout(scrollTimeout);
         }
         
-        // Set new timeout
         scrollTimeout = setTimeout(function() {
             handleScroll(header, bottomNav);
         }, 100);
     });
     
-    // Initial call
     handleScroll(header, bottomNav);
 }
 
 function handleScroll(header, bottomNav) {
     const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
     
-    // Only hide on mobile
     if (window.innerWidth <= 768) {
         if (currentScroll > lastScrollTop && currentScroll > 100) {
-            // Scrolling down - hide
             header.classList.add('hidden');
             bottomNav.classList.add('hidden');
         } else if (currentScroll < lastScrollTop) {
-            // Scrolling up - show
             header.classList.remove('hidden');
             bottomNav.classList.remove('hidden');
         }
     } else {
-        // On desktop, always show
         header.classList.remove('hidden');
         bottomNav.classList.remove('hidden');
     }
@@ -1202,7 +1226,7 @@ function handleScroll(header, bottomNav) {
 }
 
 // ============================================
-// UTILITY FUNCTION TO REMOVE UNDEFINED VALUES
+// UTILITY FUNCTIONS
 // ============================================
 
 function removeUndefinedValues(obj) {
@@ -1219,6 +1243,15 @@ function removeUndefinedValues(obj) {
     return newObj;
 }
 
+function getUserId() {
+    let userId = localStorage.getItem('irya_guest_id');
+    if (!userId) {
+        userId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('irya_guest_id', userId);
+    }
+    return userId;
+}
+
 // ============================================
 // INITIALIZATION
 // ============================================
@@ -1230,8 +1263,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Initialize Firebase
     await initializeFirebase();
     
-    // Initialize Stripe (optional - don't fail if not available)
-    await initializeStripe();
+    // Initialize payment systems
+    await initializePaymentSystems();
     
     // Check if this is Buy Now flow
     isBuyNow = localStorage.getItem('irya_buy_now') === 'true';
@@ -1251,6 +1284,55 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Initialize payment options
     initializePaymentOptions();
 });
+
+// ============================================
+// PAYMENT SYSTEMS INITIALIZATION
+// ============================================
+
+async function initializePaymentSystems() {
+    try {
+        // Initialize Stripe
+        await initializeStripe();
+        
+        // Initialize PayPal is already loaded via SDK in head
+        
+    } catch (error) {
+        console.error('Payment systems initialization error:', error);
+        showError('Payment system initialization failed. Please refresh the page.');
+    }
+}
+
+async function initializeStripe() {
+    try {
+        // Initialize Stripe with your publishable key
+        stripe = Stripe('pk_test_51QK1V2RqVv8b8p5x5Z4X9vHjK8l7mN6pL2zRtS8w9cF3yA7bD1'); // Replace with your actual Stripe key
+        
+        const elements = stripe.elements();
+        cardElement = elements.create('card', {
+            style: {
+                base: {
+                    fontSize: '16px',
+                    color: '#32325d',
+                    fontFamily: '"Poppins", sans-serif',
+                },
+            },
+        });
+        
+        cardElement.mount('#card-element');
+        
+        cardElement.on('change', function(event) {
+            const displayError = document.getElementById('card-errors');
+            if (event.error) {
+                displayError.textContent = event.error.message;
+            } else {
+                displayError.textContent = '';
+            }
+        });
+        
+    } catch (error) {
+        console.warn('Stripe initialization error:', error);
+    }
+}
 
 // ============================================
 // FIREBASE INITIALIZATION
@@ -1281,47 +1363,7 @@ async function initializeFirebase() {
 }
 
 // ============================================
-// STRIPE INITIALIZATION
-// ============================================
-
-async function initializeStripe() {
-    try {
-        // Initialize Stripe with your publishable key
-        // Use test key for development
-        stripe = Stripe('pk_test_51QK1V2RqVv8b8p5x5Z4X9vHjK8l7mN6pL2zRtS8w9cF3yA7bD1'); // Replace with your actual Stripe key
-        
-        // Create card element
-        const elements = stripe.elements();
-        cardElement = elements.create('card', {
-            style: {
-                base: {
-                    fontSize: '16px',
-                    color: '#32325d',
-                    fontFamily: '"Poppins", sans-serif',
-                },
-            },
-        });
-        
-        cardElement.mount('#card-element');
-        
-        // Handle real-time validation errors
-        cardElement.on('change', function(event) {
-            const displayError = document.getElementById('card-errors');
-            if (event.error) {
-                displayError.textContent = event.error.message;
-            } else {
-                displayError.textContent = '';
-            }
-        });
-        
-    } catch (error) {
-        console.warn('Stripe initialization error:', error);
-        // Don't show error for Stripe as it might be optional
-    }
-}
-
-// ============================================
-// LOAD CART ITEMS
+// CART MANAGEMENT
 // ============================================
 
 async function loadCartItems() {
@@ -1337,7 +1379,6 @@ async function loadCartItems() {
             displayOrderItems();
             calculateTotals();
             
-            // Clear buy now flag
             if (isBuyNow) {
                 localStorage.removeItem('irya_buy_now');
             }
@@ -1363,11 +1404,9 @@ function displayOrderItems() {
         return;
     }
     
-    // Clear custom requirements container
     customRequirementsContainer.innerHTML = '';
     
     const itemsHTML = cartItems.map(item => {
-        // Display custom requirements if any
         if (item.customRequirements) {
             const customReqHTML = `
                 <div class="custom-requirements-box">
@@ -1420,22 +1459,19 @@ function calculateTotals() {
         const itemTotal = item.calculatedPrice || ((item.price || 0) * (item.quantity || 1));
         subtotal += itemTotal;
         
-        // Use stored advance and remaining if available
         if (item.advancePayment !== undefined && item.remainingPayment !== undefined) {
             advanceTotal += item.advancePayment;
             remainingTotal += item.remainingPayment;
         } else {
-            // Calculate if not stored
             advanceTotal += itemTotal * 0.3;
             remainingTotal += itemTotal * 0.7;
         }
     });
     
-    const tax = subtotal * 0.2; // 20% VAT
+    const tax = subtotal * 0.2;
     const shipping = calculateShippingCost();
     const total = subtotal + tax + shipping;
     
-    // Update stored values in cart items
     cartItems.forEach(item => {
         const itemTotal = item.calculatedPrice || ((item.price || 0) * (item.quantity || 1));
         if (item.advancePayment === undefined) {
@@ -1447,16 +1483,13 @@ function calculateTotals() {
         item.totalPrice = itemTotal;
     });
     
-    // Save updated cart items
     saveCartItems();
     
-    // Update display
     document.getElementById('subtotal').textContent = `£${subtotal.toFixed(2)}`;
     document.getElementById('tax').textContent = `£${tax.toFixed(2)}`;
     document.getElementById('shipping').textContent = shipping === 0 ? 'FREE' : `£${shipping.toFixed(2)}`;
     document.getElementById('total').textContent = `£${total.toFixed(2)}`;
     
-    // Update payment breakdown
     updatePaymentBreakdown(total, advanceTotal, remainingTotal);
     
     return { 
@@ -1483,40 +1516,35 @@ function updatePaymentBreakdown(total, advanceTotal, remainingTotal) {
         remainingAmount.textContent = `£${remainingTotal.toFixed(2)}`;
         payNowAmount.textContent = `£${advanceTotal.toFixed(2)}`;
         
-        // Reset labels for advance payment
         advanceLabel.textContent = '30% Advance:';
         remainingLabel.textContent = '70% After Shipping:';
     } else {
-        const discountedTotal = total * 0.95; // 5% discount
+        const discountedTotal = total * 0.95;
         totalOrderValue.textContent = `£${total.toFixed(2)}`;
         advanceAmount.textContent = `-£${(total * 0.05).toFixed(2)}`;
         remainingAmount.textContent = `£${discountedTotal.toFixed(2)}`;
         payNowAmount.textContent = `£${discountedTotal.toFixed(2)}`;
         
-        // Update labels for full payment
         advanceLabel.textContent = 'Discount (5%):';
         remainingLabel.textContent = 'Discounted Total:';
     }
 }
 
 function calculateShippingCost() {
-    // Simple shipping calculation based on subtotal
     const subtotal = cartItems.reduce((sum, item) => sum + (item.calculatedPrice || ((item.price || 0) * (item.quantity || 1))), 0);
     
     if (subtotal > 500) {
-        return 0; // Free shipping for orders over £500
+        return 0;
     } else if (subtotal > 200) {
-        return 25; // £25 shipping
+        return 25;
     } else {
-        return 35; // £35 shipping
+        return 35;
     }
 }
 
 function calculateShipping() {
     const shipping = calculateShippingCost();
     document.getElementById('shipping').textContent = shipping === 0 ? 'FREE' : `£${shipping.toFixed(2)}`;
-    
-    // Recalculate totals with shipping
     calculateTotals();
 }
 
@@ -1525,17 +1553,14 @@ function calculateShipping() {
 // ============================================
 
 function initializePaymentOptions() {
-    // Get elements directly instead of relying on event
     const advanceOption = document.getElementById('advancePaymentOption');
     const fullOption = document.getElementById('fullPaymentOption');
     
-    // Set default selection
     if (advanceOption && fullOption) {
         advanceOption.classList.add('selected');
         fullOption.classList.remove('selected');
     }
     
-    // Update payment breakdown with initial values
     const totals = calculateTotals();
     updatePaymentBreakdown(totals.total, totals.advanceTotal, totals.remainingTotal);
 }
@@ -1543,16 +1568,11 @@ function initializePaymentOptions() {
 function selectPaymentOption(paymentType) {
     currentPaymentType = paymentType;
     
-    // Get elements
     const advanceOption = document.getElementById('advancePaymentOption');
     const fullOption = document.getElementById('fullPaymentOption');
     
-    if (!advanceOption || !fullOption) {
-        console.error('Payment option elements not found');
-        return;
-    }
+    if (!advanceOption || !fullOption) return;
     
-    // Update UI
     advanceOption.classList.remove('selected');
     fullOption.classList.remove('selected');
     
@@ -1562,10 +1582,8 @@ function selectPaymentOption(paymentType) {
         fullOption.classList.add('selected');
     }
     
-    // Update radio button
     document.getElementById(`${paymentType}Payment`).checked = true;
     
-    // Update payment breakdown
     const totals = calculateTotals();
     updatePaymentBreakdown(totals.total, totals.advanceTotal, totals.remainingTotal);
 }
@@ -1573,7 +1591,6 @@ function selectPaymentOption(paymentType) {
 function selectPaymentMethod(method) {
     selectedPaymentMethod = method;
     
-    // Update UI
     document.querySelectorAll('.payment-method').forEach(el => {
         el.classList.remove('active');
         el.querySelector('.fa-check-circle').style.color = '';
@@ -1582,102 +1599,90 @@ function selectPaymentMethod(method) {
     event.currentTarget.classList.add('active');
     event.currentTarget.querySelector('.fa-check-circle').style.color = 'var(--primary-gold)';
     
-    // Show/hide card element
     const stripeCardElement = document.getElementById('stripeCardElement');
     stripeCardElement.style.display = method === 'stripe' ? 'block' : 'none';
+    
+    const paypalButtonsContainer = document.getElementById('paypalButtonsContainer');
+    paypalButtonsContainer.style.display = method === 'paypal' ? 'block' : 'none';
+    
+    if (method === 'paypal') {
+        initializePayPalButtons();
+    }
 }
 
 // ============================================
-// ADDRESS MANAGEMENT
+// PAYPAL PAYMENT INTEGRATION
 // ============================================
 
-async function loadSavedAddresses() {
-    try {
-        const userId = getUserId();
+function initializePayPalButtons() {
+    const paypalButtonsContainer = document.getElementById('paypalButtonsContainer');
+    paypalButtonsContainer.innerHTML = '';
+    
+    const totals = calculateTotals();
+    const amount = currentPaymentType === 'advance' ? totals.advanceTotal : totals.total * 0.95;
+    
+    if (typeof paypal === 'undefined') {
+        paypalButtonsContainer.innerHTML = `
+            <div style="color: #ff4757; padding: 10px; background: #ffeaea; border-radius: 8px;">
+                <i class="fas fa-exclamation-circle"></i> PayPal is not available at the moment. Please try another payment method.
+            </div>
+        `;
+        return;
+    }
+    
+    paypal.Buttons({
+        createOrder: function(data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    description: `IRYA STONE Order - ${currentPaymentType === 'advance' ? '30% Advance' : 'Full Payment'}`,
+                    amount: {
+                        currency_code: 'GBP',
+                        value: amount.toFixed(2)
+                    }
+                }]
+            });
+        },
         
-        if (!firebaseDB) return;
+        onApprove: async function(data, actions) {
+            try {
+                showPaymentProcessing('Completing PayPal Payment...');
+                
+                // Capture the payment
+                const details = await actions.order.capture();
+                
+                // Process successful payment
+                await processSuccessfulPayment({
+                    method: 'paypal',
+                    paymentId: details.id,
+                    transactionDetails: details,
+                    amount: amount
+                });
+                
+            } catch (error) {
+                console.error('PayPal payment error:', error);
+                hidePaymentProcessing();
+                showError('Payment failed: ' + error.message);
+            }
+        },
         
-        // Try to load from Firebase
-        const doc = await firebaseDB.collection('userAddresses').doc(userId).get();
+        onError: function(err) {
+            console.error('PayPal error:', err);
+            showError('PayPal payment failed. Please try again or use another payment method.');
+        },
         
-        if (doc.exists) {
-            userAddress = doc.data();
-            displaySavedAddress(userAddress);
+        onCancel: function(data) {
+            console.log('PayPal payment cancelled');
+            showNotification('Payment was cancelled');
         }
         
-    } catch (error) {
-        console.error('Error loading saved addresses:', error);
-    }
-}
-
-function displaySavedAddress(address) {
-    const savedAddressesDiv = document.getElementById('savedAddresses');
-    
-    const addressHTML = `
-        <div class="saved-address active" onclick="useSavedAddress()">
-            <div class="address-type">Saved Address</div>
-            <div class="address-details">
-                <div class="name">${address.fullName || ''}</div>
-                <div>${address.address1 || ''} ${address.address2 || ''}</div>
-                <div>${address.city || ''}, ${address.state || ''} ${address.postalCode || ''}</div>
-                <div>${getCountryName(address.country)}</div>
-                <div>Phone: ${address.phone || ''}</div>
-            </div>
-        </div>
-    `;
-    
-    savedAddressesDiv.innerHTML = addressHTML;
-    
-    // Fill form with saved address
-    if (address) {
-        document.getElementById('fullName').value = address.fullName || '';
-        document.getElementById('email').value = address.email || '';
-        document.getElementById('phone').value = address.phone || '';
-        document.getElementById('country').value = address.country || '';
-        document.getElementById('address1').value = address.address1 || '';
-        document.getElementById('address2').value = address.address2 || '';
-        document.getElementById('city').value = address.city || '';
-        document.getElementById('state').value = address.state || '';
-        document.getElementById('postalCode').value = address.postalCode || '';
-    }
-}
-
-function useSavedAddress() {
-    if (userAddress) {
-        document.getElementById('fullName').value = userAddress.fullName || '';
-        document.getElementById('email').value = userAddress.email || '';
-        document.getElementById('phone').value = userAddress.phone || '';
-        document.getElementById('country').value = userAddress.country || '';
-        document.getElementById('address1').value = userAddress.address1 || '';
-        document.getElementById('address2').value = userAddress.address2 || '';
-        document.getElementById('city').value = userAddress.city || '';
-        document.getElementById('state').value = userAddress.state || '';
-        document.getElementById('postalCode').value = userAddress.postalCode || '';
-    }
-}
-
-function getCountryName(countryCode) {
-    const countries = {
-        'GB': 'United Kingdom',
-        'US': 'United States',
-        'CA': 'Canada',
-        'AU': 'Australia',
-        'IN': 'India',
-        'DE': 'Germany',
-        'FR': 'France',
-        'IT': 'Italy',
-        'ES': 'Spain',
-        'AE': 'United Arab Emirates'
-    };
-    
-    return countries[countryCode] || countryCode;
+    }).render('#paypalButtonsContainer');
 }
 
 // ============================================
-// PLACE ORDER - FIXED FOR UNDEFINED VALUES
+// PAYMENT PROCESSING FLOW
 // ============================================
 
-async function placeOrder() {
+async function validateAndProcessPayment() {
     try {
         // Validate form
         if (!validateForm()) return;
@@ -1687,8 +1692,6 @@ async function placeOrder() {
             showError('Please agree to the terms and conditions');
             return;
         }
-        
-        showLoading(true);
         
         // Get address data
         const addressData = {
@@ -1705,18 +1708,13 @@ async function placeOrder() {
             saveAddress: document.getElementById('saveAddress').checked
         };
         
-        // Save address if requested
-        if (addressData.saveAddress) {
-            await saveUserAddress(addressData);
-        }
-        
         // Calculate totals
         const totals = calculateTotals();
         const paymentType = currentPaymentType;
         const paymentAmount = paymentType === 'advance' ? totals.advanceTotal : totals.total * 0.95;
         
-        // Create order object with safe values
-        const order = {
+        // Create order data
+        currentOrderData = {
             userId: getUserId(),
             items: cartItems.map(item => ({
                 id: item.id || '',
@@ -1740,116 +1738,220 @@ async function placeOrder() {
             total: totals.total,
             advancePayment: paymentType === 'advance' ? paymentAmount : 0,
             remainingPayment: paymentType === 'advance' ? totals.remainingTotal : 0,
-            amountPaid: paymentAmount,
+            amountToPay: paymentAmount,
             status: 'pending',
             createdAt: new Date().toISOString(),
             orderNumber: generateOrderNumber(),
-            paymentStatus: 'pending',
-            customRequirements: cartItems
-                .map(item => item.customRequirements || '')
-                .filter(req => req && req.trim() !== '')
+            paymentStatus: 'pending'
         };
         
-        // Remove undefined values before saving to Firebase
-        const cleanOrder = removeUndefinedValues(order);
-        
-        // Process payment
-        let paymentResult;
-        
-        switch(selectedPaymentMethod) {
-            case 'stripe':
-                paymentResult = await processStripePayment(cleanOrder, paymentAmount);
-                break;
-            case 'paypal':
-                paymentResult = await processPayPalPayment(cleanOrder, paymentAmount);
-                break;
-            case 'bank':
-                paymentResult = { success: true, method: 'bank_transfer' };
-                break;
-            default:
-                throw new Error('Invalid payment method');
-        }
-        
-        if (paymentResult.success) {
-            // Update order with payment info
-            cleanOrder.paymentStatus = paymentType === 'full' ? 'paid' : 'advance_paid';
-            cleanOrder.paymentId = paymentResult.paymentId || '';
-            cleanOrder.paymentMethod = paymentResult.method || selectedPaymentMethod;
-            cleanOrder.transactionDetails = paymentResult.transactionDetails || {};
-            cleanOrder.updatedAt = new Date().toISOString();
+        // Process based on payment method
+        if (selectedPaymentMethod === 'paypal') {
+            // PayPal handles payment in its own flow
+            showNotification('Click the PayPal button above to complete payment');
             
-            // Save order to Firebase
-            const orderId = await saveOrderToFirebase(cleanOrder);
+        } else if (selectedPaymentMethod === 'stripe') {
+            // Process Stripe payment
+            await processStripePayment(currentOrderData, paymentAmount);
             
-            // Save custom requirements if any
-            if (cleanOrder.customRequirements && cleanOrder.customRequirements.length > 0) {
-                await saveCustomRequirements(orderId, cleanOrder.customRequirements);
-            }
-            
-            // Clear cart
-            await clearCart();
-            
-            // Redirect to order confirmation
-            window.location.href = `order-confirmation.html?order=${cleanOrder.orderNumber}`;
+        } else if (selectedPaymentMethod === 'bank') {
+            // Bank transfer
+            await processBankTransfer(currentOrderData);
             
         } else {
-            throw new Error(paymentResult.error || 'Payment failed');
+            throw new Error('Invalid payment method');
         }
         
     } catch (error) {
-        console.error('Error placing order:', error);
-        showError('Failed to place order: ' + error.message);
-    } finally {
-        showLoading(false);
+        console.error('Payment validation error:', error);
+        showError('Payment processing failed: ' + error.message);
     }
 }
 
 // ============================================
-// PAYMENT PROCESSING
+// STRIPE PAYMENT PROCESSING
 // ============================================
 
-async function processStripePayment(order, amount) {
+async function processStripePayment(orderData, amount) {
     try {
-        // For demo purposes, simulate successful payment
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        showPaymentProcessing('Processing Card Payment...');
         
-        const paymentId = 'pi_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-        
-        return {
-            success: true,
-            paymentId: paymentId,
-            method: 'stripe',
-            transactionDetails: {
-                amount: amount,
+        // Create payment intent on your backend
+        const response = await fetch('/api/create-payment-intent', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                amount: Math.round(amount * 100), // Convert to pence
                 currency: 'gbp',
-                paymentType: order.paymentType,
-                timestamp: new Date().toISOString()
+                description: `Order ${orderData.orderNumber} - ${orderData.paymentType === 'advance' ? '30% Advance' : 'Full Payment'}`
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to create payment intent');
+        }
+        
+        const { clientSecret } = await response.json();
+        
+        // Confirm payment
+        const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+            payment_method: {
+                card: cardElement,
+                billing_details: {
+                    name: orderData.shippingAddress.fullName,
+                    email: orderData.shippingAddress.email,
+                    phone: orderData.shippingAddress.phone,
+                    address: {
+                        line1: orderData.shippingAddress.address1,
+                        line2: orderData.shippingAddress.address2,
+                        city: orderData.shippingAddress.city,
+                        state: orderData.shippingAddress.state,
+                        postal_code: orderData.shippingAddress.postalCode,
+                        country: orderData.shippingAddress.country
+                    }
+                }
             }
+        });
+        
+        if (error) {
+            throw new Error(error.message);
+        }
+        
+        // Process successful payment
+        await processSuccessfulPayment({
+            method: 'stripe',
+            paymentId: paymentIntent.id,
+            transactionDetails: paymentIntent,
+            amount: amount
+        });
+        
+    } catch (error) {
+        console.error('Stripe payment error:', error);
+        hidePaymentProcessing();
+        showError('Card payment failed: ' + error.message);
+    }
+}
+
+// ============================================
+// BANK TRANSFER PROCESSING
+// ============================================
+
+async function processBankTransfer(orderData) {
+    try {
+        showPaymentProcessing('Preparing Bank Transfer Details...');
+        
+        // Update order with bank transfer info
+        orderData.paymentStatus = 'pending_bank_transfer';
+        orderData.bankTransferDetails = {
+            accountName: 'IRYA STONE LTD',
+            accountNumber: '12345678',
+            sortCode: '04-00-04',
+            iban: 'GB29NWBK60161331926819',
+            swift: 'NWBKGB2L',
+            reference: orderData.orderNumber,
+            amount: orderData.amountToPay,
+            currency: 'GBP'
         };
         
+        // Save order first
+        const orderId = await saveOrderToFirebase(orderData);
+        
+        // Show bank details to user
+        hidePaymentProcessing();
+        
+        const bankDetailsHTML = `
+            <div style="background: var(--bg-light); padding: 20px; border-radius: 10px; margin: 20px 0;">
+                <h4 style="color: var(--primary-gold); margin-bottom: 15px;">
+                    <i class="fas fa-university"></i> Bank Transfer Details
+                </h4>
+                <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #e0e0e0;">
+                    <p><strong>Account Name:</strong> ${orderData.bankTransferDetails.accountName}</p>
+                    <p><strong>Account Number:</strong> ${orderData.bankTransferDetails.accountNumber}</p>
+                    <p><strong>Sort Code:</strong> ${orderData.bankTransferDetails.sortCode}</p>
+                    <p><strong>IBAN:</strong> ${orderData.bankTransferDetails.iban}</p>
+                    <p><strong>SWIFT/BIC:</strong> ${orderData.bankTransferDetails.swift}</p>
+                    <p><strong>Reference:</strong> ${orderData.bankTransferDetails.reference}</p>
+                    <p><strong>Amount:</strong> £${orderData.bankTransferDetails.amount.toFixed(2)}</p>
+                </div>
+                <p style="margin-top: 15px; font-size: 12px; color: var(--text-light);">
+                    <i class="fas fa-info-circle"></i> Please use the reference number when making the transfer. Order will be processed once payment is confirmed.
+                </p>
+                <button onclick="window.location.href='order-confirmation.html?order=${orderData.orderNumber}'" style="margin-top: 15px; padding: 10px 20px; background: var(--primary-gold); color: white; border: none; border-radius: 8px; cursor: pointer;">
+                    View Order Details
+                </button>
+            </div>
+        `;
+        
+        // Show bank details
+        document.body.insertAdjacentHTML('beforeend', bankDetailsHTML);
+        
+        // Clear cart
+        await clearCart();
+        
     } catch (error) {
-        console.error('Payment processing error:', error);
-        return { success: false, error: 'Payment processing failed' };
+        console.error('Bank transfer error:', error);
+        hidePaymentProcessing();
+        showError('Failed to process bank transfer: ' + error.message);
     }
 }
 
-async function processPayPalPayment(order, amount) {
-    // Mock PayPal payment
-    return {
-        success: true,
-        paymentId: 'PAYPAL_' + Date.now(),
-        method: 'paypal',
-        transactionDetails: {
-            amount: amount,
-            currency: 'gbp',
-            paymentType: order.paymentType,
-            timestamp: new Date().toISOString()
+// ============================================
+// SUCCESSFUL PAYMENT PROCESSING
+// ============================================
+
+async function processSuccessfulPayment(paymentResult) {
+    try {
+        showPaymentProcessing('Completing Order...');
+        
+        if (!currentOrderData) {
+            throw new Error('Order data not found');
         }
-    };
+        
+        // Update order with payment info
+        currentOrderData.paymentStatus = currentOrderData.paymentType === 'full' ? 'paid' : 'advance_paid';
+        currentOrderData.paymentId = paymentResult.paymentId;
+        currentOrderData.paymentMethod = paymentResult.method;
+        currentOrderData.transactionDetails = paymentResult.transactionDetails;
+        currentOrderData.amountPaid = paymentResult.amount;
+        currentOrderData.paidAt = new Date().toISOString();
+        
+        // Save address if requested
+        const saveAddress = document.getElementById('saveAddress').checked;
+        if (saveAddress) {
+            await saveUserAddress(currentOrderData.shippingAddress);
+        }
+        
+        // Save order to Firebase
+        const orderId = await saveOrderToFirebase(currentOrderData);
+        
+        // Save custom requirements if any
+        const customReqs = currentOrderData.items
+            .map(item => item.customRequirements)
+            .filter(req => req && req.trim() !== '');
+        
+        if (customReqs.length > 0) {
+            await saveCustomRequirements(orderId, customReqs);
+        }
+        
+        // Clear cart
+        await clearCart();
+        
+        hidePaymentProcessing();
+        
+        // Redirect to order confirmation
+        window.location.href = `order-confirmation.html?order=${currentOrderData.orderNumber}&payment=success`;
+        
+    } catch (error) {
+        console.error('Payment completion error:', error);
+        hidePaymentProcessing();
+        showError('Failed to complete order: ' + error.message);
+    }
 }
 
 // ============================================
-// FIREBASE ORDER MANAGEMENT - FIXED FOR UNDEFINED
+// FIREBASE ORDER MANAGEMENT
 // ============================================
 
 async function saveOrderToFirebase(order) {
@@ -1858,39 +1960,19 @@ async function saveOrderToFirebase(order) {
             throw new Error('Firebase not initialized');
         }
         
-        // Generate document ID
         const orderId = firebaseDB.collection('orders').doc().id;
         
-        // Create final order object with all required fields
-        const finalOrder = {
+        const finalOrder = removeUndefinedValues({
             id: orderId,
-            userId: order.userId || '',
-            items: order.items || [],
-            shippingAddress: order.shippingAddress || {},
-            billingAddress: order.billingAddress || order.shippingAddress || {},
-            paymentMethod: order.paymentMethod || 'stripe',
-            paymentType: order.paymentType || 'advance',
-            subtotal: order.subtotal || 0,
-            tax: order.tax || 0,
-            shipping: order.shipping || 0,
-            total: order.total || 0,
-            advancePayment: order.advancePayment || 0,
-            remainingPayment: order.remainingPayment || 0,
-            amountPaid: order.amountPaid || 0,
-            status: order.status || 'pending',
-            createdAt: order.createdAt || new Date().toISOString(),
-            orderNumber: order.orderNumber || generateOrderNumber(),
-            paymentStatus: order.paymentStatus || 'pending',
-            paymentId: order.paymentId || '',
-            transactionDetails: order.transactionDetails || {},
+            ...order,
             updatedAt: new Date().toISOString()
-        };
+        });
         
-        // Remove any remaining undefined values
-        const cleanOrder = removeUndefinedValues(finalOrder);
+        await firebaseDB.collection('orders').doc(orderId).set(finalOrder);
         
-        // Save to main orders collection
-        await firebaseDB.collection('orders').doc(orderId).set(cleanOrder);
+        // Also save to user's orders collection
+        const userOrderRef = firebaseDB.collection('users').doc(order.userId).collection('orders').doc(orderId);
+        await userOrderRef.set(finalOrder);
         
         return orderId;
     } catch (error) {
@@ -1936,17 +2018,38 @@ async function saveUserAddress(addressData) {
 }
 
 // ============================================
-// UTILITY FUNCTIONS
+// PAYMENT MODAL FUNCTIONS
 // ============================================
 
-function getUserId() {
-    let userId = localStorage.getItem('irya_guest_id');
-    if (!userId) {
-        userId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem('irya_guest_id', userId);
-    }
-    return userId;
+function showPaymentProcessing(message = 'Processing Payment...') {
+    const modal = document.getElementById('paymentModal');
+    const paymentSpinner = document.getElementById('paymentSpinner');
+    const paymentMessage = document.getElementById('paymentMessage');
+    
+    paymentMessage.textContent = message;
+    paymentSpinner.style.display = 'block';
+    
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
 }
+
+function hidePaymentProcessing() {
+    const modal = document.getElementById('paymentModal');
+    const paymentSpinner = document.getElementById('paymentSpinner');
+    
+    paymentSpinner.style.display = 'none';
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+function cancelPayment() {
+    hidePaymentProcessing();
+    showNotification('Payment cancelled');
+}
+
+// ============================================
+// HELPER FUNCTIONS
+// ============================================
 
 function saveCartItems() {
     const userId = getUserId();
@@ -1959,10 +2062,7 @@ async function clearCart() {
         const userId = getUserId();
         const cartKey = 'irya_local_cart_' + userId;
         
-        // Clear local storage
         localStorage.removeItem(cartKey);
-        
-        // Update cart badge
         updateCartBadge();
         
         return true;
@@ -2004,7 +2104,6 @@ function validateForm() {
         }
     }
     
-    // Validate email
     const email = document.getElementById('email').value;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
@@ -2012,7 +2111,6 @@ function validateForm() {
         return false;
     }
     
-    // Validate phone
     const phone = document.getElementById('phone').value;
     const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
     if (!phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ''))) {
@@ -2049,8 +2147,8 @@ function showError(message) {
 // Make functions available globally
 window.selectPaymentOption = selectPaymentOption;
 window.selectPaymentMethod = selectPaymentMethod;
-window.placeOrder = placeOrder;
-window.useSavedAddress = useSavedAddress;
+window.validateAndProcessPayment = validateAndProcessPayment;
+window.cancelPayment = cancelPayment;
 </script>
 </body>
 </html>
