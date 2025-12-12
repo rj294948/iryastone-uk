@@ -47,7 +47,7 @@ body {
     font-size: 14px;
 }
 
-/* Header */
+/* Header - Hide/Show on Scroll */
 header {
     position: fixed;
     top: 0;
@@ -61,6 +61,14 @@ header {
     box-shadow: var(--shadow-sm);
     z-index: 1000;
     gap: 10px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    transform: translateY(0);
+    opacity: 1;
+}
+
+header.hidden {
+    transform: translateY(-100%);
+    opacity: 0;
 }
 
 .logo {
@@ -110,6 +118,11 @@ header {
     padding: 90px 16px 20px;
     background: var(--white);
     border-bottom: 1px solid #f0f0f0;
+    transition: padding 0.3s ease;
+}
+
+.breadcrumb.scrolled {
+    padding-top: 20px;
 }
 
 .breadcrumb-content {
@@ -667,7 +680,7 @@ header {
     display: block;
 }
 
-/* Bottom Navigation */
+/* Bottom Navigation - Hide/Show on Scroll */
 .bottom-nav {
     position: fixed;
     left: 0;
@@ -680,6 +693,14 @@ header {
     border-top: 1px solid #eee;
     z-index: 999;
     box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.bottom-nav.hidden {
+    transform: translateY(100%);
+    opacity: 0;
 }
 
 .nav-btn {
@@ -788,7 +809,7 @@ header {
 <div class="notification" id="notification"></div>
 
 <!-- Header -->
-<header>
+<header id="mainHeader">
     <div class="logo">
         <i class="fa-solid fa-gem"></i>
         <span>IRYA STONE</span>
@@ -806,7 +827,7 @@ header {
 </header>
 
 <!-- Breadcrumb -->
-<section class="breadcrumb">
+<section class="breadcrumb" id="breadcrumb">
     <div class="breadcrumb-content">
         <div class="breadcrumb-item">
             <a href="index.html"><i class="fas fa-home"></i> Home</a>
@@ -925,7 +946,7 @@ header {
                 <div class="payment-options">
                     <h4><i class="fas fa-money-bill-wave"></i> Select Payment Type</h4>
                     
-                    <div class="payment-option selected" onclick="selectPaymentOption('advance')">
+                    <div class="payment-option selected" onclick="selectPaymentOption('advance')" id="advancePaymentOption">
                         <input type="radio" id="advancePayment" name="paymentType" value="advance" checked>
                         <label for="advancePayment">
                             <i class="fas fa-credit-card"></i>
@@ -936,7 +957,7 @@ header {
                         </label>
                     </div>
                     
-                    <div class="payment-option" onclick="selectPaymentOption('full')">
+                    <div class="payment-option" onclick="selectPaymentOption('full')" id="fullPaymentOption">
                         <input type="radio" id="fullPayment" name="paymentType" value="full">
                         <label for="fullPayment">
                             <i class="fas fa-money-check-alt"></i>
@@ -1093,7 +1114,7 @@ header {
 </section>
 
 <!-- Bottom Menu -->
-<div class="bottom-nav">
+<div class="bottom-nav" id="bottomNav">
     <a href="index.html" class="nav-btn">
         <i class="fas fa-home"></i>
         <span>Home</span>
@@ -1139,12 +1160,78 @@ let selectedPaymentMethod = 'stripe';
 let userAddress = null;
 let isBuyNow = false;
 let currentPaymentType = 'advance';
+let lastScrollTop = 0;
+
+// ============================================
+// SCROLL HIDE/SHOW FUNCTIONALITY
+// ============================================
+
+function initScrollHideShow() {
+    const header = document.getElementById('mainHeader');
+    const bottomNav = document.getElementById('bottomNav');
+    const breadcrumb = document.getElementById('breadcrumb');
+    
+    let ticking = false;
+    
+    window.addEventListener('scroll', function() {
+        if (!ticking) {
+            window.requestAnimationFrame(function() {
+                handleScroll(header, bottomNav, breadcrumb);
+                ticking = false;
+            });
+            ticking = true;
+        }
+    });
+    
+    // Initial call to set proper state
+    handleScroll(header, bottomNav, breadcrumb);
+}
+
+function handleScroll(header, bottomNav, breadcrumb) {
+    const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+    
+    // For mobile screens, hide/show based on scroll direction
+    if (window.innerWidth <= 768) {
+        if (currentScroll > lastScrollTop && currentScroll > 100) {
+            // Scrolling down
+            header.classList.add('hidden');
+            bottomNav.classList.add('hidden');
+            breadcrumb.classList.add('scrolled');
+        } else {
+            // Scrolling up
+            header.classList.remove('hidden');
+            bottomNav.classList.remove('hidden');
+            
+            // Only add scrolled class if we're not at the very top
+            if (currentScroll > 50) {
+                breadcrumb.classList.add('scrolled');
+            } else {
+                breadcrumb.classList.remove('scrolled');
+            }
+        }
+    } else {
+        // For desktop, always show but adjust breadcrumb
+        header.classList.remove('hidden');
+        bottomNav.classList.remove('hidden');
+        
+        if (currentScroll > 50) {
+            breadcrumb.classList.add('scrolled');
+        } else {
+            breadcrumb.classList.remove('scrolled');
+        }
+    }
+    
+    lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+}
 
 // ============================================
 // INITIALIZATION
 // ============================================
 
 document.addEventListener('DOMContentLoaded', async function() {
+    // Initialize scroll hide/show
+    initScrollHideShow();
+    
     // Initialize Firebase
     await initializeFirebase();
     
@@ -1232,6 +1319,7 @@ async function initializeStripe() {
         
     } catch (error) {
         console.error('Stripe initialization error:', error);
+        // Don't show error for Stripe as it might be optional
     }
 }
 
@@ -1389,24 +1477,28 @@ function updatePaymentBreakdown(total, advanceTotal, remainingTotal) {
     const advanceAmount = document.getElementById('advanceAmount');
     const remainingAmount = document.getElementById('remainingAmount');
     const payNowAmount = document.getElementById('payNowAmount');
+    const advanceLabel = document.getElementById('advanceLabel');
+    const remainingLabel = document.getElementById('remainingLabel');
     
     if (currentPaymentType === 'advance') {
         totalOrderValue.textContent = `£${total.toFixed(2)}`;
         advanceAmount.textContent = `£${advanceTotal.toFixed(2)}`;
         remainingAmount.textContent = `£${remainingTotal.toFixed(2)}`;
         payNowAmount.textContent = `£${advanceTotal.toFixed(2)}`;
+        
+        // Reset labels for advance payment
+        advanceLabel.textContent = '30% Advance:';
+        remainingLabel.textContent = '70% After Shipping:';
     } else {
         const discountedTotal = total * 0.95; // 5% discount
         totalOrderValue.textContent = `£${total.toFixed(2)}`;
-        advanceAmount.textContent = `£0.00`;
-        remainingAmount.textContent = `£0.00`;
+        advanceAmount.textContent = `-£${(total * 0.05).toFixed(2)}`;
+        remainingAmount.textContent = `£${discountedTotal.toFixed(2)}`;
         payNowAmount.textContent = `£${discountedTotal.toFixed(2)}`;
         
         // Update labels for full payment
-        document.getElementById('advanceLabel').textContent = 'Discount (5%):';
-        document.getElementById('remainingLabel').textContent = 'Discounted Total:';
-        advanceAmount.textContent = `-£${(total * 0.05).toFixed(2)}`;
-        remainingAmount.textContent = `£${discountedTotal.toFixed(2)}`;
+        advanceLabel.textContent = 'Discount (5%):';
+        remainingLabel.textContent = 'Discounted Total:';
     }
 }
 
@@ -1432,34 +1524,45 @@ function calculateShipping() {
 }
 
 // ============================================
-// PAYMENT OPTIONS
+// PAYMENT OPTIONS - FIXED ERROR
 // ============================================
 
 function initializePaymentOptions() {
+    // Get elements directly instead of relying on event
+    const advanceOption = document.getElementById('advancePaymentOption');
+    const fullOption = document.getElementById('fullPaymentOption');
+    
     // Set default selection
-    selectPaymentOption('advance');
+    if (advanceOption && fullOption) {
+        advanceOption.classList.add('selected');
+        fullOption.classList.remove('selected');
+    }
+    
+    // Update payment breakdown with initial values
+    const totals = calculateTotals();
+    updatePaymentBreakdown(totals.total, totals.advanceTotal, totals.remainingTotal);
 }
 
 function selectPaymentOption(paymentType) {
     currentPaymentType = paymentType;
     
-    // Update UI
-    document.querySelectorAll('.payment-option').forEach(el => {
-        el.classList.remove('selected');
-    });
+    // Get elements
+    const advanceOption = document.getElementById('advancePaymentOption');
+    const fullOption = document.getElementById('fullPaymentOption');
     
-    if (event) {
-        event.currentTarget.classList.add('selected');
+    if (!advanceOption || !fullOption) {
+        console.error('Payment option elements not found');
+        return;
+    }
+    
+    // Update UI
+    advanceOption.classList.remove('selected');
+    fullOption.classList.remove('selected');
+    
+    if (paymentType === 'advance') {
+        advanceOption.classList.add('selected');
     } else {
-        // If called without event (initialization)
-        const advanceOption = document.querySelector('.payment-option:first-child');
-        const fullOption = document.querySelector('.payment-option:last-child');
-        
-        if (paymentType === 'advance') {
-            advanceOption.classList.add('selected');
-        } else {
-            fullOption.classList.add('selected');
-        }
+        fullOption.classList.add('selected');
     }
     
     // Update radio button
