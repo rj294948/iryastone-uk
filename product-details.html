@@ -308,6 +308,31 @@ header {
     color: var(--primary-gold);
 }
 
+.calculator-mode-selector {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.mode-btn {
+    padding: 10px 20px;
+    border-radius: 20px;
+    border: 2px solid #e0e0e0;
+    background: var(--white);
+    color: var(--text-dark);
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 14px;
+}
+
+.mode-btn.active {
+    background: var(--primary-gold);
+    color: white;
+    border-color: var(--primary-gold);
+}
+
 .calculator-inputs {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -327,42 +352,19 @@ header {
     color: var(--stone-dark);
 }
 
-.input-group input {
+.input-group input, .input-group select {
     padding: 12px 15px;
     border-radius: 8px;
     border: 1px solid #e0e0e0;
     font-size: 14px;
     transition: var(--transition);
+    background: var(--white);
 }
 
-.input-group input:focus {
+.input-group input:focus, .input-group select:focus {
     outline: none;
     border-color: var(--primary-gold);
     box-shadow: 0 0 0 2px rgba(201, 162, 39, 0.1);
-}
-
-.unit-selector {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-}
-
-.unit-btn {
-    padding: 8px 20px;
-    border-radius: 20px;
-    border: 2px solid #e0e0e0;
-    background: var(--white);
-    color: var(--text-dark);
-    font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.unit-btn.active {
-    background: var(--primary-gold);
-    color: white;
-    border-color: var(--primary-gold);
 }
 
 .calculation-result {
@@ -469,6 +471,73 @@ header {
     gap: 25px;
 }
 
+.product-card {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+    border: 1px solid #f0f0f0;
+    text-decoration: none;
+    color: inherit;
+}
+
+.product-card:hover {
+    border-color: var(--primary-gold);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-5px);
+}
+
+.product-image-container {
+    height: 180px;
+    overflow: hidden;
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.05);
+}
+
+.product-info {
+    padding: 15px;
+}
+
+.product-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--stone-dark);
+    font-family: 'Roboto Slab', serif;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.product-price {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.price-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--primary-gold);
+}
+
+.price-unit {
+    font-size: 12px;
+    color: var(--text-light);
+}
+
 /* Bottom Navigation */
 .bottom-nav {
     position: fixed;
@@ -533,6 +602,108 @@ header {
     to { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
+/* Notification */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--primary-gold);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    box-shadow: var(--shadow-lg);
+    z-index: 9999;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    max-width: 300px;
+    display: none;
+}
+
+.notification.show {
+    transform: translateX(0);
+    display: block;
+}
+
+/* Modal for Custom Calculation */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal {
+    background: var(--white);
+    border-radius: var(--border-radius-lg);
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: var(--stone-dark);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    border: none;
+    transition: var(--transition);
+}
+
+.modal-close:hover {
+    background: #ff4757;
+    transform: rotate(90deg);
+}
+
+.modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.modal-header h3 {
+    font-size: 20px;
+    color: var(--stone-dark);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modal-header h3 i {
+    color: var(--primary-gold);
+}
+
+.modal-body {
+    padding: 20px;
+}
+
 /* Responsive */
 @media (max-width: 992px) {
     .product-grid {
@@ -561,6 +732,10 @@ header {
     .main-image-container {
         height: 300px;
     }
+    
+    .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
 }
 
 @media (max-width: 480px) {
@@ -583,6 +758,34 @@ header {
 
 <!-- Loading Spinner -->
 <div class="loading-spinner" id="loadingSpinner"></div>
+
+<!-- Notification -->
+<div class="notification" id="notification"></div>
+
+<!-- Custom Calculation Modal -->
+<div class="modal-overlay" id="customCalcModal">
+    <div class="modal">
+        <button class="modal-close" id="customCalcCloseBtn">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="modal-header">
+            <h3><i class="fas fa-ruler-combined"></i> Custom Calculation</h3>
+        </div>
+        <div class="modal-body">
+            <div class="calculator-inputs" id="customCalcInputs">
+                <!-- Custom calculation inputs will be loaded here -->
+            </div>
+            <div class="calculation-result" id="customCalcResult">
+                <!-- Custom calculation result will be shown here -->
+            </div>
+            <div class="action-buttons" style="margin-top: 20px;">
+                <button class="action-btn-large btn-primary" onclick="addCustomCalculationToCart()">
+                    <i class="fas fa-cart-plus"></i> Add to Cart
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Header -->
 <header>
@@ -651,15 +854,20 @@ header {
         <i class="fas fa-th-large"></i>
         <span>Products</span>
     </a>
-    <a href="wishlist.html" class="nav-btn">
-        <i class="far fa-heart"></i>
-        <span>Wishlist</span>
+    <a href="orders.html" class="nav-btn">
+        <i class="fas fa-box"></i>
+        <span>Orders</span>
     </a>
     <a href="account.html" class="nav-btn">
         <i class="fas fa-user"></i>
         <span>Account</span>
     </a>
 </div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 
 <script>
 // ============================================
@@ -676,13 +884,359 @@ const firebaseConfig = {
     measurementId: "G-6YM1FLYN48"
 };
 
-let firebaseApp, firebaseDB;
+let firebaseApp, firebaseDB, firebaseAuth;
 let currentProduct = null;
-let currentUnit = 'sqft';
+let currentCalculationMode = 'standard';
+let customCalculationData = null;
+
+// ============================================
+// AUTHENTICATION SYSTEM
+// ============================================
+
+class AuthSystem {
+    constructor() {
+        this.currentUser = null;
+        this.authKey = 'irya_stone_user';
+    }
+    
+    async init() {
+        this.checkLocalStorage();
+        await this.checkFirebaseAuth();
+        return this;
+    }
+    
+    async checkFirebaseAuth() {
+        try {
+            if (!firebaseAuth) return;
+            
+            return new Promise((resolve) => {
+                firebaseAuth.onAuthStateChanged((user) => {
+                    if (user) {
+                        this.currentUser = {
+                            uid: user.uid,
+                            displayName: user.displayName || 'User',
+                            email: user.email,
+                            photoURL: user.photoURL,
+                            provider: user.providerId,
+                            isFirebaseUser: true
+                        };
+                        
+                        this.saveUserToLocalStorage();
+                    } else {
+                        this.currentUser = this.getUserFromLocalStorage();
+                    }
+                    
+                    resolve(this.currentUser);
+                });
+            });
+        } catch (error) {
+            console.error('Firebase auth error:', error);
+            this.currentUser = this.getUserFromLocalStorage();
+            return this.currentUser;
+        }
+    }
+    
+    checkLocalStorage() {
+        const userData = localStorage.getItem(this.authKey);
+        if (userData) {
+            this.currentUser = JSON.parse(userData);
+        }
+    }
+    
+    saveUserToLocalStorage() {
+        if (this.currentUser) {
+            localStorage.setItem(this.authKey, JSON.stringify(this.currentUser));
+        }
+    }
+    
+    getUserFromLocalStorage() {
+        const userData = localStorage.getItem(this.authKey);
+        return userData ? JSON.parse(userData) : null;
+    }
+    
+    isLoggedIn() {
+        return this.currentUser !== null;
+    }
+    
+    getUserId() {
+        if (this.isLoggedIn()) {
+            return this.currentUser.uid;
+        }
+        
+        let guestId = localStorage.getItem('irya_guest_id');
+        if (!guestId) {
+            guestId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('irya_guest_id', guestId);
+        }
+        return guestId;
+    }
+    
+    getUserName() {
+        return this.currentUser ? this.currentUser.displayName : 'Guest';
+    }
+    
+    getUserEmail() {
+        return this.currentUser ? this.currentUser.email : '';
+    }
+    
+    async loadUserAddress() {
+        try {
+            if (!this.isLoggedIn() || !firebaseDB) return null;
+            
+            const doc = await firebaseDB.collection('userAddresses').doc(this.getUserId()).get();
+            if (doc.exists) {
+                return doc.data();
+            }
+            return null;
+        } catch (error) {
+            console.error('Error loading address:', error);
+            return null;
+        }
+    }
+    
+    async saveUserAddress(addressData) {
+        try {
+            if (!this.isLoggedIn() || !firebaseDB) return false;
+            
+            await firebaseDB.collection('userAddresses').doc(this.getUserId()).set({
+                ...addressData,
+                userId: this.getUserId(),
+                updatedAt: new Date().toISOString()
+            }, { merge: true });
+            
+            return true;
+        } catch (error) {
+            console.error('Error saving address:', error);
+            return false;
+        }
+    }
+}
+
+// ============================================
+// CART SYSTEM
+// ============================================
+
+class CartSystem {
+    constructor() {
+        this.localCartKey = 'irya_local_cart_';
+        this.cartItems = [];
+    }
+    
+    async init() {
+        await this.loadCart();
+        this.updateCartBadge();
+        return this;
+    }
+    
+    getUserId() {
+        const authSystem = window.authSystem;
+        return authSystem ? authSystem.getUserId() : 'guest';
+    }
+    
+    async loadCart() {
+        try {
+            const userId = this.getUserId();
+            
+            if (window.authSystem && window.authSystem.isLoggedIn() && firebaseDB) {
+                await this.loadFromFirebase(userId);
+            } else {
+                this.loadFromLocalStorage(userId);
+            }
+            
+            return this.cartItems;
+        } catch (error) {
+            console.error('Error loading cart:', error);
+            this.cartItems = [];
+            return [];
+        }
+    }
+    
+    async loadFromFirebase(userId) {
+        try {
+            const cartDoc = await firebaseDB.collection('userCarts').doc(userId).get();
+            
+            if (cartDoc.exists) {
+                this.cartItems = cartDoc.data().items || [];
+                this.saveToLocalStorage(userId);
+            } else {
+                this.loadFromLocalStorage(userId);
+                
+                if (this.cartItems.length > 0) {
+                    await this.saveToFirebase(userId);
+                }
+            }
+        } catch (error) {
+            console.error('Error loading cart from Firebase:', error);
+            this.loadFromLocalStorage(userId);
+        }
+    }
+    
+    loadFromLocalStorage(userId) {
+        const cartKey = this.localCartKey + userId;
+        const cartData = localStorage.getItem(cartKey);
+        this.cartItems = cartData ? JSON.parse(cartData) : [];
+    }
+    
+    async saveCart() {
+        const userId = this.getUserId();
+        
+        this.saveToLocalStorage(userId);
+        
+        if (window.authSystem && window.authSystem.isLoggedIn() && firebaseDB) {
+            await this.saveToFirebase(userId);
+        }
+        
+        this.updateCartBadge();
+        return this.cartItems;
+    }
+    
+    saveToLocalStorage(userId) {
+        const cartKey = this.localCartKey + userId;
+        localStorage.setItem(cartKey, JSON.stringify(this.cartItems));
+    }
+    
+    async saveToFirebase(userId) {
+        try {
+            await firebaseDB.collection('userCarts').doc(userId).set({
+                userId: userId,
+                items: this.cartItems,
+                updatedAt: new Date().toISOString(),
+                itemCount: this.cartItems.reduce((sum, item) => sum + item.quantity, 0),
+                totalAmount: this.cartItems.reduce((sum, item) => sum + (item.calculatedPrice || item.price * item.quantity), 0)
+            }, { merge: true });
+        } catch (error) {
+            console.error('Error saving cart to Firebase:', error);
+        }
+    }
+    
+    async addToCart(product, quantity = 1, calculationData = null) {
+        try {
+            const existingItem = this.cartItems.find(item => item.id === product.id && 
+                JSON.stringify(item.calculationData) === JSON.stringify(calculationData));
+            
+            if (existingItem) {
+                existingItem.quantity += quantity;
+                existingItem.updatedAt = new Date().toISOString();
+            } else {
+                const cartItem = {
+                    id: product.id,
+                    name: product.stone_name,
+                    stoneName: product.stone_name,
+                    price: product.price,
+                    priceUnit: product.price_unit || 'piece',
+                    image: product.images?.[0] || product.image,
+                    category: product.category,
+                    description: product.description,
+                    quantity: quantity,
+                    addedAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    userId: this.getUserId(),
+                    calculationData: calculationData
+                };
+                
+                // Calculate price based on calculation data
+                if (calculationData) {
+                    cartItem.calculatedPrice = calculatePrice(product, calculationData);
+                    cartItem.calculationType = calculationData.mode || 'standard';
+                } else {
+                    cartItem.calculatedPrice = product.price * quantity;
+                }
+                
+                this.cartItems.push(cartItem);
+            }
+            
+            await this.saveCart();
+            
+            showNotification(`${product.stone_name} added to cart!`);
+            
+            return true;
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+            showError('Failed to add to cart. Please try again.');
+            return false;
+        }
+    }
+    
+    getCartCount() {
+        return this.cartItems.reduce((total, item) => total + item.quantity, 0);
+    }
+    
+    updateCartBadge() {
+        const count = this.getCartCount();
+        const cartBadge = document.getElementById('cartBadge');
+        if (cartBadge) {
+            cartBadge.textContent = count;
+            cartBadge.style.display = count > 0 ? 'flex' : 'none';
+        }
+    }
+}
+
+// ============================================
+// PRICE CALCULATION FUNCTIONS
+// ============================================
+
+function calculatePrice(product, calculationData) {
+    const mode = calculationData.mode || 'standard';
+    const unit = calculationData.unit || product.price_unit || 'piece';
+    const quantity = parseFloat(calculationData.quantity) || 1;
+    
+    let price = product.price;
+    
+    switch(mode) {
+        case 'standard':
+            // Standard calculation based on product's price unit
+            switch(unit) {
+                case 'sqft':
+                    const area = (calculationData.length || 1) * (calculationData.width || 1);
+                    return price * Math.ceil(area) * quantity;
+                    
+                case 'sqm':
+                    const areaM = (calculationData.length || 1) * (calculationData.width || 1);
+                    const areaSqft = areaM * 10.7639;
+                    return price * Math.ceil(areaSqft) * quantity;
+                    
+                case 'weight':
+                    const weight = calculationData.weight || 1;
+                    return price * weight * quantity;
+                    
+                case 'piece':
+                default:
+                    return price * quantity;
+            }
+            
+        case 'custom':
+            // Custom calculation for complex orders
+            const length = parseFloat(calculationData.length) || 0;
+            const width = parseFloat(calculationData.width) || 0;
+            const height = parseFloat(calculationData.height) || 0;
+            const thickness = parseFloat(calculationData.thickness) || 0;
+            const pieces = parseFloat(calculationData.pieces) || quantity;
+            
+            // Calculate volume in cubic feet
+            const volume = (length * width * height) / 1728; // Convert cubic inches to cubic feet
+            
+            // Base price calculation (simplified - adjust based on actual pricing model)
+            let basePrice = price;
+            
+            // Adjust for thickness if provided
+            if (thickness > 0) {
+                const standardThickness = 1; // Assume 1 inch standard thickness
+                basePrice = basePrice * (thickness / standardThickness);
+            }
+            
+            // Calculate total price
+            return (basePrice * volume * pieces).toFixed(2);
+            
+        default:
+            return price * quantity;
+    }
+}
 
 // ============================================
 // INITIALIZATION
 // ============================================
+
+let authSystem, cartSystem;
 
 document.addEventListener('DOMContentLoaded', async function() {
     // Get product ID from URL
@@ -694,21 +1248,32 @@ document.addEventListener('DOMContentLoaded', async function() {
         return;
     }
     
+    // Initialize Firebase
+    await initializeFirebase();
+    
+    // Initialize systems
+    authSystem = new AuthSystem();
+    await authSystem.init();
+    
+    cartSystem = new CartSystem();
+    await cartSystem.init();
+    
+    // Load product details
     await loadProductDetails(productId);
+    
+    // Initialize event listeners
+    initEventListeners();
 });
 
 // ============================================
-// LOAD PRODUCT DETAILS
+// FIREBASE INITIALIZATION
 // ============================================
 
-async function loadProductDetails(productId) {
+async function initializeFirebase() {
     try {
-        showLoading(true);
-        
-        // Initialize Firebase
         if (typeof firebase === 'undefined') {
-            showError('Firebase not loaded');
-            return;
+            showError('Firebase not loaded. Please check your internet connection.');
+            return false;
         }
         
         if (!firebase.apps.length) {
@@ -718,6 +1283,28 @@ async function loadProductDetails(productId) {
         }
         
         firebaseDB = firebase.firestore();
+        firebaseAuth = firebase.auth();
+        
+        console.log('Firebase initialized successfully');
+        return true;
+    } catch (error) {
+        console.error('Firebase initialization error:', error);
+        showError('Firebase initialization failed: ' + error.message);
+        return false;
+    }
+}
+
+// ============================================
+// LOAD PRODUCT DETAILS
+// ============================================
+
+async function loadProductDetails(productId) {
+    try {
+        showLoading(true);
+        
+        if (!firebaseDB) {
+            await initializeFirebase();
+        }
         
         // Get product from Firebase
         const doc = await firebaseDB.collection("products").doc(productId).get();
@@ -747,7 +1334,9 @@ async function loadProductDetails(productId) {
             water_absorption: data.water_absorption || '',
             type: data.type || '',
             images: [],
-            min_order: data.min_order || 1
+            min_order: data.min_order || 1,
+            weight_per_unit: data.weight_per_unit || null,
+            area_per_unit: data.area_per_unit || null
         };
         
         // Handle images
@@ -863,34 +1452,65 @@ function displayProductDetails() {
             <div class="price-calculator">
                 <h3><i class="fas fa-calculator"></i> Price Calculator</h3>
                 
-                <div class="calculator-inputs">
-                    <div class="input-group">
-                        <label for="lengthInput">Length (ft)</label>
-                        <input type="number" id="lengthInput" min="0" step="0.01" value="1">
+                <div class="calculator-mode-selector">
+                    <button class="mode-btn ${currentCalculationMode === 'standard' ? 'active' : ''}" 
+                            onclick="changeCalculationMode('standard')">
+                        <i class="fas fa-calculator"></i> Standard
+                    </button>
+                    <button class="mode-btn ${currentCalculationMode === 'custom' ? 'active' : ''}" 
+                            onclick="openCustomCalculationModal()">
+                        <i class="fas fa-ruler-combined"></i> Custom Order
+                    </button>
+                </div>
+                
+                <div id="standardCalculator" ${currentCalculationMode !== 'standard' ? 'style="display:none;"' : ''}>
+                    <div class="calculator-inputs">
+                        <div class="input-group">
+                            <label for="unitSelect">Calculation Unit</label>
+                            <select id="unitSelect" onchange="updateStandardCalculator()">
+                                <option value="piece" ${currentProduct.price_unit === 'piece' ? 'selected' : ''}>Pieces</option>
+                                <option value="sqft" ${currentProduct.price_unit === 'sqft' ? 'selected' : ''}>Square Feet</option>
+                                <option value="sqm" ${currentProduct.price_unit === 'sqm' ? 'selected' : ''}>Square Meters</option>
+                                <option value="weight" ${currentProduct.weight_per_unit ? 'selected' : ''}>Weight</option>
+                            </select>
+                        </div>
+                        
+                        <div class="input-group" id="areaInputs" style="${currentProduct.price_unit !== 'sqft' && currentProduct.price_unit !== 'sqm' ? 'display:none;' : ''}">
+                            <label for="lengthInput">Length (${currentProduct.price_unit === 'sqm' ? 'm' : 'ft'})</label>
+                            <input type="number" id="lengthInput" min="0" step="0.01" value="1" oninput="updateStandardCalculator()">
+                        </div>
+                        
+                        <div class="input-group" id="widthInputs" style="${currentProduct.price_unit !== 'sqft' && currentProduct.price_unit !== 'sqm' ? 'display:none;' : ''}">
+                            <label for="widthInput">Width (${currentProduct.price_unit === 'sqm' ? 'm' : 'ft'})</label>
+                            <input type="number" id="widthInput" min="0" step="0.01" value="1" oninput="updateStandardCalculator()">
+                        </div>
+                        
+                        <div class="input-group" id="weightInputs" style="${!currentProduct.weight_per_unit ? 'display:none;' : ''}">
+                            <label for="weightInput">Weight (kg)</label>
+                            <input type="number" id="weightInput" min="0" step="0.01" value="1" oninput="updateStandardCalculator()">
+                        </div>
+                        
+                        <div class="input-group" id="quantityInputs">
+                            <label for="quantityInput">Quantity</label>
+                            <input type="number" id="quantityInput" min="${currentProduct.min_order}" step="1" 
+                                   value="${currentProduct.min_order}" oninput="updateStandardCalculator()">
+                        </div>
                     </div>
                     
-                    <div class="input-group">
-                        <label for="widthInput">Width (ft)</label>
-                        <input type="number" id="widthInput" min="0" step="0.01" value="1">
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="quantityInput">Quantity</label>
-                        <input type="number" id="quantityInput" min="${currentProduct.min_order}" step="1" value="${currentProduct.min_order}">
+                    <div class="calculation-result" id="standardCalcResult">
+                        <!-- Standard calculation results will be updated here -->
                     </div>
                 </div>
                 
-                <div class="unit-selector">
-                    <button class="unit-btn ${currentProduct.price_unit === 'sqft' ? 'active' : ''}" 
-                            onclick="changeUnit('sqft')">Square Feet (sqft)</button>
-                    <button class="unit-btn ${currentProduct.price_unit === 'piece' ? 'active' : ''}" 
-                            onclick="changeUnit('piece')">Pieces</button>
-                    <button class="unit-btn ${currentProduct.price_unit === 'sqm' ? 'active' : ''}" 
-                            onclick="changeUnit('sqm')">Square Meters (m²)</button>
-                </div>
-                
-                <div class="calculation-result" id="calculationResult">
-                    <!-- Calculation results will be updated here -->
+                <div id="customCalculatorInfo" ${currentCalculationMode !== 'custom' ? 'style="display:none;"' : ''}>
+                    <div style="text-align: center; padding: 20px; background: var(--bg-light); border-radius: 10px;">
+                        <i class="fas fa-ruler-combined" style="font-size: 48px; color: var(--primary-gold); margin-bottom: 15px;"></i>
+                        <h4>Custom Order Calculation</h4>
+                        <p>Click the "Custom Order" button above to open custom calculation tool for complex requirements.</p>
+                        <button class="action-btn-large btn-primary" onclick="openCustomCalculationModal()" style="margin-top: 15px;">
+                            <i class="fas fa-ruler-combined"></i> Open Custom Calculator
+                        </button>
+                    </div>
                 </div>
             </div>
             
@@ -900,9 +1520,9 @@ function displayProductDetails() {
                     <i class="fas fa-cart-plus"></i>
                     Add to Cart
                 </button>
-                <button class="action-btn-large btn-secondary" onclick="addToWishlist()">
-                    <i class="far fa-heart"></i>
-                    Add to Wishlist
+                <button class="action-btn-large btn-secondary" onclick="buyNow()">
+                    <i class="fas fa-bolt"></i>
+                    Buy Now
                 </button>
             </div>
         </div>
@@ -911,20 +1531,11 @@ function displayProductDetails() {
     productDetails.innerHTML = html;
     
     // Initialize calculator
-    currentUnit = currentProduct.price_unit || 'sqft';
-    updateCalculator();
-    
-    // Add event listeners to inputs
-    ['lengthInput', 'widthInput', 'quantityInput'].forEach(id => {
-        const input = document.getElementById(id);
-        if (input) {
-            input.addEventListener('input', updateCalculator);
-        }
-    });
+    updateStandardCalculator();
 }
 
 // ============================================
-// PRICE CALCULATOR FUNCTIONS
+// CALCULATOR FUNCTIONS
 // ============================================
 
 function changeMainImage(imageUrl, thumbnailElement) {
@@ -938,64 +1549,81 @@ function changeMainImage(imageUrl, thumbnailElement) {
     thumbnailElement.classList.add('active');
 }
 
-function changeUnit(unit) {
-    currentUnit = unit;
-    document.querySelectorAll('.unit-btn').forEach(btn => {
+function changeCalculationMode(mode) {
+    currentCalculationMode = mode;
+    
+    // Update button active states
+    document.querySelectorAll('.mode-btn').forEach(btn => {
         btn.classList.remove('active');
     });
     event.target.classList.add('active');
-    updateCalculator();
+    
+    // Show/hide calculator sections
+    document.getElementById('standardCalculator').style.display = mode === 'standard' ? 'block' : 'none';
+    document.getElementById('customCalculatorInfo').style.display = mode === 'custom' ? 'block' : 'none';
 }
 
-function updateCalculator() {
+function updateStandardCalculator() {
     if (!currentProduct) return;
     
-    const length = parseFloat(document.getElementById('lengthInput').value) || 0;
-    const width = parseFloat(document.getElementById('widthInput').value) || 0;
-    const quantity = parseInt(document.getElementById('quantityInput').value) || currentProduct.min_order;
+    const unit = document.getElementById('unitSelect').value;
+    const quantity = parseFloat(document.getElementById('quantityInput').value) || currentProduct.min_order;
     
-    let area = 0;
-    let unitPrice = currentProduct.price;
+    // Show/hide inputs based on unit
+    document.getElementById('areaInputs').style.display = (unit === 'sqft' || unit === 'sqm') ? 'flex' : 'none';
+    document.getElementById('widthInputs').style.display = (unit === 'sqft' || unit === 'sqm') ? 'flex' : 'none';
+    document.getElementById('weightInputs').style.display = (unit === 'weight') ? 'flex' : 'none';
+    
     let totalQuantity = quantity;
     let totalPrice = 0;
     
-    switch(currentUnit) {
+    switch(unit) {
         case 'sqft':
-            area = length * width;
-            totalQuantity = Math.ceil(area);
-            totalPrice = unitPrice * totalQuantity;
+            const lengthFt = parseFloat(document.getElementById('lengthInput').value) || 1;
+            const widthFt = parseFloat(document.getElementById('widthInput').value) || 1;
+            const areaSqft = lengthFt * widthFt;
+            totalQuantity = Math.ceil(areaSqft) * quantity;
+            totalPrice = currentProduct.price * totalQuantity;
             break;
             
         case 'sqm':
-            area = length * width;
-            const areaSqft = area * 10.7639;
-            totalQuantity = Math.ceil(areaSqft);
-            totalPrice = unitPrice * totalQuantity;
+            const lengthM = parseFloat(document.getElementById('lengthInput').value) || 1;
+            const widthM = parseFloat(document.getElementById('widthInput').value) || 1;
+            const areaSqm = lengthM * widthM;
+            const areaSqftFromM = areaSqm * 10.7639;
+            totalQuantity = Math.ceil(areaSqftFromM) * quantity;
+            totalPrice = currentProduct.price * totalQuantity;
+            break;
+            
+        case 'weight':
+            const weight = parseFloat(document.getElementById('weightInput').value) || 1;
+            totalQuantity = weight * quantity;
+            totalPrice = currentProduct.price * totalQuantity;
             break;
             
         case 'piece':
         default:
             totalQuantity = quantity;
-            totalPrice = unitPrice * totalQuantity;
+            totalPrice = currentProduct.price * totalQuantity;
             break;
     }
     
     // Ensure minimum order quantity
     if (totalQuantity < currentProduct.min_order) {
         totalQuantity = currentProduct.min_order;
-        totalPrice = unitPrice * totalQuantity;
+        totalPrice = currentProduct.price * totalQuantity;
         document.getElementById('quantityInput').value = currentProduct.min_order;
     }
     
-    const calculationResult = document.getElementById('calculationResult');
+    const calculationResult = document.getElementById('standardCalcResult');
     calculationResult.innerHTML = `
         <div class="calculation-row">
             <span class="calculation-label">Unit Price:</span>
-            <span class="calculation-value">£${unitPrice.toFixed(2)} per ${currentUnit}</span>
+            <span class="calculation-value">£${currentProduct.price.toFixed(2)} per ${unit}</span>
         </div>
         <div class="calculation-row">
-            <span class="calculation-label">Quantity:</span>
-            <span class="calculation-value">${totalQuantity} ${currentUnit}</span>
+            <span class="calculation-label">Total ${getUnitLabel(unit)}:</span>
+            <span class="calculation-value">${totalQuantity.toFixed(2)} ${getUnitDisplay(unit)}</span>
         </div>
         <div class="calculation-row">
             <span class="calculation-label">Subtotal:</span>
@@ -1004,89 +1632,188 @@ function updateCalculator() {
     `;
 }
 
+function getUnitLabel(unit) {
+    switch(unit) {
+        case 'sqft': return 'Area';
+        case 'sqm': return 'Area';
+        case 'weight': return 'Weight';
+        case 'piece': return 'Quantity';
+        default: return 'Quantity';
+    }
+}
+
+function getUnitDisplay(unit) {
+    switch(unit) {
+        case 'sqft': return 'sq ft';
+        case 'sqm': return 'sq m';
+        case 'weight': return 'kg';
+        case 'piece': return 'pieces';
+        default: return unit;
+    }
+}
+
 // ============================================
-// CART & WISHLIST FUNCTIONS
+// CUSTOM CALCULATION MODAL
+// ============================================
+
+function openCustomCalculationModal() {
+    if (!currentProduct) return;
+    
+    const modal = document.getElementById('customCalcModal');
+    const inputsDiv = document.getElementById('customCalcInputs');
+    
+    // Build custom calculation inputs
+    const inputsHTML = `
+        <div class="input-group">
+            <label for="customLength">Length (inches)</label>
+            <input type="number" id="customLength" min="0" step="0.01" value="12" oninput="updateCustomCalculation()">
+        </div>
+        
+        <div class="input-group">
+            <label for="customWidth">Width (inches)</label>
+            <input type="number" id="customWidth" min="0" step="0.01" value="12" oninput="updateCustomCalculation()">
+        </div>
+        
+        <div class="input-group">
+            <label for="customHeight">Height (inches)</label>
+            <input type="number" id="customHeight" min="0" step="0.01" value="1" oninput="updateCustomCalculation()">
+        </div>
+        
+        <div class="input-group">
+            <label for="customThickness">Thickness (inches)</label>
+            <input type="number" id="customThickness" min="0" step="0.01" value="${currentProduct.thickness || 1}" oninput="updateCustomCalculation()">
+        </div>
+        
+        <div class="input-group">
+            <label for="customPieces">Number of Pieces</label>
+            <input type="number" id="customPieces" min="1" step="1" value="${currentProduct.min_order}" oninput="updateCustomCalculation()">
+        </div>
+        
+        <div class="input-group">
+            <label for="customNotes">Special Requirements</label>
+            <textarea id="customNotes" rows="3" placeholder="Any special requirements or notes..."></textarea>
+        </div>
+    `;
+    
+    inputsDiv.innerHTML = inputsHTML;
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    
+    // Initialize custom calculation
+    updateCustomCalculation();
+}
+
+function closeCustomCalculationModal() {
+    const modal = document.getElementById('customCalcModal');
+    modal.classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+
+function updateCustomCalculation() {
+    if (!currentProduct) return;
+    
+    const length = parseFloat(document.getElementById('customLength').value) || 12;
+    const width = parseFloat(document.getElementById('customWidth').value) || 12;
+    const height = parseFloat(document.getElementById('customHeight').value) || 1;
+    const thickness = parseFloat(document.getElementById('customThickness').value) || (currentProduct.thickness || 1);
+    const pieces = parseInt(document.getElementById('customPieces').value) || currentProduct.min_order;
+    
+    // Calculate volume in cubic feet
+    const volume = (length * width * height) / 1728; // Convert cubic inches to cubic feet
+    
+    // Calculate price (simplified model - adjust based on actual pricing)
+    let basePrice = currentProduct.price;
+    
+    // Adjust for thickness
+    const standardThickness = 1; // Assume 1 inch standard
+    const thicknessMultiplier = thickness / standardThickness;
+    const adjustedPrice = basePrice * thicknessMultiplier;
+    
+    // Calculate total
+    const totalVolume = volume * pieces;
+    const totalPrice = (adjustedPrice * totalVolume).toFixed(2);
+    
+    // Store calculation data
+    customCalculationData = {
+        mode: 'custom',
+        length: length,
+        width: width,
+        height: height,
+        thickness: thickness,
+        pieces: pieces,
+        volume: volume,
+        totalVolume: totalVolume,
+        notes: document.getElementById('customNotes').value,
+        calculatedAt: new Date().toISOString()
+    };
+    
+    const resultDiv = document.getElementById('customCalcResult');
+    resultDiv.innerHTML = `
+        <div class="calculation-row">
+            <span class="calculation-label">Volume per piece:</span>
+            <span class="calculation-value">${volume.toFixed(2)} cu ft</span>
+        </div>
+        <div class="calculation-row">
+            <span class="calculation-label">Total volume:</span>
+            <span class="calculation-value">${totalVolume.toFixed(2)} cu ft</span>
+        </div>
+        <div class="calculation-row">
+            <span class="calculation-label">Thickness multiplier:</span>
+            <span class="calculation-value">${thicknessMultiplier.toFixed(2)}x</span>
+        </div>
+        <div class="calculation-row">
+            <span class="calculation-label">Total Price:</span>
+            <span class="calculation-value">£${totalPrice}</span>
+        </div>
+    `;
+}
+
+async function addCustomCalculationToCart() {
+    if (!currentProduct || !customCalculationData) return;
+    
+    const quantity = customCalculationData.pieces || currentProduct.min_order;
+    
+    await cartSystem.addToCart(currentProduct, quantity, customCalculationData);
+    closeCustomCalculationModal();
+    showNotification('Custom order added to cart!');
+}
+
+// ============================================
+// ADD TO CART & BUY NOW
 // ============================================
 
 async function addToCart() {
     if (!currentProduct) return;
     
-    const quantity = parseInt(document.getElementById('quantityInput').value) || currentProduct.min_order;
-    const length = parseFloat(document.getElementById('lengthInput').value) || 0;
-    const width = parseFloat(document.getElementById('widthInput').value) || 0;
+    let calculationData = null;
+    let quantity = parseFloat(document.getElementById('quantityInput').value) || currentProduct.min_order;
     
-    let calculatedPrice = currentProduct.price * quantity;
-    
-    if (currentUnit === 'sqft' || currentUnit === 'sqm') {
-        const area = length * width;
-        let areaSqft = currentUnit === 'sqm' ? area * 10.7639 : area;
-        calculatedPrice = currentProduct.price * Math.ceil(areaSqft);
-    }
-    
-    // Save to localStorage (simple cart system)
-    const cartKey = 'irya_cart';
-    let cart = JSON.parse(localStorage.getItem(cartKey)) || [];
-    
-    const existingItem = cart.find(item => item.id === currentProduct.id);
-    
-    if (existingItem) {
-        existingItem.quantity += quantity;
-        existingItem.calculatedPrice = calculatedPrice;
-    } else {
-        cart.push({
-            id: currentProduct.id,
-            name: currentProduct.stone_name,
-            price: currentProduct.price,
-            calculatedPrice: calculatedPrice,
-            quantity: quantity,
-            image: currentProduct.images[0],
-            category: currentProduct.category
-        });
-    }
-    
-    localStorage.setItem(cartKey, JSON.stringify(cart));
-    
-    // Update cart badge
-    updateCartBadge();
-    
-    // Show notification
-    showNotification(`${currentProduct.stone_name} added to cart!`);
-}
-
-function addToWishlist() {
-    if (!currentProduct) return;
-    
-    const wishlistKey = 'irya_wishlist';
-    let wishlist = JSON.parse(localStorage.getItem(wishlistKey)) || [];
-    
-    const existingItem = wishlist.find(item => item.id === currentProduct.id);
-    
-    if (!existingItem) {
-        wishlist.push({
-            id: currentProduct.id,
-            name: currentProduct.stone_name,
-            price: currentProduct.price,
-            image: currentProduct.images[0],
-            category: currentProduct.category
-        });
+    if (currentCalculationMode === 'standard') {
+        const unit = document.getElementById('unitSelect').value;
         
-        localStorage.setItem(wishlistKey, JSON.stringify(wishlist));
-        showNotification(`${currentProduct.stone_name} added to wishlist!`);
-    } else {
-        showNotification(`${currentProduct.stone_name} is already in your wishlist`);
+        calculationData = {
+            mode: 'standard',
+            unit: unit,
+            quantity: quantity
+        };
+        
+        if (unit === 'sqft' || unit === 'sqm') {
+            calculationData.length = parseFloat(document.getElementById('lengthInput').value) || 1;
+            calculationData.width = parseFloat(document.getElementById('widthInput').value) || 1;
+        } else if (unit === 'weight') {
+            calculationData.weight = parseFloat(document.getElementById('weightInput').value) || 1;
+        }
     }
+    
+    await cartSystem.addToCart(currentProduct, quantity, calculationData);
 }
 
-function updateCartBadge() {
-    const cartKey = 'irya_cart';
-    const cart = JSON.parse(localStorage.getItem(cartKey)) || [];
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+async function buyNow() {
+    // First add to cart
+    await addToCart();
     
-    const cartBadge = document.getElementById('cartBadge');
-    if (cartBadge) {
-        cartBadge.textContent = totalItems;
-        cartBadge.style.display = totalItems > 0 ? 'flex' : 'none';
-    }
+    // Then redirect to checkout
+    window.location.href = 'checkout.html';
 }
 
 // ============================================
@@ -1181,39 +1908,14 @@ function showLoading(show) {
 }
 
 function showNotification(message) {
-    // Create notification element
-    const notification = document.createElement('div');
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: var(--primary-gold);
-        color: white;
-        padding: 15px 20px;
-        border-radius: 10px;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        z-index: 9999;
-        max-width: 300px;
-        animation: slideIn 0.3s ease;
-    `;
+    const notification = document.getElementById('notification');
+    if (!notification) return;
     
-    notification.innerHTML = `
-        <style>
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-        </style>
-        <div>${message}</div>
-    `;
-    
-    document.body.appendChild(notification);
+    notification.textContent = message;
+    notification.classList.add('show');
     
     setTimeout(() => {
-        notification.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => {
-            document.body.removeChild(notification);
-        }, 300);
+        notification.classList.remove('show');
     }, 3000);
 }
 
@@ -1221,8 +1923,36 @@ function showError(message) {
     alert(message);
 }
 
-// Initialize cart badge on page load
-updateCartBadge();
+// ============================================
+// EVENT LISTENERS INITIALIZATION
+// ============================================
+
+function initEventListeners() {
+    // Custom calculation modal close
+    const customCalcCloseBtn = document.getElementById('customCalcCloseBtn');
+    const customCalcModal = document.getElementById('customCalcModal');
+    
+    if (customCalcCloseBtn && customCalcModal) {
+        customCalcCloseBtn.addEventListener('click', closeCustomCalculationModal);
+        
+        customCalcModal.addEventListener('click', function(e) {
+            if (e.target === customCalcModal) {
+                closeCustomCalculationModal();
+            }
+        });
+    }
+}
+
+// Make functions globally available
+window.changeMainImage = changeMainImage;
+window.changeCalculationMode = changeCalculationMode;
+window.updateStandardCalculator = updateStandardCalculator;
+window.openCustomCalculationModal = openCustomCalculationModal;
+window.closeCustomCalculationModal = closeCustomCalculationModal;
+window.updateCustomCalculation = updateCustomCalculation;
+window.addCustomCalculationToCart = addCustomCalculationToCart;
+window.addToCart = addToCart;
+window.buyNow = buyNow;
 </script>
 </body>
 </html>
