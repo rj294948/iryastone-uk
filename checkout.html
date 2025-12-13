@@ -11,14 +11,7 @@
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto+Slab:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-<!-- PayPal SDK -->
-<script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=GBP&intent=capture"></script>
-
-<!-- Stripe for Cards -->
-<script src="https://js.stripe.com/v3/"></script>
-
 <style>
-/* All your existing CSS remains same */
 :root {
     --primary-gold: #c9a227;
     --gold-light: #f0d77c;
@@ -36,7 +29,6 @@
     --border-radius: 12px;
     --border-radius-lg: 20px;
 }
-
 
 * {
     margin: 0;
@@ -1157,7 +1149,7 @@ header.hidden {
 
 const firebaseConfig = {
     apiKey: "AIzaSyDNwzhOkQQLAQbkiNFTFEGSpWJdKaxbTRk",
-    authDomain: "iryastone-uk.firebasestorage.app",
+    authDomain: "iryastone-uk.firebaseapp.com",
     projectId: "iryastone-uk",
     storageBucket: "iryastone-uk.firebasestorage.app",
     messagingSenderId: "110940910896",
@@ -1166,106 +1158,21 @@ const firebaseConfig = {
 };
 
 let firebaseApp, firebaseDB, firebaseAuth;
-let stripe, cardElement, paypalButtons;
 let cartItems = [];
 let selectedPaymentMethod = 'stripe';
-let userAddress = null;
 let isBuyNowFlow = false;
 let currentPaymentType = 'advance';
-let lastScrollTop = 0;
-let scrollTimeout;
 let currentOrderData = null;
-
-// ============================================
-// PAYPAL CONFIGURATION
-// ============================================
-
-const PAYPAL_CONFIG = {
-    clientId: 'YOUR_PAYPAL_CLIENT_ID', // Replace with your actual PayPal Client ID
-    currency: 'GBP',
-    intent: 'capture',
-    commit: true
-};
-
-// ============================================
-// SCROLL HIDE/SHOW FUNCTIONALITY
-// ============================================
-
-function initScrollHideShow() {
-    const header = document.getElementById('mainHeader');
-    const bottomNav = document.getElementById('bottomNav');
-    
-    window.addEventListener('scroll', function() {
-        if (scrollTimeout) {
-            clearTimeout(scrollTimeout);
-        }
-        
-        scrollTimeout = setTimeout(function() {
-            handleScroll(header, bottomNav);
-        }, 100);
-    });
-    
-    handleScroll(header, bottomNav);
-}
-
-function handleScroll(header, bottomNav) {
-    const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-    
-    if (window.innerWidth <= 768) {
-        if (currentScroll > lastScrollTop && currentScroll > 100) {
-            header.classList.add('hidden');
-            bottomNav.classList.add('hidden');
-        } else if (currentScroll < lastScrollTop) {
-            header.classList.remove('hidden');
-            bottomNav.classList.remove('hidden');
-        }
-    } else {
-        header.classList.remove('hidden');
-        bottomNav.classList.remove('hidden');
-    }
-    
-    lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
-}
-
-// ============================================
-// UTILITY FUNCTIONS
-// ============================================
-
-function removeUndefinedValues(obj) {
-    const newObj = {};
-    for (const key in obj) {
-        if (obj[key] !== undefined && obj[key] !== null) {
-            if (typeof obj[key] === 'object' && !Array.isArray(obj[key]) && obj[key] !== null) {
-                newObj[key] = removeUndefinedValues(obj[key]);
-            } else {
-                newObj[key] = obj[key];
-            }
-        }
-    }
-    return newObj;
-}
-
-function getUserId() {
-    let userId = localStorage.getItem('irya_guest_id');
-    if (!userId) {
-        userId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem('irya_guest_id', userId);
-    }
-    return userId;
-}
 
 // ============================================
 // INITIALIZATION
 // ============================================
 
 document.addEventListener('DOMContentLoaded', async function() {
-    // Check if this is Buy Now flow
     const urlParams = new URLSearchParams(window.location.search);
     isBuyNowFlow = urlParams.get('buynow') === 'true';
     const buyNowProductId = urlParams.get('product');
-    const source = urlParams.get('source');
     
-    // Update UI for Buy Now flow
     if (isBuyNowFlow) {
         document.title = 'Buy Now Checkout | IRYA STONE';
         document.getElementById('breadcrumbTitle').textContent = 'Buy Now Checkout';
@@ -1274,79 +1181,12 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.getElementById('backButtonText').textContent = 'Back to Product';
     }
     
-    // Initialize scroll hide/show
-    initScrollHideShow();
-    
-    // Initialize Firebase
     await initializeFirebase();
-    
-    // Initialize payment systems
-    await initializePaymentSystems();
-    
-    // Load cart items (with buy now support)
     await loadCartItems();
     
-    // Load saved addresses
-    await loadSavedAddresses();
-    
-    // Calculate shipping
-    calculateShipping();
-    
-    // Update cart badge
-    updateCartBadge();
-    
-    // Initialize payment options
     initializePaymentOptions();
+    updateCartBadge();
 });
-
-// ============================================
-// PAYMENT SYSTEMS INITIALIZATION
-// ============================================
-
-async function initializePaymentSystems() {
-    try {
-        // Initialize Stripe
-        await initializeStripe();
-        
-        // Initialize PayPal is already loaded via SDK in head
-        
-    } catch (error) {
-        console.error('Payment systems initialization error:', error);
-        showError('Payment system initialization failed. Please refresh the page.');
-    }
-}
-
-async function initializeStripe() {
-    try {
-        // Initialize Stripe with your publishable key
-        stripe = Stripe('pk_test_51QK1V2RqVv8b8p5x5Z4X9vHjK8l7mN6pL2zRtS8w9cF3yA7bD1'); // Replace with your actual Stripe key
-        
-        const elements = stripe.elements();
-        cardElement = elements.create('card', {
-            style: {
-                base: {
-                    fontSize: '16px',
-                    color: '#32325d',
-                    fontFamily: '"Poppins", sans-serif',
-                },
-            },
-        });
-        
-        cardElement.mount('#card-element');
-        
-        cardElement.on('change', function(event) {
-            const displayError = document.getElementById('card-errors');
-            if (event.error) {
-                displayError.textContent = event.error.message;
-            } else {
-                displayError.textContent = '';
-            }
-        });
-        
-    } catch (error) {
-        console.warn('Stripe initialization error:', error);
-    }
-}
 
 // ============================================
 // FIREBASE INITIALIZATION
@@ -1388,12 +1228,11 @@ async function loadCartItems() {
         let cartData = null;
         
         if (isBuyNowFlow) {
-            // For Buy Now flow, load from buy now storage
+            // For Buy Now flow
             const buyNowKey = 'irya_buynow_cart_' + userId;
             cartData = localStorage.getItem(buyNowKey);
             
             if (!cartData) {
-                // Try to load from current buy now item
                 const currentBuyNowItem = localStorage.getItem('irya_current_buynow_item');
                 if (currentBuyNowItem) {
                     cartData = JSON.stringify([JSON.parse(currentBuyNowItem)]);
@@ -1406,7 +1245,7 @@ async function loadCartItems() {
                 return;
             }
         } else {
-            // For regular checkout, load from regular cart
+            // For regular checkout
             const cartKey = 'irya_local_cart_' + userId;
             cartData = localStorage.getItem(cartKey);
             
@@ -1420,7 +1259,6 @@ async function loadCartItems() {
         if (cartData) {
             cartItems = JSON.parse(cartData);
             
-            // For Buy Now flow, filter only buy now items
             if (isBuyNowFlow) {
                 cartItems = cartItems.filter(item => item.isBuyNow === true);
                 
@@ -1443,8 +1281,6 @@ async function loadCartItems() {
     } catch (error) {
         console.error('Error loading cart items:', error);
         showError('Failed to load cart items');
-        
-        // Fallback redirect
         window.location.href = isBuyNowFlow ? 'products.html' : 'cart.html';
     } finally {
         showLoading(false);
@@ -1488,6 +1324,8 @@ function displayOrderItems() {
             calculationInfo = `Quantity: ${item.quantity} pieces`;
         }
         
+        const itemPrice = item.calculatedPrice ? parseFloat(item.calculatedPrice).toFixed(2) : ((item.price || 0) * (item.quantity || 1)).toFixed(2);
+        
         return `
             <div class="order-item">
                 <div class="order-item-image">
@@ -1499,7 +1337,7 @@ function displayOrderItems() {
                     <div class="order-item-name">${item.name || 'Product'}</div>
                     <div class="order-item-info">${item.category || 'General'}</div>
                     <div class="order-item-info">${calculationInfo}</div>
-                    <div class="order-item-price">£${item.calculatedPrice ? parseFloat(item.calculatedPrice).toFixed(2) : ((item.price || 0) * (item.quantity || 1)).toFixed(2)}</div>
+                    <div class="order-item-price">£${itemPrice}</div>
                 </div>
             </div>
         `;
@@ -1530,7 +1368,6 @@ function calculateTotals() {
     const shipping = calculateShippingCost();
     const total = subtotal + tax + shipping;
     
-    // Update item payments if not already set
     cartItems.forEach(item => {
         const itemTotal = item.calculatedPrice || ((item.price || 0) * (item.quantity || 1));
         if (item.advancePayment === undefined) {
@@ -1542,7 +1379,6 @@ function calculateTotals() {
         item.totalPrice = itemTotal;
     });
     
-    // Save updated cart items
     saveCartItems();
     
     document.getElementById('subtotal').textContent = `£${subtotal.toFixed(2)}`;
@@ -1605,12 +1441,6 @@ function calculateShippingCost() {
     } else {
         return 35;
     }
-}
-
-function calculateShipping() {
-    const shipping = calculateShippingCost();
-    document.getElementById('shipping').textContent = shipping === 0 ? 'FREE' : `£${shipping.toFixed(2)}`;
-    calculateTotals();
 }
 
 // ============================================
@@ -1686,61 +1516,11 @@ function initializePayPalButtons() {
     const totals = calculateTotals();
     const amount = currentPaymentType === 'advance' ? totals.advanceTotal : totals.total * 0.95;
     
-    if (typeof paypal === 'undefined') {
-        paypalButtonsContainer.innerHTML = `
-            <div style="color: #ff4757; padding: 10px; background: #ffeaea; border-radius: 8px;">
-                <i class="fas fa-exclamation-circle"></i> PayPal is not available at the moment. Please try another payment method.
-            </div>
-        `;
-        return;
-    }
-    
-    paypal.Buttons({
-        createOrder: function(data, actions) {
-            return actions.order.create({
-                purchase_units: [{
-                    description: `IRYA STONE ${isBuyNowFlow ? 'Buy Now' : 'Order'} - ${currentPaymentType === 'advance' ? '30% Advance' : 'Full Payment'}`,
-                    amount: {
-                        currency_code: 'GBP',
-                        value: amount.toFixed(2)
-                    }
-                }]
-            });
-        },
-        
-        onApprove: async function(data, actions) {
-            try {
-                showPaymentProcessing('Completing PayPal Payment...');
-                
-                // Capture the payment
-                const details = await actions.order.capture();
-                
-                // Process successful payment
-                await processSuccessfulPayment({
-                    method: 'paypal',
-                    paymentId: details.id,
-                    transactionDetails: details,
-                    amount: amount
-                });
-                
-            } catch (error) {
-                console.error('PayPal payment error:', error);
-                hidePaymentProcessing();
-                showError('Payment failed: ' + error.message);
-            }
-        },
-        
-        onError: function(err) {
-            console.error('PayPal error:', err);
-            showError('PayPal payment failed. Please try again or use another payment method.');
-        },
-        
-        onCancel: function(data) {
-            console.log('PayPal payment cancelled');
-            showNotification('Payment was cancelled');
-        }
-        
-    }).render('#paypalButtonsContainer');
+    paypalButtonsContainer.innerHTML = `
+        <div style="color: #ff4757; padding: 10px; background: #ffeaea; border-radius: 8px;">
+            <i class="fas fa-exclamation-circle"></i> PayPal integration will be available soon. Please use another payment method.
+        </div>
+    `;
 }
 
 // ============================================
@@ -1749,16 +1529,13 @@ function initializePayPalButtons() {
 
 async function validateAndProcessPayment() {
     try {
-        // Validate form
         if (!validateForm()) return;
         
-        // Check terms agreement
         if (!document.getElementById('agreeTerms').checked) {
             showError('Please agree to the terms and conditions');
             return;
         }
         
-        // Get address data
         const addressData = {
             fullName: document.getElementById('fullName').value.trim(),
             email: document.getElementById('email').value.trim(),
@@ -1773,12 +1550,10 @@ async function validateAndProcessPayment() {
             saveAddress: document.getElementById('saveAddress').checked
         };
         
-        // Calculate totals
         const totals = calculateTotals();
         const paymentType = currentPaymentType;
         const paymentAmount = paymentType === 'advance' ? totals.advanceTotal : totals.total * 0.95;
         
-        // Create order data
         currentOrderData = {
             userId: getUserId(),
             items: cartItems.map(item => ({
@@ -1816,92 +1591,15 @@ async function validateAndProcessPayment() {
             isBuyNowOrder: isBuyNowFlow
         };
         
-        // Process based on payment method
-        if (selectedPaymentMethod === 'paypal') {
-            // PayPal handles payment in its own flow
-            showNotification('Click the PayPal button above to complete payment');
-            
-        } else if (selectedPaymentMethod === 'stripe') {
-            // Process Stripe payment
-            await processStripePayment(currentOrderData, paymentAmount);
-            
-        } else if (selectedPaymentMethod === 'bank') {
-            // Bank transfer
+        if (selectedPaymentMethod === 'bank') {
             await processBankTransfer(currentOrderData);
-            
         } else {
-            throw new Error('Invalid payment method');
+            showError('Please select Bank Transfer as payment method for now. Other methods coming soon.');
         }
         
     } catch (error) {
         console.error('Payment validation error:', error);
         showError('Payment processing failed: ' + error.message);
-    }
-}
-
-// ============================================
-// STRIPE PAYMENT PROCESSING
-// ============================================
-
-async function processStripePayment(orderData, amount) {
-    try {
-        showPaymentProcessing('Processing Card Payment...');
-        
-        // Create payment intent on your backend
-        const response = await fetch('/api/create-payment-intent', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                amount: Math.round(amount * 100), // Convert to pence
-                currency: 'gbp',
-                description: `Order ${orderData.orderNumber} - ${orderData.paymentType === 'advance' ? '30% Advance' : 'Full Payment'}`
-            })
-        });
-        
-        if (!response.ok) {
-            throw new Error('Failed to create payment intent');
-        }
-        
-        const { clientSecret } = await response.json();
-        
-        // Confirm payment
-        const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-            payment_method: {
-                card: cardElement,
-                billing_details: {
-                    name: orderData.shippingAddress.fullName,
-                    email: orderData.shippingAddress.email,
-                    phone: orderData.shippingAddress.phone,
-                    address: {
-                        line1: orderData.shippingAddress.address1,
-                        line2: orderData.shippingAddress.address2,
-                        city: orderData.shippingAddress.city,
-                        state: orderData.shippingAddress.state,
-                        postal_code: orderData.shippingAddress.postalCode,
-                        country: orderData.shippingAddress.country
-                    }
-                }
-            }
-        });
-        
-        if (error) {
-            throw new Error(error.message);
-        }
-        
-        // Process successful payment
-        await processSuccessfulPayment({
-            method: 'stripe',
-            paymentId: paymentIntent.id,
-            transactionDetails: paymentIntent,
-            amount: amount
-        });
-        
-    } catch (error) {
-        console.error('Stripe payment error:', error);
-        hidePaymentProcessing();
-        showError('Card payment failed: ' + error.message);
     }
 }
 
@@ -1913,7 +1611,6 @@ async function processBankTransfer(orderData) {
     try {
         showPaymentProcessing('Preparing Bank Transfer Details...');
         
-        // Update order with bank transfer info
         orderData.paymentStatus = 'pending_bank_transfer';
         orderData.bankTransferDetails = {
             accountName: 'IRYA STONE LTD',
@@ -1926,10 +1623,8 @@ async function processBankTransfer(orderData) {
             currency: 'GBP'
         };
         
-        // Save order first
         const orderId = await saveOrderToFirebase(orderData);
         
-        // Show bank details to user
         hidePaymentProcessing();
         
         const bankDetailsHTML = `
@@ -1949,17 +1644,13 @@ async function processBankTransfer(orderData) {
                 <p style="margin-top: 15px; font-size: 12px; color: var(--text-light);">
                     <i class="fas fa-info-circle"></i> Please use the reference number when making the transfer. Order will be processed once payment is confirmed.
                 </p>
-                <button onclick="window.location.href='order-confirmation.html?order=${orderData.orderNumber}'" style="margin-top: 15px; padding: 10px 20px; background: var(--primary-gold); color: white; border: none; border-radius: 8px; cursor: pointer;">
-                    View Order Details
+                <button onclick="completeOrder()" style="margin-top: 15px; padding: 10px 20px; background: var(--primary-gold); color: white; border: none; border-radius: 8px; cursor: pointer;">
+                    Complete Order
                 </button>
             </div>
         `;
         
-        // Show bank details
         document.body.insertAdjacentHTML('beforeend', bankDetailsHTML);
-        
-        // Clear cart
-        await clearCart();
         
     } catch (error) {
         console.error('Bank transfer error:', error);
@@ -1968,56 +1659,16 @@ async function processBankTransfer(orderData) {
     }
 }
 
-// ============================================
-// SUCCESSFUL PAYMENT PROCESSING
-// ============================================
-
-async function processSuccessfulPayment(paymentResult) {
+async function completeOrder() {
     try {
-        showPaymentProcessing('Completing Order...');
-        
-        if (!currentOrderData) {
-            throw new Error('Order data not found');
-        }
-        
-        // Update order with payment info
-        currentOrderData.paymentStatus = currentOrderData.paymentType === 'full' ? 'paid' : 'advance_paid';
-        currentOrderData.paymentId = paymentResult.paymentId;
-        currentOrderData.paymentMethod = paymentResult.method;
-        currentOrderData.transactionDetails = paymentResult.transactionDetails;
-        currentOrderData.amountPaid = paymentResult.amount;
-        currentOrderData.paidAt = new Date().toISOString();
-        
-        // Save address if requested
-        const saveAddress = document.getElementById('saveAddress').checked;
-        if (saveAddress) {
-            await saveUserAddress(currentOrderData.shippingAddress);
-        }
-        
-        // Save order to Firebase
-        const orderId = await saveOrderToFirebase(currentOrderData);
-        
-        // Save custom requirements if any
-        const customReqs = currentOrderData.items
-            .map(item => item.customRequirements)
-            .filter(req => req && req.trim() !== '');
-        
-        if (customReqs.length > 0) {
-            await saveCustomRequirements(orderId, customReqs);
-        }
-        
-        // Clear cart
+        showLoading(true);
         await clearCart();
-        
-        hidePaymentProcessing();
-        
-        // Redirect to order confirmation
-        window.location.href = `order-confirmation.html?order=${currentOrderData.orderNumber}&payment=success`;
-        
+        window.location.href = `order-confirmation.html?order=${currentOrderData.orderNumber}&payment=bank_transfer`;
     } catch (error) {
-        console.error('Payment completion error:', error);
-        hidePaymentProcessing();
-        showError('Failed to complete order: ' + error.message);
+        console.error('Error completing order:', error);
+        showError('Failed to complete order');
+    } finally {
+        showLoading(false);
     }
 }
 
@@ -2033,15 +1684,14 @@ async function saveOrderToFirebase(order) {
         
         const orderId = firebaseDB.collection('orders').doc().id;
         
-        const finalOrder = removeUndefinedValues({
+        const finalOrder = {
             id: orderId,
             ...order,
             updatedAt: new Date().toISOString()
-        });
+        };
         
         await firebaseDB.collection('orders').doc(orderId).set(finalOrder);
         
-        // Also save to user's orders collection
         const userOrderRef = firebaseDB.collection('users').doc(order.userId).collection('orders').doc(orderId);
         await userOrderRef.set(finalOrder);
         
@@ -2049,42 +1699,6 @@ async function saveOrderToFirebase(order) {
     } catch (error) {
         console.error('Error saving order to Firebase:', error);
         throw error;
-    }
-}
-
-async function saveCustomRequirements(orderId, requirements) {
-    try {
-        if (!firebaseDB || !requirements || requirements.length === 0) return;
-        
-        await firebaseDB.collection('orderCustomRequirements').doc(orderId).set({
-            orderId: orderId,
-            requirements: requirements,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        });
-        
-    } catch (error) {
-        console.error('Error saving custom requirements:', error);
-    }
-}
-
-async function saveUserAddress(addressData) {
-    try {
-        if (!firebaseDB) return false;
-        
-        const userId = getUserId();
-        const cleanAddress = removeUndefinedValues(addressData);
-        
-        await firebaseDB.collection('userAddresses').doc(userId).set({
-            ...cleanAddress,
-            userId: userId,
-            updatedAt: new Date().toISOString()
-        }, { merge: true });
-        
-        return true;
-    } catch (error) {
-        console.error('Error saving address:', error);
-        return false;
     }
 }
 
@@ -2122,15 +1736,22 @@ function cancelPayment() {
 // HELPER FUNCTIONS
 // ============================================
 
+function getUserId() {
+    let userId = localStorage.getItem('irya_guest_id');
+    if (!userId) {
+        userId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('irya_guest_id', userId);
+    }
+    return userId;
+}
+
 function saveCartItems() {
     const userId = getUserId();
     
     if (isBuyNowFlow) {
-        // Save to buy now storage
         const buyNowKey = 'irya_buynow_cart_' + userId;
         localStorage.setItem(buyNowKey, JSON.stringify(cartItems));
     } else {
-        // Save to regular cart storage
         const cartKey = 'irya_local_cart_' + userId;
         localStorage.setItem(cartKey, JSON.stringify(cartItems));
     }
@@ -2143,17 +1764,14 @@ async function clearCart() {
         const userId = getUserId();
         
         if (isBuyNowFlow) {
-            // Clear buy now storage
             const buyNowKey = 'irya_buynow_cart_' + userId;
             localStorage.removeItem(buyNowKey);
             
-            // Clear buy now flags
             localStorage.removeItem('irya_current_buynow_item');
             localStorage.removeItem('irya_is_buynow_flow');
             localStorage.removeItem('irya_buynow_product_id');
             localStorage.removeItem('irya_buynow_timestamp');
         } else {
-            // Clear regular cart
             const cartKey = 'irya_local_cart_' + userId;
             localStorage.removeItem(cartKey);
         }
@@ -2170,7 +1788,6 @@ async function clearCart() {
 function updateCartBadge() {
     const userId = getUserId();
     
-    // Check both regular cart and buy now cart
     const cartKey = 'irya_local_cart_' + userId;
     const buyNowKey = 'irya_buynow_cart_' + userId;
     
