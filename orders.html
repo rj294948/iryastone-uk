@@ -12,6 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto+Slab:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
+/* All CSS remains same as before until the JavaScript section */
 :root {
     --primary-gold: #c9a227;
     --gold-light: #f0d77c;
@@ -262,6 +263,11 @@ header {
     color: #721c24;
 }
 
+.status-pending_bank_transfer {
+    background: #ffeaa7;
+    color: #856404;
+}
+
 /* Order Items */
 .order-items {
     margin-bottom: 20px;
@@ -342,6 +348,46 @@ header {
 
 .summary-value {
     font-weight: 600;
+    color: var(--stone-dark);
+}
+
+/* Payment Info */
+.payment-info {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 15px 0;
+    border-left: 4px solid var(--primary-gold);
+}
+
+.payment-info h5 {
+    font-size: 14px;
+    margin-bottom: 10px;
+    color: var(--stone-dark);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.payment-info h5 i {
+    color: var(--primary-gold);
+}
+
+.payment-details {
+    font-size: 13px;
+    color: var(--text-dark);
+    line-height: 1.5;
+    background: var(--white);
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+}
+
+.payment-details p {
+    margin: 5px 0;
+}
+
+.payment-details strong {
     color: var(--stone-dark);
 }
 
@@ -573,6 +619,23 @@ header {
     font-size: 18px;
 }
 
+/* Cart Badge */
+.cart-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff4757;
+    color: var(--white);
+    font-size: 10px;
+    font-weight: 600;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .order-header {
@@ -708,12 +771,12 @@ header {
 
 <script>
 // ============================================
-// FIREBASE CONFIGURATION
+// FIREBASE CONFIGURATION (Checkout ke saath match)
 // ============================================
 
 const firebaseConfig = {
     apiKey: "AIzaSyDNwzhOkQQLAQbkiNFTFEGSpWJdKaxbTRk",
-    authDomain: "iryastone-uk.firebasestorage.app",
+    authDomain: "iryastone-uk.firebaseapp.com",
     projectId: "iryastone-uk",
     storageBucket: "iryastone-uk.firebasestorage.app",
     messagingSenderId: "110940910896",
@@ -724,14 +787,142 @@ const firebaseConfig = {
 let firebaseApp, firebaseDB, firebaseAuth;
 let userOrders = [];
 let currentFilter = 'all';
+let authSystem = null;
+
+// ============================================
+// AUTHENTICATION SYSTEM (Checkout ke saath match)
+// ============================================
+
+class OrdersAuthSystem {
+    constructor() {
+        this.currentUser = null;
+        this.authKey = 'irya_stone_auth_user';
+        this.guestIdKey = 'irya_guest_id';
+    }
+    
+    async init() {
+        try {
+            await this.initializeFirebase();
+            
+            return new Promise((resolve) => {
+                firebaseAuth.onAuthStateChanged((user) => {
+                    console.log("Auth State Changed:", user ? user.uid : "No user");
+                    
+                    if (user) {
+                        // Firebase authenticated user
+                        this.currentUser = {
+                            uid: user.uid,
+                            displayName: user.displayName || 'User',
+                            email: user.email,
+                            photoURL: user.photoURL,
+                            providerId: user.providerId,
+                            isFirebaseUser: true
+                        };
+                        
+                        localStorage.setItem(this.authKey, JSON.stringify(this.currentUser));
+                        
+                    } else {
+                        // No Firebase user, check localStorage
+                        const storedUser = this.getUserFromStorage();
+                        
+                        if (storedUser && storedUser.isFirebaseUser) {
+                            this.currentUser = storedUser;
+                        } else {
+                            // Create guest user
+                            this.currentUser = this.createGuestUser();
+                            localStorage.setItem(this.authKey, JSON.stringify(this.currentUser));
+                        }
+                    }
+                    
+                    resolve(this.currentUser);
+                });
+            });
+            
+        } catch (error) {
+            console.error('Auth init error:', error);
+            this.currentUser = this.getUserFromStorage() || this.createGuestUser();
+            return this.currentUser;
+        }
+    }
+    
+    async initializeFirebase() {
+        try {
+            if (typeof firebase === 'undefined') {
+                throw new Error('Firebase SDK not loaded');
+            }
+            
+            if (!firebase.apps.length) {
+                firebaseApp = firebase.initializeApp(firebaseConfig);
+            } else {
+                firebaseApp = firebase.app();
+            }
+            
+            firebaseDB = firebase.firestore();
+            firebaseAuth = firebase.auth();
+            
+            console.log('Firebase initialized for orders');
+            return true;
+        } catch (error) {
+            console.error('Firebase initialization error:', error);
+            throw error;
+        }
+    }
+    
+    getUserFromStorage() {
+        const userData = localStorage.getItem(this.authKey);
+        if (userData) {
+            try {
+                return JSON.parse(userData);
+            } catch (e) {
+                console.error('Error parsing user data:', e);
+                return null;
+            }
+        }
+        return null;
+    }
+    
+    createGuestUser() {
+        let guestId = localStorage.getItem(this.guestIdKey);
+        if (!guestId) {
+            guestId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem(this.guestIdKey, guestId);
+        }
+        
+        return {
+            uid: guestId,
+            displayName: 'Guest',
+            email: '',
+            photoURL: '',
+            providerId: 'guest',
+            isFirebaseUser: false,
+            isGuest: true
+        };
+    }
+    
+    isLoggedIn() {
+        return this.currentUser && this.currentUser.isFirebaseUser === true;
+    }
+    
+    getUserId() {
+        if (!this.currentUser) {
+            return this.createGuestUser().uid;
+        }
+        return this.currentUser.uid;
+    }
+}
 
 // ============================================
 // INITIALIZATION
 // ============================================
 
 document.addEventListener('DOMContentLoaded', async function() {
-    // Initialize Firebase
-    await initializeFirebase();
+    console.log("Orders page loaded");
+    
+    // Initialize Auth System
+    authSystem = new OrdersAuthSystem();
+    await authSystem.init();
+    
+    console.log("Auth initialized. User ID:", authSystem.getUserId());
     
     // Load user orders
     await loadUserOrders();
@@ -741,8 +932,82 @@ document.addEventListener('DOMContentLoaded', async function() {
 });
 
 // ============================================
-// FIREBASE INITIALIZATION
+// LOAD USER ORDERS (Checkout se compatible)
 // ============================================
+
+async function loadUserOrders() {
+    try {
+        showLoading(true);
+        
+        if (!firebaseDB) {
+            await initializeFirebase();
+        }
+        
+        const userId = authSystem.getUserId();
+        
+        if (!firebaseDB) {
+            showError('Database not available');
+            return;
+        }
+        
+        console.log("Loading orders for user:", userId);
+        
+        // Try main orders collection (checkout se same structure)
+        const ordersSnapshot = await firebaseDB.collection('orders')
+            .where('userId', '==', userId)
+            .orderBy('createdAt', 'desc')
+            .get();
+        
+        if (!ordersSnapshot.empty) {
+            userOrders = [];
+            
+            ordersSnapshot.forEach(doc => {
+                const orderData = doc.data();
+                userOrders.push({
+                    id: doc.id,
+                    ...orderData
+                });
+            });
+            
+            console.log("Orders loaded from main collection:", userOrders.length);
+            displayOrders();
+        } else {
+            // Check user's orders collection
+            try {
+                const userOrdersRef = firebaseDB.collection('userOrders').doc(userId);
+                const userOrdersSnapshot = await userOrdersRef.collection('orders')
+                    .orderBy('createdAt', 'desc')
+                    .get();
+                
+                if (!userOrdersSnapshot.empty) {
+                    userOrders = [];
+                    
+                    userOrdersSnapshot.forEach(doc => {
+                        const orderData = doc.data();
+                        userOrders.push({
+                            id: doc.id,
+                            ...orderData
+                        });
+                    });
+                    
+                    console.log("Orders loaded from user collection:", userOrders.length);
+                    displayOrders();
+                } else {
+                    showNoOrders();
+                }
+            } catch (error) {
+                console.log("User collection error, showing no orders");
+                showNoOrders();
+            }
+        }
+        
+    } catch (error) {
+        console.error('Error loading orders:', error);
+        showNoOrders();
+    } finally {
+        showLoading(false);
+    }
+}
 
 async function initializeFirebase() {
     try {
@@ -768,74 +1033,7 @@ async function initializeFirebase() {
 }
 
 // ============================================
-// LOAD USER ORDERS
-// ============================================
-
-async function loadUserOrders() {
-    try {
-        showLoading(true);
-        
-        if (!firebaseDB) {
-            await initializeFirebase();
-        }
-        
-        const userId = getUserId();
-        
-        if (!firebaseDB) {
-            showError('Database not available');
-            return;
-        }
-        
-        // Try to load from user's orders collection
-        const userOrdersRef = firebaseDB.collection('userOrders').doc(userId);
-        const ordersSnapshot = await userOrdersRef.collection('orders').orderBy('createdAt', 'desc').get();
-        
-        if (!ordersSnapshot.empty) {
-            userOrders = [];
-            
-            ordersSnapshot.forEach(doc => {
-                const orderData = doc.data();
-                userOrders.push({
-                    id: doc.id,
-                    ...orderData
-                });
-            });
-            
-            displayOrders();
-        } else {
-            // Check main orders collection (for backward compatibility)
-            const mainOrdersSnapshot = await firebaseDB.collection('orders')
-                .where('userId', '==', userId)
-                .orderBy('createdAt', 'desc')
-                .get();
-            
-            if (!mainOrdersSnapshot.empty) {
-                userOrders = [];
-                
-                mainOrdersSnapshot.forEach(doc => {
-                    const orderData = doc.data();
-                    userOrders.push({
-                        id: doc.id,
-                        ...orderData
-                    });
-                });
-                
-                displayOrders();
-            } else {
-                showNoOrders();
-            }
-        }
-        
-    } catch (error) {
-        console.error('Error loading orders:', error);
-        showNoOrders();
-    } finally {
-        showLoading(false);
-    }
-}
-
-// ============================================
-// DISPLAY ORDERS
+// DISPLAY ORDERS (Checkout ke order structure ke saath match)
 // ============================================
 
 function displayOrders() {
@@ -845,6 +1043,7 @@ function displayOrders() {
     // Filter orders
     const filteredOrders = userOrders.filter(order => {
         if (currentFilter === 'all') return true;
+        if (order.status === 'pending_bank_transfer' && currentFilter === 'pending') return true;
         return order.status === currentFilter;
     });
     
@@ -859,43 +1058,64 @@ function displayOrders() {
         <div class="order-card">
             <div class="order-header">
                 <div class="order-info">
-                    <h3>Order #${order.orderNumber}</h3>
+                    <h3>Order #${order.orderNumber || order.id}</h3>
                     <div class="order-date">Placed on ${formatDate(order.createdAt)}</div>
                     <div class="order-number">Order ID: ${order.id}</div>
                 </div>
-                <div class="order-status status-${order.status}">
-                    ${getStatusText(order.status)}
+                <div class="order-status status-${order.status || 'pending'}">
+                    ${getStatusText(order.status || 'pending')}
                 </div>
             </div>
             
             <div class="order-items">
-                ${order.items.slice(0, 2).map(item => `
+                ${(order.items || []).slice(0, 2).map(item => `
                     <div class="order-item">
                         <div class="order-item-image">
-                            <img src="${item.image}" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=800'">
+                            <img src="${item.image || getDefaultImage(item.category)}" 
+                                 alt="${item.name}" 
+                                 onerror="this.src='${getDefaultImage(item.category)}'">
                         </div>
                         <div class="order-item-details">
-                            <div class="order-item-name">${item.name}</div>
-                            <div class="order-item-info">${item.category}</div>
+                            <div class="order-item-name">${item.name || 'Product'}</div>
+                            <div class="order-item-info">${item.category || 'General'}</div>
                             ${item.calculationData ? `
                                 <div class="order-item-info">
-                                    ${item.calculationData.mode === 'custom' ? 
-                                        `Custom: ${item.calculationData.length}" × ${item.calculationData.width}" × ${item.calculationData.height}"` :
-                                        `Quantity: ${item.quantity} ${item.calculationData?.unit || 'pieces'}`
-                                    }
+                                    ${getCalculationInfo(item)}
                                 </div>
-                            ` : ''}
-                            <div class="order-item-price">£${item.calculatedPrice ? parseFloat(item.calculatedPrice).toFixed(2) : (item.price * item.quantity).toFixed(2)}</div>
+                            ` : `
+                                <div class="order-item-info">Quantity: ${item.quantity || 1} ${item.priceUnit || 'pieces'}</div>
+                            `}
+                            <div class="order-item-price">£${item.calculatedPrice ? parseFloat(item.calculatedPrice).toFixed(2) : ((item.price || 0) * (item.quantity || 1)).toFixed(2)}</div>
                         </div>
                     </div>
                 `).join('')}
                 
-                ${order.items.length > 2 ? `
+                ${(order.items || []).length > 2 ? `
                     <div style="text-align: center; padding: 10px; color: var(--text-light); font-size: 13px;">
-                        + ${order.items.length - 2} more items
+                        + ${(order.items || []).length - 2} more items
                     </div>
                 ` : ''}
             </div>
+            
+            <!-- Payment Information (Checkout se same) -->
+            ${order.paymentMethod === 'bank' && order.paymentStatus === 'pending_bank_transfer' ? `
+                <div class="payment-info">
+                    <h5><i class="fas fa-university"></i> Bank Transfer Details</h5>
+                    <div class="payment-details">
+                        <p><strong>Account Name:</strong> ${order.bankTransferDetails?.accountName || 'IRYA STONE LTD'}</p>
+                        <p><strong>Account Number:</strong> ${order.bankTransferDetails?.accountNumber || '12345678'}</p>
+                        <p><strong>Sort Code:</strong> ${order.bankTransferDetails?.sortCode || '04-00-04'}</p>
+                        <p><strong>Reference:</strong> ${order.bankTransferDetails?.reference || order.orderNumber}</p>
+                        <p><strong>Amount:</strong> £${order.amountToPay?.toFixed(2) || order.advancePayment?.toFixed(2) || '0.00'}</p>
+                        ${order.paymentType === 'advance' ? `
+                            <p><strong>Payment Type:</strong> 30% Advance Payment</p>
+                            <p><strong>Remaining Payment:</strong> £${order.remainingPayment?.toFixed(2) || '0.00'} (70% after shipping)</p>
+                        ` : `
+                            <p><strong>Payment Type:</strong> Full Payment (5% discount applied)</p>
+                        `}
+                    </div>
+                </div>
+            ` : ''}
             
             <div class="order-summary">
                 <div class="summary-item">
@@ -916,11 +1136,11 @@ function displayOrders() {
                 </div>
             </div>
             
-            ${order.tracking ? `
+            ${order.tracking || order.shippingAddress ? `
                 <div class="tracking-timeline">
                     <div class="timeline-header">
-                        <h4><i class="fas fa-shipping-fast"></i> Order Tracking</h4>
-                        ${order.tracking.id ? `<div class="tracking-id">Tracking ID: ${order.tracking.id}</div>` : ''}
+                        <h4><i class="fas fa-shipping-fast"></i> Shipping Information</h4>
+                        ${order.tracking?.id ? `<div class="tracking-id">Tracking ID: ${order.tracking.id}</div>` : ''}
                     </div>
                     ${getTrackingTimeline(order)}
                 </div>
@@ -931,20 +1151,28 @@ function displayOrders() {
                     <i class="fas fa-eye"></i>
                     View Details
                 </button>
-                <button class="order-action-btn" onclick="trackOrder('${order.id}')">
-                    <i class="fas fa-map-marker-alt"></i>
-                    Track Order
-                </button>
-                ${order.status === 'delivered' ? `
+                ${order.tracking?.url ? `
+                    <button class="order-action-btn" onclick="trackOrder('${order.id}')">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Track Order
+                    </button>
+                ` : ''}
+                ${order.status === 'delivered' || order.status === 'shipped' ? `
                     <button class="order-action-btn" onclick="downloadInvoice('${order.id}')">
                         <i class="fas fa-file-invoice"></i>
                         Download Invoice
                     </button>
                 ` : ''}
-                ${order.status === 'pending' || order.status === 'processing' ? `
+                ${order.status === 'pending' || order.status === 'pending_bank_transfer' ? `
                     <button class="order-action-btn" onclick="cancelOrder('${order.id}')" style="color: #ff4757; border-color: #ff4757;">
                         <i class="fas fa-times"></i>
                         Cancel Order
+                    </button>
+                ` : ''}
+                ${order.paymentMethod === 'bank' && order.paymentStatus === 'pending_bank_transfer' ? `
+                    <button class="order-action-btn primary" onclick="markPaymentComplete('${order.id}')">
+                        <i class="fas fa-check-circle"></i>
+                        Mark Payment Sent
                     </button>
                 ` : ''}
             </div>
@@ -954,17 +1182,43 @@ function displayOrders() {
     ordersList.innerHTML = ordersHTML;
 }
 
+function getCalculationInfo(item) {
+    if (!item.calculationData) return `Quantity: ${item.quantity || 1} pieces`;
+    
+    const unit = item.calculationData.unit || 'piece';
+    
+    if (unit === 'sqft') {
+        return `Area: ${item.calculationData.length || 1}ft × ${item.calculationData.width || 1}ft`;
+    } else if (unit === 'sqm') {
+        return `Area: ${item.calculationData.length || 1}m × ${item.calculationData.width || 1}m`;
+    } else if (unit === 'weight') {
+        return `Weight: ${item.calculationData.weight || 1}kg`;
+    } else {
+        return `Quantity: ${item.quantity || 1} pieces`;
+    }
+}
+
 function getTrackingTimeline(order) {
     const statuses = [
-        { id: 'ordered', label: 'Order Placed', icon: 'fa-shopping-cart', date: order.createdAt },
-        { id: 'confirmed', label: 'Order Confirmed', icon: 'fa-check-circle', date: order.confirmedAt },
-        { id: 'processing', label: 'Processing', icon: 'fa-cogs', date: order.processingAt },
+        { id: 'pending', label: 'Order Placed', icon: 'fa-shopping-cart', date: order.createdAt },
+        { id: 'processing', label: 'Processing', icon: 'fa-cogs', date: order.processingAt || order.confirmedAt },
         { id: 'shipped', label: 'Shipped', icon: 'fa-shipping-fast', date: order.shippedAt },
         { id: 'delivered', label: 'Delivered', icon: 'fa-home', date: order.deliveredAt }
     ];
     
+    // For bank transfer orders
+    if (order.paymentStatus === 'pending_bank_transfer') {
+        statuses.unshift({ 
+            id: 'pending_bank_transfer', 
+            label: 'Awaiting Payment', 
+            icon: 'fa-clock', 
+            date: order.createdAt 
+        });
+    }
+    
     // Get current status index
-    const statusIndex = statuses.findIndex(s => s.id === order.status);
+    const currentStatus = order.paymentStatus === 'pending_bank_transfer' ? 'pending_bank_transfer' : order.status;
+    const statusIndex = statuses.findIndex(s => s.id === currentStatus);
     
     return `
         <div class="timeline-steps">
@@ -983,11 +1237,23 @@ function getTrackingTimeline(order) {
                 `;
             }).join('')}
         </div>
+        
+        ${order.shippingAddress ? `
+            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #e0e0e0;">
+                <div style="font-size: 13px; color: var(--text-light); margin-bottom: 5px;">Shipping to:</div>
+                <div style="font-size: 14px; color: var(--text-dark);">
+                    ${order.shippingAddress.fullName}<br>
+                    ${order.shippingAddress.address1}<br>
+                    ${order.shippingAddress.city}, ${order.shippingAddress.state} ${order.shippingAddress.postalCode}<br>
+                    ${order.shippingAddress.country}
+                </div>
+            </div>
+        ` : ''}
     `;
 }
 
 // ============================================
-// ORDER ACTIONS
+// ORDER ACTIONS (Checkout se compatible)
 // ============================================
 
 function filterOrders(status) {
@@ -1004,21 +1270,17 @@ function filterOrders(status) {
 }
 
 function viewOrderDetails(orderId) {
-    // Redirect to order details page
     window.location.href = `order-details.html?id=${orderId}`;
 }
 
 function trackOrder(orderId) {
     const order = userOrders.find(o => o.id === orderId);
-    if (order && order.tracking) {
-        // Open tracking in new window
-        if (order.tracking.url) {
-            window.open(order.tracking.url, '_blank');
-        } else {
-            alert(`Tracking ID: ${order.tracking.id || 'Not available'}`);
-        }
+    if (order && order.tracking && order.tracking.url) {
+        window.open(order.tracking.url, '_blank');
+    } else if (order && order.tracking && order.tracking.id) {
+        alert(`Tracking ID: ${order.tracking.id}\nCarrier: ${order.tracking.carrier || 'Not specified'}`);
     } else {
-        alert('Tracking information not available yet');
+        alert('Tracking information will be available once the order is shipped.');
     }
 }
 
@@ -1031,21 +1293,28 @@ async function cancelOrder(orderId) {
         // Update order status in Firebase
         await firebaseDB.collection('orders').doc(orderId).update({
             status: 'cancelled',
+            paymentStatus: 'cancelled',
             cancelledAt: new Date().toISOString()
         });
         
-        // Also update in user's orders collection
-        const userId = getUserId();
-        await firebaseDB.collection('userOrders').doc(userId)
-            .collection('orders').doc(orderId).update({
-                status: 'cancelled',
-                cancelledAt: new Date().toISOString()
-            });
+        // Also update in user's orders collection if exists
+        try {
+            const userId = authSystem.getUserId();
+            await firebaseDB.collection('userOrders').doc(userId)
+                .collection('orders').doc(orderId).update({
+                    status: 'cancelled',
+                    paymentStatus: 'cancelled',
+                    cancelledAt: new Date().toISOString()
+                });
+        } catch (error) {
+            console.log("User collection update skipped:", error.message);
+        }
         
         // Update local data
         const orderIndex = userOrders.findIndex(o => o.id === orderId);
         if (orderIndex !== -1) {
             userOrders[orderIndex].status = 'cancelled';
+            userOrders[orderIndex].paymentStatus = 'cancelled';
             userOrders[orderIndex].cancelledAt = new Date().toISOString();
         }
         
@@ -1062,33 +1331,80 @@ async function cancelOrder(orderId) {
     }
 }
 
+async function markPaymentComplete(orderId) {
+    if (!confirm('Have you successfully transferred the payment? This will notify the admin to process your order.')) return;
+    
+    try {
+        showLoading(true);
+        
+        const order = userOrders.find(o => o.id === orderId);
+        if (!order) {
+            showError('Order not found');
+            return;
+        }
+        
+        // Update order status
+        await firebaseDB.collection('orders').doc(orderId).update({
+            paymentStatus: 'payment_received',
+            updatedAt: new Date().toISOString()
+        });
+        
+        // Update local data
+        const orderIndex = userOrders.findIndex(o => o.id === orderId);
+        if (orderIndex !== -1) {
+            userOrders[orderIndex].paymentStatus = 'payment_received';
+            userOrders[orderIndex].updatedAt = new Date().toISOString();
+        }
+        
+        // Refresh display
+        displayOrders();
+        
+        showNotification('Payment status updated. Admin will now process your order.');
+        
+    } catch (error) {
+        console.error('Error updating payment status:', error);
+        showError('Failed to update payment status');
+    } finally {
+        showLoading(false);
+    }
+}
+
 function downloadInvoice(orderId) {
     const order = userOrders.find(o => o.id === orderId);
-    if (!order) return;
+    if (!order) {
+        showError('Order not found');
+        return;
+    }
     
     // Create invoice content
     const invoiceContent = `
         IRYA STONE - INVOICE
         =====================
         
-        Invoice Number: ${order.orderNumber}
+        Invoice Number: ${order.orderNumber || order.id}
         Date: ${formatDate(order.createdAt)}
+        Order ID: ${order.id}
         
         BILL TO:
-        ${order.shippingAddress.fullName}
-        ${order.shippingAddress.address1}
-        ${order.shippingAddress.address2}
-        ${order.shippingAddress.city}, ${order.shippingAddress.state} ${order.shippingAddress.postalCode}
-        ${order.shippingAddress.country}
-        Phone: ${order.shippingAddress.phone}
-        Email: ${order.shippingAddress.email}
+        ${order.shippingAddress?.fullName || 'Customer'}
+        ${order.shippingAddress?.address1 || ''}
+        ${order.shippingAddress?.address2 || ''}
+        ${order.shippingAddress?.city || ''}, ${order.shippingAddress?.state || ''} ${order.shippingAddress?.postalCode || ''}
+        ${order.shippingAddress?.country || ''}
+        Phone: ${order.shippingAddress?.phone || ''}
+        Email: ${order.userEmail || ''}
         
         ORDER DETAILS:
-        ${order.items.map(item => `
-        • ${item.name} (${item.quantity} × £${item.price})
-          ${item.calculationData ? `Custom: ${item.calculationData.length}" × ${item.calculationData.width}" × ${item.calculationData.height}"` : ''}
-          Total: £${item.calculatedPrice ? parseFloat(item.calculatedPrice).toFixed(2) : (item.price * item.quantity).toFixed(2)}
+        ${(order.items || []).map(item => `
+        • ${item.name || 'Product'}
+          ${getCalculationInfo(item)}
+          Price: £${item.calculatedPrice ? parseFloat(item.calculatedPrice).toFixed(2) : ((item.price || 0) * (item.quantity || 1)).toFixed(2)}
         `).join('')}
+        
+        ${order.customRequirements ? `
+        CUSTOM REQUIREMENTS:
+        ${order.customRequirements}
+        ` : ''}
         
         SUMMARY:
         Subtotal: £${order.subtotal?.toFixed(2) || '0.00'}
@@ -1096,11 +1412,20 @@ function downloadInvoice(orderId) {
         Tax: £${order.tax?.toFixed(2) || '0.00'}
         Total: £${order.total?.toFixed(2) || '0.00'}
         
-        Payment Method: ${order.paymentMethod}
-        Payment Status: ${order.paymentStatus}
+        PAYMENT DETAILS:
+        Payment Method: ${order.paymentMethod || 'Bank Transfer'}
+        Payment Type: ${order.paymentType === 'advance' ? '30% Advance Payment' : 'Full Payment'}
+        ${order.paymentType === 'advance' ? `
+        Advance Paid: £${order.advancePayment?.toFixed(2) || '0.00'}
+        Remaining: £${order.remainingPayment?.toFixed(2) || '0.00'}
+        ` : ''}
+        Payment Status: ${getStatusText(order.paymentStatus || order.status)}
+        
+        ORDER STATUS: ${getStatusText(order.status)}
         
         Thank you for your business!
         IRYA STONE - Premium Natural Stone Products
+        www.iryastone.com
     `;
     
     // Create download link
@@ -1108,7 +1433,7 @@ function downloadInvoice(orderId) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `IRYA-INVOICE-${order.orderNumber}.txt`;
+    a.download = `IRYA-INVOICE-${order.orderNumber || order.id}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -1116,21 +1441,14 @@ function downloadInvoice(orderId) {
 }
 
 // ============================================
-// UTILITY FUNCTIONS
+// UTILITY FUNCTIONS (Checkout se same)
 // ============================================
-
-function getUserId() {
-    let userId = localStorage.getItem('irya_guest_id');
-    if (!userId) {
-        userId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem('irya_guest_id', userId);
-    }
-    return userId;
-}
 
 function getStatusText(status) {
     const statusMap = {
         'pending': 'Pending',
+        'pending_bank_transfer': 'Awaiting Payment',
+        'payment_received': 'Payment Received',
         'processing': 'Processing',
         'shipped': 'Shipped',
         'delivered': 'Delivered',
@@ -1151,6 +1469,20 @@ function formatDate(dateString) {
         hour: '2-digit',
         minute: '2-digit'
     });
+}
+
+function getDefaultImage(category) {
+    const categoryLower = (category || '').toLowerCase();
+    
+    if (categoryLower.includes('sand')) {
+        return 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=800';
+    } else if (categoryLower.includes('kota')) {
+        return 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800';
+    } else if (categoryLower.includes('granite')) {
+        return 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800';
+    }
+    
+    return 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=800';
 }
 
 function showNoOrders() {
@@ -1213,11 +1545,12 @@ function showError(message) {
 }
 
 function updateCartBadge() {
-    const userId = getUserId();
+    const userId = authSystem.getUserId();
+    
     const cartKey = 'irya_local_cart_' + userId;
     const cartData = localStorage.getItem(cartKey);
     const cartItems = cartData ? JSON.parse(cartData) : [];
-    const count = cartItems.reduce((total, item) => total + item.quantity, 0);
+    const count = cartItems.reduce((total, item) => total + (item.quantity || 0), 0);
     
     const cartBadge = document.getElementById('cartBadge');
     if (cartBadge) {
@@ -1225,6 +1558,14 @@ function updateCartBadge() {
         cartBadge.style.display = count > 0 ? 'flex' : 'none';
     }
 }
+
+// Make functions available globally
+window.filterOrders = filterOrders;
+window.viewOrderDetails = viewOrderDetails;
+window.trackOrder = trackOrder;
+window.cancelOrder = cancelOrder;
+window.markPaymentComplete = markPaymentComplete;
+window.downloadInvoice = downloadInvoice;
 </script>
 </body>
 </html>
