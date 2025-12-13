@@ -12,7 +12,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto+Slab:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-/* All your existing CSS remains same */
 :root {
     --primary-gold: #c9a227;
     --gold-light: #f0d77c;
@@ -505,7 +504,7 @@ header {
     border-color: var(--primary-gold);
 }
 
-/* Custom Requirements Box */
+/* Custom Requirements */
 .custom-requirements {
     margin: 20px 0;
 }
@@ -755,10 +754,7 @@ header {
     .thumbnails {
         justify-content: center;
     }
-    }
-
-/* ... All CSS remains exactly same ... */
-
+}
 </style>
 </head>
 
@@ -1138,7 +1134,7 @@ class CartSystem {
         try {
             this.isBuyNowMode = true;
             
-            // Create buy now item separately
+            // Create buy now item
             const itemId = calculationData ? 
                 `${product.id}_${JSON.stringify(calculationData)}_BUYNOW_${Date.now()}` : 
                 `${product.id}_${quantity}_BUYNOW_${Date.now()}`;
@@ -1161,7 +1157,7 @@ class CartSystem {
                 customRequirements: customRequirements || '',
                 isBuyNow: true,
                 buyNowTimestamp: Date.now(),
-                isBuyNowOnly: true // This flag indicates it's ONLY for buy now
+                isBuyNowOnly: true
             };
             
             // Calculate price
@@ -1182,14 +1178,11 @@ class CartSystem {
             const userId = this.getUserId();
             const buyNowKey = this.buyNowCartKey + userId;
             
-            // Clear any previous buy now items
-            localStorage.removeItem(buyNowKey);
-            
             // Save only this buy now item
             const buyNowItems = [buyNowItem];
             localStorage.setItem(buyNowKey, JSON.stringify(buyNowItems));
             
-            // Also save to a temporary location for immediate access
+            // Also save for immediate access
             localStorage.setItem('irya_current_buynow_item', JSON.stringify(buyNowItem));
             localStorage.setItem('irya_is_buynow_flow', 'true');
             localStorage.setItem('irya_buynow_product_id', product.id);
@@ -1234,7 +1227,6 @@ function calculatePrice(product, calculationData) {
     
     switch(mode) {
         case 'standard':
-            // Standard calculation based on unit type
             switch(unit) {
                 case 'sqft':
                     const lengthFt = parseFloat(calculationData.length) || 1;
@@ -1276,7 +1268,6 @@ function calculatePrice(product, calculationData) {
 let authSystem, cartSystem;
 
 document.addEventListener('DOMContentLoaded', async function() {
-    // Get product ID from URL
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
     
@@ -1285,20 +1276,16 @@ document.addEventListener('DOMContentLoaded', async function() {
         return;
     }
     
-    // Initialize Firebase
     await initializeFirebase();
     
-    // Initialize systems
     authSystem = new AuthSystem();
     await authSystem.init();
     
     cartSystem = new CartSystem();
     await cartSystem.init();
     
-    // Load product details
     await loadProductDetails(productId);
     
-    // Initialize event listeners
     initEventListeners();
 });
 
@@ -1343,7 +1330,6 @@ async function loadProductDetails(productId) {
             await initializeFirebase();
         }
         
-        // Get product from Firebase
         const doc = await firebaseDB.collection("products").doc(productId).get();
         
         if (!doc.exists) {
@@ -1376,7 +1362,6 @@ async function loadProductDetails(productId) {
             area_per_unit: data.area_per_unit || null
         };
         
-        // Handle images
         if (data.images && Array.isArray(data.images) && data.images.length > 0) {
             currentProduct.images = data.images;
         } else if (typeof data.image === 'string') {
@@ -1385,10 +1370,7 @@ async function loadProductDetails(productId) {
             currentProduct.images = [getDefaultImage(currentProduct.category)];
         }
         
-        // Display product details
         displayProductDetails();
-        
-        // Load related products based on usage
         await loadRelatedProducts(currentProduct.usage);
         
     } catch (error) {
@@ -1409,7 +1391,6 @@ function displayProductDetails() {
     
     if (!currentProduct) return;
     
-    // Update breadcrumb
     if (productNameBreadcrumb) {
         productNameBreadcrumb.textContent = currentProduct.stone_name;
     }
@@ -1577,7 +1558,6 @@ function displayProductDetails() {
     
     productDetails.innerHTML = html;
     
-    // Initialize calculator
     updateCalculatorInputs();
     calculatePrice();
 }
@@ -1590,7 +1570,6 @@ function changeMainImage(imageUrl, thumbnailElement) {
     const mainImage = document.getElementById('mainProductImage');
     mainImage.src = imageUrl;
     
-    // Update active thumbnail
     document.querySelectorAll('.thumbnail').forEach(thumb => {
         thumb.classList.remove('active');
     });
@@ -1603,12 +1582,10 @@ function updateCalculatorInputs() {
     const widthInputGroup = document.getElementById('widthInputGroup');
     const weightInputGroup = document.getElementById('weightInputGroup');
     
-    // Reset all inputs
     areaInputGroup.style.display = 'none';
     widthInputGroup.style.display = 'none';
     weightInputGroup.style.display = 'none';
     
-    // Update labels and show relevant inputs
     if (unit === 'sqft') {
         areaInputGroup.style.display = 'flex';
         widthInputGroup.style.display = 'flex';
@@ -1677,14 +1654,12 @@ function calculatePrice() {
             break;
     }
     
-    // Ensure minimum order quantity
     if (quantity < currentProduct.min_order) {
         document.getElementById('quantityInput').value = currentProduct.min_order;
         calculatePrice();
         return;
     }
     
-    // Calculate advance and remaining payments
     const advancePayment = totalPrice * 0.3;
     const remainingPayment = totalPrice * 0.7;
     
@@ -1712,7 +1687,6 @@ function calculatePrice() {
         </div>
     `;
     
-    // Store current calculation data
     window.currentCalculationData = calculationData;
     window.currentTotalPrice = totalPrice;
     window.currentAdvancePayment = advancePayment;
@@ -1766,7 +1740,6 @@ async function buyNowProduct() {
     try {
         showLoading(true);
         
-        // Process Buy Now
         const success = await cartSystem.buyNow(
             currentProduct, 
             quantity, 
@@ -1775,7 +1748,6 @@ async function buyNowProduct() {
         );
         
         if (success) {
-            // Redirect to checkout with Buy Now parameters
             window.location.href = `checkout.html?buynow=true&product=${currentProduct.id}&source=product_details`;
         } else {
             showError('Failed to process Buy Now. Please try again.');
@@ -1797,12 +1769,10 @@ async function loadRelatedProducts(usage) {
     try {
         if (!usage || !firebaseDB) return;
         
-        // Split usage string by commas to get individual uses
         const uses = usage.split(',').map(u => u.trim()).filter(u => u);
         
         if (uses.length === 0) return;
         
-        // Query products with similar usage (using the first use from the list)
         const querySnapshot = await firebaseDB.collection("products")
             .where("usage", "array-contains", uses[0])
             .limit(4)
@@ -1909,7 +1879,6 @@ function showError(message) {
 // ============================================
 
 function initEventListeners() {
-    // Update custom requirements when typed
     const customRequirementsTextarea = document.getElementById('customRequirements');
     if (customRequirementsTextarea) {
         customRequirementsTextarea.addEventListener('input', function() {
@@ -1918,7 +1887,6 @@ function initEventListeners() {
     }
 }
 
-// Make functions globally available
 window.changeMainImage = changeMainImage;
 window.updateCalculatorInputs = updateCalculatorInputs;
 window.calculatePrice = calculatePrice;
