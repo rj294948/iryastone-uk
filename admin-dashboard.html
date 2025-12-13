@@ -639,6 +639,34 @@
             to { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
+        /* Direct Access Banner */
+        .direct-access-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .direct-access-banner h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .direct-access-banner .btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .direct-access-banner .btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
         /* Responsive */
         @media (max-width: 1024px) {
             .admin-sidebar {
@@ -740,9 +768,9 @@
             </div>
             
             <div style="margin-top: 30px; padding: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
-                <div class="nav-item" onclick="adminSignOut()">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Logout</span>
+                <div class="nav-item" onclick="refreshData()">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Refresh Data</span>
                 </div>
             </div>
         </div>
@@ -750,12 +778,29 @@
     
     <!-- Main Content -->
     <div class="admin-main">
+        <!-- Direct Access Banner -->
+        <div class="direct-access-banner">
+            <div>
+                <h3><i class="fas fa-unlock"></i> Direct Admin Access</h3>
+                <p>Full control without login required</p>
+            </div>
+            <button class="btn" onclick="refreshData()">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+        </div>
+        
         <!-- Header -->
         <div class="admin-header">
-            <h1>Admin Dashboard</h1>
+            <h1>Admin Dashboard - Direct Access</h1>
             <div class="admin-actions">
-                <div class="admin-user" id="adminUserInfo">
-                    <!-- Admin info will be loaded here -->
+                <div class="admin-user">
+                    <div class="user-avatar">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight: 500;">Direct Admin</div>
+                        <div style="font-size: 11px; color: var(--text-light);">Full Access Mode</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -769,7 +814,7 @@
                         <div class="stat-icon">
                             <i class="fas fa-money-bill-wave"></i>
                         </div>
-                        <span class="stat-trend trend-up" id="revenueTrend">+12%</span>
+                        <span class="stat-trend trend-up" id="revenueTrend">+0%</span>
                     </div>
                     <div class="stat-number" id="totalRevenue">£0.00</div>
                     <div class="stat-label">Total Revenue</div>
@@ -780,7 +825,7 @@
                         <div class="stat-icon">
                             <i class="fas fa-shopping-cart"></i>
                         </div>
-                        <span class="stat-trend trend-up" id="ordersTrend">+8%</span>
+                        <span class="stat-trend trend-up" id="ordersTrend">+0%</span>
                     </div>
                     <div class="stat-number" id="totalOrders">0</div>
                     <div class="stat-label">Total Orders</div>
@@ -791,7 +836,7 @@
                         <div class="stat-icon">
                             <i class="fas fa-users"></i>
                         </div>
-                        <span class="stat-trend trend-up" id="customersTrend">+5%</span>
+                        <span class="stat-trend trend-up" id="customersTrend">+0%</span>
                     </div>
                     <div class="stat-number" id="totalCustomers">0</div>
                     <div class="stat-label">Total Customers</div>
@@ -802,7 +847,7 @@
                         <div class="stat-icon">
                             <i class="fas fa-clock"></i>
                         </div>
-                        <span class="stat-trend trend-down" id="pendingTrend">-3%</span>
+                        <span class="stat-trend trend-down" id="pendingTrend">-0%</span>
                     </div>
                     <div class="stat-number" id="pendingPayments">0</div>
                     <div class="stat-label">Pending Payments</div>
@@ -861,7 +906,12 @@
                         </tr>
                     </thead>
                     <tbody id="recentOrdersTable">
-                        <!-- Orders will be loaded here -->
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 40px;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: var(--primary-gold);"></i>
+                                <div style="margin-top: 10px; color: var(--text-light);">Loading orders...</div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -903,7 +953,12 @@
                         </tr>
                     </thead>
                     <tbody id="allOrdersTable">
-                        <!-- All orders will be loaded here -->
+                        <tr>
+                            <td colspan="9" style="text-align: center; padding: 40px;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: var(--primary-gold);"></i>
+                                <div style="margin-top: 10px; color: var(--text-light);">Loading orders...</div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -949,7 +1004,12 @@
                         </tr>
                     </thead>
                     <tbody id="paymentsTable">
-                        <!-- Payments will be loaded here -->
+                        <tr>
+                            <td colspan="9" style="text-align: center; padding: 40px;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: var(--primary-gold);"></i>
+                                <div style="margin-top: 10px; color: var(--text-light);">Loading payments...</div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -985,7 +1045,12 @@
                         </tr>
                     </thead>
                     <tbody id="shippingTable">
-                        <!-- Shipping orders will be loaded here -->
+                        <tr>
+                            <td colspan="9" style="text-align: center; padding: 40px;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: var(--primary-gold);"></i>
+                                <div style="margin-top: 10px; color: var(--text-light);">Loading shipping data...</div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -1021,7 +1086,12 @@
                         </tr>
                     </thead>
                     <tbody id="customersTable">
-                        <!-- Customers will be loaded here -->
+                        <tr>
+                            <td colspan="9" style="text-align: center; padding: 40px;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: var(--primary-gold);"></i>
+                                <div style="margin-top: 10px; color: var(--text-light);">Loading customers...</div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -1063,7 +1133,12 @@
                         </tr>
                     </thead>
                     <tbody id="productsTable">
-                        <!-- Products will be loaded here -->
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 40px;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: var(--primary-gold);"></i>
+                                <div style="margin-top: 10px; color: var(--text-light);">Loading products...</div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -1121,55 +1196,37 @@
                     <h3><i class="fas fa-cog"></i> Admin Settings</h3>
                 </div>
                 <div style="padding: 30px;">
-                    <h4 style="margin-bottom: 20px;">System Settings</h4>
+                    <h4 style="margin-bottom: 20px;">Firebase Configuration</h4>
                     
                     <div class="form-group">
-                        <label class="form-label">Allowed Admin Emails</label>
-                        <div id="adminEmailsList">
-                            <!-- Admin emails will be loaded here -->
-                        </div>
-                        <div style="display: flex; gap: 10px; margin-top: 10px;">
-                            <input type="email" id="newAdminEmail" placeholder="Enter email address" class="form-control">
-                            <button class="btn btn-primary" onclick="addAdminEmail()">
-                                <i class="fas fa-plus"></i> Add
-                            </button>
+                        <label class="form-label">Firebase Project ID</label>
+                        <input type="text" id="firebaseProjectId" value="iryastone-uk" class="form-control" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">API Key</label>
+                        <input type="text" id="firebaseApiKey" value="AIzaSyDNwzhOkQQLAQbkiNFTFEGSpWJdKaxbTRk" class="form-control" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Database Status</label>
+                        <div id="databaseStatus" style="padding: 10px; background: #d4edda; color: #155724; border-radius: 8px;">
+                            <i class="fas fa-check-circle"></i> Connected to Firebase
                         </div>
                     </div>
+                    
+                    <h4 style="margin-top: 30px; margin-bottom: 20px;">Payment Settings</h4>
                     
                     <div class="form-group">
                         <label class="form-label">Payment Terms</label>
                         <div class="form-row">
                             <div>
                                 <label>Advance Payment Percentage</label>
-                                <input type="number" id="advancePercent" value="30" class="form-control">
+                                <input type="number" id="advancePercent" value="30" class="form-control" min="0" max="100">
                             </div>
                             <div>
                                 <label>Discount for Full Payment (%)</label>
-                                <input type="number" id="discountPercent" value="5" class="form-control">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Bank Account Details</label>
-                        <div class="form-row">
-                            <div>
-                                <label>Account Name</label>
-                                <input type="text" id="bankAccountName" value="IRYA STONE LTD" class="form-control">
-                            </div>
-                            <div>
-                                <label>Account Number</label>
-                                <input type="text" id="bankAccountNumber" value="12345678" class="form-control">
-                            </div>
-                        </div>
-                        <div class="form-row" style="margin-top: 10px;">
-                            <div>
-                                <label>Sort Code</label>
-                                <input type="text" id="bankSortCode" value="04-00-04" class="form-control">
-                            </div>
-                            <div>
-                                <label>IBAN</label>
-                                <input type="text" id="bankIban" value="GB29NWBK60161331926819" class="form-control">
+                                <input type="number" id="discountPercent" value="5" class="form-control" min="0" max="100">
                             </div>
                         </div>
                     </div>
@@ -1204,156 +1261,72 @@ const firebaseConfig = {
 };
 
 // ============================================
-// ALLOWED ADMIN EMAILS (YOUR EMAILS)
+// DIRECT ACCESS ADMIN SYSTEM
 // ============================================
 
-const ALLOWED_ADMIN_EMAILS = [
-    "ravijain236129@gmail.com",           // REPLACE WITH YOUR EMAIL
-    "ravijain236129@gmail.com",             // REPLACE WITH YOUR EMAIL
-    "admin@iryastone.com"              // Keep this one
-];
-
-// ============================================
-// ADMIN SYSTEM INITIALIZATION
-// ============================================
-
-let firebaseApp, firebaseAuth, firebaseDB;
-let currentAdmin = null;
-let charts = {};
+let firebaseApp, firebaseDB;
 let currentSection = 'dashboard';
+let charts = {};
 
-class AdminSystem {
+class DirectAccessAdmin {
     constructor() {
-        this.adminKey = 'irya_admin_auth';
-        this.settingsKey = 'irya_admin_settings';
+        this.initialized = false;
     }
     
     async initialize() {
         try {
-            // Check existing session
-            const adminData = localStorage.getItem(this.adminKey);
-            if (!adminData) {
-                this.redirectToLogin();
-                return;
+            showLoading(true);
+            
+            // Initialize Firebase without authentication
+            if (typeof firebase === 'undefined') {
+                throw new Error('Firebase SDK not loaded');
             }
             
-            this.currentAdmin = JSON.parse(adminData);
-            
-            // Initialize Firebase
-            await this.initializeFirebase();
-            
-            // Verify admin status
-            const isAdmin = await this.verifyAdminStatus();
-            if (!isAdmin) {
-                this.redirectToLogin();
-                return;
+            if (!firebase.apps.length) {
+                firebaseApp = firebase.initializeApp(firebaseConfig);
+            } else {
+                firebaseApp = firebase.app();
             }
             
-            // Initialize dashboard
-            this.loadAdminInfo();
-            this.loadDashboardData();
+            // Initialize Firestore
+            firebaseDB = firebase.firestore();
+            
+            // Disable offline persistence to avoid permission issues
+            firebaseDB.settings({
+                cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED
+            });
+            
+            console.log('✅ Firebase initialized in direct access mode');
+            this.initialized = true;
+            
+            // Load initial data
+            await this.loadDashboardData();
+            
+            // Setup event listeners
             this.setupEventListeners();
             
-            // Start real-time updates
-            this.startRealtimeUpdates();
-            
-        } catch (error) {
-            console.error('Admin system initialization error:', error);
-            this.redirectToLogin();
-        }
-    }
-    
-    async initializeFirebase() {
-        if (typeof firebase === 'undefined') {
-            throw new Error('Firebase SDK not loaded');
-        }
-        
-        if (!firebase.apps.length) {
-            firebaseApp = firebase.initializeApp(firebaseConfig);
-        } else {
-            firebaseApp = firebase.app();
-        }
-        
-        firebaseAuth = firebase.auth();
-        firebaseDB = firebase.firestore();
-        
-        console.log('✅ Firebase initialized for admin dashboard');
-    }
-    
-    async verifyAdminStatus() {
-        try {
-            // Check if user is authenticated with Firebase
-            const user = firebaseAuth.currentUser;
-            if (!user) {
-                console.log('❌ No Firebase user found');
-                return false;
-            }
-            
-            // Verify email is in allowed list
-            if (!ALLOWED_ADMIN_EMAILS.includes(user.email)) {
-                console.log('❌ Email not authorized:', user.email);
-                await this.signOut();
-                return false;
-            }
-            
-            // Check admin collection
-            const adminSnapshot = await firebaseDB.collection('admins')
-                .where('email', '==', user.email)
-                .where('isActive', '==', true)
-                .limit(1)
-                .get();
-            
-            if (adminSnapshot.empty) {
-                // Create admin entry if not exists
-                await this.createAdminEntry(user);
-            }
-            
-            return true;
-            
-        } catch (error) {
-            console.error('Admin verification error:', error);
-            return false;
-        }
-    }
-    
-    async createAdminEntry(user) {
-        try {
-            const adminData = {
-                email: user.email,
-                name: user.displayName || user.email.split('@')[0],
-                role: 'super_admin',
-                permissions: ['all'],
-                isActive: true,
-                createdAt: new Date().toISOString(),
-                lastLogin: new Date().toISOString()
-            };
-            
-            await firebaseDB.collection('admins').add(adminData);
-            console.log('✅ Admin entry created for:', user.email);
-        } catch (error) {
-            console.error('Error creating admin entry:', error);
-        }
-    }
-    
-    loadAdminInfo() {
-        const adminUserInfo = document.getElementById('adminUserInfo');
-        if (adminUserInfo && this.currentAdmin) {
-            adminUserInfo.innerHTML = `
-                <div class="user-avatar">
-                    ${this.currentAdmin.displayName?.charAt(0).toUpperCase() || 'A'}
-                </div>
-                <div>
-                    <div style="font-weight: 500;">${this.currentAdmin.displayName || 'Admin'}</div>
-                    <div style="font-size: 11px; color: var(--text-light);">Super Admin</div>
-                </div>
+            // Update database status
+            document.getElementById('databaseStatus').innerHTML = `
+                <i class="fas fa-check-circle"></i> Connected to Firebase: ${firebaseConfig.projectId}
             `;
+            
+            showNotification('✅ Connected to Firebase successfully!');
+            
+        } catch (error) {
+            console.error('❌ Firebase initialization error:', error);
+            
+            document.getElementById('databaseStatus').innerHTML = `
+                <i class="fas fa-exclamation-triangle"></i> Connection failed: ${error.message}
+            `;
+            
+            showError('Failed to connect to Firebase. Please check your configuration.');
+        } finally {
+            showLoading(false);
         }
     }
     
     async loadDashboardData() {
         try {
-            showLoading(true);
-            
             // Load stats
             await this.loadStats();
             
@@ -1365,20 +1338,12 @@ class AdminSystem {
             
         } catch (error) {
             console.error('Error loading dashboard data:', error);
-        } finally {
-            showLoading(false);
+            showError('Failed to load dashboard data: ' + error.message);
         }
     }
     
     async loadStats() {
         try {
-            // Get today's date
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            
-            const yesterday = new Date(today);
-            yesterday.setDate(yesterday.getDate() - 1);
-            
             // Total orders
             const ordersSnapshot = await firebaseDB.collection('orders').get();
             const totalOrders = ordersSnapshot.size;
@@ -1386,25 +1351,11 @@ class AdminSystem {
             
             // Total revenue
             let totalRevenue = 0;
-            let yesterdayRevenue = 0;
             ordersSnapshot.forEach(doc => {
                 const order = doc.data();
-                totalRevenue += order.total || 0;
-                
-                // Calculate yesterday's revenue
-                const orderDate = new Date(order.createdAt);
-                if (orderDate >= yesterday && orderDate < today) {
-                    yesterdayRevenue += order.total || 0;
-                }
+                totalRevenue += parseFloat(order.total) || 0;
             });
             document.getElementById('totalRevenue').textContent = '£' + totalRevenue.toFixed(2);
-            
-            // Revenue trend
-            const revenueTrend = yesterdayRevenue > 0 ? 
-                (((totalRevenue - yesterdayRevenue) / yesterdayRevenue) * 100).toFixed(1) : '0';
-            const revenueTrendElement = document.getElementById('revenueTrend');
-            revenueTrendElement.textContent = `${parseFloat(revenueTrend) > 0 ? '+' : ''}${revenueTrend}%`;
-            revenueTrendElement.className = `stat-trend ${parseFloat(revenueTrend) >= 0 ? 'trend-up' : 'trend-down'}`;
             
             // Total customers
             const customersSnapshot = await firebaseDB.collection('users').get();
@@ -1416,9 +1367,7 @@ class AdminSystem {
             document.getElementById('pendingPayments').textContent = pendingPayments;
             
             // Update badges
-            document.getElementById('pendingOrdersBadge').textContent = this.getPendingOrdersCount(ordersSnapshot);
-            document.getElementById('pendingPaymentsBadge').textContent = pendingPayments;
-            document.getElementById('readyToShipBadge').textContent = this.getReadyToShipCount(ordersSnapshot);
+            this.updateBadges(ordersSnapshot);
             
         } catch (error) {
             console.error('Error loading stats:', error);
@@ -1436,27 +1385,33 @@ class AdminSystem {
         }
     }
     
-    getPendingOrdersCount(ordersSnapshot) {
-        let count = 0;
+    updateBadges(ordersSnapshot) {
+        let pendingOrders = 0;
+        let readyToShip = 0;
+        
         ordersSnapshot.forEach(doc => {
             const order = doc.data();
+            
             if (order.status === 'pending' || order.paymentStatus === 'pending_bank_transfer') {
-                count++;
+                pendingOrders++;
             }
-        });
-        return count;
-    }
-    
-    getReadyToShipCount(ordersSnapshot) {
-        let count = 0;
-        ordersSnapshot.forEach(doc => {
-            const order = doc.data();
+            
             if (order.status === 'processing' && 
                 (order.paymentStatus === 'payment_verified' || order.paymentStatus === 'paid')) {
-                count++;
+                readyToShip++;
             }
         });
-        return count;
+        
+        const pendingPayments = parseInt(document.getElementById('pendingPayments').textContent);
+        
+        document.getElementById('pendingOrdersBadge').textContent = pendingOrders;
+        document.getElementById('pendingPaymentsBadge').textContent = pendingPayments;
+        document.getElementById('readyToShipBadge').textContent = readyToShip;
+        
+        // Show/hide badges
+        document.getElementById('pendingOrdersBadge').style.display = pendingOrders > 0 ? 'flex' : 'none';
+        document.getElementById('pendingPaymentsBadge').style.display = pendingPayments > 0 ? 'flex' : 'none';
+        document.getElementById('readyToShipBadge').style.display = readyToShip > 0 ? 'flex' : 'none';
     }
     
     async loadRecentOrders() {
@@ -1467,32 +1422,37 @@ class AdminSystem {
                 .get();
             
             const tableBody = document.getElementById('recentOrdersTable');
-            tableBody.innerHTML = '';
-            
-            if (ordersSnapshot.empty) {
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="7" style="text-align: center; padding: 40px; color: var(--text-light);">
-                            <i class="fas fa-box-open" style="font-size: 32px; margin-bottom: 10px;"></i>
-                            <div>No orders found</div>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-            
-            ordersSnapshot.forEach(doc => {
-                const order = doc.data();
-                const row = this.createOrderTableRow(doc.id, order);
-                tableBody.appendChild(row);
-            });
+            this.populateOrdersTable(ordersSnapshot, tableBody, true);
             
         } catch (error) {
             console.error('Error loading recent orders:', error);
+            this.showTableError('recentOrdersTable', 'Failed to load orders');
         }
     }
     
-    createOrderTableRow(orderId, order) {
+    populateOrdersTable(ordersSnapshot, tableBody, isRecent = false) {
+        tableBody.innerHTML = '';
+        
+        if (ordersSnapshot.empty) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="${isRecent ? '7' : '9'}" style="text-align: center; padding: 40px; color: var(--text-light);">
+                        <i class="fas fa-box-open" style="font-size: 32px; margin-bottom: 10px;"></i>
+                        <div>No orders found</div>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        ordersSnapshot.forEach(doc => {
+            const order = doc.data();
+            const row = this.createOrderTableRow(doc.id, order, isRecent);
+            tableBody.appendChild(row);
+        });
+    }
+    
+    createOrderTableRow(orderId, order, isRecent = false) {
         const row = document.createElement('tr');
         
         // Status badge
@@ -1508,109 +1468,227 @@ class AdminSystem {
         // Customer name
         const customerName = order.userName || order.shippingAddress?.fullName || 'Customer';
         
-        row.innerHTML = `
-            <td><strong>${order.orderNumber || orderId.substring(0, 8)}</strong></td>
-            <td>${customerName}</td>
-            <td>${orderDate}</td>
-            <td>£${order.total?.toFixed(2) || '0.00'}</td>
-            <td>${statusBadge}</td>
-            <td>${paymentBadge}</td>
-            <td>
-                <div class="action-buttons">
-                    <button class="btn-icon btn-view" onclick="viewOrderDetails('${orderId}')" title="View Details">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    ${(order.status === 'pending' || order.paymentStatus === 'pending_bank_transfer') ? `
-                        <button class="btn-icon btn-verify" onclick="verifyPayment('${orderId}')" title="Verify Payment">
-                            <i class="fas fa-check"></i>
+        if (isRecent) {
+            row.innerHTML = `
+                <td><strong>${order.orderNumber || orderId.substring(0, 8)}</strong></td>
+                <td>${customerName}</td>
+                <td>${orderDate}</td>
+                <td>£${order.total?.toFixed(2) || '0.00'}</td>
+                <td>${statusBadge}</td>
+                <td>${paymentBadge}</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn-icon btn-view" onclick="viewOrderDetails('${orderId}')" title="View Details">
+                            <i class="fas fa-eye"></i>
                         </button>
-                    ` : ''}
-                    ${order.status === 'processing' ? `
-                        <button class="btn-icon btn-ship" onclick="updateShipping('${orderId}')" title="Update Shipping">
-                            <i class="fas fa-shipping-fast"></i>
+                        ${(order.status === 'pending' || order.paymentStatus === 'pending_bank_transfer') ? `
+                            <button class="btn-icon btn-verify" onclick="verifyPayment('${orderId}')" title="Verify Payment">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        ` : ''}
+                        ${order.status === 'processing' ? `
+                            <button class="btn-icon btn-ship" onclick="updateShipping('${orderId}')" title="Update Shipping">
+                                <i class="fas fa-shipping-fast"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                </td>
+            `;
+        } else {
+            // For all orders table
+            const paymentType = order.paymentType === 'advance' ? '30% Advance' : 'Full Payment';
+            const itemsCount = order.items?.length || 0;
+            
+            row.innerHTML = `
+                <td><strong>${order.orderNumber || orderId.substring(0, 8)}</strong></td>
+                <td>${customerName}</td>
+                <td>${orderDate}</td>
+                <td>${itemsCount} items</td>
+                <td>£${order.total?.toFixed(2) || '0.00'}</td>
+                <td>${paymentType}</td>
+                <td>${statusBadge}</td>
+                <td>${paymentBadge}</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn-icon btn-view" onclick="viewOrderDetails('${orderId}')" title="View Details">
+                            <i class="fas fa-eye"></i>
                         </button>
-                    ` : ''}
-                </div>
-            </td>
-        `;
+                        <button class="btn-icon btn-edit" onclick="editOrder('${orderId}')" title="Edit Order">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        ${order.status === 'pending' ? `
+                            <button class="btn-icon btn-delete" onclick="cancelOrder('${orderId}')" title="Cancel Order">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                </td>
+            `;
+        }
         
         return row;
     }
     
     initializeCharts() {
-        // Revenue Chart
-        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-        charts.revenue = new Chart(revenueCtx, {
-            type: 'line',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                datasets: [{
-                    label: 'Revenue (£)',
-                    data: [12000, 19000, 15000, 25000, 22000, 30000],
-                    borderColor: '#c9a227',
-                    backgroundColor: 'rgba(201, 162, 39, 0.1)',
-                    tension: 0.4,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
+        try {
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            charts.revenue = new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Revenue (£)',
+                        data: [0, 0, 0, 0, 0, 0],
+                        borderColor: '#c9a227',
+                        backgroundColor: 'rgba(201, 162, 39, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
                     }
                 }
-            }
-        });
-        
-        // Order Status Chart
-        const orderStatusCtx = document.getElementById('orderStatusChart').getContext('2d');
-        charts.orderStatus = new Chart(orderStatusCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
-                datasets: [{
-                    data: [5, 12, 8, 25, 2],
-                    backgroundColor: [
-                        '#fff3cd',
-                        '#cce5ff',
-                        '#d4edda',
-                        '#d1ecf1',
-                        '#f8d7da'
-                    ],
-                    borderColor: [
-                        '#856404',
-                        '#004085',
-                        '#155724',
-                        '#0c5460',
-                        '#721c24'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'right'
+            });
+            
+            // Order Status Chart
+            const orderStatusCtx = document.getElementById('orderStatusChart').getContext('2d');
+            charts.orderStatus = new Chart(orderStatusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
+                    datasets: [{
+                        data: [0, 0, 0, 0, 0],
+                        backgroundColor: [
+                            '#fff3cd',
+                            '#cce5ff',
+                            '#d4edda',
+                            '#d1ecf1',
+                            '#f8d7da'
+                        ],
+                        borderColor: [
+                            '#856404',
+                            '#004085',
+                            '#155724',
+                            '#0c5460',
+                            '#721c24'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        }
                     }
                 }
+            });
+            
+            // Update chart data
+            this.updateChartData();
+            
+        } catch (error) {
+            console.error('Error initializing charts:', error);
+        }
+    }
+    
+    async updateChartData() {
+        try {
+            const ordersSnapshot = await firebaseDB.collection('orders').get();
+            
+            // Calculate order status distribution
+            let statusCount = {
+                pending: 0,
+                processing: 0,
+                shipped: 0,
+                delivered: 0,
+                cancelled: 0
+            };
+            
+            let monthlyRevenue = [0, 0, 0, 0, 0, 0];
+            
+            ordersSnapshot.forEach(doc => {
+                const order = doc.data();
+                const status = order.status || 'pending';
+                
+                if (statusCount[status] !== undefined) {
+                    statusCount[status]++;
+                }
+                
+                // Group by month
+                if (order.createdAt) {
+                    const orderDate = new Date(order.createdAt);
+                    const month = orderDate.getMonth();
+                    if (month >= 0 && month < 6) {
+                        monthlyRevenue[month] += parseFloat(order.total) || 0;
+                    }
+                }
+            });
+            
+            // Update order status chart
+            if (charts.orderStatus) {
+                charts.orderStatus.data.datasets[0].data = [
+                    statusCount.pending,
+                    statusCount.processing,
+                    statusCount.shipped,
+                    statusCount.delivered,
+                    statusCount.cancelled
+                ];
+                charts.orderStatus.update();
             }
-        });
+            
+            // Update revenue chart
+            if (charts.revenue) {
+                charts.revenue.data.datasets[0].data = monthlyRevenue;
+                charts.revenue.update();
+            }
+            
+        } catch (error) {
+            console.error('Error updating chart data:', error);
+        }
     }
     
     setupEventListeners() {
-        // Search functionality
-        document.getElementById('orderSearch')?.addEventListener('input', (e) => {
-            this.filterTable('recentOrdersTable', e.target.value);
-        });
+        // Search functionality for recent orders
+        const orderSearch = document.getElementById('orderSearch');
+        if (orderSearch) {
+            orderSearch.addEventListener('input', (e) => {
+                this.filterTable('recentOrdersTable', e.target.value);
+            });
+        }
         
-        // Filter functionality
-        document.getElementById('orderFilter')?.addEventListener('change', (e) => {
-            this.filterOrdersByStatus(e.target.value);
-        });
+        // Filter functionality for recent orders
+        const orderFilter = document.getElementById('orderFilter');
+        if (orderFilter) {
+            orderFilter.addEventListener('change', (e) => {
+                this.filterOrdersByStatus('recentOrdersTable', e.target.value);
+            });
+        }
+        
+        // Search for all orders
+        const allOrdersSearch = document.getElementById('allOrdersSearch');
+        if (allOrdersSearch) {
+            allOrdersSearch.addEventListener('input', (e) => {
+                this.filterTable('allOrdersTable', e.target.value);
+            });
+        }
+        
+        // Filter for all orders
+        const allOrdersFilter = document.getElementById('allOrdersFilter');
+        if (allOrdersFilter) {
+            allOrdersFilter.addEventListener('change', (e) => {
+                this.filterOrdersByStatus('allOrdersTable', e.target.value);
+            });
+        }
     }
     
     filterTable(tableId, searchText) {
@@ -1624,8 +1702,8 @@ class AdminSystem {
         }
     }
     
-    filterOrdersByStatus(status) {
-        const table = document.getElementById('recentOrdersTable');
+    filterOrdersByStatus(tableId, status) {
+        const table = document.getElementById(tableId);
         const rows = table.getElementsByTagName('tr');
         
         for (let row of rows) {
@@ -1635,35 +1713,11 @@ class AdminSystem {
             }
             
             const statusText = row.cells[4]?.textContent.toLowerCase();
-            row.style.display = statusText.includes(status) ? '' : 'none';
-        }
-    }
-    
-    async startRealtimeUpdates() {
-        // Listen for new orders
-        firebaseDB.collection('orders')
-            .orderBy('createdAt', 'desc')
-            .limit(1)
-            .onSnapshot((snapshot) => {
-                if (!snapshot.empty) {
-                    this.loadStats();
-                    this.loadRecentOrders();
-                }
-            });
-        
-        // Listen for payment updates
-        firebaseDB.collection('payment_confirmations')
-            .where('status', '==', 'pending')
-            .onSnapshot((snapshot) => {
-                this.updatePaymentBadges(snapshot.size);
-            });
-    }
-    
-    updatePaymentBadges(count) {
-        const badge = document.getElementById('pendingPaymentsBadge');
-        if (badge) {
-            badge.textContent = count;
-            badge.style.display = count > 0 ? 'flex' : 'none';
+            if (statusText && statusText.includes(status)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
         }
     }
     
@@ -1691,18 +1745,16 @@ class AdminSystem {
         return statusMap[status] || status;
     }
     
-    redirectToLogin() {
-        window.location.href = 'admin-login.html';
-    }
-    
-    async signOut() {
-        try {
-            await firebaseAuth.signOut();
-            localStorage.removeItem(this.adminKey);
-            this.redirectToLogin();
-        } catch (error) {
-            console.error('Sign out error:', error);
-        }
+    showTableError(tableId, message) {
+        const tableBody = document.getElementById(tableId);
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align: center; padding: 40px; color: var(--danger);">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 32px; margin-bottom: 10px;"></i>
+                    <div>${message}</div>
+                </td>
+            </tr>
+        `;
     }
 }
 
@@ -1714,11 +1766,11 @@ let adminSystem;
 
 async function initializeAdminDashboard() {
     try {
-        adminSystem = new AdminSystem();
+        adminSystem = new DirectAccessAdmin();
         await adminSystem.initialize();
     } catch (error) {
         console.error('Dashboard initialization error:', error);
-        window.location.href = 'admin-login.html';
+        showError('Failed to initialize admin dashboard: ' + error.message);
     }
 }
 
@@ -1729,134 +1781,96 @@ function showSection(section) {
     });
     
     // Show selected section
-    document.getElementById(section + 'Section').style.display = 'block';
+    const sectionElement = document.getElementById(section + 'Section');
+    if (sectionElement) {
+        sectionElement.style.display = 'block';
+    }
     
     // Update active nav item
     document.querySelectorAll('.nav-item').forEach(el => {
         el.classList.remove('active');
     });
-    event.currentTarget.classList.add('active');
+    
+    // Find and activate the clicked nav item
+    const navItems = document.querySelectorAll('.nav-item');
+    for (let item of navItems) {
+        if (item.textContent.includes(getSectionName(section))) {
+            item.classList.add('active');
+            break;
+        }
+    }
     
     // Load section data
     currentSection = section;
     loadSectionData(section);
 }
 
-function loadSectionData(section) {
-    switch(section) {
-        case 'orders':
-            loadAllOrders();
-            break;
-        case 'payments':
-            loadPayments();
-            break;
-        case 'shipping':
-            loadShipping();
-            break;
-        case 'customers':
-            loadCustomers();
-            break;
-        case 'products':
-            loadProducts();
-            break;
-        case 'analytics':
-            loadAnalytics();
-            break;
-        case 'settings':
-            loadSettings();
-            break;
-    }
+function getSectionName(section) {
+    const sectionNames = {
+        'dashboard': 'Dashboard',
+        'orders': 'Orders',
+        'payments': 'Payments',
+        'shipping': 'Shipping',
+        'customers': 'Customers',
+        'products': 'Products',
+        'analytics': 'Analytics',
+        'settings': 'Settings'
+    };
+    return sectionNames[section] || section;
 }
 
-async function loadAllOrders() {
+async function loadSectionData(section) {
     try {
         showLoading(true);
         
-        const ordersSnapshot = await firebaseDB.collection('orders')
-            .orderBy('createdAt', 'desc')
-            .get();
-        
-        const tableBody = document.getElementById('allOrdersTable');
-        tableBody.innerHTML = '';
-        
-        if (ordersSnapshot.empty) {
-            tableBody.innerHTML = `
-                <tr>
-                    <td colspan="9" style="text-align: center; padding: 40px; color: var(--text-light);">
-                        <i class="fas fa-box-open" style="font-size: 32px; margin-bottom: 10px;"></i>
-                        <div>No orders found</div>
-                    </td>
-                </tr>
-            `;
-            return;
+        switch(section) {
+            case 'orders':
+                await loadAllOrders();
+                break;
+            case 'payments':
+                await loadPayments();
+                break;
+            case 'shipping':
+                await loadShipping();
+                break;
+            case 'customers':
+                await loadCustomers();
+                break;
+            case 'products':
+                await loadProducts();
+                break;
+            case 'analytics':
+                await loadAnalytics();
+                break;
+            case 'settings':
+                loadSettings();
+                break;
+            default:
+                // Dashboard is already loaded
+                break;
         }
         
-        ordersSnapshot.forEach(doc => {
-            const order = doc.data();
-            const row = createAllOrdersTableRow(doc.id, order);
-            tableBody.appendChild(row);
-        });
-        
     } catch (error) {
-        console.error('Error loading all orders:', error);
+        console.error(`Error loading ${section} data:`, error);
+        showError(`Failed to load ${section} data: ${error.message}`);
     } finally {
         showLoading(false);
     }
 }
 
-function createAllOrdersTableRow(orderId, order) {
-    const row = document.createElement('tr');
-    
-    // Status badge
-    const status = order.status || 'pending';
-    const statusBadge = `<span class="status-badge status-${status}">${adminSystem.getStatusText(status)}</span>`;
-    
-    // Payment status badge
-    let paymentStatus = order.paymentStatus || 'pending';
-    let paymentClass = paymentStatus.includes('pending') ? 'pending' : 
-                      paymentStatus.includes('verified') ? 'verified' : 
-                      paymentStatus.includes('rejected') ? 'rejected' : paymentStatus;
-    let paymentBadge = `<span class="status-badge payment-${paymentClass}">${adminSystem.getPaymentStatusText(paymentStatus)}</span>`;
-    
-    // Format date
-    const orderDate = order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A';
-    
-    // Customer name
-    const customerName = order.userName || order.shippingAddress?.fullName || 'Customer';
-    
-    // Payment type
-    const paymentType = order.paymentType === 'advance' ? '30% Advance' : 'Full Payment';
-    
-    // Items count
-    const itemsCount = order.items?.length || 0;
-    
-    row.innerHTML = `
-        <td><strong>${order.orderNumber || orderId.substring(0, 8)}</strong></td>
-        <td>${customerName}</td>
-        <td>${orderDate}</td>
-        <td>${itemsCount} items</td>
-        <td>£${order.total?.toFixed(2) || '0.00'}</td>
-        <td>${paymentType}</td>
-        <td>${statusBadge}</td>
-        <td>${paymentBadge}</td>
-        <td>
-            <div class="action-buttons">
-                <button class="btn-icon btn-view" onclick="viewOrderDetails('${orderId}')" title="View Details">
-                    <i class="fas fa-eye"></i>
-                </button>
-                <button class="btn-icon btn-edit" onclick="editOrder('${orderId}')" title="Edit Order">
-                    <i class="fas fa-edit"></i>
-                </button>
-                ${status === 'pending' ? `
-                    <button class="btn-icon btn-delete" onclick="cancelOrder('${orderId}')" title="Cancel Order">
-                        <i class="fas fa-times"></i>
-                    </button>
-                ` : ''}
-            </div>
-        </td>
-    `;
-    
-    return row;
+async function loadAllOrders() {
+    try {
+        const ordersSnapshot = await firebaseDB.collection('orders')
+            .orderBy('createdAt', 'desc')
+            .get();
+        
+        const tableBody = document.getElementById('allOrdersTable');
+        adminSystem.populateOrdersTable(ordersSnapshot, tableBody, false);
+        
+    } catch (error) {
+        console.error('Error loading all orders:', error);
+        adminSystem.showTableError('allOrdersTable', 'Failed to load orders');
+    }
 }
 
 async function viewOrderDetails(orderId) {
@@ -2065,34 +2079,21 @@ async function confirmPaymentVerification(orderId) {
             updatedAt: new Date().toISOString()
         });
         
-        // Send notification to customer
-        const orderDoc = await firebaseDB.collection('orders').doc(orderId).get();
-        const order = orderDoc.data();
-        
-        if (order.userId) {
-            await sendNotificationToUser(order.userId, {
-                type: 'payment_verified',
-                title: 'Payment Verified',
-                message: `Your payment for order #${order.orderNumber} has been verified. Order is now being processed.`,
-                orderId: orderId,
-                orderNumber: order.orderNumber
-            });
-        }
-        
-        closeModal();
         showNotification('✅ Payment verified successfully!');
+        closeModal();
         
-        // Reload data
-        if (currentSection === 'dashboard') {
-            adminSystem.loadStats();
-            adminSystem.loadRecentOrders();
-        } else if (currentSection === 'orders') {
-            loadAllOrders();
+        // Refresh data
+        await adminSystem.loadStats();
+        await adminSystem.loadRecentOrders();
+        adminSystem.updateChartData();
+        
+        if (currentSection === 'orders') {
+            await loadAllOrders();
         }
         
     } catch (error) {
         console.error('Error confirming payment:', error);
-        showError('Failed to verify payment');
+        showError('Failed to verify payment: ' + error.message);
     } finally {
         showLoading(false);
     }
@@ -2160,11 +2161,6 @@ async function updateShipping(orderId) {
                 <button class="btn btn-primary" onclick="saveShippingUpdate('${orderId}')">
                     <i class="fas fa-save"></i> Update Shipping
                 </button>
-                ${order.paymentType === 'advance' && order.paymentStatus === 'payment_verified' ? `
-                    <button class="btn btn-secondary" onclick="sendRemainingPaymentRequest('${orderId}')">
-                        <i class="fas fa-money-bill-wave"></i> Request Remaining Payment
-                    </button>
-                ` : ''}
                 <button class="btn btn-secondary" onclick="closeModal()">
                     Cancel
                 </button>
@@ -2214,113 +2210,23 @@ async function saveShippingUpdate(orderId) {
         
         await firebaseDB.collection('orders').doc(orderId).update(updateData);
         
-        // Save shipping confirmation
-        const shippingData = {
-            orderId: orderId,
-            shippingDate: shippingDate,
-            estimatedDelivery: estimatedDelivery,
-            trackingNumber: trackingNumber,
-            carrier: carrier,
-            shippingCost: parseFloat(shippingCost) || 0,
-            notes: notes,
-            status: status,
-            updatedBy: adminSystem.currentAdmin.email,
-            updatedAt: new Date().toISOString()
-        };
-        
-        await firebaseDB.collection('shipping_updates').add(shippingData);
-        
-        // Send notification to customer if shipped
-        if (status === 'shipped') {
-            const orderDoc = await firebaseDB.collection('orders').doc(orderId).get();
-            const order = orderDoc.data();
-            
-            if (order.userId) {
-                await sendNotificationToUser(order.userId, {
-                    type: 'order_shipped',
-                    title: 'Order Shipped',
-                    message: `Your order #${order.orderNumber} has been shipped. Tracking: ${trackingNumber}`,
-                    orderId: orderId,
-                    orderNumber: order.orderNumber,
-                    trackingNumber: trackingNumber
-                });
-            }
-        }
-        
         closeModal();
         showNotification('✅ Shipping updated successfully!');
         
-        // Reload data
-        if (currentSection === 'dashboard') {
-            adminSystem.loadStats();
-            adminSystem.loadRecentOrders();
-        } else if (currentSection === 'orders') {
-            loadAllOrders();
+        // Refresh data
+        await adminSystem.loadStats();
+        await adminSystem.loadRecentOrders();
+        adminSystem.updateChartData();
+        
+        if (currentSection === 'orders') {
+            await loadAllOrders();
         } else if (currentSection === 'shipping') {
-            loadShipping();
+            await loadShipping();
         }
         
     } catch (error) {
         console.error('Error saving shipping update:', error);
-        showError('Failed to update shipping');
-    } finally {
-        showLoading(false);
-    }
-}
-
-async function sendRemainingPaymentRequest(orderId) {
-    try {
-        showLoading(true);
-        
-        const orderDoc = await firebaseDB.collection('orders').doc(orderId).get();
-        if (!orderDoc.exists) {
-            showError('Order not found');
-            return;
-        }
-        
-        const order = orderDoc.data();
-        
-        if (order.paymentType !== 'advance' || order.paymentStatus !== 'payment_verified') {
-            showError('This order is not eligible for remaining payment request');
-            return;
-        }
-        
-        const remainingAmount = order.remainingPayment || (order.total * 0.7);
-        
-        // Create payment request
-        const paymentRequest = {
-            orderId: orderId,
-            userId: order.userId,
-            orderNumber: order.orderNumber,
-            amount: remainingAmount,
-            paymentType: 'remaining',
-            dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-            status: 'pending',
-            createdAt: new Date().toISOString(),
-            notes: `Remaining 70% payment for order #${order.orderNumber}`
-        };
-        
-        await firebaseDB.collection('payment_requests').add(paymentRequest);
-        
-        // Send notification to customer
-        if (order.userId) {
-            await sendNotificationToUser(order.userId, {
-                type: 'remaining_payment',
-                title: 'Remaining Payment Request',
-                message: `Your order #${order.orderNumber} is ready to ship. Please pay the remaining £${remainingAmount.toFixed(2)}`,
-                orderId: orderId,
-                orderNumber: order.orderNumber,
-                amount: remainingAmount,
-                dueDate: paymentRequest.dueDate
-            });
-        }
-        
-        closeModal();
-        showNotification('✅ Remaining payment request sent to customer!');
-        
-    } catch (error) {
-        console.error('Error sending payment request:', error);
-        showError('Failed to send payment request');
+        showError('Failed to update shipping: ' + error.message);
     } finally {
         showLoading(false);
     }
@@ -2337,19 +2243,418 @@ function getTrackingUrl(carrier, trackingNumber) {
     return carriers[carrier] || `#`;
 }
 
-async function sendNotificationToUser(userId, notification) {
+// ============================================
+// ADDITIONAL SECTION LOADERS
+// ============================================
+
+async function loadPayments() {
     try {
-        await firebaseDB.collection('users').doc(userId)
-            .collection('notifications').add({
-                ...notification,
-                isRead: false,
-                createdAt: new Date().toISOString()
-            });
-        console.log('✅ Notification sent to user:', userId);
+        const paymentsSnapshot = await firebaseDB.collection('payment_confirmations')
+            .orderBy('createdAt', 'desc')
+            .get();
+        
+        const tableBody = document.getElementById('paymentsTable');
+        tableBody.innerHTML = '';
+        
+        if (paymentsSnapshot.empty) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="9" style="text-align: center; padding: 40px; color: var(--text-light);">
+                        <i class="fas fa-money-bill-wave" style="font-size: 32px; margin-bottom: 10px;"></i>
+                        <div>No payment submissions found</div>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        paymentsSnapshot.forEach(async (doc) => {
+            const payment = doc.data();
+            const row = await createPaymentTableRow(doc.id, payment);
+            tableBody.appendChild(row);
+        });
+        
     } catch (error) {
-        console.error('Error sending notification:', error);
+        console.error('Error loading payments:', error);
+        adminSystem.showTableError('paymentsTable', 'Failed to load payments');
     }
 }
+
+async function createPaymentTableRow(paymentId, payment) {
+    const row = document.createElement('tr');
+    
+    // Get order details
+    let orderNumber = 'N/A';
+    let customerName = 'Customer';
+    
+    try {
+        const orderDoc = await firebaseDB.collection('orders').doc(payment.orderId).get();
+        if (orderDoc.exists) {
+            const order = orderDoc.data();
+            orderNumber = order.orderNumber || payment.orderId.substring(0, 8);
+            customerName = order.userName || order.shippingAddress?.fullName || 'Customer';
+        }
+    } catch (error) {
+        console.error('Error getting order details:', error);
+    }
+    
+    // Status badge
+    let statusClass = 'pending';
+    if (payment.status === 'verified') statusClass = 'verified';
+    if (payment.status === 'rejected') statusClass = 'rejected';
+    
+    const statusBadge = `<span class="status-badge payment-${statusClass}">${payment.status || 'pending'}</span>`;
+    
+    // Format date
+    const submittedDate = payment.createdAt ? new Date(payment.createdAt).toLocaleDateString() : 'N/A';
+    
+    // Payment type
+    const paymentType = payment.paymentType === 'advance' ? 'Advance (30%)' : 
+                       payment.paymentType === 'remaining' ? 'Remaining (70%)' : 'Full Payment';
+    
+    // Receipt button
+    const receiptButton = payment.screenshotUrl ? `
+        <button class="btn-icon btn-view" onclick="viewReceipt('${payment.screenshotUrl}')" title="View Receipt">
+            <i class="fas fa-receipt"></i>
+        </button>
+    ` : 'No receipt';
+    
+    row.innerHTML = `
+        <td><strong>${orderNumber}</strong></td>
+        <td>${customerName}</td>
+        <td>£${payment.amountPaid?.toFixed(2) || '0.00'}</td>
+        <td>${paymentType}</td>
+        <td>${submittedDate}</td>
+        <td>${payment.referenceNumber || 'N/A'}</td>
+        <td>${statusBadge}</td>
+        <td>${receiptButton}</td>
+        <td>
+            <div class="action-buttons">
+                ${payment.status === 'pending' ? `
+                    <button class="btn-icon btn-verify" onclick="verifyPaymentSubmission('${paymentId}')" title="Verify">
+                        <i class="fas fa-check"></i>
+                    </button>
+                    <button class="btn-icon btn-delete" onclick="rejectPaymentSubmission('${paymentId}')" title="Reject">
+                        <i class="fas fa-times"></i>
+                    </button>
+                ` : ''}
+                <button class="btn-icon btn-view" onclick="viewPaymentDetails('${paymentId}')" title="View Details">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+        </td>
+    `;
+    
+    return row;
+}
+
+async function verifyPaymentSubmission(paymentId) {
+    if (confirm('Verify this payment submission?')) {
+        try {
+            showLoading(true);
+            
+            await firebaseDB.collection('payment_confirmations').doc(paymentId).update({
+                status: 'verified',
+                verifiedAt: new Date().toISOString(),
+                verifiedBy: 'Direct Admin'
+            });
+            
+            showNotification('✅ Payment verified!');
+            await loadPayments();
+            
+        } catch (error) {
+            console.error('Error verifying payment:', error);
+            showError('Failed to verify payment');
+        } finally {
+            showLoading(false);
+        }
+    }
+}
+
+async function loadShipping() {
+    try {
+        const ordersSnapshot = await firebaseDB.collection('orders')
+            .where('status', 'in', ['processing', 'shipped', 'delivered'])
+            .orderBy('createdAt', 'desc')
+            .get();
+        
+        const tableBody = document.getElementById('shippingTable');
+        tableBody.innerHTML = '';
+        
+        if (ordersSnapshot.empty) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="9" style="text-align: center; padding: 40px; color: var(--text-light);">
+                        <i class="fas fa-truck" style="font-size: 32px; margin-bottom: 10px;"></i>
+                        <div>No shipping data found</div>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        ordersSnapshot.forEach(doc => {
+            const order = doc.data();
+            const row = createShippingTableRow(doc.id, order);
+            tableBody.appendChild(row);
+        });
+        
+    } catch (error) {
+        console.error('Error loading shipping:', error);
+        adminSystem.showTableError('shippingTable', 'Failed to load shipping data');
+    }
+}
+
+function createShippingTableRow(orderId, order) {
+    const row = document.createElement('tr');
+    const address = order.shippingAddress || {};
+    
+    const shippingAddress = `
+        <div style="font-size: 12px;">
+            <div>${address.fullName || ''}</div>
+            <div>${address.address1 || ''}</div>
+            <div>${address.city || ''}, ${address.postalCode || ''}</div>
+            <div>${address.country || ''}</div>
+        </div>
+    `;
+    
+    const itemsCount = order.items?.length || 0;
+    const totalWeight = order.items?.reduce((sum, item) => sum + (item.weight || 0), 0) || 0;
+    
+    row.innerHTML = `
+        <td><input type="checkbox" class="shipping-checkbox" data-order-id="${orderId}"></td>
+        <td><strong>${order.orderNumber || orderId.substring(0, 8)}</strong></td>
+        <td>${order.userName || address.fullName || 'Customer'}</td>
+        <td>${shippingAddress}</td>
+        <td>${itemsCount} items</td>
+        <td>${totalWeight} kg</td>
+        <td>
+            <span class="status-badge status-${order.status}">
+                ${adminSystem.getStatusText(order.status)}
+            </span>
+        </td>
+        <td>${order.estimatedDelivery || 'Not set'}</td>
+        <td>
+            <div class="action-buttons">
+                <button class="btn-icon btn-ship" onclick="updateShipping('${orderId}')" title="Update Shipping">
+                    <i class="fas fa-shipping-fast"></i>
+                </button>
+                <button class="btn-icon btn-view" onclick="viewOrderDetails('${orderId}')" title="View Details">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+        </td>
+    `;
+    
+    return row;
+}
+
+async function loadCustomers() {
+    try {
+        const customersSnapshot = await firebaseDB.collection('users')
+            .orderBy('createdAt', 'desc')
+            .get();
+        
+        const tableBody = document.getElementById('customersTable');
+        tableBody.innerHTML = '';
+        
+        if (customersSnapshot.empty) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="9" style="text-align: center; padding: 40px; color: var(--text-light);">
+                        <i class="fas fa-users" style="font-size: 32px; margin-bottom: 10px;"></i>
+                        <div>No customers found</div>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        // For each customer, get their order count and total spent
+        for (const doc of customersSnapshot.docs) {
+            const customer = doc.data();
+            
+            // Get customer's orders
+            const ordersSnapshot = await firebaseDB.collection('orders')
+                .where('userId', '==', doc.id)
+                .get();
+            
+            let totalOrders = 0;
+            let totalSpent = 0;
+            let lastOrderDate = '';
+            
+            ordersSnapshot.forEach(orderDoc => {
+                const order = orderDoc.data();
+                totalOrders++;
+                totalSpent += parseFloat(order.total) || 0;
+                
+                if (order.createdAt) {
+                    const orderDate = new Date(order.createdAt);
+                    if (!lastOrderDate || orderDate > new Date(lastOrderDate)) {
+                        lastOrderDate = order.createdAt;
+                    }
+                }
+            });
+            
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${doc.id.substring(0, 8)}</td>
+                <td>${customer.displayName || customer.email?.split('@')[0] || 'Customer'}</td>
+                <td>${customer.email || 'N/A'}</td>
+                <td>${customer.phone || 'N/A'}</td>
+                <td>${totalOrders}</td>
+                <td>£${totalSpent.toFixed(2)}</td>
+                <td>${lastOrderDate ? new Date(lastOrderDate).toLocaleDateString() : 'No orders'}</td>
+                <td><span class="status-badge" style="background: #d4edda; color: #155724;">Active</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn-icon btn-view" onclick="viewCustomerDetails('${doc.id}')" title="View Details">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </td>
+            `;
+            
+            tableBody.appendChild(row);
+        }
+        
+    } catch (error) {
+        console.error('Error loading customers:', error);
+        adminSystem.showTableError('customersTable', 'Failed to load customers');
+    }
+}
+
+async function loadProducts() {
+    try {
+        const productsSnapshot = await firebaseDB.collection('products')
+            .orderBy('createdAt', 'desc')
+            .get();
+        
+        const tableBody = document.getElementById('productsTable');
+        tableBody.innerHTML = '';
+        
+        if (productsSnapshot.empty) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="8" style="text-align: center; padding: 40px; color: var(--text-light);">
+                        <i class="fas fa-gem" style="font-size: 32px; margin-bottom: 10px;"></i>
+                        <div>No products found</div>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        productsSnapshot.forEach(doc => {
+            const product = doc.data();
+            const row = createProductTableRow(doc.id, product);
+            tableBody.appendChild(row);
+        });
+        
+    } catch (error) {
+        console.error('Error loading products:', error);
+        adminSystem.showTableError('productsTable', 'Failed to load products');
+    }
+}
+
+function createProductTableRow(productId, product) {
+    const row = document.createElement('tr');
+    
+    row.innerHTML = `
+        <td>
+            <img src="${product.images?.[0] || 'https://via.placeholder.com/50'}" 
+                 style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px;">
+        </td>
+        <td>${product.name || 'Unnamed Product'}</td>
+        <td>${product.category || 'Uncategorized'}</td>
+        <td>£${product.price?.toFixed(2) || '0.00'}</td>
+        <td>${product.stock || 0}</td>
+        <td>${product.orderCount || 0}</td>
+        <td>
+            <span class="status-badge" style="background: ${product.status === 'active' ? '#d4edda' : '#f8d7da'}; 
+                  color: ${product.status === 'active' ? '#155724' : '#721c24'};">
+                ${product.status || 'inactive'}
+            </span>
+        </td>
+        <td>
+            <div class="action-buttons">
+                <button class="btn-icon btn-edit" onclick="editProduct('${productId}')" title="Edit Product">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-icon btn-delete" onclick="deleteProduct('${productId}')" title="Delete Product">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </td>
+    `;
+    
+    return row;
+}
+
+async function loadAnalytics() {
+    try {
+        // This would require more complex queries
+        // For now, we'll just show a message
+        document.getElementById('analyticsSection').innerHTML = `
+            <div class="admin-table-container">
+                <div class="table-header">
+                    <h3><i class="fas fa-chart-bar"></i> Analytics Dashboard</h3>
+                </div>
+                <div style="padding: 40px; text-align: center;">
+                    <i class="fas fa-chart-line" style="font-size: 48px; color: var(--primary-gold); margin-bottom: 20px;"></i>
+                    <h3>Analytics Coming Soon</h3>
+                    <p style="color: var(--text-light); margin-top: 10px;">
+                        Advanced analytics features will be available in the next update.
+                    </p>
+                </div>
+            </div>
+        `;
+    } catch (error) {
+        console.error('Error loading analytics:', error);
+    }
+}
+
+function loadSettings() {
+    // Settings are already loaded in the HTML
+    // No additional loading needed
+}
+
+function viewReceipt(url) {
+    window.open(url, '_blank');
+}
+
+function refreshData() {
+    if (adminSystem && adminSystem.initialized) {
+        showNotification('🔄 Refreshing data...');
+        
+        if (currentSection === 'dashboard') {
+            adminSystem.loadDashboardData();
+        } else {
+            loadSectionData(currentSection);
+        }
+    } else {
+        showError('System not initialized. Please wait...');
+    }
+}
+
+function saveSettings() {
+    const advancePercent = document.getElementById('advancePercent').value;
+    const discountPercent = document.getElementById('discountPercent').value;
+    
+    // Save to localStorage for demo purposes
+    // In a real app, you would save to Firebase
+    localStorage.setItem('irya_payment_settings', JSON.stringify({
+        advancePercent: advancePercent,
+        discountPercent: discountPercent,
+        savedAt: new Date().toISOString()
+    }));
+    
+    showNotification('✅ Settings saved successfully!');
+}
+
+// ============================================
+// UI HELPER FUNCTIONS
+// ============================================
 
 function showModal(title, content) {
     const modalContent = document.getElementById('modalContent');
@@ -2422,175 +2727,19 @@ function showError(message) {
     alert('❌ ' + message);
 }
 
-function adminSignOut() {
-    if (confirm('Are you sure you want to sign out?')) {
-        adminSystem.signOut();
-    }
-}
-
 // ============================================
-// INITIALIZE ADMIN DASHBOARD
+// PAGE INITIALIZATION
 // ============================================
 
 document.addEventListener('DOMContentLoaded', initializeAdminDashboard);
 
-// ============================================
-// ADDITIONAL SECTION LOADERS
-// ============================================
-
-async function loadPayments() {
-    try {
-        showLoading(true);
-        
-        const paymentsSnapshot = await firebaseDB.collection('payment_confirmations')
-            .orderBy('createdAt', 'desc')
-            .get();
-        
-        const tableBody = document.getElementById('paymentsTable');
-        tableBody.innerHTML = '';
-        
-        if (paymentsSnapshot.empty) {
-            tableBody.innerHTML = `
-                <tr>
-                    <td colspan="9" style="text-align: center; padding: 40px; color: var(--text-light);">
-                        <i class="fas fa-money-bill-wave" style="font-size: 32px; margin-bottom: 10px;"></i>
-                        <div>No payment submissions found</div>
-                    </td>
-                </tr>
-            `;
-            return;
-        }
-        
-        paymentsSnapshot.forEach(async (doc) => {
-            const payment = doc.data();
-            const row = await createPaymentTableRow(doc.id, payment);
-            tableBody.appendChild(row);
-        });
-        
-    } catch (error) {
-        console.error('Error loading payments:', error);
-    } finally {
-        showLoading(false);
+// Auto-refresh data every 30 seconds
+setInterval(() => {
+    if (adminSystem && adminSystem.initialized && currentSection === 'dashboard') {
+        adminSystem.loadStats();
+        adminSystem.loadRecentOrders();
     }
-}
-
-async function createPaymentTableRow(paymentId, payment) {
-    const row = document.createElement('tr');
-    
-    // Get order details
-    let orderNumber = 'N/A';
-    let customerName = 'Customer';
-    
-    try {
-        const orderDoc = await firebaseDB.collection('orders').doc(payment.orderId).get();
-        if (orderDoc.exists) {
-            const order = orderDoc.data();
-            orderNumber = order.orderNumber || payment.orderId.substring(0, 8);
-            customerName = order.userName || order.shippingAddress?.fullName || 'Customer';
-        }
-    } catch (error) {
-        console.error('Error getting order details:', error);
-    }
-    
-    // Status badge
-    let statusClass = 'pending';
-    if (payment.status === 'verified') statusClass = 'verified';
-    if (payment.status === 'rejected') statusClass = 'rejected';
-    
-    const statusBadge = `<span class="status-badge payment-${statusClass}">${payment.status || 'pending'}</span>`;
-    
-    // Format date
-    const submittedDate = payment.createdAt ? new Date(payment.createdAt).toLocaleDateString() : 'N/A';
-    
-    // Payment type
-    const paymentType = payment.paymentType === 'advance' ? 'Advance (30%)' : 
-                       payment.paymentType === 'remaining' ? 'Remaining (70%)' : 'Full Payment';
-    
-    // Receipt button
-    const receiptButton = payment.screenshotUrl ? `
-        <button class="btn-icon btn-view" onclick="viewReceipt('${payment.screenshotUrl}')" title="View Receipt">
-            <i class="fas fa-receipt"></i>
-        </button>
-    ` : 'No receipt';
-    
-    row.innerHTML = `
-        <td><strong>${orderNumber}</strong></td>
-        <td>${customerName}</td>
-        <td>£${payment.amountPaid?.toFixed(2) || '0.00'}</td>
-        <td>${paymentType}</td>
-        <td>${submittedDate}</td>
-        <td>${payment.referenceNumber || 'N/A'}</td>
-        <td>${statusBadge}</td>
-        <td>${receiptButton}</td>
-        <td>
-            <div class="action-buttons">
-                ${payment.status === 'pending' ? `
-                    <button class="btn-icon btn-verify" onclick="verifyPaymentSubmission('${paymentId}')" title="Verify">
-                        <i class="fas fa-check"></i>
-                    </button>
-                    <button class="btn-icon btn-delete" onclick="rejectPaymentSubmission('${paymentId}')" title="Reject">
-                        <i class="fas fa-times"></i>
-                    </button>
-                ` : ''}
-                <button class="btn-icon btn-view" onclick="viewPaymentDetails('${paymentId}')" title="View Details">
-                    <i class="fas fa-eye"></i>
-                </button>
-            </div>
-        </td>
-    `;
-    
-    return row;
-}
-
-function viewReceipt(url) {
-    window.open(url, '_blank');
-}
-
-async function verifyPaymentSubmission(paymentId) {
-    if (confirm('Verify this payment submission?')) {
-        try {
-            showLoading(true);
-            
-            await firebaseDB.collection('payment_confirmations').doc(paymentId).update({
-                status: 'verified',
-                verifiedAt: new Date().toISOString(),
-                verifiedBy: adminSystem.currentAdmin.email
-            });
-            
-            showNotification('✅ Payment verified!');
-            loadPayments();
-            
-        } catch (error) {
-            console.error('Error verifying payment:', error);
-            showError('Failed to verify payment');
-        } finally {
-            showLoading(false);
-        }
-    }
-}
-
-// ============================================
-// SECURITY: CHECK ADMIN ACCESS EVERY 5 MINUTES
-// ============================================
-
-setInterval(async () => {
-    try {
-        const adminData = localStorage.getItem('irya_admin_auth');
-        if (!adminData) {
-            adminSystem.redirectToLogin();
-            return;
-        }
-        
-        const admin = JSON.parse(adminData);
-        const user = firebaseAuth.currentUser;
-        
-        if (!user || user.email !== admin.email) {
-            adminSystem.redirectToLogin();
-        }
-    } catch (error) {
-        console.error('Security check error:', error);
-    }
-}, 5 * 60 * 1000); // Check every 5 minutes
+}, 30000);
 
 </script>
 </body>
