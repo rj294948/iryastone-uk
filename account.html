@@ -197,6 +197,16 @@ header {
     color: var(--text-light);
 }
 
+.user-type {
+    font-size: 11px;
+    color: var(--primary-gold);
+    background: rgba(201, 162, 39, 0.1);
+    padding: 3px 10px;
+    border-radius: 10px;
+    display: inline-block;
+    margin-top: 5px;
+}
+
 .account-menu {
     display: flex;
     flex-direction: column;
@@ -534,6 +544,45 @@ header {
     padding: 20px;
 }
 
+/* Order Status Badges */
+.order-status-badge {
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-processing {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.status-shipped {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-delivered {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.status-pending_bank_transfer {
+    background: #ffeaa7;
+    color: #856404;
+}
+
 /* Loading */
 .loading-spinner {
     display: none;
@@ -790,6 +839,7 @@ header {
                 </div>
                 <div class="user-name" id="userName">Loading...</div>
                 <div class="user-email" id="userEmail">Loading...</div>
+                <div class="user-type" id="userType">Guest</div>
             </div>
             
             <div class="account-menu">
@@ -813,10 +863,17 @@ header {
                     <i class="fas fa-lock"></i>
                     <span>Security</span>
                 </a>
-                <a href="javascript:void(0)" class="menu-item" onclick="logout()" style="color: #ff4757;">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Logout</span>
-                </a>
+                ${isLoggedIn ? `
+                    <a href="javascript:void(0)" class="menu-item" onclick="logout()" style="color: #ff4757;">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                ` : `
+                    <a href="sign.html" class="menu-item" style="color: var(--primary-gold);">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Sign In / Register</span>
+                    </a>
+                `}
             </div>
         </div>
         
@@ -977,12 +1034,12 @@ header {
 
 <script>
 // ============================================
-// FIREBASE CONFIGURATION
+// FIREBASE CONFIGURATION (Checkout ke saath match)
 // ============================================
 
 const firebaseConfig = {
     apiKey: "AIzaSyDNwzhOkQQLAQbkiNFTFEGSpWJdKaxbTRk",
-    authDomain: "iryastone-uk.firebasestorage.app",
+    authDomain: "iryastone-uk.firebaseapp.com",
     projectId: "iryastone-uk",
     storageBucket: "iryastone-uk.firebasestorage.app",
     messagingSenderId: "110940910896",
@@ -994,14 +1051,155 @@ let firebaseApp, firebaseDB, firebaseAuth;
 let currentUser = null;
 let userAddresses = [];
 let editingAddressId = null;
+let authSystem = null;
+let isLoggedIn = false;
+
+// ============================================
+// AUTHENTICATION SYSTEM (Checkout ke saath match)
+// ============================================
+
+class AccountAuthSystem {
+    constructor() {
+        this.currentUser = null;
+        this.authKey = 'irya_stone_auth_user';
+        this.guestIdKey = 'irya_guest_id';
+    }
+    
+    async init() {
+        try {
+            await this.initializeFirebase();
+            
+            return new Promise((resolve) => {
+                firebaseAuth.onAuthStateChanged((user) => {
+                    if (user) {
+                        // Firebase authenticated user
+                        this.currentUser = {
+                            uid: user.uid,
+                            displayName: user.displayName || 'User',
+                            email: user.email,
+                            photoURL: user.photoURL,
+                            providerId: user.providerId,
+                            isFirebaseUser: true
+                        };
+                        
+                        localStorage.setItem(this.authKey, JSON.stringify(this.currentUser));
+                        isLoggedIn = true;
+                        
+                    } else {
+                        // No Firebase user, check localStorage
+                        const storedUser = this.getUserFromStorage();
+                        
+                        if (storedUser && storedUser.isFirebaseUser) {
+                            this.currentUser = storedUser;
+                            isLoggedIn = true;
+                        } else {
+                            // Create guest user
+                            this.currentUser = this.createGuestUser();
+                            localStorage.setItem(this.authKey, JSON.stringify(this.currentUser));
+                            isLoggedIn = false;
+                        }
+                    }
+                    
+                    resolve(this.currentUser);
+                });
+            });
+            
+        } catch (error) {
+            console.error('Auth init error:', error);
+            this.currentUser = this.getUserFromStorage() || this.createGuestUser();
+            isLoggedIn = this.currentUser.isFirebaseUser || false;
+            return this.currentUser;
+        }
+    }
+    
+    async initializeFirebase() {
+        try {
+            if (typeof firebase === 'undefined') {
+                throw new Error('Firebase SDK not loaded');
+            }
+            
+            if (!firebase.apps.length) {
+                firebaseApp = firebase.initializeApp(firebaseConfig);
+            } else {
+                firebaseApp = firebase.app();
+            }
+            
+            firebaseDB = firebase.firestore();
+            firebaseAuth = firebase.auth();
+            
+            return true;
+        } catch (error) {
+            console.error('Firebase initialization error:', error);
+            throw error;
+        }
+    }
+    
+    getUserFromStorage() {
+        const userData = localStorage.getItem(this.authKey);
+        if (userData) {
+            try {
+                return JSON.parse(userData);
+            } catch (e) {
+                console.error('Error parsing user data:', e);
+                return null;
+            }
+        }
+        return null;
+    }
+    
+    createGuestUser() {
+        let guestId = localStorage.getItem(this.guestIdKey);
+        if (!guestId) {
+            guestId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem(this.guestIdKey, guestId);
+        }
+        
+        return {
+            uid: guestId,
+            displayName: 'Guest',
+            email: '',
+            photoURL: '',
+            providerId: 'guest',
+            isFirebaseUser: false,
+            isGuest: true
+        };
+    }
+    
+    isLoggedIn() {
+        return this.currentUser && this.currentUser.isFirebaseUser === true;
+    }
+    
+    getUserId() {
+        if (!this.currentUser) {
+            return this.createGuestUser().uid;
+        }
+        return this.currentUser.uid;
+    }
+    
+    getUserEmail() {
+        return this.currentUser ? this.currentUser.email : '';
+    }
+    
+    getUserName() {
+        return this.currentUser ? this.currentUser.displayName : 'Guest';
+    }
+}
 
 // ============================================
 // INITIALIZATION
 // ============================================
 
 document.addEventListener('DOMContentLoaded', async function() {
-    // Initialize Firebase
-    await initializeFirebase();
+    console.log("Account page loaded");
+    
+    // Initialize Auth System
+    authSystem = new AccountAuthSystem();
+    await authSystem.init();
+    
+    console.log("Auth initialized. User ID:", authSystem.getUserId(), "Logged in:", authSystem.isLoggedIn());
+    
+    // Update menu based on login status
+    updateMenuBasedOnLogin();
     
     // Load user data
     await loadUserData();
@@ -1013,52 +1211,49 @@ document.addEventListener('DOMContentLoaded', async function() {
     initEventListeners();
 });
 
-// ============================================
-// FIREBASE INITIALIZATION
-// ============================================
-
-async function initializeFirebase() {
-    try {
-        if (typeof firebase === 'undefined') {
-            showError('Firebase not loaded');
-            return false;
-        }
-        
-        if (!firebase.apps.length) {
-            firebaseApp = firebase.initializeApp(firebaseConfig);
-        } else {
-            firebaseApp = firebase.app();
-        }
-        
-        firebaseDB = firebase.firestore();
-        firebaseAuth = firebase.auth();
-        
-        return true;
-    } catch (error) {
-        console.error('Firebase initialization error:', error);
-        return false;
+function updateMenuBasedOnLogin() {
+    const menuContainer = document.querySelector('.account-menu');
+    if (!menuContainer) return;
+    
+    // Remove existing logout/signin items
+    const existingAuthItem = menuContainer.querySelector('[onclick="logout()"], [href="sign.html"]');
+    if (existingAuthItem) {
+        existingAuthItem.remove();
     }
+    
+    // Add appropriate auth item
+    const authItem = document.createElement('a');
+    authItem.className = 'menu-item';
+    
+    if (isLoggedIn) {
+        authItem.style.color = '#ff4757';
+        authItem.href = 'javascript:void(0)';
+        authItem.onclick = logout;
+        authItem.innerHTML = `
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+        `;
+    } else {
+        authItem.style.color = 'var(--primary-gold)';
+        authItem.href = 'sign.html';
+        authItem.innerHTML = `
+            <i class="fas fa-sign-in-alt"></i>
+            <span>Sign In / Register</span>
+        `;
+    }
+    
+    menuContainer.appendChild(authItem);
 }
 
 // ============================================
-// LOAD USER DATA
+// LOAD USER DATA (Checkout se compatible)
 // ============================================
 
 async function loadUserData() {
     try {
         showLoading(true);
         
-        // Check if user is logged in
-        const authKey = 'irya_stone_user';
-        const userData = localStorage.getItem(authKey);
-        
-        if (!userData) {
-            // Redirect to sign in if not logged in
-            window.location.href = 'sign.html';
-            return;
-        }
-        
-        currentUser = JSON.parse(userData);
+        currentUser = authSystem.currentUser;
         
         // Update UI with user data
         updateUserProfileUI();
@@ -1083,7 +1278,7 @@ async function loadUserData() {
 function updateUserProfileUI() {
     if (!currentUser) return;
     
-    const userName = currentUser.displayName || 'User';
+    const userName = currentUser.displayName || 'Guest';
     const userEmail = currentUser.email || '';
     const firstName = userName.split(' ')[0];
     const firstLetter = firstName.charAt(0).toUpperCase();
@@ -1096,7 +1291,8 @@ function updateUserProfileUI() {
     
     // Update name and email
     document.getElementById('userName').textContent = userName;
-    document.getElementById('userEmail').textContent = userEmail;
+    document.getElementById('userEmail').textContent = userEmail || 'Not provided';
+    document.getElementById('userType').textContent = currentUser.isFirebaseUser ? 'Registered User' : 'Guest User';
     
     // Update profile info
     const profileInfo = document.getElementById('profileInfo');
@@ -1108,17 +1304,31 @@ function updateUserProfileUI() {
             </div>
             <div>
                 <div style="font-size: 13px; color: var(--text-light); margin-bottom: 5px;">Email Address</div>
-                <div style="font-weight: 600; font-size: 16px;">${userEmail}</div>
+                <div style="font-weight: 600; font-size: 16px;">${userEmail || 'Not provided'}</div>
             </div>
             <div>
-                <div style="font-size: 13px; color: var(--text-light); margin-bottom: 5px;">Phone Number</div>
-                <div style="font-weight: 600; font-size: 16px;">${currentUser.phone || 'Not provided'}</div>
+                <div style="font-size: 13px; color: var(--text-light); margin-bottom: 5px;">User ID</div>
+                <div style="font-weight: 600; font-size: 16px; font-family: monospace; font-size: 12px;">${currentUser.uid}</div>
             </div>
             <div>
-                <div style="font-size: 13px; color: var(--text-light); margin-bottom: 5px;">Member Since</div>
-                <div style="font-weight: 600; font-size: 16px;">${formatDate(currentUser.createdAt) || 'N/A'}</div>
+                <div style="font-size: 13px; color: var(--text-light); margin-bottom: 5px;">Account Type</div>
+                <div style="font-weight: 600; font-size: 16px;">${currentUser.isFirebaseUser ? 'Registered Account' : 'Guest Account'}</div>
             </div>
         </div>
+        ${!currentUser.isFirebaseUser ? `
+            <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-info-circle" style="color: #856404;"></i>
+                    <div>
+                        <div style="font-weight: 600; color: #856404;">Guest Account</div>
+                        <div style="font-size: 13px; color: #856404; margin-top: 5px;">
+                            You are using a guest account. <a href="sign.html" style="color: var(--primary-gold); text-decoration: none;">Sign up</a> 
+                            to save your orders, addresses, and access your account from any device.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        ` : ''}
     `;
     
     // Pre-fill edit form
@@ -1126,11 +1336,10 @@ function updateUserProfileUI() {
     document.getElementById('firstName').value = nameParts[0] || '';
     document.getElementById('lastName').value = nameParts.slice(1).join(' ') || '';
     document.getElementById('profileEmail').value = userEmail;
-    document.getElementById('profilePhone').value = currentUser.phone || '';
 }
 
 // ============================================
-// ADDRESS MANAGEMENT
+// ADDRESS MANAGEMENT (Checkout se compatible)
 // ============================================
 
 async function loadUserAddresses() {
@@ -1250,10 +1459,214 @@ function getCountryName(countryCode) {
 }
 
 // ============================================
-// ADDRESS MODAL
+// ORDER MANAGEMENT (Checkout se compatible)
+// ============================================
+
+async function loadRecentOrders() {
+    try {
+        if (!firebaseDB || !currentUser) return;
+        
+        const userId = currentUser.uid;
+        const ordersSnapshot = await firebaseDB.collection('orders')
+            .where('userId', '==', userId)
+            .orderBy('createdAt', 'desc')
+            .limit(3)
+            .get();
+        
+        if (!ordersSnapshot.empty) {
+            const orders = [];
+            ordersSnapshot.forEach(doc => {
+                orders.push({
+                    id: doc.id,
+                    ...doc.data()
+                });
+            });
+            
+            displayRecentOrders(orders);
+        }
+        
+    } catch (error) {
+        console.error('Error loading recent orders:', error);
+    }
+}
+
+function displayRecentOrders(orders) {
+    const recentOrdersDiv = document.getElementById('recentOrders');
+    
+    if (orders.length === 0) {
+        recentOrdersDiv.innerHTML = `
+            <div style="text-align: center; padding: 40px 20px;">
+                <i class="fas fa-box-open" style="font-size: 48px; color: var(--text-light); opacity: 0.5; margin-bottom: 20px;"></i>
+                <h3 style="color: var(--stone-dark); margin-bottom: 10px;">No Orders Yet</h3>
+                <p style="color: var(--text-light); margin-bottom: 20px;">Start shopping to see your orders here</p>
+                <a href="products.html" class="edit-btn">
+                    <i class="fas fa-shopping-bag"></i>
+                    Start Shopping
+                </a>
+            </div>
+        `;
+        return;
+    }
+    
+    const ordersHTML = orders.map(order => `
+        <div style="background: var(--bg-light); border-radius: 10px; padding: 15px; margin-bottom: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <div>
+                    <div style="font-weight: 600; color: var(--stone-dark);">Order #${order.orderNumber || order.id}</div>
+                    <div style="font-size: 13px; color: var(--text-light);">${formatDate(order.createdAt)}</div>
+                </div>
+                <div class="order-status-badge status-${order.status || 'pending'}">
+                    ${getStatusText(order.status || 'pending')}
+                </div>
+            </div>
+            <div style="font-size: 14px; color: var(--text-dark); margin-bottom: 10px;">
+                ${(order.items || []).length} item${(order.items || []).length !== 1 ? 's' : ''} • £${order.total?.toFixed(2) || '0.00'}
+            </div>
+            ${order.paymentMethod === 'bank' && order.paymentStatus === 'pending_bank_transfer' ? `
+                <div style="background: #fff3cd; padding: 8px; border-radius: 6px; margin-bottom: 10px; font-size: 12px;">
+                    <i class="fas fa-exclamation-circle" style="color: #856404;"></i>
+                    Awaiting bank transfer payment
+                </div>
+            ` : ''}
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 13px; color: var(--text-light);">
+                    ${order.paymentMethod === 'bank' ? 'Bank Transfer' : 
+                      order.paymentMethod === 'stripe' ? 'Credit Card' : 
+                      order.paymentMethod === 'paypal' ? 'PayPal' : 'N/A'}
+                </div>
+                <a href="order-details.html?id=${order.id}" style="font-size: 13px; color: var(--primary-gold); text-decoration: none;">
+                    View Details <i class="fas fa-arrow-right" style="font-size: 11px;"></i>
+                </a>
+            </div>
+        </div>
+    `).join('');
+    
+    recentOrdersDiv.innerHTML = ordersHTML;
+}
+
+function getStatusText(status) {
+    const statusMap = {
+        'pending': 'Pending',
+        'pending_bank_transfer': 'Awaiting Payment',
+        'payment_received': 'Payment Received',
+        'processing': 'Processing',
+        'shipped': 'Shipped',
+        'delivered': 'Delivered',
+        'cancelled': 'Cancelled'
+    };
+    return statusMap[status] || status;
+}
+
+function formatDate(dateString) {
+    if (!dateString) return 'N/A';
+    
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+    });
+}
+
+// ============================================
+// WISHLIST MANAGEMENT
+// ============================================
+
+async function loadWishlistItems() {
+    try {
+        const userId = currentUser?.uid || authSystem.getUserId();
+        const wishlistKey = `irya_wishlist_${userId}`;
+        const wishlistData = localStorage.getItem(wishlistKey);
+        
+        if (wishlistData) {
+            const wishlistItems = JSON.parse(wishlistData);
+            displayWishlistItems(wishlistItems);
+        }
+        
+    } catch (error) {
+        console.error('Error loading wishlist:', error);
+    }
+}
+
+function displayWishlistItems(items) {
+    const wishlistDiv = document.getElementById('wishlistItems');
+    
+    if (!items || items.length === 0) {
+        wishlistDiv.innerHTML = `
+            <div style="text-align: center; padding: 40px 20px;">
+                <i class="far fa-heart" style="font-size: 48px; color: var(--text-light); opacity: 0.5; margin-bottom: 20px;"></i>
+                <h3 style="color: var(--stone-dark); margin-bottom: 10px;">Wishlist is Empty</h3>
+                <p style="color: var(--text-light); margin-bottom: 20px;">Save products you love to your wishlist</p>
+                <a href="products.html" class="edit-btn">
+                    <i class="fas fa-shopping-bag"></i>
+                    Browse Products
+                </a>
+            </div>
+        `;
+        return;
+    }
+    
+    // Display first 3 items
+    const displayItems = items.slice(0, 3);
+    
+    const itemsHTML = displayItems.map(item => `
+        <div style="display: flex; gap: 15px; padding: 15px; background: var(--bg-light); border-radius: 10px; margin-bottom: 15px;">
+            <div style="width: 60px; height: 60px; border-radius: 8px; overflow: hidden; flex-shrink: 0;">
+                <img src="${item.image || 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=800'}" 
+                     alt="${item.name}" 
+                     style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div style="flex: 1;">
+                <div style="font-weight: 600; margin-bottom: 5px; color: var(--stone-dark);">${item.name || 'Product'}</div>
+                <div style="font-size: 14px; color: var(--text-light); margin-bottom: 5px;">${item.category || 'General'}</div>
+                <div style="font-weight: 600; color: var(--primary-gold);">£${item.price?.toFixed(2) || '0.00'}</div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+                <a href="product-details.html?id=${item.id}" style="font-size: 13px; color: var(--primary-gold); text-decoration: none;">
+                    View <i class="fas fa-arrow-right" style="font-size: 11px;"></i>
+                </a>
+                <button onclick="removeFromWishlist('${item.id}')" style="font-size: 13px; color: #ff4757; background: none; border: none; cursor: pointer; text-align: left;">
+                    Remove
+                </button>
+            </div>
+        </div>
+    `).join('');
+    
+    wishlistDiv.innerHTML = itemsHTML;
+}
+
+function removeFromWishlist(productId) {
+    try {
+        const userId = currentUser?.uid || authSystem.getUserId();
+        const wishlistKey = `irya_wishlist_${userId}`;
+        const wishlistData = localStorage.getItem(wishlistKey);
+        
+        if (wishlistData) {
+            let wishlistItems = JSON.parse(wishlistData);
+            wishlistItems = wishlistItems.filter(item => item.id !== productId);
+            localStorage.setItem(wishlistKey, JSON.stringify(wishlistItems));
+            
+            // Refresh display
+            loadWishlistItems();
+            
+            showNotification('Product removed from wishlist');
+        }
+    } catch (error) {
+        console.error('Error removing from wishlist:', error);
+    }
+}
+
+// ============================================
+// ADDRESS MODAL FUNCTIONS
 // ============================================
 
 function addNewAddress() {
+    if (!currentUser.isFirebaseUser) {
+        showError('Please sign in to save addresses');
+        window.location.href = 'sign.html';
+        return;
+    }
+    
     editingAddressId = null;
     document.getElementById('modalTitle').textContent = 'Add New Address';
     document.getElementById('addressForm').reset();
@@ -1262,6 +1675,12 @@ function addNewAddress() {
 }
 
 function editAddress(addressId) {
+    if (!currentUser.isFirebaseUser) {
+        showError('Please sign in to edit addresses');
+        window.location.href = 'sign.html';
+        return;
+    }
+    
     const address = userAddresses.find(a => a.id === addressId);
     if (!address) return;
     
@@ -1296,6 +1715,12 @@ async function saveAddress(event) {
     try {
         if (!currentUser || !firebaseDB) {
             showError('Please sign in to save addresses');
+            return;
+        }
+        
+        if (!currentUser.isFirebaseUser) {
+            showError('Please sign in to save addresses');
+            window.location.href = 'sign.html';
             return;
         }
         
@@ -1458,194 +1883,16 @@ async function deleteAddress(addressId) {
 }
 
 // ============================================
-// ORDER MANAGEMENT
-// ============================================
-
-async function loadRecentOrders() {
-    try {
-        if (!firebaseDB || !currentUser) return;
-        
-        const userId = currentUser.uid;
-        const ordersRef = firebaseDB.collection('userOrders').doc(userId);
-        const ordersSnapshot = await ordersRef.collection('orders')
-            .orderBy('createdAt', 'desc')
-            .limit(3)
-            .get();
-        
-        if (!ordersSnapshot.empty) {
-            const orders = [];
-            ordersSnapshot.forEach(doc => {
-                orders.push({
-                    id: doc.id,
-                    ...doc.data()
-                });
-            });
-            
-            displayRecentOrders(orders);
-        }
-        
-    } catch (error) {
-        console.error('Error loading recent orders:', error);
-    }
-}
-
-function displayRecentOrders(orders) {
-    const recentOrdersDiv = document.getElementById('recentOrders');
-    
-    if (orders.length === 0) {
-        recentOrdersDiv.innerHTML = `
-            <div style="text-align: center; padding: 40px 20px;">
-                <i class="fas fa-box-open" style="font-size: 48px; color: var(--text-light); opacity: 0.5; margin-bottom: 20px;"></i>
-                <h3 style="color: var(--stone-dark); margin-bottom: 10px;">No Orders Yet</h3>
-                <p style="color: var(--text-light); margin-bottom: 20px;">Start shopping to see your orders here</p>
-                <a href="products.html" class="edit-btn">
-                    <i class="fas fa-shopping-bag"></i>
-                    Start Shopping
-                </a>
-            </div>
-        `;
-        return;
-    }
-    
-    const ordersHTML = orders.map(order => `
-        <div style="background: var(--bg-light); border-radius: 10px; padding: 15px; margin-bottom: 15px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <div>
-                    <div style="font-weight: 600; color: var(--stone-dark);">Order #${order.orderNumber}</div>
-                    <div style="font-size: 13px; color: var(--text-light);">${formatDate(order.createdAt)}</div>
-                </div>
-                <div style="padding: 6px 12px; border-radius: 15px; font-size: 12px; font-weight: 600; 
-                    ${getStatusStyle(order.status)}">
-                    ${getStatusText(order.status)}
-                </div>
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="font-size: 14px; color: var(--text-dark);">
-                    ${order.items.length} item${order.items.length !== 1 ? 's' : ''} • £${order.total?.toFixed(2) || '0.00'}
-                </div>
-                <a href="order-details.html?id=${order.id}" style="font-size: 13px; color: var(--primary-gold); text-decoration: none;">
-                    View Details <i class="fas fa-arrow-right" style="font-size: 11px;"></i>
-                </a>
-            </div>
-        </div>
-    `).join('');
-    
-    recentOrdersDiv.innerHTML = ordersHTML;
-}
-
-function getStatusStyle(status) {
-    switch(status) {
-        case 'pending': return 'background: #fff3cd; color: #856404;';
-        case 'processing': return 'background: #cce5ff; color: #004085;';
-        case 'shipped': return 'background: #d4edda; color: #155724;';
-        case 'delivered': return 'background: #d1ecf1; color: #0c5460;';
-        case 'cancelled': return 'background: #f8d7da; color: #721c24;';
-        default: return 'background: #f8f9fa; color: #6c757d;';
-    }
-}
-
-function getStatusText(status) {
-    const statusMap = {
-        'pending': 'Pending',
-        'processing': 'Processing',
-        'shipped': 'Shipped',
-        'delivered': 'Delivered',
-        'cancelled': 'Cancelled'
-    };
-    return statusMap[status] || status;
-}
-
-// ============================================
-// WISHLIST MANAGEMENT
-// ============================================
-
-async function loadWishlistItems() {
-    try {
-        const userId = currentUser?.uid || getUserId();
-        const wishlistKey = `irya_wishlist_${userId}`;
-        const wishlistData = localStorage.getItem(wishlistKey);
-        
-        if (wishlistData) {
-            const wishlistItems = JSON.parse(wishlistData);
-            displayWishlistItems(wishlistItems);
-        }
-        
-    } catch (error) {
-        console.error('Error loading wishlist:', error);
-    }
-}
-
-function displayWishlistItems(items) {
-    const wishlistDiv = document.getElementById('wishlistItems');
-    
-    if (items.length === 0) {
-        wishlistDiv.innerHTML = `
-            <div style="text-align: center; padding: 40px 20px;">
-                <i class="far fa-heart" style="font-size: 48px; color: var(--text-light); opacity: 0.5; margin-bottom: 20px;"></i>
-                <h3 style="color: var(--stone-dark); margin-bottom: 10px;">Wishlist is Empty</h3>
-                <p style="color: var(--text-light); margin-bottom: 20px;">Save products you love to your wishlist</p>
-                <a href="products.html" class="edit-btn">
-                    <i class="fas fa-shopping-bag"></i>
-                    Browse Products
-                </a>
-            </div>
-        `;
-        return;
-    }
-    
-    // Display first 3 items
-    const displayItems = items.slice(0, 3);
-    
-    const itemsHTML = displayItems.map(item => `
-        <div style="display: flex; gap: 15px; padding: 15px; background: var(--bg-light); border-radius: 10px; margin-bottom: 15px;">
-            <div style="width: 60px; height: 60px; border-radius: 8px; overflow: hidden; flex-shrink: 0;">
-                <img src="${item.image}" alt="${item.name}" style="width: 100%; height: 100%; object-fit: cover;">
-            </div>
-            <div style="flex: 1;">
-                <div style="font-weight: 600; margin-bottom: 5px; color: var(--stone-dark);">${item.name}</div>
-                <div style="font-size: 14px; color: var(--text-light); margin-bottom: 5px;">${item.category}</div>
-                <div style="font-weight: 600; color: var(--primary-gold);">£${item.price?.toFixed(2) || '0.00'}</div>
-            </div>
-            <div style="display: flex; flex-direction: column; gap: 5px;">
-                <a href="product-details.html?id=${item.id}" style="font-size: 13px; color: var(--primary-gold); text-decoration: none;">
-                    View <i class="fas fa-arrow-right" style="font-size: 11px;"></i>
-                </a>
-                <button onclick="removeFromWishlist('${item.id}')" style="font-size: 13px; color: #ff4757; background: none; border: none; cursor: pointer; text-align: left;">
-                    Remove
-                </button>
-            </div>
-        </div>
-    `).join('');
-    
-    wishlistDiv.innerHTML = itemsHTML;
-}
-
-function removeFromWishlist(productId) {
-    try {
-        const userId = currentUser?.uid || getUserId();
-        const wishlistKey = `irya_wishlist_${userId}`;
-        const wishlistData = localStorage.getItem(wishlistKey);
-        
-        if (wishlistData) {
-            let wishlistItems = JSON.parse(wishlistData);
-            wishlistItems = wishlistItems.filter(item => item.id !== productId);
-            localStorage.setItem(wishlistKey, JSON.stringify(wishlistItems));
-            
-            // Refresh display
-            loadWishlistItems();
-            
-            showNotification('Product removed from wishlist');
-        }
-    } catch (error) {
-        console.error('Error removing from wishlist:', error);
-    }
-}
-
-// ============================================
 // PROFILE EDITING
 // ============================================
 
 function editProfile() {
+    if (!currentUser.isFirebaseUser) {
+        showError('Please sign in to edit profile');
+        window.location.href = 'sign.html';
+        return;
+    }
+    
     document.getElementById('profileInfo').style.display = 'none';
     document.getElementById('profileForm').style.display = 'grid';
 }
@@ -1660,6 +1907,12 @@ async function saveProfile(event) {
     
     try {
         if (!currentUser || !firebaseDB) return;
+        
+        if (!currentUser.isFirebaseUser) {
+            showError('Please sign in to update profile');
+            window.location.href = 'sign.html';
+            return;
+        }
         
         const firstName = document.getElementById('firstName').value.trim();
         const lastName = document.getElementById('lastName').value.trim();
@@ -1683,13 +1936,15 @@ async function saveProfile(event) {
         };
         
         // Save to localStorage
-        localStorage.setItem('irya_stone_user', JSON.stringify(updatedUser));
+        localStorage.setItem('irya_stone_auth_user', JSON.stringify(updatedUser));
         
         // Save to Firebase if user is logged in
         if (currentUser.isFirebaseUser && firebaseAuth.currentUser) {
             await firebaseAuth.currentUser.updateProfile({
                 displayName: updatedUser.displayName
             });
+            
+            await firebaseAuth.currentUser.updateEmail(email);
             
             // Save additional data to Firestore
             await firebaseDB.collection('users').doc(currentUser.uid).set({
@@ -1702,6 +1957,7 @@ async function saveProfile(event) {
         
         // Update current user
         currentUser = updatedUser;
+        authSystem.currentUser = updatedUser;
         
         // Update UI
         updateUserProfileUI();
@@ -1711,7 +1967,7 @@ async function saveProfile(event) {
         
     } catch (error) {
         console.error('Error saving profile:', error);
-        showError('Failed to update profile');
+        showError('Failed to update profile: ' + error.message);
     } finally {
         showLoading(false);
     }
@@ -1723,6 +1979,12 @@ async function saveProfile(event) {
 
 async function changePassword() {
     try {
+        if (!currentUser.isFirebaseUser) {
+            showError('Please sign in to change password');
+            window.location.href = 'sign.html';
+            return;
+        }
+        
         const currentPassword = document.getElementById('currentPassword').value;
         const newPassword = document.getElementById('newPassword').value;
         const confirmPassword = document.getElementById('confirmPassword').value;
@@ -1763,8 +2025,6 @@ async function changePassword() {
             document.getElementById('confirmPassword').value = '';
             
             showNotification('Password updated successfully');
-        } else {
-            showError('Password change not available for guest accounts');
         }
         
     } catch (error) {
@@ -1772,8 +2032,10 @@ async function changePassword() {
         
         if (error.code === 'auth/wrong-password') {
             showError('Current password is incorrect');
+        } else if (error.code === 'auth/requires-recent-login') {
+            showError('Please re-login to change your password');
         } else {
-            showError('Failed to change password');
+            showError('Failed to change password: ' + error.message);
         }
     } finally {
         showLoading(false);
@@ -1807,8 +2069,8 @@ function showSection(sectionId) {
 async function logout() {
     try {
         if (confirm('Are you sure you want to logout?')) {
-            // Clear localStorage
-            localStorage.removeItem('irya_stone_user');
+            // Clear localStorage auth data
+            localStorage.removeItem('irya_stone_auth_user');
             
             // Sign out from Firebase
             if (firebaseAuth) {
@@ -1827,26 +2089,6 @@ async function logout() {
 // UTILITY FUNCTIONS
 // ============================================
 
-function getUserId() {
-    let userId = localStorage.getItem('irya_guest_id');
-    if (!userId) {
-        userId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem('irya_guest_id', userId);
-    }
-    return userId;
-}
-
-function formatDate(dateString) {
-    if (!dateString) return 'N/A';
-    
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric'
-    });
-}
-
 function showLoading(show) {
     const spinner = document.getElementById('loadingSpinner');
     if (spinner) {
@@ -1855,7 +2097,6 @@ function showLoading(show) {
 }
 
 function showNotification(message) {
-    // Create notification element
     const notification = document.createElement('div');
     notification.style.cssText = `
         position: fixed;
@@ -1899,11 +2140,12 @@ function showError(message) {
 }
 
 function updateCartBadge() {
-    const userId = getUserId();
+    const userId = authSystem.getUserId();
+    
     const cartKey = 'irya_local_cart_' + userId;
     const cartData = localStorage.getItem(cartKey);
     const cartItems = cartData ? JSON.parse(cartData) : [];
-    const count = cartItems.reduce((total, item) => total + item.quantity, 0);
+    const count = cartItems.reduce((total, item) => total + (item.quantity || 0), 0);
     
     const cartBadge = document.getElementById('cartBadge');
     if (cartBadge) {
@@ -1949,6 +2191,19 @@ function initEventListeners() {
         });
     }
 }
+
+// Make functions available globally
+window.showSection = showSection;
+window.editProfile = editProfile;
+window.cancelEditProfile = cancelEditProfile;
+window.addNewAddress = addNewAddress;
+window.editAddress = editAddress;
+window.closeAddressModal = closeAddressModal;
+window.setDefaultAddress = setDefaultAddress;
+window.deleteAddress = deleteAddress;
+window.changePassword = changePassword;
+window.logout = logout;
+window.removeFromWishlist = removeFromWishlist;
 </script>
 </body>
 </html>
