@@ -2251,14 +2251,18 @@ async function processBankTransfer(orderData) {
     }
 }
 
+// ============================================
+// COMPLETE ORDER FUNCTION
+// ============================================
+
 async function completeOrder() {
     try {
         showLoading(true);
         
-        // Clear cart items
+        // Clear cart items based on flow type
         if (isBuyNowFlow) {
             // Clear buy now storage
-            const userId = getUserId();
+            const userId = authSystem.getUserId();
             const buyNowKey = 'irya_buynow_cart_' + userId;
             localStorage.removeItem(buyNowKey);
             
@@ -2272,21 +2276,73 @@ async function completeOrder() {
             localStorage.removeItem('irya_is_buynow_flow');
         } else {
             // Clear regular cart
-            const userId = getUserId();
+            const userId = authSystem.getUserId();
             const cartKey = 'irya_local_cart_' + userId;
             localStorage.removeItem(cartKey);
         }
         
         updateCartBadge();
         
+        // Send notification to admin
+        await sendNewOrderNotification(currentOrderData);
+        
         // Redirect to confirmation
-        window.location.href = `order-confirmation.html?order=${currentOrderData.orderNumber}&payment=bank_transfer`;
+        window.location.href = `order-confirmation.html?order=${currentOrderData.orderNumber}&payment=${currentOrderData.paymentMethod}`;
         
     } catch (error) {
         console.error('Error completing order:', error);
         showError('Failed to complete order');
     } finally {
         showLoading(false);
+    }
+}
+
+// ============================================
+// SEND NEW ORDER NOTIFICATION FUNCTION
+// ============================================
+
+async function sendNewOrderNotification(orderData) {
+    try {
+        if (!firebaseDB) return;
+        
+        const notification = {
+            type: 'new_order',
+            orderId: orderData.id,
+            orderNumber: orderData.orderNumber,
+            userId: orderData.userId,
+            userName: orderData.userName || 'Customer',
+            title: 'New Order Placed',
+            message: `New order #${orderData.orderNumber} has been placed by ${orderData.userName || 'Customer'}`,
+            isRead: false,
+            requiresAction: true,
+            createdAt: new Date().toISOString(),
+            orderData: {
+                total: orderData.total,
+                paymentMethod: orderData.paymentMethod,
+                paymentStatus: orderData.paymentStatus,
+                itemsCount: orderData.items.length
+            }
+        };
+        
+        // Get all admins
+        const adminSnapshot = await firebaseDB.collection('admins').get();
+        
+        if (!adminSnapshot.empty) {
+            const batch = firebaseDB.batch();
+            
+            adminSnapshot.forEach(doc => {
+                const adminId = doc.id;
+                const adminNotificationRef = firebaseDB.collection('users').doc(adminId)
+                    .collection('adminNotifications').doc();
+                batch.set(adminNotificationRef, notification);
+            });
+            
+            await batch.commit();
+            console.log('✅ New order notification sent to all admins');
+        }
+        
+    } catch (error) {
+        console.error('❌ Error sending new order notification:', error);
     }
 }
 
@@ -2477,6 +2533,7 @@ window.selectPaymentMethod = selectPaymentMethod;
 window.validateAndProcessPayment = validateAndProcessPayment;
 window.cancelPayment = cancelPayment;
 window.goBack = goBack;
+window.completeOrder = completeOrder;
 </script>
 </body>
 </html>
