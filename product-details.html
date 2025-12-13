@@ -12,6 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto+Slab:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
+/* All your existing CSS remains same */
 :root {
     --primary-gold: #c9a227;
     --gold-light: #f0d77c;
@@ -754,7 +755,10 @@ header {
     .thumbnails {
         justify-content: center;
     }
-}
+    }
+
+/* ... All CSS remains exactly same ... */
+
 </style>
 </head>
 
@@ -960,14 +964,15 @@ class AuthSystem {
 }
 
 // ============================================
-// CART SYSTEM
+// CART SYSTEM - UPDATED FOR BUY NOW
 // ============================================
 
 class CartSystem {
     constructor() {
         this.localCartKey = 'irya_local_cart_';
+        this.buyNowCartKey = 'irya_buynow_cart_';
         this.cartItems = [];
-        this.isBuyNowMode = false; // Add this flag
+        this.isBuyNowMode = false;
     }
     
     async init() {
@@ -1041,11 +1046,6 @@ class CartSystem {
     saveToLocalStorage(userId) {
         const cartKey = this.localCartKey + userId;
         localStorage.setItem(cartKey, JSON.stringify(this.cartItems));
-        
-        // Set a flag for buy now in localStorage
-        if (this.isBuyNowMode) {
-            localStorage.setItem('irya_buy_now', 'true');
-        }
     }
     
     async saveToFirebase(userId) {
@@ -1098,7 +1098,8 @@ class CartSystem {
                     userId: this.getUserId(),
                     calculationData: calculationData,
                     customRequirements: customRequirements || '',
-                    isBuyNow: this.isBuyNowMode // Mark if buy now
+                    isBuyNow: this.isBuyNowMode,
+                    buyNowTimestamp: this.isBuyNowMode ? Date.now() : null
                 };
                 
                 // Calculate price
@@ -1132,11 +1133,77 @@ class CartSystem {
         }
     }
     
-    // Method for Buy Now
+    // Method for Buy Now - SEPARATE FROM REGULAR CART
     async buyNow(product, quantity = 1, calculationData = null, customRequirements = '') {
-        this.isBuyNowMode = true;
-        await this.addToCart(product, quantity, calculationData, customRequirements);
-        this.isBuyNowMode = false;
+        try {
+            this.isBuyNowMode = true;
+            
+            // Create buy now item separately
+            const itemId = calculationData ? 
+                `${product.id}_${JSON.stringify(calculationData)}_BUYNOW_${Date.now()}` : 
+                `${product.id}_${quantity}_BUYNOW_${Date.now()}`;
+            
+            const buyNowItem = {
+                id: product.id,
+                uniqueId: itemId,
+                name: product.stone_name,
+                stoneName: product.stone_name,
+                price: product.price,
+                priceUnit: product.price_unit || 'piece',
+                image: product.images?.[0] || product.image,
+                category: product.category,
+                description: product.description,
+                quantity: quantity,
+                addedAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                userId: this.getUserId(),
+                calculationData: calculationData,
+                customRequirements: customRequirements || '',
+                isBuyNow: true,
+                buyNowTimestamp: Date.now(),
+                isBuyNowOnly: true // This flag indicates it's ONLY for buy now
+            };
+            
+            // Calculate price
+            if (calculationData) {
+                buyNowItem.calculatedPrice = calculatePrice(product, calculationData);
+                buyNowItem.calculationType = calculationData.mode || 'standard';
+            } else {
+                buyNowItem.calculatedPrice = product.price * quantity;
+            }
+            
+            // Calculate advance and remaining payments
+            const totalPrice = buyNowItem.calculatedPrice;
+            buyNowItem.advancePayment = totalPrice * 0.3;
+            buyNowItem.remainingPayment = totalPrice * 0.7;
+            buyNowItem.totalPrice = totalPrice;
+            
+            // Save buy now item to SEPARATE storage
+            const userId = this.getUserId();
+            const buyNowKey = this.buyNowCartKey + userId;
+            
+            // Clear any previous buy now items
+            localStorage.removeItem(buyNowKey);
+            
+            // Save only this buy now item
+            const buyNowItems = [buyNowItem];
+            localStorage.setItem(buyNowKey, JSON.stringify(buyNowItems));
+            
+            // Also save to a temporary location for immediate access
+            localStorage.setItem('irya_current_buynow_item', JSON.stringify(buyNowItem));
+            localStorage.setItem('irya_is_buynow_flow', 'true');
+            localStorage.setItem('irya_buynow_product_id', product.id);
+            localStorage.setItem('irya_buynow_timestamp', Date.now().toString());
+            
+            this.isBuyNowMode = false;
+            
+            return true;
+        } catch (error) {
+            console.error('Buy Now error:', error);
+            this.isBuyNowMode = false;
+            showError('Failed to process Buy Now. Please try again.');
+            return false;
+        }
     }
     
     getCartCount() {
@@ -1500,7 +1567,7 @@ function displayProductDetails() {
                     <i class="fas fa-cart-plus"></i>
                     Add to Cart
                 </button>
-                <button class="action-btn-large btn-secondary" onclick="buyNow()">
+                <button class="action-btn-large btn-secondary" onclick="buyNowProduct()">
                     <i class="fas fa-bolt"></i>
                     Buy Now
                 </button>
@@ -1648,6 +1715,8 @@ function calculatePrice() {
     // Store current calculation data
     window.currentCalculationData = calculationData;
     window.currentTotalPrice = totalPrice;
+    window.currentAdvancePayment = advancePayment;
+    window.currentRemainingPayment = remainingPayment;
 }
 
 function getUnitLabel(unit) {
@@ -1688,22 +1757,36 @@ async function addToCart() {
     );
 }
 
-async function buyNow() {
+async function buyNowProduct() {
     if (!currentProduct) return;
     
     const quantity = parseInt(document.getElementById('quantityInput').value) || currentProduct.min_order;
     const customRequirements = document.getElementById('customRequirements').value;
     
-    // Use the buyNow method instead of addToCart
-    await cartSystem.buyNow(
-        currentProduct, 
-        quantity, 
-        window.currentCalculationData, 
-        customRequirements
-    );
-    
-    // Redirect to checkout page
-    window.location.href = 'checkout.html';
+    try {
+        showLoading(true);
+        
+        // Process Buy Now
+        const success = await cartSystem.buyNow(
+            currentProduct, 
+            quantity, 
+            window.currentCalculationData, 
+            customRequirements
+        );
+        
+        if (success) {
+            // Redirect to checkout with Buy Now parameters
+            window.location.href = `checkout.html?buynow=true&product=${currentProduct.id}&source=product_details`;
+        } else {
+            showError('Failed to process Buy Now. Please try again.');
+        }
+        
+    } catch (error) {
+        console.error('Buy Now error:', error);
+        showError('Failed to process Buy Now. Please try again.');
+    } finally {
+        showLoading(false);
+    }
 }
 
 // ============================================
@@ -1840,7 +1923,7 @@ window.changeMainImage = changeMainImage;
 window.updateCalculatorInputs = updateCalculatorInputs;
 window.calculatePrice = calculatePrice;
 window.addToCart = addToCart;
-window.buyNow = buyNow;
+window.buyNowProduct = buyNowProduct;
 </script>
 </body>
 </html>
