@@ -31,13 +31,15 @@
     --border-radius-lg: 20px;
     
     /* Order status colors */
-    --success: #007600;
-    --warning: #ffa41c;
-    --pending: #ffa500;
-    --processing: #007185;
-    --shipped: #b12704;
-    --delivered: #007600;
-    --cancelled: #d50000;
+    --payment-pending: #ff6b6b;
+    --payment-confirmed: #51cf66;
+    --processing: #339af0;
+    --ready-to-ship: #ff922b;
+    --shipped: #748ffc;
+    --out-for-delivery: #cc5de8;
+    --delivered: #40c057;
+    --cancelled: #fa5252;
+    --returned: #868e96;
 }
 
 * {
@@ -283,61 +285,113 @@ body {
     color: var(--stone-dark);
 }
 
-.order-top-content {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
+/* ===== COMPLETE TRACKING TIMELINE ===== */
+.tracking-timeline {
+    margin: 25px 0;
+    padding: 20px;
+    background: var(--bg-light);
+    border-radius: var(--border-radius);
 }
 
-.order-top-item {
+.timeline-item {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    position: relative;
 }
 
-.order-top-label {
+.timeline-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.timeline-item.completed .timeline-icon {
+    background: var(--delivered);
+    border-color: var(--delivered);
+}
+
+.timeline-item.active .timeline-icon {
+    background: var(--primary-gold);
+    border-color: var(--primary-gold);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(201, 162, 39, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(201, 162, 39, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(201, 162, 39, 0); }
+}
+
+.timeline-item.pending .timeline-icon {
+    background: #f1f3f5;
+    border-color: #dee2e6;
+}
+
+.timeline-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-size: 16px;
+    flex-shrink: 0;
+    border: 2px solid;
+}
+
+.timeline-content {
+    flex: 1;
+}
+
+.timeline-title {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: var(--stone-dark);
+}
+
+.timeline-desc {
+    font-size: 13px;
+    color: var(--text-light);
+    margin-bottom: 8px;
+}
+
+.timeline-date {
     font-size: 12px;
     color: var(--text-light);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.order-top-value {
-    font-weight: 600;
-    color: var(--text-dark);
-}
-
-.order-top-value.amount {
-    color: var(--primary-gold);
-    font-size: 18px;
-}
-
-.order-top-value.status {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 4px 12px;
+    gap: 5px;
+}
+
+.timeline-date i {
+    font-size: 11px;
+}
+
+/* ===== ORDER STATUS BADGES ===== */
+.status-badge {
+    padding: 6px 12px;
     border-radius: 20px;
     font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
-/* ===== ORDER STATUS BADGES ===== */
-.status-pending { background: #fff8e1; color: var(--pending); }
-.status-processing { background: #e3f2fd; color: var(--processing); }
-.status-shipped { background: #f3e5f5; color: var(--shipped); }
-.status-delivered { background: #e8f5e8; color: var(--delivered); }
-.status-cancelled { background: #ffebee; color: var(--cancelled); }
-.status-pending_bank_transfer { background: #ffeaa7; color: #856404; }
-
-.order-status-badge {
-    padding: 4px 10px;
-    border-radius: 15px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-}
+.status-payment-pending { background: #fff5f5; color: var(--payment-pending); border: 1px solid #ffc9c9; }
+.status-payment-confirmed { background: #ebfbee; color: var(--payment-confirmed); border: 1px solid #b2f2bb; }
+.status-processing { background: #e7f5ff; color: var(--processing); border: 1px solid #a5d8ff; }
+.status-ready-to-ship { background: #fff4e6; color: var(--ready-to-ship); border: 1px solid #ffd8a8; }
+.status-shipped { background: #edf2ff; color: var(--shipped); border: 1px solid #bac8ff; }
+.status-out-for-delivery { background: #f8f0fc; color: var(--out-for-delivery); border: 1px solid #eebefa; }
+.status-delivered { background: #d3f9d8; color: var(--delivered); border: 1px solid #8ce99a; }
+.status-cancelled { background: #ffe3e3; color: var(--cancelled); border: 1px solid #ffa8a8; }
+.status-returned { background: #e9ecef; color: var(--returned); border: 1px solid #ced4da; }
 
 /* ===== MAIN CONTAINER ===== */
 .container {
@@ -428,7 +482,7 @@ body {
 /* ===== ORDERS GRID ===== */
 .orders-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
     gap: 20px;
 }
 
@@ -446,11 +500,17 @@ body {
     box-shadow: var(--shadow-sm);
     transition: var(--transition);
     border: 1px solid #f0f0f0;
+    position: relative;
 }
 
 .order-card:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
+}
+
+.order-card.cancelled {
+    opacity: 0.8;
+    background: #f8f9fa;
 }
 
 .order-header {
@@ -474,17 +534,6 @@ body {
     color: var(--text-light);
 }
 
-.order-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
 .order-body {
     padding: 16px;
 }
@@ -504,6 +553,7 @@ body {
     overflow: hidden;
     background: var(--bg-light);
     flex-shrink: 0;
+    position: relative;
 }
 
 .item-image img {
@@ -562,92 +612,8 @@ body {
 }
 
 .summary-value.paid { color: var(--delivered); }
-.summary-value.remaining { color: var(--pending); }
+.summary-value.remaining { color: var(--payment-pending); }
 .summary-value.total { color: var(--primary-gold); }
-
-/* ===== TRACKING PROGRESS ===== */
-.tracking-progress {
-    margin: 20px 0;
-}
-
-.progress-steps {
-    display: flex;
-    justify-content: space-between;
-    position: relative;
-    padding: 0 10px;
-}
-
-.progress-steps::before {
-    content: '';
-    position: absolute;
-    top: 12px;
-    left: 10%;
-    right: 10%;
-    height: 2px;
-    background: #e0e0e0;
-    z-index: 1;
-}
-
-.progress-bar {
-    position: absolute;
-    top: 12px;
-    left: 10%;
-    height: 2px;
-    background: var(--primary-gold);
-    z-index: 2;
-    transition: width 0.3s;
-}
-
-.step {
-    position: relative;
-    z-index: 3;
-    text-align: center;
-    flex: 1;
-}
-
-.step-icon {
-    width: 26px;
-    height: 26px;
-    background: var(--white);
-    border: 2px solid #e0e0e0;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 8px;
-    font-size: 12px;
-    color: var(--text-light);
-    transition: var(--transition);
-}
-
-.step.active .step-icon {
-    background: var(--primary-gold);
-    border-color: var(--primary-gold);
-    color: var(--white);
-}
-
-.step.completed .step-icon {
-    background: var(--delivered);
-    border-color: var(--delivered);
-    color: var(--white);
-}
-
-.step-label {
-    font-size: 11px;
-    color: var(--text-light);
-    font-weight: 500;
-    text-transform: uppercase;
-}
-
-.step.active .step-label {
-    color: var(--primary-gold);
-    font-weight: 600;
-}
-
-.step.completed .step-label {
-    color: var(--delivered);
-    font-weight: 600;
-}
 
 /* ===== ORDER ACTIONS ===== */
 .order-actions {
@@ -701,6 +667,15 @@ body {
 
 .btn-outline:hover {
     background: rgba(201, 162, 39, 0.1);
+}
+
+.btn-danger {
+    background: #ff6b6b;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #fa5252;
 }
 
 /* ===== NOTIFICATION DROPDOWN ===== */
@@ -847,6 +822,76 @@ body {
     justify-content: center;
 }
 
+/* ===== TRACKING INFO ===== */
+.tracking-info {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 15px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tracking-number {
+    font-family: monospace;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.tracking-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.tracking-actions .btn {
+    padding: 8px 12px;
+    font-size: 13px;
+}
+
+/* ===== DELIVERY ESTIMATE ===== */
+.delivery-estimate {
+    background: #e3f2fd;
+    border-left: 4px solid #2196f3;
+    padding: 12px 15px;
+    border-radius: 6px;
+    margin: 15px 0;
+    font-size: 13px;
+}
+
+.delivery-estimate .label {
+    font-weight: 600;
+    color: #1565c0;
+    margin-bottom: 5px;
+}
+
+.delivery-estimate .date {
+    font-weight: 600;
+    color: #0d47a1;
+}
+
+/* ===== CANCELLATION SECTION ===== */
+.cancellation-section {
+    background: #fff5f5;
+    border: 1px solid #ffcccc;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.cancellation-reason {
+    font-weight: 600;
+    color: #c92a2a;
+    margin-bottom: 8px;
+}
+
+.cancellation-date {
+    font-size: 12px;
+    color: #868e96;
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
     .breadcrumb {
@@ -906,16 +951,9 @@ body {
       <i class="fas fa-times"></i>
     </button>
   </div>
-  <div class="order-top-content" id="orderTopContent">
+  
+  <div id="orderTopContent">
     <!-- Order details will be loaded here -->
-  </div>
-  <div class="order-actions">
-    <button class="btn btn-primary" onclick="downloadInvoice()">
-      <i class="fas fa-file-invoice"></i> Download Invoice
-    </button>
-    <button class="btn btn-secondary" onclick="closeOrderTopView()">
-      <i class="fas fa-times"></i> Close
-    </button>
   </div>
 </div>
 
@@ -979,10 +1017,12 @@ body {
   <!-- Orders Filter -->
   <div class="orders-filter">
     <button class="filter-btn active" onclick="filterOrders('all')">All Orders</button>
-    <button class="filter-btn" onclick="filterOrders('pending')">Pending</button>
+    <button class="filter-btn" onclick="filterOrders('payment_pending')">Payment Pending</button>
+    <button class="filter-btn" onclick="filterOrders('payment_confirmed')">Payment Confirmed</button>
     <button class="filter-btn" onclick="filterOrders('processing')">Processing</button>
     <button class="filter-btn" onclick="filterOrders('shipped')">Shipped</button>
     <button class="filter-btn" onclick="filterOrders('delivered')">Delivered</button>
+    <button class="filter-btn" onclick="filterOrders('cancelled')">Cancelled</button>
     
     <div class="search-box">
       <input type="text" id="searchInput" placeholder="Search by order number..." onkeyup="searchOrders()">
@@ -1059,20 +1099,15 @@ let lastScrollTop = 0;
 const header = document.getElementById('mainHeader');
 const bottomNav = document.getElementById('bottomNav');
 const breadcrumb = document.querySelector('.breadcrumb');
-
-// Scroll threshold for hiding/showing
 const SCROLL_THRESHOLD = 50;
 
 function handleScroll() {
   const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
   
-  // Hide/show header
   if (scrollTop > lastScrollTop && scrollTop > SCROLL_THRESHOLD) {
-    // Scrolling down
     header.classList.add('hide');
     bottomNav.classList.add('hide');
   } else {
-    // Scrolling up
     header.classList.remove('hide');
     bottomNav.classList.remove('hide');
   }
@@ -1080,7 +1115,6 @@ function handleScroll() {
   lastScrollTop = scrollTop;
 }
 
-// Add scroll event listener
 window.addEventListener('scroll', handleScroll, { passive: true });
 
 // ============================================
@@ -1089,22 +1123,18 @@ window.addEventListener('scroll', handleScroll, { passive: true });
 
 async function getUserId() {
   try {
-    // Check localStorage for user
     const savedUser = localStorage.getItem('irya_stone_auth_user');
     if (savedUser) {
       const user = JSON.parse(savedUser);
-      console.log("✅ User ID from localStorage:", user.uid);
       return user.uid;
     }
 
-    // Check for guest ID
     let guestId = localStorage.getItem('irya_guest_id');
     if (!guestId) {
       guestId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
       localStorage.setItem('irya_guest_id', guestId);
     }
     
-    console.log("✅ Guest user ID:", guestId);
     return guestId;
     
   } catch (error) {
@@ -1129,17 +1159,11 @@ async function loadOrders() {
   try {
     const ordersDiv = document.getElementById("orders");
     
-    // Get user ID
     userId = await getUserId();
     console.log("📱 Loading orders for user:", userId);
     
-    // Setup real-time listener for orders
     setupOrdersListener();
-    
-    // Load notifications
     loadNotifications();
-    
-    // Update cart badge
     updateCartBadge();
     
   } catch (error) {
@@ -1151,19 +1175,14 @@ async function loadOrders() {
 async function setupOrdersListener() {
   const ordersDiv = document.getElementById("orders");
   
-  // Clean up previous listener
   if (ordersUnsubscribe) ordersUnsubscribe();
   
   let ordersQuery;
   
   try {
-    // First try: users/{userId}/orders collection
     const userOrdersRef = collection(db, "users", userId, "orders");
     ordersQuery = query(userOrdersRef, orderBy("createdAt", "desc"));
-    console.log("✅ Trying users/{userId}/orders collection");
   } catch (error) {
-    console.log("❌ Trying main orders collection...");
-    // Second try: main orders collection with user filter
     const ordersRef = collection(db, "orders");
     ordersQuery = query(
       ordersRef, 
@@ -1177,51 +1196,25 @@ async function setupOrdersListener() {
       orders = [];
       
       if (snapshot.empty) {
-        console.log("📭 No orders found for user:", userId);
         showEmptyState("You haven't placed any orders yet.");
         return;
       }
       
-      // Process each order
       for (const docSnapshot of snapshot.docs) {
         const orderData = docSnapshot.data();
         orderData.id = docSnapshot.id;
         
-        // Fetch product images for order items
+        // Fetch product images from products collection
         if (orderData.items && Array.isArray(orderData.items)) {
           for (const item of orderData.items) {
-            if (item.imageId) {
-              // Try to fetch image from products collection
-              try {
-                const productDoc = await getDoc(doc(db, "products", item.imageId));
-                if (productDoc.exists()) {
-                  const productData = productDoc.data();
-                  item.image = productData.imageUrl || productData.image || 
-                              getDefaultImage(item.category);
-                } else {
-                  // Check in stone collection
-                  const stoneDoc = await getDoc(doc(db, "stone", item.imageId));
-                  if (stoneDoc.exists()) {
-                    const stoneData = stoneDoc.data();
-                    item.image = stoneData.imageUrl || stoneData.image || 
-                                getDefaultImage(item.category);
-                  }
-                }
-              } catch (error) {
-                console.warn("⚠️ Could not fetch image for item:", item.imageId);
-                item.image = getDefaultImage(item.category);
-              }
-            } else {
-              item.image = getDefaultImage(item.category);
-            }
+            await fetchProductImage(item);
           }
         }
         
         orders.push(orderData);
-        console.log(`📦 Order loaded: ${orderData.orderNumber} - ${orderData.status}`);
       }
       
-      console.log(`✅ Loaded ${orders.length} orders with images`);
+      console.log(`✅ Loaded ${orders.length} orders`);
       displayOrders(orders);
       
     }, 
@@ -1239,6 +1232,39 @@ async function setupOrdersListener() {
       `;
     }
   );
+}
+
+async function fetchProductImage(item) {
+  if (!item.imageId && !item.productId) return;
+  
+  const imageId = item.imageId || item.productId;
+  
+  try {
+    // Try products collection first
+    const productDoc = await getDoc(doc(db, "products", imageId));
+    if (productDoc.exists()) {
+      const productData = productDoc.data();
+      item.image = productData.imageUrl || productData.images?.[0] || productData.image;
+      item.name = item.name || productData.name || productData.title;
+      item.category = item.category || productData.category;
+    } else {
+      // Try stone collection
+      const stoneDoc = await getDoc(doc(db, "stone", imageId));
+      if (stoneDoc.exists()) {
+        const stoneData = stoneDoc.data();
+        item.image = stoneData.imageUrl || stoneData.image;
+        item.name = item.name || stoneData.name || stoneData.stoneName;
+        item.category = item.category || stoneData.category;
+      }
+    }
+  } catch (error) {
+    console.warn("⚠️ Could not fetch image for item:", imageId);
+  }
+  
+  // Set default image if no image found
+  if (!item.image) {
+    item.image = getDefaultImage(item.category);
+  }
 }
 
 function getDefaultImage(category) {
@@ -1265,11 +1291,10 @@ function displayOrders(ordersList) {
     return;
   }
   
-  // Filter orders based on current filter
   let filteredOrders = ordersList;
   if (currentFilter !== 'all') {
     filteredOrders = ordersList.filter(order => {
-      const status = order.status || order.shippingStatus || 'pending';
+      const status = order.status || order.orderStatus || 'payment_pending';
       return status.toLowerCase().includes(currentFilter);
     });
   }
@@ -1282,24 +1307,14 @@ function displayOrders(ordersList) {
   let ordersHTML = '';
   
   filteredOrders.forEach((order) => {
-    // Format date
     const orderDate = formatDate(order.createdAt);
-    
-    // Payment status
-    const isFullPaid = order.paymentStatus === 'fully_paid' || 
-                      (order.advancePayment && order.advancePayment >= order.total) ||
-                      (order.submittedAmount && order.submittedAmount >= order.total);
-    
-    // Shipping status
-    const shippingStatus = order.shippingStatus || order.status || 'pending';
-    const statusClass = getStatusClass(shippingStatus);
-    const statusText = getStatusText(shippingStatus);
-    
-    // Calculate payments
+    const isFullPaid = order.paymentStatus === 'fully_paid';
+    const status = order.status || order.orderStatus || 'payment_pending';
+    const statusClass = getStatusClass(status);
+    const statusText = getStatusText(status);
     const paidAmount = order.submittedAmount || order.advancePayment || 0;
     const remainingAmount = isFullPaid ? 0 : (order.remainingPayment || order.total - paidAmount);
     
-    // Get first item for preview
     let itemName = 'Multiple Items';
     let itemImage = getDefaultImage();
     let itemCount = order.items ? order.items.length : 1;
@@ -1310,18 +1325,18 @@ function displayOrders(ordersList) {
       if (firstItem.image) itemImage = firstItem.image;
     }
     
-    // Progress calculation
-    const progressWidth = calculateProgressWidth(order);
+    const isCancelled = status === 'cancelled' || status === 'returned';
+    const cardClass = isCancelled ? 'order-card cancelled' : 'order-card';
     
     ordersHTML += `
-      <div class="order-card" data-order-id="${order.id}">
+      <div class="${cardClass}" data-order-id="${order.id}">
         <div class="order-header">
           <div class="order-info">
             <h3>${order.orderNumber || 'Order #' + order.id.substring(0, 8)}</h3>
             <div class="order-date">Placed on ${orderDate}</div>
           </div>
-          <div class="order-status ${statusClass}">
-            <i class="fas ${getStatusIcon(shippingStatus)}"></i>
+          <div class="status-badge ${statusClass}">
+            <i class="fas ${getStatusIcon(status)}"></i>
             ${statusText}
           </div>
         </div>
@@ -1365,12 +1380,37 @@ function displayOrders(ordersList) {
             </div>
           </div>
           
-          <div class="tracking-progress">
-            <div class="progress-steps">
-              <div class="progress-bar" style="width: ${progressWidth}%"></div>
-              ${createProgressSteps(order)}
+          ${order.estimatedDelivery ? `
+          <div class="delivery-estimate">
+            <div class="label">Estimated Delivery</div>
+            <div class="date">${formatDate(order.estimatedDelivery)}</div>
+          </div>
+          ` : ''}
+          
+          ${order.trackingNumber ? `
+          <div class="tracking-info">
+            <div>
+              <div style="font-size: 12px; opacity: 0.9;">Tracking Number</div>
+              <div class="tracking-number">${order.trackingNumber}</div>
+            </div>
+            <div class="tracking-actions">
+              <button class="btn btn-outline" onclick="trackOrder('${order.trackingNumber}')" style="background: rgba(255,255,255,0.2); color: white; border-color: white;">
+                <i class="fas fa-truck"></i> Track
+              </button>
             </div>
           </div>
+          ` : ''}
+          
+          ${isCancelled && order.cancellationDetails ? `
+          <div class="cancellation-section">
+            <div class="cancellation-reason">
+              <i class="fas fa-times-circle"></i> ${order.cancellationDetails.reason || 'Order Cancelled'}
+            </div>
+            <div class="cancellation-date">
+              Cancelled on ${formatDate(order.cancellationDetails.date)}
+            </div>
+          </div>
+          ` : ''}
         </div>
         
         <div class="order-actions">
@@ -1380,9 +1420,9 @@ function displayOrders(ordersList) {
           <button class="btn btn-secondary" onclick="downloadOrderInvoice('${order.id}')">
             <i class="fas fa-file-invoice"></i> Invoice
           </button>
-          ${order.trackingNumber ? `
-            <button class="btn btn-outline" onclick="trackOrder('${order.trackingNumber}')">
-              <i class="fas fa-truck"></i> Track
+          ${!isCancelled && status !== 'delivered' ? `
+            <button class="btn btn-danger" onclick="cancelOrder('${order.id}')">
+              <i class="fas fa-times"></i> Cancel
             </button>
           ` : ''}
         </div>
@@ -1394,31 +1434,20 @@ function displayOrders(ordersList) {
 }
 
 // ============================================
-// ORDER TOP VIEW FUNCTIONS
+// ORDER TOP VIEW WITH COMPLETE TIMELINE
 // ============================================
 
 async function showOrderTopView(orderId) {
   try {
-    // Find order in local data
     const order = orders.find(o => o.id === orderId);
-    if (!order) {
-      console.error("❌ Order not found:", orderId);
-      return;
-    }
+    if (!order) return;
     
     currentOrderDetails = order;
-    
-    // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    
-    // Show header and footer
     header.classList.remove('hide');
     bottomNav.classList.remove('hide');
     
-    // Display order details in top view
     displayOrderTopView(order);
-    
-    // Show the top view
     document.getElementById('orderTopView').style.display = 'block';
     
   } catch (error) {
@@ -1431,91 +1460,273 @@ function displayOrderTopView(order) {
   
   const orderDate = formatDate(order.createdAt);
   const isFullPaid = order.paymentStatus === 'fully_paid';
-  const statusClass = getStatusClass(order.shippingStatus || order.status);
-  const statusText = getStatusText(order.shippingStatus || order.status);
+  const status = order.status || order.orderStatus || 'payment_pending';
+  const statusClass = getStatusClass(status);
+  const statusText = getStatusText(status);
   const paidAmount = order.submittedAmount || order.advancePayment || 0;
   const remainingAmount = isFullPaid ? 0 : (order.remainingPayment || order.total - paidAmount);
   
-  let itemsInfo = '1 item';
-  if (order.items && order.items.length > 0) {
-    const firstItem = order.items[0];
-    itemsInfo = `${order.items.length} items • ${firstItem.name || firstItem.stoneName || 'Product'}`;
-  }
+  const timelineHTML = createTimelineHTML(order);
   
   topContent.innerHTML = `
-    <div class="order-top-item">
-      <div class="order-top-label">Order Number</div>
-      <div class="order-top-value">${order.orderNumber || 'N/A'}</div>
-    </div>
-    
-    <div class="order-top-item">
-      <div class="order-top-label">Order Date</div>
-      <div class="order-top-value">${orderDate}</div>
-    </div>
-    
-    <div class="order-top-item">
-      <div class="order-top-label">Status</div>
-      <div class="order-top-value status ${statusClass}">${statusText}</div>
-    </div>
-    
-    <div class="order-top-item">
-      <div class="order-top-label">Items</div>
-      <div class="order-top-value">${itemsInfo}</div>
-    </div>
-    
-    <div class="order-top-item">
-      <div class="order-top-label">Total Amount</div>
-      <div class="order-top-value amount">£${order.total?.toFixed(2) || '0.00'}</div>
-    </div>
-    
-    <div class="order-top-item">
-      <div class="order-top-label">Paid Amount</div>
-      <div class="order-top-value" style="color: #28a745;">£${paidAmount.toFixed(2)}</div>
-    </div>
-    
-    <div class="order-top-item">
-      <div class="order-top-label">Remaining</div>
-      <div class="order-top-value" style="color: ${remainingAmount > 0 ? '#dc3545' : '#28a745'}">
-        £${remainingAmount.toFixed(2)}
+    <div class="order-top-content" style="margin-bottom: 25px;">
+      <div class="order-top-item">
+        <div class="order-top-label">Order Number</div>
+        <div class="order-top-value">${order.orderNumber || 'N/A'}</div>
+      </div>
+      
+      <div class="order-top-item">
+        <div class="order-top-label">Order Date</div>
+        <div class="order-top-value">${orderDate}</div>
+      </div>
+      
+      <div class="order-top-item">
+        <div class="order-top-label">Status</div>
+        <div class="status-badge ${statusClass}">${statusText}</div>
+      </div>
+      
+      <div class="order-top-item">
+        <div class="order-top-label">Items</div>
+        <div class="order-top-value">${order.items ? order.items.length : 1} items</div>
+      </div>
+      
+      <div class="order-top-item">
+        <div class="order-top-label">Total Amount</div>
+        <div class="order-top-value" style="color: var(--primary-gold); font-size: 18px;">£${order.total?.toFixed(2) || '0.00'}</div>
+      </div>
+      
+      <div class="order-top-item">
+        <div class="order-top-label">Paid Amount</div>
+        <div class="order-top-value" style="color: #28a745;">£${paidAmount.toFixed(2)}</div>
+      </div>
+      
+      <div class="order-top-item">
+        <div class="order-top-label">Remaining</div>
+        <div class="order-top-value" style="color: ${remainingAmount > 0 ? '#dc3545' : '#28a745'}">
+          £${remainingAmount.toFixed(2)}
+        </div>
+      </div>
+      
+      ${order.trackingNumber ? `
+      <div class="order-top-item">
+        <div class="order-top-label">Tracking Number</div>
+        <div class="order-top-value" style="font-family: monospace; font-weight: 600;">${order.trackingNumber}</div>
+      </div>
+      ` : ''}
+      
+      ${order.estimatedDelivery ? `
+      <div class="order-top-item">
+        <div class="order-top-label">Estimated Delivery</div>
+        <div class="order-top-value" style="color: #2196f3; font-weight: 600;">
+          ${formatDateTime(order.estimatedDelivery)}
+        </div>
+      </div>
+      ` : ''}
+      
+      <div class="order-top-item">
+        <div class="order-top-label">Payment Method</div>
+        <div class="order-top-value">
+          ${order.paymentMethod === 'bank' ? 'Bank Transfer' : 
+            order.paymentMethod === 'stripe' ? 'Credit Card' : 
+            order.paymentMethod === 'paypal' ? 'PayPal' : 'N/A'}
+        </div>
       </div>
     </div>
     
-    ${order.trackingNumber ? `
-    <div class="order-top-item">
-      <div class="order-top-label">Tracking Number</div>
-      <div class="order-top-value">${order.trackingNumber}</div>
+    <div class="tracking-timeline">
+      <h3 style="margin-bottom: 20px; color: var(--stone-dark);">
+        <i class="fas fa-shipping-fast"></i> Order Tracking
+      </h3>
+      ${timelineHTML}
+    </div>
+    
+    ${order.cancellationDetails ? `
+    <div class="cancellation-section" style="margin-top: 25px;">
+      <div class="cancellation-reason">
+        <i class="fas fa-times-circle"></i> ${order.cancellationDetails.reason || 'Order Cancelled'}
+      </div>
+      <div class="cancellation-desc" style="margin: 10px 0; color: #868e96;">
+        ${order.cancellationDetails.note || ''}
+      </div>
+      <div class="cancellation-date">
+        Cancelled on ${formatDateTime(order.cancellationDetails.date)}
+      </div>
     </div>
     ` : ''}
     
-    <div class="order-top-item">
-      <div class="order-top-label">Payment Method</div>
-      <div class="order-top-value">
-        ${order.paymentMethod === 'bank' ? 'Bank Transfer' : 
-          order.paymentMethod === 'stripe' ? 'Credit Card' : 
-          order.paymentMethod === 'paypal' ? 'PayPal' : 'N/A'}
-      </div>
+    <div class="order-actions" style="margin-top: 25px;">
+      <button class="btn btn-primary" onclick="downloadInvoice()">
+        <i class="fas fa-file-invoice"></i> Download Invoice
+      </button>
+      ${order.trackingNumber ? `
+      <button class="btn btn-outline" onclick="trackOrder('${order.trackingNumber}')">
+        <i class="fas fa-truck"></i> Track Order
+      </button>
+      ` : ''}
+      ${status !== 'cancelled' && status !== 'delivered' && status !== 'returned' ? `
+      <button class="btn btn-danger" onclick="cancelOrder('${order.id}')">
+        <i class="fas fa-times"></i> Cancel Order
+      </button>
+      ` : ''}
+      <button class="btn btn-secondary" onclick="closeOrderTopView()">
+        <i class="fas fa-times"></i> Close
+      </button>
     </div>
-    
-    ${order.bankTransferDetails ? `
-    <div class="order-top-item" style="grid-column: 1 / -1; background: #f8f9fa; padding: 15px; border-radius: 6px;">
-      <div class="order-top-label">Bank Transfer Details</div>
-      <div style="margin-top: 8px;">
-        <div><strong>Reference:</strong> ${order.bankTransferDetails.reference}</div>
-        <div><strong>Amount:</strong> £${order.bankTransferDetails.amount?.toFixed(2) || '0.00'}</div>
-      </div>
-    </div>
-    ` : ''}
   `;
 }
 
-function closeOrderTopView() {
-  document.getElementById('orderTopView').style.display = 'none';
-  currentOrderDetails = null;
+function createTimelineHTML(order) {
+  const status = order.status || order.orderStatus || 'payment_pending';
+  const timelineData = getTimelineData(order);
+  
+  let html = '';
+  
+  timelineData.forEach((step, index) => {
+    let stepClass = 'pending';
+    let icon = step.icon;
+    
+    if (step.completed) {
+      stepClass = 'completed';
+    } else if (step.active) {
+      stepClass = 'active';
+    }
+    
+    html += `
+      <div class="timeline-item ${stepClass}">
+        <div class="timeline-icon">
+          <i class="fas ${icon}"></i>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-title">${step.title}</div>
+          <div class="timeline-desc">${step.description}</div>
+          ${step.date ? `
+          <div class="timeline-date">
+            <i class="far fa-clock"></i> ${formatDateTime(step.date)}
+          </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  });
+  
+  return html;
 }
 
-function downloadInvoice() {
-  if (!currentOrderDetails) return;
-  downloadOrderInvoice(currentOrderDetails.id);
+function getTimelineData(order) {
+  const status = order.status || order.orderStatus || 'payment_pending';
+  const timeline = [];
+  
+  // Step 1: Order Placed
+  timeline.push({
+    title: 'Order Placed',
+    description: 'Your order has been successfully placed',
+    icon: 'fa-shopping-cart',
+    date: order.createdAt,
+    completed: true
+  });
+  
+  // Step 2: Payment Confirmation
+  const paymentConfirmed = status !== 'payment_pending';
+  timeline.push({
+    title: 'Payment Confirmation',
+    description: paymentConfirmed ? 'Payment has been confirmed' : 'Awaiting payment confirmation',
+    icon: 'fa-credit-card',
+    date: order.paymentConfirmedAt,
+    completed: paymentConfirmed,
+    active: !paymentConfirmed && status === 'payment_pending'
+  });
+  
+  // Step 3: Order Processing
+  const processing = ['processing', 'ready_to_ship', 'shipped', 'out_for_delivery', 'delivered'].includes(status);
+  timeline.push({
+    title: 'Order Processing',
+    description: processing ? 'Your order is being processed' : 'Order will be processed after payment',
+    icon: 'fa-cogs',
+    date: order.processingStartAt,
+    completed: processing,
+    active: paymentConfirmed && !processing
+  });
+  
+  // Step 4: Ready to Ship
+  const readyToShip = ['ready_to_ship', 'shipped', 'out_for_delivery', 'delivered'].includes(status);
+  timeline.push({
+    title: 'Ready to Ship',
+    description: readyToShip ? 'Order is packed and ready for shipping' : 'Preparing your order for shipment',
+    icon: 'fa-box',
+    date: order.readyToShipAt,
+    completed: readyToShip,
+    active: processing && !readyToShip
+  });
+  
+  // Step 5: Shipped
+  const shipped = ['shipped', 'out_for_delivery', 'delivered'].includes(status);
+  timeline.push({
+    title: 'Shipped',
+    description: shipped ? `Order shipped with tracking: ${order.trackingNumber || 'N/A'}` : 'Waiting for shipping',
+    icon: 'fa-shipping-fast',
+    date: order.shippedAt,
+    completed: shipped,
+    active: readyToShip && !shipped
+  });
+  
+  // Step 6: Out for Delivery
+  const outForDelivery = ['out_for_delivery', 'delivered'].includes(status);
+  timeline.push({
+    title: 'Out for Delivery',
+    description: outForDelivery ? 'Order is out for delivery' : 'Will be out for delivery soon',
+    icon: 'fa-truck',
+    date: order.outForDeliveryAt,
+    completed: outForDelivery,
+    active: shipped && !outForDelivery
+  });
+  
+  // Step 7: Delivered
+  const delivered = status === 'delivered';
+  timeline.push({
+    title: 'Delivered',
+    description: delivered ? 'Order has been delivered' : 'Awaiting delivery',
+    icon: 'fa-check-circle',
+    date: order.deliveredAt,
+    completed: delivered,
+    active: outForDelivery && !delivered
+  });
+  
+  return timeline;
+}
+
+// ============================================
+// ORDER CANCELLATION
+// ============================================
+
+async function cancelOrder(orderId) {
+  if (!confirm('Are you sure you want to cancel this order?')) return;
+  
+  try {
+    const order = orders.find(o => o.id === orderId);
+    if (!order) return;
+    
+    // In real implementation, you would update Firestore here
+    // For now, we'll just show a message
+    showMessage('Order cancellation request submitted. Our team will contact you shortly.');
+    
+    // You can add Firestore update code here:
+    /*
+    const orderRef = doc(db, "users", userId, "orders", orderId);
+    await updateDoc(orderRef, {
+      status: 'cancelled',
+      cancellationDetails: {
+        reason: 'Customer Request',
+        date: new Date().toISOString(),
+        note: 'Cancelled by customer from orders page'
+      },
+      updatedAt: new Date().toISOString()
+    });
+    */
+    
+  } catch (error) {
+    console.error('❌ Error cancelling order:', error);
+    showMessage('Failed to cancel order. Please contact support.');
+  }
 }
 
 // ============================================
@@ -1557,7 +1768,6 @@ async function loadNotifications() {
           
           if (!note.read) unreadCount++;
           
-          // Add to UI
           const noteElement = createNotificationElement(note);
           notificationList.appendChild(noteElement);
         });
@@ -1593,7 +1803,6 @@ function createNotificationElement(note) {
 
 async function viewNotification(notificationId, orderId) {
   try {
-    // Mark as read
     if (db && userId) {
       const notificationRef = doc(db, "users", userId, "notifications", notificationId);
       await updateDoc(notificationRef, {
@@ -1602,7 +1811,6 @@ async function viewNotification(notificationId, orderId) {
       });
     }
     
-    // If notification has orderId, show order details
     if (orderId) {
       closeNotifications();
       setTimeout(() => {
@@ -1632,7 +1840,6 @@ async function markAllAsRead() {
       });
     }
     
-    // Update UI
     notifications.forEach(n => n.read = true);
     updateNotificationBadge(0);
     
@@ -1689,13 +1896,11 @@ function updateCartBadge() {
 function filterOrders(status) {
   currentFilter = status;
   
-  // Update active filter button
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.classList.remove('active');
   });
   event.currentTarget.classList.add('active');
   
-  // Display filtered orders
   displayOrders(orders);
 }
 
@@ -1721,87 +1926,58 @@ function searchOrders() {
   displayOrders(filteredOrders);
 }
 
-function calculateProgressWidth(order) {
-  let progress = 0;
-  
-  if (order.paymentStatus === 'fully_paid' || order.paymentStatus === 'payment_verified') progress = 25;
-  if (order.status === 'processing') progress = 50;
-  if (order.shippingStatus === 'shipped' || order.status === 'shipped') progress = 75;
-  if (order.status === 'delivered') progress = 100;
-  
-  return progress;
-}
-
-function createProgressSteps(order) {
-  const steps = [
-    { key: 'payment', icon: 'fa-credit-card', label: 'Payment' },
-    { key: 'processing', icon: 'fa-cog', label: 'Processing' },
-    { key: 'shipped', icon: 'fa-shipping-fast', label: 'Shipped' },
-    { key: 'delivered', icon: 'fa-check-circle', label: 'Delivered' }
-  ];
-  
-  let completedSteps = 0;
-  
-  if (order.paymentStatus === 'fully_paid' || order.paymentStatus === 'payment_verified') completedSteps++;
-  if (order.status === 'processing' || order.status === 'shipped' || order.status === 'delivered') completedSteps++;
-  if (order.shippingStatus === 'shipped' || order.status === 'shipped' || order.status === 'delivered') completedSteps++;
-  if (order.status === 'delivered') completedSteps++;
-  
-  return steps.map((step, index) => {
-    let stepClass = '';
-    if (index < completedSteps) stepClass = 'completed';
-    else if (index === completedSteps) stepClass = 'active';
-    
-    return `
-      <div class="step ${stepClass}">
-        <div class="step-icon">
-          <i class="fas ${step.icon}"></i>
-        </div>
-        <div class="step-label">${step.label}</div>
-      </div>
-    `;
-  }).join('');
-}
-
 function getStatusClass(status) {
-  if (!status) return 'status-pending';
+  if (!status) return 'status-payment-pending';
   
-  const statusLower = status.toLowerCase();
-  if (statusLower.includes('processing') || statusLower.includes('payment_verified')) return 'status-processing';
-  if (statusLower.includes('shipped')) return 'status-shipped';
-  if (statusLower.includes('delivered')) return 'status-delivered';
-  if (statusLower.includes('cancelled')) return 'status-cancelled';
-  if (statusLower.includes('pending_bank_transfer')) return 'status-pending_bank_transfer';
-  return 'status-pending';
+  const statusMap = {
+    'payment_pending': 'status-payment-pending',
+    'payment_confirmed': 'status-payment-confirmed',
+    'processing': 'status-processing',
+    'ready_to_ship': 'status-ready-to-ship',
+    'shipped': 'status-shipped',
+    'out_for_delivery': 'status-out-for-delivery',
+    'delivered': 'status-delivered',
+    'cancelled': 'status-cancelled',
+    'returned': 'status-returned'
+  };
+  
+  return statusMap[status] || 'status-payment-pending';
 }
 
 function getStatusText(status) {
-  if (!status) return 'Pending';
+  if (!status) return 'Payment Pending';
   
   const statusMap = {
-    'pending': 'Pending',
+    'payment_pending': 'Payment Pending',
+    'payment_confirmed': 'Payment Confirmed',
     'processing': 'Processing',
+    'ready_to_ship': 'Ready to Ship',
     'shipped': 'Shipped',
+    'out_for_delivery': 'Out for Delivery',
     'delivered': 'Delivered',
     'cancelled': 'Cancelled',
-    'payment_verified': 'Payment Verified',
-    'pending_bank_transfer': 'Awaiting Payment',
-    'payment_received': 'Payment Received'
+    'returned': 'Returned'
   };
   
-  return statusMap[status.toLowerCase()] || status;
+  return statusMap[status] || status;
 }
 
 function getStatusIcon(status) {
   if (!status) return 'fa-clock';
   
-  const statusLower = status.toLowerCase();
-  if (statusLower.includes('processing') || statusLower.includes('payment_verified')) return 'fa-cog';
-  if (statusLower.includes('shipped')) return 'fa-shipping-fast';
-  if (statusLower.includes('delivered')) return 'fa-check-circle';
-  if (statusLower.includes('cancelled')) return 'fa-times-circle';
-  if (statusLower.includes('pending_bank_transfer')) return 'fa-exclamation-circle';
-  return 'fa-clock';
+  const iconMap = {
+    'payment_pending': 'fa-clock',
+    'payment_confirmed': 'fa-check-circle',
+    'processing': 'fa-cogs',
+    'ready_to_ship': 'fa-box',
+    'shipped': 'fa-shipping-fast',
+    'out_for_delivery': 'fa-truck',
+    'delivered': 'fa-check-circle',
+    'cancelled': 'fa-times-circle',
+    'returned': 'fa-undo'
+  };
+  
+  return iconMap[status] || 'fa-clock';
 }
 
 function formatDate(dateString) {
@@ -1813,6 +1989,23 @@ function formatDate(dateString) {
       day: '2-digit',
       month: 'short',
       year: 'numeric'
+    });
+  } catch (error) {
+    return dateString;
+  }
+}
+
+function formatDateTime(dateString) {
+  if (!dateString) return 'N/A';
+  
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     });
   } catch (error) {
     return dateString;
@@ -1859,7 +2052,6 @@ function showEmptyState(message) {
 }
 
 function showMessage(message) {
-  // Create a simple toast notification
   const toast = document.createElement('div');
   toast.style.cssText = `
     position: fixed;
@@ -1990,16 +2182,12 @@ async function downloadOrderInvoice(orderId) {
           }
           .status-badge {
             display: inline-block;
-            padding: 4px 10px;
-            border-radius: 15px;
+            padding: 6px 12px;
+            border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
             text-transform: uppercase;
           }
-          .status-pending { background: #fff8e1; color: #ffa500; }
-          .status-processing { background: #e3f2fd; color: #007185; }
-          .status-shipped { background: #f3e5f5; color: #b12704; }
-          .status-delivered { background: #e8f5e8; color: #007600; }
         </style>
       </head>
       <body>
@@ -2014,8 +2202,8 @@ async function downloadOrderInvoice(orderId) {
               <strong>Invoice Number:</strong> ${order.orderNumber || 'N/A'}<br>
               <strong>Invoice Date:</strong> ${formatDate(order.createdAt)}<br>
               <strong>Status:</strong> 
-              <span class="status-badge ${getStatusClass(order.shippingStatus || order.status)}">
-                ${getStatusText(order.shippingStatus || order.status)}
+              <span class="status-badge" style="background: ${getStatusColor(order.status)}; color: white;">
+                ${getStatusText(order.status)}
               </span>
             </div>
             <div style="text-align: right;">
@@ -2096,10 +2284,35 @@ async function downloadOrderInvoice(orderId) {
   }
 }
 
+function getStatusColor(status) {
+  const colorMap = {
+    'payment_pending': '#ff6b6b',
+    'payment_confirmed': '#51cf66',
+    'processing': '#339af0',
+    'ready_to_ship': '#ff922b',
+    'shipped': '#748ffc',
+    'out_for_delivery': '#cc5de8',
+    'delivered': '#40c057',
+    'cancelled': '#fa5252',
+    'returned': '#868e96'
+  };
+  
+  return colorMap[status] || '#ff6b6b';
+}
+
 function trackOrder(trackingNumber) {
   showMessage(`Tracking number: ${trackingNumber}`);
-  // In real implementation, redirect to tracking service
   // window.open(`https://tracking-url.com/${trackingNumber}`, '_blank');
+}
+
+function closeOrderTopView() {
+  document.getElementById('orderTopView').style.display = 'none';
+  currentOrderDetails = null;
+}
+
+function downloadInvoice() {
+  if (!currentOrderDetails) return;
+  downloadOrderInvoice(currentOrderDetails.id);
 }
 
 // ============================================
@@ -2115,7 +2328,6 @@ function closeNotifications() {
   document.getElementById("notificationDropdown").classList.remove("active");
 }
 
-// Close notifications when clicking outside
 document.addEventListener('click', function(event) {
   const dropdown = document.getElementById("notificationDropdown");
   const button = document.querySelector('.notification-btn');
@@ -2129,15 +2341,12 @@ document.addEventListener('click', function(event) {
 // INITIALIZATION
 // ============================================
 
-// Initialize when page loads
 document.addEventListener('DOMContentLoaded', async function() {
   try {
     console.log("📱 Orders page loaded");
     
-    // Load orders
     await loadOrders();
     
-    // Setup periodic refresh (every 2 minutes)
     setInterval(() => {
       console.log("🔄 Auto-refreshing orders...");
       loadOrders();
@@ -2148,7 +2357,6 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 });
 
-// Clean up listeners when page unloads
 window.addEventListener('beforeunload', () => {
   if (ordersUnsubscribe) ordersUnsubscribe();
   if (notificationsUnsubscribe) notificationsUnsubscribe();
@@ -2164,6 +2372,7 @@ window.downloadOrderInvoice = downloadOrderInvoice;
 window.trackOrder = trackOrder;
 window.toggleNotifications = toggleNotifications;
 window.markAllAsRead = markAllAsRead;
+window.cancelOrder = cancelOrder;
 </script>
 
 </body>
