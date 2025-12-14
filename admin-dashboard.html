@@ -1,37 +1,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>IRYA STONE – Admin Orders</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body { font-family: Arial; background:#f2f2f2; padding:15px; }
-    h2 { text-align:center; }
-    .order {
-      background:#fff;
-      padding:14px;
-      margin-bottom:14px;
-      border-radius:6px;
-      box-shadow:0 2px 6px rgba(0,0,0,0.1);
-    }
-    .order small { color:#555; display:block; }
-    button {
-      width:100%;
-      padding:8px;
-      margin-top:6px;
-      border:none;
-      border-radius:4px;
-      cursor:pointer;
-    }
-    .confirm { background:#198754; color:#fff; }
-    .ship { background:#0d6efd; color:#fff; }
-  </style>
+<meta charset="UTF-8">
+<title>IRYA STONE – Admin Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body { font-family: Arial; background:#f4f6f8; padding:15px; }
+.order {
+  background:#fff;
+  padding:15px;
+  margin-bottom:15px;
+  border-radius:8px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+.badge { padding:4px 8px; border-radius:4px; font-size:12px; }
+.advance { background:#ffc107; }
+.full { background:#28a745; color:#fff; }
+.pending { background:#dc3545; color:#fff; }
+button {
+  padding:7px 10px;
+  margin-top:6px;
+  border:none;
+  border-radius:4px;
+  cursor:pointer;
+}
+.confirm { background:#198754; color:#fff; }
+.ship { background:#0d6efd; color:#fff; }
+input { width:100%; padding:6px; margin-top:5px; }
+</style>
 </head>
 
 <body>
 
-<h2>Admin Orders Dashboard</h2>
-<div id="orders">Loading orders…</div>
+<h2>Admin Orders – IRYA STONE</h2>
+<div id="orders">Loading…</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
@@ -45,7 +48,6 @@ import {
   collection
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-/* 🔥 FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyDNwzhOkQQLAQbkiNFTFEGSpWJdKaxbTRk",
   authDomain: "iryastone-uk.firebaseapp.com",
@@ -59,125 +61,109 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const ordersDiv = document.getElementById("orders");
 
-/* ================= LOAD ALL ORDERS ================= */
+/* ================= LOAD ORDERS ================= */
 async function loadOrders() {
   ordersDiv.innerHTML = "";
   const snap = await getDocs(collectionGroup(db, "orders"));
 
-  if (snap.empty) {
-    ordersDiv.innerHTML = "No orders found";
-    return;
-  }
+  snap.forEach(d => {
+    const o = d.data();
+    const userId = d.ref.parent.parent.id;
+    const orderId = d.id;
 
-  snap.forEach(docSnap => {
-    // ✅ SAFE PATH CHECK
-    if (!docSnap.ref.parent?.parent?.id) return;
-
-    const order = docSnap.data();
-    const orderId = docSnap.id;
-    const userId = docSnap.ref.parent.parent.id;
+    const isFull = o.submittedAmount >= o.total;
+    const badge = isFull
+      ? `<span class="badge full">FULL PAID</span>`
+      : `<span class="badge advance">ADVANCE PAID</span>`;
 
     ordersDiv.innerHTML += `
       <div class="order">
-        <b>${order.orderNumber}</b>
-        <small>User: ${order.userEmail}</small>
-        <small>Status: ${order.status}</small>
-        <small>Payment: ${order.paymentStatus}</small>
-        <small>Submitted: £${order.submittedAmount}</small>
-        <small>Remaining: £${order.remainingPayment}</small>
+        <b>${o.orderNumber}</b> ${badge}
+        <p><b>User:</b> ${o.userName} (${o.userEmail})</p>
+
+        <p><b>Payment Method:</b> ${o.paymentMethod}</p>
+        <p><b>Reference:</b> ${o.transactionReference}</p>
+        <p><b>Date:</b> ${o.transactionDate}</p>
+
+        <p><b>Paid:</b> £${o.submittedAmount}</p>
+        <p><b>Remaining:</b> £${o.remainingPayment}</p>
 
         <button class="confirm"
-          onclick='confirmPayment("${userId}","${orderId}",${JSON.stringify(order).replace(/"/g,"&quot;")})'>
+          onclick="confirmPayment('${userId}','${orderId}',${o.submittedAmount},${o.total})">
           Confirm Payment
         </button>
 
+        <input placeholder="Tracking Number"
+          id="track-${orderId}"
+          value="${o.trackingNumber || ""}">
+
         <button class="ship"
-          onclick='confirmShipping("${userId}","${orderId}",${order.remainingPayment})'>
-          Confirm Shipping
+          onclick="updateShipping('${userId}','${orderId}')">
+          Update Shipping
         </button>
       </div>
     `;
   });
 }
 
-/* ================= CONFIRM PAYMENT LOGIC ================= */
-window.confirmPayment = async (userId, orderId, order) => {
-  let paymentStatus, status, remainingPayment;
-
-  // 🔹 FULL PAYMENT
-  if (order.submittedAmount >= order.total) {
-    paymentStatus = "fully_paid";
-    status = "completed";
-    remainingPayment = 0;
-  }
-  // 🔹 ADVANCE PAYMENT (30%)
-  else {
-    paymentStatus = "advance_confirmed";
-    status = "confirmed";
-    remainingPayment = order.total - order.submittedAmount;
-  }
+/* ================= PAYMENT CONFIRM ================= */
+window.confirmPayment = async (userId, orderId, paid, total) => {
+  let paymentStatus = paid >= total ? "fully_paid" : "advance_confirmed";
 
   await updateDoc(
-    doc(db, "users", userId, "orders", orderId),
+    doc(db,"users",userId,"orders",orderId),
     {
       paymentStatus,
-      status,
-      remainingPayment,
+      status: "payment_confirmed",
+      remainingPayment: Math.max(total - paid, 0),
       updatedAt: new Date().toISOString()
     }
   );
 
   await addDoc(
-    collection(db, "users", userId, "notifications"),
+    collection(db,"users",userId,"notifications"),
     {
-      title: "Payment Confirmed",
-      message:
-        paymentStatus === "fully_paid"
-          ? "Your full payment has been confirmed. Order completed."
-          : "Your advance payment is confirmed. Remaining payment due before delivery.",
-      orderId,
-      read: false,
-      createdAt: new Date().toISOString()
+      title:"Payment Confirmed",
+      message: paymentStatus === "fully_paid"
+        ? "Your full payment has been confirmed."
+        : "Advance payment confirmed. Remaining payment pending.",
+      createdAt:new Date().toISOString(),
+      read:false
     }
   );
 
-  alert("✅ Payment confirmed");
+  alert("Payment updated");
   loadOrders();
 };
 
-/* ================= CONFIRM SHIPPING ================= */
-window.confirmShipping = async (userId, orderId, remainingPayment) => {
-
-  if (remainingPayment > 0) {
-    alert("❌ Remaining payment pending. Shipping blocked.");
-    return;
-  }
+/* ================= SHIPPING UPDATE ================= */
+window.updateShipping = async (userId, orderId) => {
+  const track = document.getElementById(`track-${orderId}`).value;
 
   await updateDoc(
-    doc(db, "users", userId, "orders", orderId),
+    doc(db,"users",userId,"orders",orderId),
     {
-      status: "shipped",
-      shippedAt: new Date().toISOString()
+      shippingStatus:"shipped",
+      trackingNumber: track,
+      shippedAt:new Date().toISOString()
     }
   );
 
   await addDoc(
-    collection(db, "users", userId, "notifications"),
+    collection(db,"users",userId,"notifications"),
     {
-      title: "Order Shipped",
-      message: "Your order has been shipped successfully.",
-      orderId,
-      read: false,
-      createdAt: new Date().toISOString()
+      title:"Order Shipped",
+      message:`Your order has been shipped. Tracking: ${track}`,
+      createdAt:new Date().toISOString(),
+      read:false
     }
   );
 
-  alert("🚚 Shipping confirmed");
+  alert("Shipping updated");
   loadOrders();
 };
 
 loadOrders();
 </script>
-
 </body>
 </html>
