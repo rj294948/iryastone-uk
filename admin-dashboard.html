@@ -1,29 +1,110 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Admin – IRYA STONE</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Dashboard | IRYA STONE</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body { font-family: Arial; background:#f4f6f8; padding:15px; }
-.order { background:#fff; padding:15px; margin-bottom:15px; border-radius:8px; }
-.badge { padding:4px 8px; border-radius:4px; font-size:12px; font-weight:bold; }
-.advance { background:#ffc107; }
-.full { background:#28a745; color:#fff; }
-.pending { background:#dc3545; color:#fff; }
-img { width:80px; border-radius:6px; margin-right:10px; }
-.row { display:flex; gap:10px; align-items:center; }
-button { padding:6px 10px; margin-top:6px; }
-input, select { width:100%; padding:6px; margin-top:5px; }
-.disabled { opacity:.5; pointer-events:none; }
+:root{
+  --gold:#c9a227;
+  --dark:#1e1e1e;
+  --bg:#f4f6f8;
+  --white:#fff;
+}
+body{
+  margin:0;
+  font-family:Segoe UI,Arial;
+  background:var(--bg);
+}
+header{
+  background:var(--dark);
+  color:#fff;
+  padding:15px 20px;
+  font-size:20px;
+}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:15px;
+  padding:20px;
+}
+.card{
+  background:var(--white);
+  padding:15px;
+  border-radius:10px;
+  box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+.card h3{
+  margin:0;
+  font-size:14px;
+  color:#555;
+}
+.card p{
+  margin:5px 0 0;
+  font-size:22px;
+  font-weight:bold;
+}
+.orders{
+  padding:20px;
+}
+.order{
+  background:#fff;
+  border-radius:12px;
+  padding:15px;
+  margin-bottom:15px;
+  box-shadow:0 5px 15px rgba(0,0,0,.06);
+}
+.row{
+  display:flex;
+  gap:15px;
+  align-items:center;
+}
+.order img{
+  width:90px;
+  height:70px;
+  object-fit:cover;
+  border-radius:8px;
+}
+.badge{
+  padding:4px 8px;
+  font-size:12px;
+  border-radius:6px;
+  font-weight:bold;
+}
+.advance{background:#ffc107;}
+.full{background:#28a745;color:#fff;}
+.pending{background:#dc3545;color:#fff;}
+select,input,button{
+  padding:8px;
+  width:100%;
+  margin-top:6px;
+}
+button{
+  background:var(--gold);
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  font-weight:bold;
+}
+button:hover{opacity:.9;}
+.disabled{opacity:.5;pointer-events:none;}
 </style>
 </head>
 
 <body>
 
-<h2>Admin Orders Panel</h2>
-<div id="orders"></div>
+<header>Admin Dashboard – IRYA STONE</header>
+
+<section class="stats">
+  <div class="card"><h3>Total Orders</h3><p id="stTotal">0</p></div>
+  <div class="card"><h3>Advance Orders</h3><p id="stAdvance">0</p></div>
+  <div class="card"><h3>Fully Paid</h3><p id="stFull">0</p></div>
+  <div class="card"><h3>Pending Amount (£)</h3><p id="stPending">0</p></div>
+  <div class="card"><h3>Shipped Orders</h3><p id="stShipped">0</p></div>
+</section>
+
+<section class="orders" id="orders"></section>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
@@ -42,132 +123,137 @@ const app = initializeApp({
   apiKey: "AIzaSyDNwzhOkQQLAQbkiNFTFEGSpWJdKaxbTRk",
   authDomain: "iryastone-uk.firebaseapp.com",
   projectId: "iryastone-uk",
+  storageBucket: "iryastone-uk.firebasestorage.app",
+  messagingSenderId: "110940910896",
+  appId: "1:110940910896:web:b25e92127118665e5c84f5"
 });
-
 const db = getFirestore(app);
-const ordersDiv = document.getElementById("orders");
 
-/* ================= LOAD ORDERS ================= */
-async function loadOrders() {
-  ordersDiv.innerHTML = "";
-  const snap = await getDocs(collectionGroup(db, "orders"));
+const ordersBox = document.getElementById("orders");
 
-  for (const d of snap.docs) {
-    const o = d.data();
-    const orderRef = d.ref;
+let stats={total:0,advance:0,full:0,pending:0,shipped:0};
 
-    const pending = Math.max(0, (o.total || 0) - (o.advancePayment || 0));
-    const isFull = pending === 0;
+async function loadOrders(){
+  ordersBox.innerHTML="";
+  stats={total:0,advance:0,full:0,pending:0,shipped:0};
 
-    // product image
-    let image = "";
-    if (o.items?.[0]?.id) {
-      const p = await getDoc(doc(db,"products",o.items[0].id));
-      image = p.exists() ? p.data().imageUrl : "";
+  const snap = await getDocs(collectionGroup(db,"orders"));
+
+  for(const d of snap.docs){
+    const o=d.data();
+    const ref=d.ref;
+    stats.total++;
+
+    const advance=o.advancePayment||0;
+    const pending=Math.max(0,(o.total||0)-advance);
+
+    if(pending===0) stats.full++; else stats.advance++;
+    stats.pending+=pending;
+    if(o.shippingStatus==="shipped") stats.shipped++;
+
+    let img="";
+    if(o.items?.[0]?.id){
+      const p=await getDoc(doc(db,"products",o.items[0].id));
+      if(p.exists()) img=p.data().imageUrl;
     }
 
-    ordersDiv.innerHTML += `
-      <div class="order">
-        <div class="row">
-          ${image ? `<img src="${image}">` : ""}
-          <div>
-            <b>${o.orderNumber}</b><br>
-            <span class="badge ${isFull ? "full":"advance"}">
-              ${isFull ? "FULL PAID" : "ADVANCE PAID"}
-            </span>
-          </div>
-        </div>
-
-        <p><b>${o.userName}</b> | ${o.userEmail}</p>
-        <p>${o.shippingAddress?.address1}, ${o.shippingAddress?.city}</p>
-
-        <p>Total: £${o.total}</p>
-        <p>Advance Paid: £${o.advancePayment || 0}</p>
-        <p><b>Pending: £${pending}</b></p>
-
-        <select id="pay-${d.id}">
-          <option value="">-- Payment Action --</option>
-          <option value="advance">Confirm Advance</option>
-          <option value="full">Confirm Full Payment</option>
-          <option value="reminder">Send Pending Warning</option>
-        </select>
-
-        <button onclick="updatePayment('${d.id}')">Update Payment</button>
-
-        <div class="${isFull ? "" : "disabled"}">
-          <input id="track-${d.id}" placeholder="Tracking Number">
-          <input id="date-${d.id}" type="date">
-          <button onclick="updateShipping('${d.id}')">Ship Order</button>
+    ordersBox.innerHTML+=`
+    <div class="order">
+      <div class="row">
+        ${img?`<img src="${img}">`:""}
+        <div>
+          <b>${o.orderNumber}</b><br>
+          <span class="badge ${pending===0?"full":"advance"}">
+            ${pending===0?"FULL PAID":"ADVANCE PAID"}
+          </span>
         </div>
       </div>
+
+      <p><b>${o.userName}</b> | ${o.userEmail}</p>
+      <p>${o.shippingAddress?.address1}, ${o.shippingAddress?.city}</p>
+
+      <p>Total £${o.total} | Advance £${advance} | <b>Pending £${pending}</b></p>
+
+      <select id="pay-${d.id}">
+        <option value="">Payment Action</option>
+        <option value="advance">Confirm Advance</option>
+        <option value="full">Confirm Full Payment</option>
+        <option value="reminder">Send Pending Warning</option>
+      </select>
+      <button onclick="pay('${d.id}')">Update Payment</button>
+
+      <div class="${pending===0?"":"disabled"}">
+        <input id="track-${d.id}" placeholder="Tracking Number">
+        <input id="date-${d.id}" type="date">
+        <button onclick="ship('${d.id}')">Ship Order</button>
+      </div>
+    </div>
     `;
 
-    window[`orderRef_${d.id}`] = orderRef;
-    window[`orderData_${d.id}`] = o;
+    window["ref_"+d.id]=ref;
+    window["ord_"+d.id]=o;
   }
+
+  document.getElementById("stTotal").innerText=stats.total;
+  document.getElementById("stAdvance").innerText=stats.advance;
+  document.getElementById("stFull").innerText=stats.full;
+  document.getElementById("stPending").innerText=stats.pending.toFixed(2);
+  document.getElementById("stShipped").innerText=stats.shipped;
 }
 
-/* ================= PAYMENT ================= */
-window.updatePayment = async (id) => {
-  const ref = window[`orderRef_${id}`];
-  const o = window[`orderData_${id}`];
-  const action = document.getElementById(`pay-${id}`).value;
+window.pay=async(id)=>{
+  const o=window["ord_"+id];
+  const ref=window["ref_"+id];
+  const act=document.getElementById("pay-"+id).value;
+  if(!act) return alert("Select action");
 
-  if (!action) return alert("Select option");
-
-  let msg = "";
-
-  if (action === "advance") {
-    msg = `Advance received. Remaining £${o.total - o.advancePayment}. 
-    Pay within 24 hours or order will be cancelled. Advance non-refundable.`;
+  let msg="";
+  if(act==="advance"){
+    msg=`Advance received. Pending £${o.total-o.advancePayment}. 
+    Pay within 24 hours. Advance non-refundable.`;
   }
-
-  if (action === "full") {
-    await updateDoc(ref,{ paymentStatus:"fully_paid" });
-    msg = "Full payment confirmed. Preparing shipment.";
+  if(act==="full"){
+    await updateDoc(ref,{paymentStatus:"fully_paid"});
+    msg="Full payment confirmed. Preparing shipment.";
   }
-
-  if (action === "reminder") {
-    msg = `£${o.total - o.advancePayment} pending. 
-    Pay within 24 hours. Order may cancel.`;
+  if(act==="reminder"){
+    msg=`£${o.total-o.advancePayment} pending. Pay within 24 hours or order may cancel.`;
   }
 
   await addDoc(collection(db,"users",o.userId,"notifications"),{
     type:"payment",
-    orderNumber:o.orderNumber,
     message:msg,
+    orderNumber:o.orderNumber,
     createdAt:new Date().toISOString(),
     read:false
   });
 
-  alert("Payment action done");
+  alert("Payment updated");
   loadOrders();
 };
 
-/* ================= SHIPPING ================= */
-window.updateShipping = async (id) => {
-  const ref = window[`orderRef_${id}`];
-  const o = window[`orderData_${id}`];
-  const track = document.getElementById(`track-${id}`).value;
-  const date = document.getElementById(`date-${id}`).value;
-
-  if (!track) return alert("Tracking required");
+window.ship=async(id)=>{
+  const o=window["ord_"+id];
+  const ref=window["ref_"+id];
+  const tr=document.getElementById("track-"+id).value;
+  const dt=document.getElementById("date-"+id).value;
+  if(!tr) return alert("Tracking required");
 
   await updateDoc(ref,{
     shippingStatus:"shipped",
-    trackingNumber:track,
-    deliveryDate:date
+    trackingNumber:tr,
+    deliveryDate:dt
   });
 
   await addDoc(collection(db,"users",o.userId,"notifications"),{
     type:"shipping",
+    message:`Order shipped. Tracking: ${tr}`,
     orderNumber:o.orderNumber,
-    message:`Shipped. Tracking: ${track}`,
     createdAt:new Date().toISOString(),
     read:false
   });
 
-  alert("Shipped");
+  alert("Order shipped");
   loadOrders();
 };
 
