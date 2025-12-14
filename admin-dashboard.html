@@ -1,63 +1,111 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Update Order</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <title>IRYA STONE | Update Order</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
     body {
-      font-family: Arial;
-      background: #f2f2f2;
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
       padding: 20px;
     }
-    .box {
-      max-width: 420px;
-      background: white;
+    .container {
+      max-width: 650px;
+      background: #fff;
       margin: auto;
       padding: 20px;
-      border-radius: 8px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-    input, select, button {
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    label {
+      font-weight: bold;
+      margin-top: 12px;
+      display: block;
+    }
+    input, select, textarea, button {
       width: 100%;
       padding: 10px;
-      margin-top: 10px;
+      margin-top: 6px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
     }
     button {
-      background: #198754;
-      color: white;
+      background: #0b5ed7;
+      color: #fff;
       border: none;
+      margin-top: 20px;
+      cursor: pointer;
       font-size: 16px;
     }
-    .msg {
-      margin-top: 12px;
+    button:hover {
+      background: #084298;
+    }
+    .success {
+      color: green;
+      margin-top: 15px;
+      text-align: center;
+    }
+    .error {
+      color: red;
+      margin-top: 15px;
       text-align: center;
     }
   </style>
 </head>
-
 <body>
 
-<div class="box">
-  <h3>Update Order</h3>
+<div class="container">
+  <h2>Update Order (Firestore)</h2>
 
-  <input id="userId" placeholder="User ID" value="dCVM344so3VCKQGNdsHm2aUZrKA3">
-  <input id="orderId" placeholder="Order ID" value="E0R8Beq9JTNTm92PDlB3">
+  <label>User ID</label>
+  <input type="text" id="userId" value="dCVM344so3VCKQGNdsHm2aUZrKA3">
 
-  <select id="status">
-    <option value="pending">Pending</option>
-    <option value="confirmed">Confirmed</option>
+  <label>Order ID</label>
+  <input type="text" id="orderId" value="E0R8Beq9JTNTm92PDlB3">
+
+  <label>Payment Status</label>
+  <select id="paymentStatus">
+    <option value="pending_bank_transfer">Pending Bank Transfer</option>
+    <option value="paid_bank_transfer">Paid Bank Transfer</option>
     <option value="completed">Completed</option>
   </select>
 
-  <button onclick="updateOrder()">Update</button>
+  <label>Order Status</label>
+  <select id="status">
+    <option value="pending">Pending</option>
+    <option value="confirmed">Confirmed</option>
+    <option value="processing">Processing</option>
+    <option value="shipped">Shipped</option>
+    <option value="completed">Completed</option>
+  </select>
 
-  <div class="msg" id="msg"></div>
+  <label>Remaining Payment</label>
+  <input type="number" id="remainingPayment" value="0">
+
+  <label>Bank Reference</label>
+  <input type="text" id="reference" value="IRYA-1765691741559-9161">
+
+  <button onclick="updateOrder()">Update Order</button>
+
+  <div id="message"></div>
 </div>
 
-<!-- FIREBASE -->
+<!-- ================= FIREBASE SCRIPT ================= -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-  import { getFirestore, doc, updateDoc, collection, addDoc } 
-    from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
+  import {
+    getFirestore,
+    doc,
+    updateDoc
+  } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDNwzhOkQQLAQbkiNFTFEGSpWJdKaxbTRk",
@@ -65,54 +113,49 @@
     projectId: "iryastone-uk",
     storageBucket: "iryastone-uk.firebasestorage.app",
     messagingSenderId: "110940910896",
-    appId: "1:110940910896:web:b25e92127118665e5c84f5"
+    appId: "1:110940910896:web:b25e92127118665e5c84f5",
+    measurementId: "G-6YM1FLYN48"
   };
 
   const app = initializeApp(firebaseConfig);
+  getAnalytics(app);
   const db = getFirestore(app);
 
-  window.updateOrder = async () => {
-    const userId = userIdInput.value.trim();
-    const orderId = orderIdInput.value.trim();
+  window.updateOrder = async function () {
+    const msg = document.getElementById("message");
+    msg.innerHTML = "";
+
+    const userId = document.getElementById("userId").value.trim();
+    const orderId = document.getElementById("orderId").value.trim();
+    const paymentStatus = document.getElementById("paymentStatus").value;
     const status = document.getElementById("status").value;
-    const msg = document.getElementById("msg");
+    const remainingPayment = Number(document.getElementById("remainingPayment").value);
+    const reference = document.getElementById("reference").value;
 
     if (!userId || !orderId) {
-      msg.innerHTML = "❌ User ID & Order ID required";
+      msg.innerHTML = "<div class='error'>User ID & Order ID required</div>";
       return;
     }
 
     try {
-      // 1️⃣ ORDER UPDATE
-      await updateDoc(
-        doc(db, "users", userId, "orders", orderId),
-        {
-          status,
-          updatedAt: new Date().toISOString()
-        }
-      );
+      const orderRef = doc(db, "users", userId, "orders", orderId);
 
-      // 2️⃣ USER NOTIFICATION CREATE
-      await addDoc(
-        collection(db, "users", userId, "notifications"),
-        {
-          title: "Order Update",
-          message: `Your order (${orderId}) status updated to "${status}"`,
-          orderId,
-          read: false,
-          createdAt: new Date().toISOString()
+      await updateDoc(orderRef, {
+        paymentStatus,
+        status,
+        remainingPayment,
+        updatedAt: new Date().toISOString(),
+        bankTransferDetails: {
+          reference
         }
-      );
+      });
 
-      msg.innerHTML = "✅ Order updated & user notified";
-    } catch (e) {
-      console.error(e);
-      msg.innerHTML = "❌ Error occurred";
+      msg.innerHTML = "<div class='success'>✅ Order successfully updated</div>";
+    } catch (err) {
+      console.error(err);
+      msg.innerHTML = "<div class='error'>❌ Update failed</div>";
     }
   };
-
-  const userIdInput = document.getElementById("userId");
-  const orderIdInput = document.getElementById("orderId");
 </script>
 
 </body>
