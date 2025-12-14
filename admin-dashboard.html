@@ -61,7 +61,7 @@ async function loadOrders() {
     // Display products with image & title
     const productsHTML = (o.items||[]).map(item=>`
       <div class="flex">
-        <img src="${item.images || 'https://via.placeholder.com/60'}" class="product-img" />
+        <img src="${item.image || 'https://via.placeholder.com/60'}" class="product-img" />
         <div>
           <b>${item.name}</b><br/>
           Qty: ${item.quantity} | Price: £${item.price} | Remaining: £${item.remainingPayment || 0}
