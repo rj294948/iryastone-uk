@@ -9,190 +9,8 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
-    import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore.js";
-    
-    // --- 1. CONFIGURATION AND INITIALIZATION ---
-    const firebaseConfig = {
-        apiKey: "AIzaSyDNwzhOkQQLAQbkiNFTFEGSpWJdKaxbTRk",
-        authDomain: "iryastone-uk.firebaseapp.com",
-        projectId: "iryastone-uk"
-    };
-
-    // Firebase App Initialization
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    // Placeholder User ID (Replace with dynamic authentication logic in a real app)
-    const userId = "dCVM344so3VCKQGNdsHm2aUZrKA3"; 
-    
-    // --- 2. DOMContentLoaded: Ensures the script runs after the HTML is loaded ---
-    document.addEventListener('DOMContentLoaded', () => {
-        
-        const ordersDiv = document.getElementById("orders");
-        
-        // Safety check (Though placement inside DOMContentLoaded should prevent the error)
-        if (!ordersDiv) {
-            console.error("The element with ID 'orders' was not found.");
-            return;
-        }
-
-        const loadingMessage = '<div style="text-align: center; padding: 50px; color: var(--text-light);"><i class="fas fa-spinner fa-spin"></i> Loading your order history...</div>';
-        ordersDiv.innerHTML = loadingMessage;
-
-        // --- 3. HELPER FUNCTIONS ---
-
-        /** Formats a Firebase Timestamp or date string */
-        function formatDate(timestamp) {
-            if (!timestamp) return 'N/A';
-            try {
-                const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-                if (isNaN(date.getTime())) return 'N/A';
-                return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-            } catch {
-                return String(timestamp).substring(0, 10);
-            }
-        }
-
-        /** Returns HTML for a styled status badge */
-        function getStatusBadge(status, paymentStatus) {
-            let text;
-            let className;
-            
-            if (status === 'cancelled') {
-                text = 'CANCELLED';
-                className = 'cancelled';
-            } else if (status === 'delivered') {
-                text = 'DELIVERED';
-                className = 'ok';
-            } else if (paymentStatus === 'fully_paid' || status === 'paid') {
-                text = 'FULL PAID';
-                className = 'ok';
-            } else if (paymentStatus === 'pending_bank_transfer' || paymentStatus === 'advance_paid') {
-                text = 'AWAITING PAYMENT';
-                className = 'pending';
-            } else {
-                text = 'PROCESSING';
-                className = 'processing';
-            }
-
-            return `<span class="badge ${className}">${text}</span>`;
-        }
-
-        /** Creates the three-step timeline HTML */
-        function createStepTimeline(order) {
-            const paid = order.paymentStatus === "fully_paid" || (Number(order.remainingPayment || 0) <= 0) || order.paymentStatus === 'verified';
-            const shipped = order.status === "shipped" || order.status === "delivered";
-            const delivered = order.status === "delivered";
-
-            return `
-                <div class="step-timeline">
-                    <div class="step-item">
-                        <span class="icon ${paid ? 'done' : 'wait'}"><i class="fas fa-money-check-alt"></i></span>
-                        <span class="label">Payment</span>
-                    </div>
-                    <div class="step-item">
-                        <span class="icon ${shipped ? 'done' : 'wait'}"><i class="fas fa-truck-moving"></i></span>
-                        <span class="label">Shipped</span>
-                    </div>
-                    <div class="step-item">
-                        <span class="icon ${delivered ? 'done' : 'wait'}"><i class="fas fa-box-open"></i></span>
-                        <span class="label">Delivered</span>
-                    </div>
-                </div>
-            `;
-        }
-        
-        /** Handles navigation to the details page */
-        window.viewDetails = (orderId) => {
-            window.location.href = `order-details.html?id=${orderId}`;
-        };
-
-        /** Handles invoice download (placeholder) */
-        window.downloadInvoice = (orderId) => {
-            alert('Generating invoice for Order: ' + orderId + ' (Feature not fully implemented)');
-        };
-
-
-        // --- 4. REALTIME DATA LISTENER ---
-        const q = query(
-            collection(db, "users", userId, "orders"),
-            orderBy("createdAt", "desc")
-        );
-
-        onSnapshot(q, snap => {
-            ordersDiv.innerHTML = "";
-            if (snap.empty) {
-                ordersDiv.innerHTML = '<div style="text-align: center; padding: 50px; color: var(--text-light);">You have no orders yet. Start shopping!</div>';
-                return;
-            }
-
-            snap.forEach(doc => {
-                const order = { id: doc.id, ...doc.data() };
-                const firstItem = order.items?.[0] || { name: 'Product', stoneName: 'N/A' };
-                const total = (order.total || 0);
-                
-                // Calculate Paid and Remaining amounts safely
-                const advance = order.advancePayment || order.amountToPay || 0;
-                const remaining = order.remainingPayment || 0;
-                
-                const paid = (total - remaining) > 0 ? (total - remaining) : advance; 
-                
-                const paidDisplay = Number(paid).toFixed(2);
-                const totalDisplay = Number(total).toFixed(2);
-                const remainingDisplay = Number(remaining).toFixed(2);
-                
-                // Check if payment is complete
-                const paymentComplete = Number(remaining) <= 0;
-                
-                ordersDiv.innerHTML += `
-                    <article class="order-card">
-                        <div class="order-header">
-                            <div class="order-info">
-                                <span class="order-number">Order #${order.orderNumber || order.id.substring(0, 8)}</span>
-                                <small class="order-date">Placed on ${formatDate(order.createdAt)}</small>
-                            </div>
-                            ${getStatusBadge(order.status, paymentComplete ? 'fully_paid' : order.paymentStatus)}
-                        </div>
-
-                        <div class="order-body">
-                            <div class="item-summary">
-                                <i class="fas fa-box"></i>
-                                <p><strong>Main Item:</strong> ${firstItem.stoneName || firstItem.name} ${order.items.length > 1 ? ` (+ ${order.items.length - 1} more)` : ''}</p>
-                            </div>
-                            
-                            <div class="price-summary">
-                                <p><strong>Total:</strong> <span class="price-value">£${totalDisplay}</span></p>
-                                <p><strong>Paid:</strong> <span class="price-paid">£${paidDisplay}</span></p>
-                                ${!paymentComplete ? `<p class="remaining"><strong>Remaining:</strong> <span class="price-value gold">£${remainingDisplay}</span></p>` : ''}
-                            </div>
-                            
-                            ${createStepTimeline(order)}
-
-                            <div class="order-actions">
-                                <button class="btn-details" onclick="viewDetails('${order.id}')">
-                                    <i class="fas fa-search"></i> View Details
-                                </button>
-                                <button class="btn-invoice" onclick="downloadInvoice('${order.orderNumber || order.id}')">
-                                    <i class="fas fa-file-invoice-dollar"></i> Invoice
-                                </button>
-                            </div>
-                        </div>
-                    </article>
-                `;
-            });
-            
-            // If the loop finished and no content was added, handle the empty state
-            if (snap.empty && ordersDiv.innerHTML === loadingMessage) {
-                 ordersDiv.innerHTML = '<div style="text-align: center; padding: 50px; color: var(--text-light);">You have no orders yet. Start shopping!</div>';
-            }
-        });
-    }); // End of DOMContentLoaded
-</script>
-
 <style>
-/* 1. Base Reset & Typography */
+/* --- 1. THEME AND LAYOUT CSS --- */
 :root {
     --primary-gold: #c19a6b;
     --text-dark: #333;
@@ -205,10 +23,8 @@ body {
     background: var(--bg-light);
     color: var(--text-dark);
 }
-
-/* 2. Header and Layout */
 header {
-    background: #131921; /* Dark header matching common e-commerce sites */
+    background: #131921; 
     color: #fff;
     padding: 15px 20px;
     font-size: 1.2em;
@@ -220,17 +36,15 @@ header {
     padding: 0 15px;
 }
 
-/* 3. Order Card */
+/* --- 2. ORDER CARD STYLES --- */
 .order-card {
     background: #fff;
     border-radius: 10px;
     padding: 20px;
     margin-bottom: 25px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    border-left: 5px solid var(--primary-gold); /* Highlight with brand color */
+    border-left: 5px solid var(--primary-gold); 
 }
-
-/* Order Header */
 .order-header {
     display: flex;
     justify-content: space-between;
@@ -260,12 +74,12 @@ header {
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
-.ok { background: #198754; color: #fff; } /* Green */
-.pending { background: #ffc107; color: var(--text-dark); } /* Yellow */
-.processing { background: #0dcaf0; color: var(--text-dark); } /* Blue/Cyan */
-.cancelled { background: #dc3545; color: #fff; } /* Red */
+.ok { background: #198754; color: #fff; } 
+.pending { background: #ffc107; color: var(--text-dark); } 
+.processing { background: #0dcaf0; color: var(--text-dark); } 
+.cancelled { background: #dc3545; color: #fff; } 
 
-/* Order Body */
+/* Order Body & Summary */
 .order-body {
     display: flex;
     flex-direction: column;
@@ -282,8 +96,6 @@ header {
     color: var(--primary-gold);
     font-size: 1.2em;
 }
-
-/* Price Summary */
 .price-summary {
     display: flex;
     flex-wrap: wrap;
@@ -293,20 +105,11 @@ header {
     padding: 10px 0;
     font-size: 0.95em;
 }
-.price-value {
-    font-weight: 600;
-    color: var(--text-dark);
-}
-.price-paid {
-    font-weight: 500;
-    color: #198754;
-}
-.remaining .price-value.gold {
-    color: #dc3545; /* Remaining amount should stand out in a warning color */
-    font-weight: 700;
-}
+.price-value { font-weight: 600; color: var(--text-dark); }
+.price-paid { font-weight: 500; color: #198754; }
+.remaining .price-value.gold { color: #dc3545; font-weight: 700; }
 
-/* 4. Timeline */
+/* --- 3. TIMELINE STYLES --- */
 .step-timeline {
     display: flex;
     justify-content: space-between;
@@ -361,7 +164,7 @@ header {
     color: var(--text-light);
 }
 
-/* 5. Action Buttons */
+/* --- 4. ACTION BUTTONS --- */
 .order-actions {
     display: flex;
     gap: 10px;
@@ -400,17 +203,13 @@ header {
 
 /* Responsive adjustments */
 @media (max-width: 600px) {
-    .container {
-        margin: 20px auto;
-    }
+    .container { margin: 20px auto; }
     .order-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 8px;
     }
-    .order-actions {
-        flex-direction: column;
-    }
+    .order-actions { flex-direction: column; }
 }
 </style>
 </head>
@@ -426,6 +225,199 @@ header {
 <div class="container">
     <div id="orders"></div> 
 </div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
+    import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore.js";
+    
+    // --- 1. CONFIGURATION AND INITIALIZATION ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyDNwzhOkQQLAQbkiNFTFEGSpWJdKaxbTRk",
+        authDomain: "iryastone-uk.firebaseapp.com",
+        projectId: "iryastone-uk"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const ordersDiv = document.getElementById("orders");
+    const loadingMessage = '<div style="text-align: center; padding: 50px; color: var(--text-light);"><i class="fas fa-spinner fa-spin"></i> Loading your order history...</div>';
+    
+    
+    // --- 2. HELPER FUNCTIONS ---
+    
+    function formatDate(timestamp) {
+        if (!timestamp) return 'N/A';
+        try {
+            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            if (isNaN(date.getTime())) return 'N/A';
+            return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+        } catch {
+            return String(timestamp).substring(0, 10);
+        }
+    }
+
+    function getStatusBadge(status, paymentStatus) {
+        let text;
+        let className;
+        
+        if (status === 'cancelled') {
+            text = 'CANCELLED';
+            className = 'cancelled';
+        } else if (status === 'delivered') {
+            text = 'DELIVERED';
+            className = 'ok';
+        } else if (paymentStatus === 'fully_paid' || status === 'paid') {
+            text = 'FULL PAID';
+            className = 'ok';
+        } else if (paymentStatus === 'pending_bank_transfer' || paymentStatus === 'advance_paid') {
+            text = 'AWAITING PAYMENT';
+            className = 'pending';
+        } else {
+            text = 'PROCESSING';
+            className = 'processing';
+        }
+        return `<span class="badge ${className}">${text}</span>`;
+    }
+
+    function createStepTimeline(order) {
+        const paid = order.paymentStatus === "fully_paid" || (Number(order.remainingPayment || 0) <= 0) || order.paymentStatus === 'verified';
+        const shipped = order.status === "shipped" || order.status === "delivered";
+        const delivered = order.status === "delivered";
+
+        return `
+            <div class="step-timeline">
+                <div class="step-item">
+                    <span class="icon ${paid ? 'done' : 'wait'}"><i class="fas fa-money-check-alt"></i></span>
+                    <span class="label">Payment</span>
+                </div>
+                <div class="step-item">
+                    <span class="icon ${shipped ? 'done' : 'wait'}"><i class="fas fa-truck-moving"></i></span>
+                    <span class="label">Shipped</span>
+                </div>
+                <div class="step-item">
+                    <span class="icon ${delivered ? 'done' : 'wait'}"><i class="fas fa-box-open"></i></span>
+                    <span class="label">Delivered</span>
+                </div>
+            </div>
+        `;
+    }
+    
+    window.viewDetails = (orderId) => {
+        // Replace with your actual order details page URL if needed
+        window.location.href = `order-details.html?id=${orderId}`; 
+    };
+
+    window.downloadInvoice = (orderId) => {
+        alert('Generating invoice for Order: ' + orderId);
+    };
+
+    /** * --- 3. CORE FUNCTION: Fetches and displays orders for a given userId */
+    function loadUserOrders(userId) {
+        ordersDiv.innerHTML = loadingMessage;
+
+        const q = query(
+            collection(db, "users", userId, "orders"),
+            orderBy("createdAt", "desc")
+        );
+
+        // Realtime Listener
+        onSnapshot(q, snap => {
+            ordersDiv.innerHTML = "";
+            if (snap.empty) {
+                ordersDiv.innerHTML = '<div style="text-align: center; padding: 50px; color: var(--text-light);">You have no orders yet. Start shopping!</div>';
+                return;
+            }
+
+            snap.forEach(doc => {
+                const order = { id: doc.id, ...doc.data() };
+                const firstItem = order.items?.[0] || { name: 'Product', stoneName: 'N/A' };
+                const total = (order.total || 0);
+                
+                // Calculate Paid and Remaining amounts safely
+                const advance = order.advancePayment || order.amountToPay || 0;
+                const remaining = order.remainingPayment || 0;
+                const paid = (total - remaining) > 0 ? (total - remaining) : advance; 
+                
+                const paidDisplay = Number(paid).toFixed(2);
+                const totalDisplay = Number(total).toFixed(2);
+                const remainingDisplay = Number(remaining).toFixed(2);
+                const paymentComplete = Number(remaining) <= 0;
+                
+                ordersDiv.innerHTML += `
+                    <article class="order-card">
+                        <div class="order-header">
+                            <div class="order-info">
+                                <span class="order-number">Order #${order.orderNumber || order.id.substring(0, 8)}</span>
+                                <small class="order-date">Placed on ${formatDate(order.createdAt)}</small>
+                            </div>
+                            ${getStatusBadge(order.status, paymentComplete ? 'fully_paid' : order.paymentStatus)}
+                        </div>
+
+                        <div class="order-body">
+                            <div class="item-summary">
+                                <i class="fas fa-box"></i>
+                                <p><strong>Main Item:</strong> ${firstItem.stoneName || firstItem.name} ${order.items.length > 1 ? ` (+ ${order.items.length - 1} more)` : ''}</p>
+                            </div>
+                            
+                            <div class="price-summary">
+                                <p><strong>Total:</strong> <span class="price-value">£${totalDisplay}</span></p>
+                                <p><strong>Paid:</strong> <span class="price-paid">£${paidDisplay}</span></p>
+                                ${!paymentComplete ? `<p class="remaining"><strong>Remaining:</strong> <span class="price-value gold">£${remainingDisplay}</span></p>` : ''}
+                            </div>
+                            
+                            ${createStepTimeline(order)}
+
+                            <div class="order-actions">
+                                <button class="btn-details" onclick="viewDetails('${order.id}')">
+                                    <i class="fas fa-search"></i> View Details
+                                </button>
+                                <button class="btn-invoice" onclick="downloadInvoice('${order.orderNumber || order.id}')">
+                                    <i class="fas fa-file-invoice-dollar"></i> Invoice
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+                `;
+            });
+            
+             if (snap.empty) {
+                 ordersDiv.innerHTML = '<div style="text-align: center; padding: 50px; color: var(--text-light);">You have no orders yet. Start shopping!</div>';
+            }
+        });
+    }
+
+    // --- 4. EXECUTION: Get User ID from URL Hash ---
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!ordersDiv) return;
+
+        // URL Hash से यूजर ID प्राप्त करें
+        let hash = window.location.hash.substring(1).trim(); 
+        
+        // चेक करें कि hash 'orders' है या खाली है, या यह एक वैध ID है
+        // यदि आपकी साइट structure: rj294948.github.io/iryastone-uk/account.html#dCVM344so3VCKQGNdsHm2aUZrKA3
+        // तो 'hash' में 'dCVM344so3VCKQGNdsHm2aUZrKA3' होगा।
+        let userId = hash;
+
+        // अगर हैश खाली है, या 'orders' जैसा कुछ है, तो हम मानेंगे कि ID उपलब्ध नहीं है
+        if (!userId || userId.length < 10 || userId === 'orders') {
+            ordersDiv.innerHTML = `
+                <div style="text-align: center; padding: 50px;">
+                    <i class="fas fa-user-times" style="font-size: 3em; color: #dc3545;"></i>
+                    <h3>User ID Not Found</h3>
+                    <p>Could not find the User ID in the address bar's hash. Please sign in again.</p>
+                </div>
+            `;
+            console.error("User ID not found in URL hash. Please check your account page URL.");
+            return;
+            
+        } else {
+            // User ID मिल गया, अब ऑर्डर्स लोड करें
+            loadUserOrders(userId);
+            console.log("Loading orders for User ID from URL Hash:", userId);
+        }
+    });
+</script>
 
 </body>
 </html>
