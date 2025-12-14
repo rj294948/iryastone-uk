@@ -1,4 +1,3 @@
-admin.html
 <!DOCTYPE html>
 <html>
 <head>
@@ -34,16 +33,43 @@ button{cursor:pointer;background:#000;color:#fff;border:none;border-radius:6px}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
 import {
   getFirestore, collectionGroup, getDocs, doc,
-  getDoc, updateDoc, addDoc, collection
+  getDoc, updateDoc, addDoc, deleteDoc, collection
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
+/* ---------------- FIREBASE INIT ---------------- */
 const app = initializeApp({
-  apiKey: "AIzaSyDNW...",
+  apiKey: "AIzaSyDNwzhOkQQLAQbkiNFTFEGSpWJdKaxbTRk",
   authDomain: "iryastone-uk.firebaseapp.com",
   projectId: "iryastone-uk"
 });
 const db = getFirestore(app);
 const box = document.getElementById("orders");
+
+/* ---------------- HELPERS ---------------- */
+function hoursPassed(from){
+  return (Date.now() - new Date(from)) / 36e5;
+}
+
+async function pushNotification(userId,data){
+  const ref = collection(db,"users",userId,"notifications");
+  const snap = await getDocs(ref);
+
+  if(snap.size >= 10){
+    let oldest;
+    snap.forEach(d=>{
+      if(!oldest || d.data().createdAt < oldest.data().createdAt){
+        oldest = d;
+      }
+    });
+    if(oldest) await deleteDoc(oldest.ref);
+  }
+
+  await addDoc(ref,{
+    ...data,
+    read:false,
+    createdAt:new Date().toISOString()
+  });
+}
 
 /* ---------------- LOAD ORDERS ---------------- */
 async function loadOrders(){
@@ -62,22 +88,35 @@ async function loadOrders(){
   for(const o of orders){
     if(!o.items?.length) continue;
 
-    let badge=o.status==="delivered"?"delivered":
+    /* AUTO CANCEL AFTER 24H */
+    if(o.paymentStatus!=="fully_paid" && o.createdAt){
+      if(hoursPassed(o.createdAt)>24 && o.status!=="cancelled"){
+        await updateDoc(doc(db,"users",o.userId,"orders",o._docId),{
+          status:"cancelled",
+          cancelledAt:new Date().toISOString()
+        });
+        await pushNotification(o.userId,{
+          title:"Order Cancelled",
+          message:`Order ${o.orderNumber} auto-cancelled due to pending payment`
+        });
+        continue;
+      }
+    }
+
+    const badge =
+      o.status==="delivered"?"delivered":
       o.status==="cancelled"?"cancelled":
-      o.paymentStatus==="fully_paid"?"paid":
-      "advance";
+      o.paymentStatus==="fully_paid"?"paid":"advance";
 
     let productsHTML="";
     for(const it of o.items){
       const ps=await getDoc(doc(db,"products",it.id));
       const p=ps.exists()?ps.data():{};
-      const img=p.images?.[0]||"https://via.placeholder.com/70";
-      const title=p.title||it.name;
       productsHTML+=`
         <div class="flex">
-          <img src="${img}" class="product-img">
+          <img src="${p.images?.[0]||'https://via.placeholder.com/70'}" class="product-img">
           <div>
-            <b>${title}</b><br>
+            <b>${p.title||it.name}</b><br>
             Qty ${it.quantity} | £${it.totalPrice}
           </div>
         </div>`;
@@ -87,8 +126,13 @@ async function loadOrders(){
     <div class="order">
       <b>${o.orderNumber}</b>
       <span class="badge ${badge}">${o.status}</span>
+
       <p>${o.userName} – ${o.userEmail}</p>
-      <p>Total £${o.total} | Paid £${o.submittedAmount||0} | Remaining £${o.remainingPayment||0}</p>
+      <p>
+        Total £${o.total} |
+        Paid £${o.submittedAmount||0} |
+        Remaining £${o.remainingPayment||0}
+      </p>
 
       ${productsHTML}
 
@@ -102,7 +146,6 @@ async function loadOrders(){
       </select>
 
       <input id="track-${o._docId}" placeholder="Tracking Number">
-      <input type="datetime-local" id="delivery-${o._docId}">
 
       <button onclick="updateStatus('${o.userId}','${o._docId}','${o.orderNumber}')">
         Update Order
@@ -116,7 +159,7 @@ async function loadOrders(){
 }
 
 /* ---------------- UPDATE STATUS ---------------- */
-window.updateStatus=async(userId,orderId,orderNumber)=>{
+window.updateStatus = async (userId,orderId,orderNumber)=>{
   const status=document.getElementById(`status-${orderId}`).value;
   if(!status) return alert("Select status");
 
@@ -124,8 +167,8 @@ window.updateStatus=async(userId,orderId,orderNumber)=>{
   const snap=await getDoc(ref);
   if(!snap.exists()) return;
 
-  const now=new Date().toISOString();
   const o=snap.data();
+  const now=new Date().toISOString();
 
   const update={
     status,
@@ -133,24 +176,31 @@ window.updateStatus=async(userId,orderId,orderNumber)=>{
     statusHistory:[...(o.statusHistory||[]),{status,at:now}]
   };
 
+  if(status==="processing" && o.paymentStatus!=="fully_paid"){
+    update.paymentStatus="fully_paid";
+    update.submittedAmount=o.total;
+    update.remainingPayment=0;
+  }
+
   if(status==="shipped"){
     update.shippingStatus="shipped";
     update.trackingNumber=document.getElementById(`track-${orderId}`).value||"";
+    update.shippedAt=now;
   }
+
   if(status==="delivered"){
     update.deliveredAt=now;
   }
+
   if(status==="cancelled"){
     update.cancelledAt=now;
   }
 
   await updateDoc(ref,update);
 
-  await addDoc(collection(db,"users",userId,"notifications"),{
+  await pushNotification(userId,{
     title:"Order Update",
-    message:`Order ${orderNumber} is now ${status.replaceAll("_"," ")}`,
-    createdAt:now,
-    read:false
+    message:`Order ${orderNumber} is now ${status.replaceAll("_"," ")}`
   });
 
   loadOrders();
@@ -158,5 +208,6 @@ window.updateStatus=async(userId,orderId,orderNumber)=>{
 
 loadOrders();
 </script>
+
 </body>
 </html>
