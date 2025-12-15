@@ -2652,105 +2652,130 @@ function goBack() {
     }
 }
 // ============================================
-// NOTIFICATION REDIRECT HANDLING
+// NOTIFICATION REDIRECT HANDLING - CHECKOUT
 // ============================================
 
-document.addEventListener("DOMContentLoaded", async () => {
-  const params = new URLSearchParams(window.location.search);
-
-  const fromNotification = params.get("from_notification");
-  const orderId = params.get("order_id");           // Firestore document ID
-  const orderNumber = params.get("order_number");   // Invoice/Order number
-  const type = params.get("type");
-  const isWarning = params.get("warning") === "true";
-
-  if (fromNotification !== "true") return;
-
-  console.log("🔔 Notification redirect detected:", {
-    orderId,
-    orderNumber,
-    type,
-    isWarning
-  });
-
+async function handleNotificationRedirectInCheckout() {
   try {
-    // Check Firebase availability
-    if (!firebaseDB || !firebaseAuth) {
-      showError("System not available. Please refresh the page.");
+    // Get URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const fromNotification = urlParams.get('from_notification') === 'true';
+    const orderIdParam = urlParams.get('order_id');
+    const orderNumberParam = urlParams.get('order_number');
+    const notificationType = urlParams.get('type');
+    const isWarning = urlParams.get('warning') === 'true';
+    
+    if (!fromNotification) return;
+    
+    console.log("🔄 Handling notification redirect in checkout:", {
+      orderIdParam,
+      orderNumberParam,
+      notificationType,
+      isWarning
+    });
+    
+    // Get notification data from localStorage
+    const storedData = localStorage.getItem('irya_checkout_redirect_data');
+    const notificationData = storedData ? JSON.parse(storedData) : null;
+    
+    if (!notificationData) {
+      console.log("No checkout redirect data found");
       return;
     }
-
-    // Get current user
-    const user = firebaseAuth.currentUser;
-    if (!user) {
-      alert("Please login to view your order");
-      window.location.href = "login.html?redirect=" + encodeURIComponent(window.location.href);
+    
+    // Validate user
+    const currentUserId = await getUserId();
+    if (notificationData.userId && notificationData.userId !== currentUserId) {
+      console.log("User ID mismatch:", notificationData.userId, currentUserId);
+      showError("This notification is for a different user account");
       return;
     }
-
-    const userId = user.uid;
-    console.log("👤 User authenticated:", userId);
-
+    
+    // Extract order info
+    const targetOrderId = orderIdParam || notificationData.orderId;
+    const targetOrderNumber = orderNumberParam || notificationData.orderNumber;
+    const notificationTypeFromData = notificationType || notificationData.notificationType;
+    const isWarningFromData = isWarning || notificationData.isWarning;
+    
+    console.log("Extracted data:", {
+      targetOrderId,
+      targetOrderNumber,
+      notificationTypeFromData,
+      isWarningFromData
+    });
+    
     // Show warning message if applicable
-    if (type === "payment_remaining_warning" || isWarning) {
+    if (isWarningFromData || notificationTypeFromData === 'payment_remaining_warning') {
       showWarningMessage(
-        "Payment Required",
-        "Remaining payment must be cleared within 1 hour or order will be cancelled. Advance payment is non-refundable.",
-        "warning"
+        'Payment Required',
+        'Remaining payment must be cleared within 1 hour or order will be cancelled. Advance payment is non-refundable.',
+        'warning'
       );
     }
-
+    
+    // Try to fetch the order
     let orderData = null;
-
-    // Try fetching by order ID first
-    if (orderId) {
-      orderData = await fetchByOrderId(userId, orderId);
+    
+    if (targetOrderId) {
+      orderData = await fetchOrderById(currentUserId, targetOrderId);
     }
-
-    // If not found by ID, try by order number
-    if (!orderData && orderNumber) {
-      orderData = await fetchByOrderNumber(userId, orderNumber);
+    
+    if (!orderData && targetOrderNumber) {
+      orderData = await fetchOrderByNumber(currentUserId, targetOrderNumber);
     }
-
+    
     if (orderData) {
-      console.log("✅ Order loaded from notification:", orderData.orderNumber);
-      await populateCheckoutForm(orderData, type);
+      console.log("✅ Order loaded successfully from notification");
+      await populateCheckoutFormForNotification(orderData, notificationTypeFromData);
+      
+      // Clear notification data after successful load
+      localStorage.removeItem('irya_checkout_redirect_data');
+      localStorage.removeItem('irya_notification_redirect');
     } else {
-      showError("Order not found. Please contact support.");
-      setTimeout(() => {
-        window.location.href = "orders.html";
-      }, 3000);
+      console.error("❌ Failed to load order from notification");
+      showError("Failed to load order. Please check if this order belongs to you or contact support.");
     }
-
+    
   } catch (error) {
-    console.error("❌ Error processing notification:", error);
-    showError("Failed to load order. Please try again.");
+    console.error("❌ Error handling notification redirect in checkout:", error);
+    showError("Failed to process notification. Please try again.");
   }
-});
+}
 
-/* ===============================
-   FETCH ORDER USING DOCUMENT ID
-================================ */
-async function fetchByOrderId(userId, orderId) {
+async function fetchOrderById(userId, orderId) {
   try {
     console.log("🔍 Fetching order by ID:", orderId);
     
-    // First try user's orders collection
-    let orderRef = firebaseDB.collection('users').doc(userId).collection('orders').doc(orderId);
-    let orderDoc = await orderRef.get();
-    
-    if (!orderDoc.exists) {
-      // Try main orders collection
-      orderRef = firebaseDB.collection('orders').doc(orderId);
-      orderDoc = await orderRef.get();
+    // Try user's orders collection first
+    try {
+      const userOrderRef = doc(db, "users", userId, "orders", orderId);
+      const userOrderDoc = await getDoc(userOrderRef);
+      
+      if (userOrderDoc.exists()) {
+        return { id: userOrderDoc.id, ...userOrderDoc.data() };
+      }
+    } catch (error) {
+      console.log("Order not found in user collection, trying main collection");
     }
     
-    if (!orderDoc.exists) {
-      console.log("❌ Order not found by ID:", orderId);
-      return null;
+    // Try main orders collection
+    try {
+      const mainOrderRef = doc(db, "orders", orderId);
+      const mainOrderDoc = await getDoc(mainOrderRef);
+      
+      if (mainOrderDoc.exists()) {
+        const orderData = mainOrderDoc.data();
+        // Verify this order belongs to current user
+        if (orderData.userId === userId) {
+          return { id: mainOrderDoc.id, ...orderData };
+        }
+      }
+    } catch (error) {
+      console.log("Order not found in main collection");
     }
     
-    return { id: orderDoc.id, ...orderDoc.data() };
+    console.log("❌ Order not found by ID:", orderId);
+    return null;
     
   } catch (error) {
     console.error("❌ Error fetching by order ID:", error);
@@ -2758,30 +2783,45 @@ async function fetchByOrderId(userId, orderId) {
   }
 }
 
-/* ===============================
-   FETCH ORDER USING INVOICE NUMBER
-================================ */
-async function fetchByOrderNumber(userId, orderNumber) {
+async function fetchOrderByNumber(userId, orderNumber) {
   try {
     console.log("🔍 Fetching order by number:", orderNumber);
     
-    // Search in user's orders first
-    let ordersRef = firebaseDB.collection('users').doc(userId).collection('orders');
-    let snapshot = await ordersRef.where('orderNumber', '==', orderNumber).get();
-    
-    if (snapshot.empty) {
-      // Search in main orders collection
-      ordersRef = firebaseDB.collection('orders');
-      snapshot = await ordersRef.where('orderNumber', '==', orderNumber).get();
+    // Search in user's orders
+    try {
+      const userOrdersRef = collection(db, "users", userId, "orders");
+      const userQuery = query(userOrdersRef, where("orderNumber", "==", orderNumber));
+      const userSnapshot = await getDocs(userQuery);
+      
+      if (!userSnapshot.empty) {
+        const docSnap = userSnapshot.docs[0];
+        return { id: docSnap.id, ...docSnap.data() };
+      }
+    } catch (error) {
+      console.log("Order not found in user collection, trying main collection");
     }
     
-    if (snapshot.empty) {
-      console.log("❌ Order not found by number:", orderNumber);
-      return null;
+    // Search in main orders collection
+    try {
+      const mainOrdersRef = collection(db, "orders");
+      const mainQuery = query(mainOrdersRef, where("orderNumber", "==", orderNumber));
+      const mainSnapshot = await getDocs(mainQuery);
+      
+      if (!mainSnapshot.empty) {
+        for (const docSnap of mainSnapshot.docs) {
+          const orderData = docSnap.data();
+          // Verify this order belongs to current user
+          if (orderData.userId === userId) {
+            return { id: docSnap.id, ...orderData };
+          }
+        }
+      }
+    } catch (error) {
+      console.log("Order not found in main collection");
     }
     
-    const docSnap = snapshot.docs[0];
-    return { id: docSnap.id, ...docSnap.data() };
+    console.log("❌ Order not found by number:", orderNumber);
+    return null;
     
   } catch (error) {
     console.error("❌ Error fetching by order number:", error);
@@ -2789,12 +2829,9 @@ async function fetchByOrderNumber(userId, orderNumber) {
   }
 }
 
-/* ===============================
-   POPULATE CHECKOUT FORM
-================================ */
-async function populateCheckoutForm(orderData, notificationType = null) {
+async function populateCheckoutFormForNotification(orderData, notificationType) {
   try {
-    console.log("🔄 Populating checkout for order:", orderData.orderNumber);
+    console.log("🔄 Populating checkout for notification order:", orderData.orderNumber);
     
     // Update UI for existing order
     updateUIForExistingOrder();
@@ -2842,7 +2879,16 @@ async function populateCheckoutForm(orderData, notificationType = null) {
     // Configure UI for existing order payment
     configureUIForExistingOrder();
     
-    console.log("✅ Checkout form populated successfully");
+    // Update breadcrumb
+    const breadcrumbTitle = document.getElementById('breadcrumbTitle');
+    if (breadcrumbTitle) {
+      breadcrumbTitle.textContent = 'Pay Remaining Amount';
+    }
+    
+    // Update page title
+    document.title = `Pay Remaining - ${orderData.orderNumber} | IRYA STONE`;
+    
+    console.log("✅ Checkout form populated successfully from notification");
     
   } catch (error) {
     console.error("❌ Error populating checkout form:", error);
@@ -2850,9 +2896,6 @@ async function populateCheckoutForm(orderData, notificationType = null) {
   }
 }
 
-/* ===============================
-   HELPER FUNCTIONS
-================================ */
 function updateUIForExistingOrder() {
   document.title = 'Pay Remaining Amount | IRYA STONE';
   
@@ -2870,43 +2913,34 @@ function updateUIForExistingOrder() {
 }
 
 function configureUIForExistingOrder() {
-  // Disable payment type selection for existing orders
+  // Disable payment type selection
   document.querySelectorAll('.payment-option').forEach(opt => {
     opt.style.opacity = '0.5';
     opt.style.pointerEvents = 'none';
   });
   
-  // Hide shipping address form for existing orders
+  // Hide shipping address form
   const addressForm = document.getElementById('addressForm');
   if (addressForm) {
     addressForm.style.display = 'none';
   }
   
-  // Show order info message
+  // Show order info
   const savedAddressesDiv = document.getElementById('savedAddresses');
   if (savedAddressesDiv) {
+    const orderNumber = currentOrderData?.orderNumber || '';
+    const amountToPay = currentOrderData?.amountToPay || 0;
+    
     savedAddressesDiv.innerHTML = `
       <div style="background: #e8f4fd; padding: 15px; border-radius: 10px; border: 1px solid #b3d9ff; margin-bottom: 15px;">
         <h4 style="color: var(--primary-gold); margin-bottom: 10px;">
-          <i class="fas fa-info-circle"></i> Order Details
+          <i class="fas fa-info-circle"></i> Complete Your Payment
         </h4>
-        <p style="font-size: 14px; color: var(--text-dark);">
-          Order #${currentOrderData?.orderNumber || ''} • Shipping address on file • 
-          ${currentOrderData?.paymentStatus === 'pending_bank_transfer' ? 'Awaiting Bank Transfer' : 'Payment Required'}
+        <p style="font-size: 14px; color: var(--text-dark); margin-bottom: 8px;">
+          Order #${orderNumber} • Complete your remaining payment to continue processing
         </p>
-      </div>
-    `;
-  }
-  
-  // Update payment options display
-  const paymentOptions = document.querySelector('.payment-options');
-  if (paymentOptions) {
-    paymentOptions.innerHTML = `
-      <h4><i class="fas fa-money-bill-wave"></i> Payment Details</h4>
-      <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 10px;">
-        <p style="margin: 0; font-size: 14px; color: var(--text-dark);">
-          <i class="fas fa-info-circle" style="color: var(--primary-gold);"></i>
-          Remaining payment for Order #${currentOrderData?.orderNumber || ''}
+        <p style="font-size: 16px; font-weight: 600; color: var(--primary-gold);">
+          Amount to Pay: £${amountToPay.toFixed(2)}
         </p>
       </div>
     `;
@@ -2932,6 +2966,20 @@ function updatePaymentBreakdownForExistingOrder(totalAmount, paidAmount, remaini
   if (advanceLabel) advanceLabel.textContent = 'Amount Paid:';
   if (remainingLabel) remainingLabel.textContent = 'Remaining Amount:';
   if (payNowLabel) payNowLabel.textContent = 'Amount to Pay Now:';
+  
+  // Update payment options display
+  const paymentOptions = document.querySelector('.payment-options');
+  if (paymentOptions) {
+    paymentOptions.innerHTML = `
+      <h4><i class="fas fa-money-bill-wave"></i> Payment Details</h4>
+      <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 10px;">
+        <p style="margin: 0; font-size: 14px; color: var(--text-dark);">
+          <i class="fas fa-info-circle" style="color: var(--primary-gold);"></i>
+          Remaining payment for Order #${currentOrderData?.orderNumber || ''}
+        </p>
+      </div>
+    `;
+  }
 }
 
 function updateOrderSummaryForExistingOrder(totalAmount) {
@@ -2968,6 +3016,7 @@ function populateAddressForm(address) {
       field.value = fields[fieldId];
       field.disabled = true;
       field.style.backgroundColor = '#f5f5f5';
+      field.style.cursor = 'not-allowed';
     }
   });
   
@@ -2994,6 +3043,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     const fromNotification = urlParams.get('from_notification') === 'true';
     const orderNumber = urlParams.get('order_number');
     const orderIdParam = urlParams.get('order_id');
+    const notificationType = urlParams.get('type');
     const warning = urlParams.get('warning') === 'true';
     
     console.log("📋 URL Parameters:", {
@@ -3003,16 +3053,10 @@ document.addEventListener('DOMContentLoaded', async function() {
       fromNotification,
       orderNumber,
       orderIdParam,
+      notificationType,
       warning
     });
     
-    // If it's a notification redirect, let the notification handler take over
-    if (fromNotification) {
-      console.log("📨 Notification flow detected, skipping normal initialization");
-      return;
-    }
-    
-    // Normal checkout flow
     // Update UI for flow type
     updateUIForFlowType();
     
@@ -3020,6 +3064,18 @@ document.addEventListener('DOMContentLoaded', async function() {
     userId = await getUserId();
     console.log("👤 User ID:", userId);
     
+    // Check if redirected from notification
+    if (fromNotification) {
+      await handleNotificationRedirectInCheckout();
+      
+      // Only proceed with normal flow if notification handling didn't populate order
+      if (currentOrderData) {
+        console.log("📨 Notification flow completed, skipping normal initialization");
+        return;
+      }
+    }
+    
+    // Normal checkout flow
     // Load user addresses from Firebase
     await loadUserAddresses();
     
@@ -3053,7 +3109,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     showError("Failed to initialize checkout. Please refresh the page.");
   }
 });
-
 /* ===============================
    WARNING MESSAGE FUNCTION
 ================================ */
