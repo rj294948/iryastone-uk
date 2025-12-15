@@ -4,10 +4,8 @@
 <meta charset="UTF-8">
 <title>My Orders | IRYA STONE</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto+Slab:wght@400;500;600;700&display=swap" rel="stylesheet">
 
@@ -515,28 +513,6 @@ body {
     flex-wrap: wrap;
 }
 
-.filter-btn {
-    padding: 8px 16px;
-    border: 1px solid #e0e0e0;
-    border-radius: 20px;
-    background: var(--white);
-    color: var(--text-dark);
-    font-size: 14px;
-    cursor: pointer;
-    transition: var(--transition);
-    white-space: nowrap;
-}
-
-.filter-btn:hover {
-    background: var(--bg-light);
-}
-
-.filter-btn.active {
-    background: var(--primary-gold);
-    color: var(--white);
-    border-color: var(--primary-gold);
-}
-
 .search-box {
     flex: 1;
     min-width: 200px;
@@ -667,6 +643,21 @@ body {
     font-size: 14px;
     margin-bottom: 4px;
     color: var(--stone-dark);
+}
+
+.item-specs {
+    margin: 8px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.spec-badge {
+    font-size: 10px;
+    padding: 3px 6px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    color: var(--text-dark);
 }
 
 .item-meta {
@@ -907,6 +898,9 @@ body {
     font-weight: 600;
     margin-bottom: 4px;
     color: var(--stone-dark);
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .notification-message {
@@ -918,6 +912,9 @@ body {
 .notification-time {
     font-size: 11px;
     color: var(--text-light);
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 /* ===== LOADING STATE ===== */
@@ -1083,6 +1080,15 @@ body {
     .tracking-actions .btn {
         width: 100%;
     }
+    
+    .item-specs {
+        font-size: 9px;
+    }
+    
+    .spec-badge {
+        font-size: 9px;
+        padding: 2px 4px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -1102,11 +1108,6 @@ body {
         padding: 15px;
     }
     
-    .filter-btn {
-        padding: 6px 12px;
-        font-size: 12px;
-    }
-    
     .order-header {
         flex-direction: column;
         align-items: flex-start;
@@ -1116,6 +1117,74 @@ body {
         padding: 8px 12px;
         font-size: 13px;
     }
+    
+    .item-image {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .order-card {
+        margin: 0 -8px;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+}
+
+@media (max-width: 375px) {
+    .timeline-step {
+        padding-left: 50px;
+    }
+    
+    .timeline-icon {
+        left: 15px;
+        width: 32px;
+        height: 32px;
+    }
+    
+    .btn {
+        min-width: 100%;
+        margin-bottom: 8px;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --stone-dark: #f0f0f0;
+        --stone-light: #1a1a1a;
+        --bg-light: #121212;
+        --text-dark: #e0e0e0;
+        --text-light: #aaaaaa;
+        --white: #1e1e1e;
+    }
+    
+    .order-card {
+        background: #2d2d2d;
+        border-color: #404040;
+    }
+    
+    .item-specs .spec-badge {
+        background: #404040;
+        color: #e0e0e0;
+    }
+}
+
+/* Amazon/Flipkart like touch optimization */
+.action-btn {
+    touch-action: manipulation;
+}
+
+.nav-btn {
+    touch-action: manipulation;
+}
+
+.btn {
+    touch-action: manipulation;
+}
+
+.order-card {
+    -webkit-tap-highlight-color: transparent;
 }
 </style>
 </head>
@@ -1194,20 +1263,10 @@ body {
     <p>Track and manage all your orders</p>
   </div>
   
-  <!-- Orders Filter -->
+  <!-- Orders Filter - Only Search Bar -->
   <div class="orders-filter">
-    <button class="filter-btn active" onclick="filterOrders('all')">All Orders</button>
-    <button class="filter-btn" onclick="filterOrders('payment_pending')">Payment Pending</button>
-    <button class="filter-btn" onclick="filterOrders('advance_paid')">Advance Payment</button>
-    <button class="filter-btn" onclick="filterOrders('fully_paid')">Full Payment</button>
-    <button class="filter-btn" onclick="filterOrders('processing')">Processing</button>
-    <button class="filter-btn" onclick="filterOrders('ready_to_ship')">Ready to Ship</button>
-    <button class="filter-btn" onclick="filterOrders('shipped')">Shipped</button>
-    <button class="filter-btn" onclick="filterOrders('delivered')">Delivered</button>
-    <button class="filter-btn" onclick="filterOrders('cancelled')">Cancelled</button>
-    
-    <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Search by order number..." onkeyup="searchOrders()">
+    <div class="search-box" style="flex: 1;">
+      <input type="text" id="searchInput" placeholder="Search by order number, product name..." onkeyup="searchOrders()">
       <i class="fas fa-search"></i>
     </div>
   </div>
@@ -1280,7 +1339,6 @@ const db = getFirestore(app);
 let lastScrollTop = 0;
 const header = document.getElementById('mainHeader');
 const bottomNav = document.getElementById('bottomNav');
-const breadcrumb = document.querySelector('.breadcrumb');
 const SCROLL_THRESHOLD = 50;
 
 function handleScroll() {
@@ -1326,20 +1384,21 @@ async function getUserId() {
 }
 
 // ============================================
-// ORDERS MANAGEMENT - REAL-TIME
+// GLOBAL VARIABLES
 // ============================================
 
 let userId = null;
 let orders = [];
 let notifications = [];
-let currentFilter = 'all';
 let ordersUnsubscribe = null;
 let notificationsUnsubscribe = null;
 
+// ============================================
+// ORDERS MANAGEMENT - REAL-TIME
+// ============================================
+
 async function loadOrders() {
   try {
-    const ordersDiv = document.getElementById("orders");
-    
     userId = await getUserId();
     console.log("📱 Loading orders for user:", userId);
     
@@ -1358,91 +1417,136 @@ async function setupOrdersListener() {
   
   if (ordersUnsubscribe) ordersUnsubscribe();
   
-  let ordersQuery;
+  // Show loading state
+  ordersDiv.innerHTML = `
+    <div class="loading">
+      <div class="loading-spinner"></div>
+      <p>Loading your orders...</p>
+    </div>
+  `;
   
   try {
-    const userOrdersRef = collection(db, "users", userId, "orders");
-    ordersQuery = query(userOrdersRef, orderBy("createdAt", "desc"));
-  } catch (error) {
-    const ordersRef = collection(db, "orders");
-    ordersQuery = query(
-      ordersRef, 
-      where("userId", "==", userId),
-      orderBy("createdAt", "desc")
-    );
-  }
-  
-  ordersUnsubscribe = onSnapshot(ordersQuery, 
-    async (snapshot) => {
-      orders = [];
-      
-      if (snapshot.empty) {
-        showEmptyState("You haven't placed any orders yet.");
-        return;
-      }
-      
-      for (const docSnapshot of snapshot.docs) {
-        const orderData = docSnapshot.data();
-        orderData.id = docSnapshot.id;
+    let ordersQuery;
+    
+    // Try user-specific orders collection first
+    try {
+      const userOrdersRef = collection(db, "users", userId, "orders");
+      ordersQuery = query(userOrdersRef, orderBy("createdAt", "desc"));
+    } catch (error) {
+      // Fallback to main orders collection
+      const ordersRef = collection(db, "orders");
+      ordersQuery = query(
+        ordersRef, 
+        where("userId", "==", userId),
+        orderBy("createdAt", "desc")
+      );
+    }
+    
+    ordersUnsubscribe = onSnapshot(ordersQuery, 
+      async (snapshot) => {
+        orders = [];
         
-        // Fetch product images from products collection
-        if (orderData.items && Array.isArray(orderData.items)) {
-          for (const item of orderData.items) {
-            await fetchProductImage(item);
-          }
+        if (snapshot.empty) {
+          showEmptyState("You haven't placed any orders yet.");
+          return;
         }
         
-        orders.push(orderData);
+        const imagePromises = [];
+        
+        for (const docSnapshot of snapshot.docs) {
+          const orderData = docSnapshot.data();
+          orderData.id = docSnapshot.id;
+          
+          // Fetch product images for each item
+          if (orderData.items && Array.isArray(orderData.items)) {
+            for (const item of orderData.items) {
+              imagePromises.push(fetchProductImage(item));
+            }
+          }
+          
+          orders.push(orderData);
+        }
+        
+        // Wait for all images to load
+        await Promise.all(imagePromises);
+        
+        console.log(`✅ Loaded ${orders.length} orders`);
+        displayOrders(orders);
+        
+      }, 
+      (error) => {
+        console.error("❌ Error in orders listener:", error);
+        ordersDiv.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>Connection Error</h3>
+            <p>Please check your internet connection</p>
+            <button class="btn btn-primary" onclick="loadOrders()" style="margin-top: 20px;">
+              <i class="fas fa-redo"></i> Retry
+            </button>
+          </div>
+        `;
       }
-      
-      console.log(`✅ Loaded ${orders.length} orders`);
-      displayOrders(orders);
-      
-    }, 
-    (error) => {
-      console.error("❌ Error in orders listener:", error);
-      ordersDiv.innerHTML = `
-        <div class="empty-state">
-          <i class="fas fa-exclamation-triangle"></i>
-          <h3>Connection Error</h3>
-          <p>Please check your internet connection</p>
-          <button class="btn btn-primary" onclick="loadOrders()" style="margin-top: 20px;">
-            <i class="fas fa-redo"></i> Retry
-          </button>
-        </div>
-      `;
-    }
-  );
+    );
+    
+  } catch (error) {
+    console.error("❌ Setup error:", error);
+    showEmptyState("Failed to setup orders. Please refresh.");
+  }
 }
 
 async function fetchProductImage(item) {
-  if (!item.imageId && !item.productId) return;
+  if (!item.productId && !item.id) return;
   
-  const imageId = item.imageId || item.productId;
+  const productId = item.productId || item.id;
   
   try {
-    // Try products collection first
-    const productDoc = await getDoc(doc(db, "products", imageId));
+    // Fetch from products collection
+    const productDoc = await getDoc(doc(db, "products", productId));
+    
     if (productDoc.exists()) {
       const productData = productDoc.data();
-      item.image = productData.imageUrl || productData.images?.[0] || productData.image;
-      item.name = item.name || productData.name || productData.title;
-      item.category = item.category || productData.category;
-    } else {
-      // Try stone collection
-      const stoneDoc = await getDoc(doc(db, "stone", imageId));
-      if (stoneDoc.exists()) {
-        const stoneData = stoneDoc.data();
-        item.image = stoneData.imageUrl || stoneData.image;
-        item.name = item.name || stoneData.name || stoneData.stoneName;
-        item.category = item.category || stoneData.category;
+      
+      // Extract image URL
+      if (productData.images && productData.images.length > 0) {
+        // Take first image from array
+        if (typeof productData.images[0] === 'string') {
+          item.image = productData.images[0];
+        } else if (productData.images[0].url) {
+          item.image = productData.images[0].url;
+        } else if (productData.images[0].imageUrl) {
+          item.image = productData.images[0].imageUrl;
+        }
+      } else if (productData.imageUrl) {
+        item.image = productData.imageUrl;
+      } else if (productData.image) {
+        item.image = productData.image;
+      }
+      
+      // Set product details
+      item.name = item.name || productData.name || productData.title || "Stone Product";
+      item.category = item.category || productData.category || "Stone";
+      item.specifications = productData.specifications || {};
+    }
+    
+    // If still no image, try stone collection
+    if (!item.image) {
+      try {
+        const stoneDoc = await getDoc(doc(db, "stone", productId));
+        if (stoneDoc.exists()) {
+          const stoneData = stoneDoc.data();
+          item.image = stoneData.imageUrl || stoneData.image;
+        }
+      } catch (stoneError) {
+        console.log("Stone collection में image नहीं मिली");
       }
     }
+    
   } catch (error) {
-    console.warn("⚠️ Could not fetch image for item:", imageId);
+    console.warn("⚠️ Product image fetch error:", error);
   }
   
-  // Set default image if no image found
+  // Set default image
   if (!item.image) {
     item.image = getDefaultImage(item.category);
   }
@@ -1472,33 +1576,9 @@ function displayOrders(ordersList) {
     return;
   }
   
-  let filteredOrders = ordersList;
-  if (currentFilter !== 'all') {
-    filteredOrders = ordersList.filter(order => {
-      const paymentStatus = order.paymentStatus || '';
-      const orderStatus = order.status || order.orderStatus || 'payment_pending';
-      
-      if (currentFilter === 'payment_pending') {
-        return paymentStatus !== 'fully_paid' && paymentStatus !== 'advance_paid';
-      } else if (currentFilter === 'advance_paid') {
-        return paymentStatus === 'advance_paid';
-      } else if (currentFilter === 'fully_paid') {
-        return paymentStatus === 'fully_paid';
-      } else {
-        return orderStatus === currentFilter;
-      }
-    });
-  }
-  
-  if (filteredOrders.length === 0) {
-    const filterName = currentFilter.replace(/_/g, ' ');
-    showEmptyState(`No ${filterName} orders found.`);
-    return;
-  }
-  
   let ordersHTML = '';
   
-  filteredOrders.forEach((order) => {
+  ordersList.forEach((order) => {
     const orderDate = formatDate(order.createdAt);
     const paymentStatus = order.paymentStatus || '';
     const orderStatus = order.status || order.orderStatus || 'payment_pending';
@@ -1518,16 +1598,6 @@ function displayOrders(ordersList) {
     } else if (paymentStatus === 'advance_paid' || paidAmount > 0) {
       paymentBadgeClass = 'advance';
       paymentBadgeText = 'Advance';
-    }
-    
-    let itemName = 'Multiple Items';
-    let itemImage = getDefaultImage();
-    let itemCount = order.items ? order.items.length : 1;
-    
-    if (order.items && order.items.length > 0) {
-      const firstItem = order.items[0];
-      itemName = firstItem.name || firstItem.stoneName || firstItem.productName || 'Product';
-      if (firstItem.image) itemImage = firstItem.image;
     }
     
     const isCancelled = orderStatus === 'cancelled' || orderStatus === 'returned';
@@ -1553,22 +1623,35 @@ function displayOrders(ordersList) {
         </div>
         
         <div class="order-body">
-          <div class="order-item">
-            <div class="item-image">
-              <img src="${itemImage}" alt="${itemName}" 
-                   onerror="this.src='${getDefaultImage()}'">
-            </div>
-            <div class="item-details">
-              <div class="item-name">${itemName}</div>
-              <div class="item-meta">
-                ${itemCount} item${itemCount !== 1 ? 's' : ''} 
-                • ${order.paymentMethod === 'bank' ? 'Bank Transfer' : 
-                    order.paymentMethod === 'stripe' ? 'Card Payment' : 
-                    order.paymentMethod === 'paypal' ? 'PayPal' : 'Payment'}
+          ${order.items && order.items.map(item => `
+            <div class="order-item">
+              <div class="item-image">
+                <img src="${item.image || getDefaultImage()}" 
+                     alt="${item.name || 'Product'}" 
+                     loading="lazy"
+                     onerror="this.src='${getDefaultImage()}'">
               </div>
-              <div class="item-price">£${totalAmount.toFixed(2)}</div>
+              <div class="item-details">
+                <div class="item-name">${item.name || 'Product'}</div>
+                
+                ${item.specifications ? `
+                  <div class="item-specs">
+                    ${Object.entries(item.specifications).slice(0, 3).map(([key, value]) => `
+                      <span class="spec-badge">${key}: ${value}</span>
+                    `).join('')}
+                    ${Object.keys(item.specifications).length > 3 ? 
+                      `<span class="spec-badge">+${Object.keys(item.specifications).length - 3} more</span>` : ''}
+                  </div>
+                ` : ''}
+                
+                <div class="item-meta">
+                  Quantity: ${item.quantity || 1} • 
+                  Price: £${item.price?.toFixed(2) || '0.00'}
+                </div>
+                <div class="item-price">Total: £${item.totalPrice?.toFixed(2) || item.calculatedPrice?.toFixed(2) || '0.00'}</div>
+              </div>
             </div>
-          </div>
+          `).join('')}
           
           <div class="order-summary">
             <div class="summary-item">
@@ -1659,7 +1742,12 @@ function displayOrders(ordersList) {
           <button class="btn btn-success" onclick="downloadInvoice('${order.id}')">
             <i class="fas fa-file-invoice"></i> Invoice
           </button>
-          ${!isCancelled && orderStatus !== 'delivered' && orderStatus !== 'returned' ? `
+          ${!isCancelled && orderStatus !== 'delivered' && orderStatus !== 'returned' && remainingAmount > 0 ? `
+          <button class="btn btn-danger" onclick="payRemainingAmount('${order.id}')">
+            <i class="fas fa-money-bill-wave"></i> Pay Remaining
+          </button>
+          ` : ''}
+          ${!isCancelled && orderStatus !== 'delivered' && orderStatus !== 'returned' && remainingAmount <= 0 ? `
           <button class="btn btn-danger" onclick="cancelOrder('${order.id}')">
             <i class="fas fa-times"></i> Cancel
           </button>
@@ -1939,7 +2027,51 @@ function trackOnWebsite(trackingNumber) {
 }
 
 // ============================================
-// ORDER DETAILS MODAL
+// PAY REMAINING AMOUNT
+// ============================================
+
+function payRemainingAmount(orderId) {
+  try {
+    const order = orders.find(o => o.id === orderId);
+    if (!order) {
+      showMessage("Order not found");
+      return;
+    }
+    
+    const paidAmount = order.submittedAmount || order.advancePayment || 0;
+    const totalAmount = order.total || 0;
+    const remainingAmount = order.remainingPayment || (totalAmount - paidAmount);
+    
+    if (remainingAmount <= 0) {
+      showMessage("No remaining amount to pay");
+      return;
+    }
+    
+    // Prepare data for checkout page
+    const checkoutData = {
+      orderId: order.id,
+      orderNumber: order.orderNumber,
+      remainingAmount: remainingAmount,
+      totalAmount: totalAmount,
+      paidAmount: paidAmount,
+      orderType: 'existing_order',
+      items: order.items || []
+    };
+    
+    // Save to localStorage
+    localStorage.setItem('irya_pending_payment_order', JSON.stringify(checkoutData));
+    
+    // Redirect to checkout page
+    window.location.href = `checkout.html?order=${order.id}&type=remaining_payment`;
+    
+  } catch (error) {
+    console.error("❌ Error in pay remaining amount:", error);
+    showMessage("Failed to proceed to payment");
+  }
+}
+
+// ============================================
+// ORDER DETAILS
 // ============================================
 
 async function showOrderDetails(orderId) {
@@ -1965,7 +2097,7 @@ async function showOrderDetails(orderId) {
       </div>
     `;
     
-    // Open in new tab for better mobile experience
+    // Open in new tab
     const win = window.open("", "_blank");
     win.document.write(`
       <!DOCTYPE html>
@@ -1986,14 +2118,6 @@ async function showOrderDetails(orderId) {
       </head>
       <body>
         ${modalHTML}
-        <script>
-          window.onload = function() {
-            if(window.location.href.includes('print=true')) {
-              window.print();
-              setTimeout(() => window.close(), 1000);
-            }
-          }
-        <\/script>
       </body>
       </html>
     `);
@@ -2105,6 +2229,15 @@ function createOrderDetailsHTML(order) {
             </div>
             <div style="flex: 1;">
               <div style="font-weight: 600; margin-bottom: 5px;">${item.name || item.stoneName || item.productName || 'Product'}</div>
+              ${item.specifications ? `
+                <div style="font-size: 11px; color: #666; margin-bottom: 5px;">
+                  ${Object.entries(item.specifications).slice(0, 2).map(([key, value]) => `
+                    <span style="background: #f0f0f0; padding: 2px 6px; border-radius: 4px; margin-right: 4px; display: inline-block;">
+                      ${key}: ${value}
+                    </span>
+                  `).join('')}
+                </div>
+              ` : ''}
               <div style="font-size: 12px; color: var(--text-light); margin-bottom: 5px;">
                 Quantity: ${item.quantity || 1} • Price: £${(item.price || 0).toFixed(2)}
               </div>
@@ -2165,7 +2298,6 @@ async function cancelOrder(orderId) {
       return;
     }
     
-    // In real implementation, you would update Firestore here
     showMessage('Order cancellation request submitted. Our team will contact you shortly.');
     
   } catch (error) {
@@ -2233,22 +2365,57 @@ async function loadNotifications() {
 function createNotificationElement(note) {
   const div = document.createElement('div');
   div.className = `notification-item ${note.read ? '' : 'unread'}`;
-  div.onclick = () => viewNotification(note.id, note.orderId);
+  div.onclick = () => handleNotificationClick(note.id, note.orderId, note.type);
   
   const timeAgo = getTimeAgo(note.createdAt);
   
+  // Notification type based icon and color
+  let icon = 'fa-bell';
+  let color = '#c9a227';
+  let actionText = '';
+  
+  if (note.type === 'payment_remaining') {
+    icon = 'fa-money-bill-wave';
+    color = '#ff6b6b';
+    actionText = '<span style="color: var(--payment-pending); margin-left: 10px;"><i class="fas fa-exclamation-circle"></i> Pay Now</span>';
+  } else if (note.type === 'payment_confirmed') {
+    icon = 'fa-check-circle';
+    color = '#51cf66';
+    actionText = '<span style="color: var(--payment-full); margin-left: 10px;"><i class="fas fa-eye"></i> View Status</span>';
+  } else if (note.type === 'order_shipped') {
+    icon = 'fa-shipping-fast';
+    color = '#339af0';
+    actionText = '<span style="color: var(--processing); margin-left: 10px;"><i class="fas fa-truck"></i> Track Order</span>';
+  } else if (note.type === 'order_delivered') {
+    icon = 'fa-check-double';
+    color = '#40c057';
+    actionText = '<span style="color: var(--delivered); margin-left: 10px;"><i class="fas fa-box-open"></i> View Details</span>';
+  } else if (note.type === 'order_cancelled') {
+    icon = 'fa-times-circle';
+    color = '#fa5252';
+  }
+  
   div.innerHTML = `
-    <div class="notification-title">${note.title || 'Notification'}</div>
+    <div class="notification-title">
+      <i class="fas ${icon}" style="color: ${color}; margin-right: 8px;"></i>
+      ${note.title || 'Notification'}
+    </div>
     <div class="notification-message">${note.message || ''}</div>
-    <div class="notification-time">${timeAgo}</div>
+    <div class="notification-time">
+      <i class="far fa-clock"></i> ${timeAgo}
+      ${actionText}
+    </div>
   `;
   
   return div;
 }
 
-async function viewNotification(notificationId, orderId) {
+async function handleNotificationClick(notificationId, orderId, notificationType) {
   try {
-    if (db && userId) {
+    if (!userId) return;
+    
+    // Mark as read
+    if (db) {
       const notificationRef = doc(db, "users", userId, "notifications", notificationId);
       await updateDoc(notificationRef, {
         read: true,
@@ -2256,17 +2423,29 @@ async function viewNotification(notificationId, orderId) {
       });
     }
     
-    if (orderId) {
-      closeNotifications();
-      setTimeout(() => {
-        showTrackingModal(orderId);
-      }, 300);
+    // Close notification dropdown
+    closeNotifications();
+    
+    // Handle based on notification type
+    if (notificationType === 'payment_remaining') {
+      // Redirect to checkout for remaining payment
+      payRemainingAmount(orderId);
+    } else if (notificationType === 'payment_confirmed' || 
+               notificationType === 'order_shipped' || 
+               notificationType === 'order_delivered') {
+      // Open tracking modal
+      showTrackingModal(orderId);
+    } else if (notificationType === 'order_cancelled' || 
+               notificationType === 'order_returned') {
+      // Show order details
+      showOrderDetails(orderId);
     } else {
-      closeNotifications();
+      // Default: show tracking
+      showTrackingModal(orderId);
     }
     
   } catch (error) {
-    console.error("❌ Error viewing notification:", error);
+    console.error("❌ Error handling notification click:", error);
     closeNotifications();
   }
 }
@@ -2335,19 +2514,8 @@ function updateCartBadge() {
 }
 
 // ============================================
-// HELPER FUNCTIONS
+// SEARCH FUNCTIONALITY
 // ============================================
-
-function filterOrders(status) {
-  currentFilter = status;
-  
-  document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.classList.remove('active');
-  });
-  event.currentTarget.classList.add('active');
-  
-  displayOrders(orders);
-}
 
 function searchOrders() {
   const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
@@ -2358,18 +2526,39 @@ function searchOrders() {
   }
   
   const filteredOrders = orders.filter(order => {
-    return (
-      (order.orderNumber && order.orderNumber.toLowerCase().includes(searchTerm)) ||
-      (order.items && order.items.some(item => 
-        (item.name && item.name.toLowerCase().includes(searchTerm)) ||
-        (item.stoneName && item.stoneName.toLowerCase().includes(searchTerm)) ||
-        (item.productName && item.productName.toLowerCase().includes(searchTerm))
-      ))
-    );
+    // Search by order number
+    if (order.orderNumber && order.orderNumber.toLowerCase().includes(searchTerm)) {
+      return true;
+    }
+    
+    // Search by product names in items
+    if (order.items && order.items.some(item => {
+      const itemName = (item.name || item.stoneName || item.productName || '').toLowerCase();
+      return itemName.includes(searchTerm);
+    })) {
+      return true;
+    }
+    
+    // Search by status
+    const statusText = getStatusText(order.status || order.orderStatus).toLowerCase();
+    if (statusText.includes(searchTerm)) {
+      return true;
+    }
+    
+    // Search by order ID
+    if (order.id.toLowerCase().includes(searchTerm)) {
+      return true;
+    }
+    
+    return false;
   });
   
   displayOrders(filteredOrders);
 }
+
+// ============================================
+// HELPER FUNCTIONS
+// ============================================
 
 function getStatusClass(status) {
   if (!status) return 'status-payment-pending';
@@ -2612,9 +2801,6 @@ async function downloadInvoice(orderId) {
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
           }
-          .invoice-details div {
-            margin-bottom: 10px;
-          }
           .address-section {
             background: #f8f9fa;
             padding: 15px;
@@ -2841,6 +3027,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     await loadOrders();
     
+    // Auto-refresh every 2 minutes
     setInterval(() => {
       console.log("🔄 Auto-refreshing orders...");
       loadOrders();
@@ -2857,7 +3044,6 @@ window.addEventListener('beforeunload', () => {
 });
 
 // Make functions available globally
-window.filterOrders = filterOrders;
 window.searchOrders = searchOrders;
 window.showTrackingModal = showTrackingModal;
 window.closeTrackingModal = closeTrackingModal;
@@ -2868,6 +3054,7 @@ window.trackOnWebsite = trackOnWebsite;
 window.toggleNotifications = toggleNotifications;
 window.markAllAsRead = markAllAsRead;
 window.cancelOrder = cancelOrder;
+window.payRemainingAmount = payRemainingAmount;
 </script>
 
 </body>
