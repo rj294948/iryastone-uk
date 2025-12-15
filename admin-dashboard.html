@@ -4,32 +4,20 @@
 <meta charset="UTF-8">
 <title>IRYA STONE – Admin Orders</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
-<style>
-body{font-family:Segoe UI;background:#f4f6f8;margin:0;padding:15px}
-.order{background:#fff;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 6px 16px rgba(0,0,0,.08)}
-.flex{display:flex;gap:12px;align-items:center}
-.product-img{width:70px;height:70px;border-radius:8px;object-fit:cover}
-.badge{padding:4px 10px;border-radius:8px;font-size:12px;margin-right:6px}
-.paid{background:#28a745;color:#fff}
-.advance{background:#ffc107}
-.processing{background:#6f42c1;color:#fff}
-.shipped{background:#17a2b8;color:#fff}
-.out{background:#fd7e14;color:#fff}
-.delivered{background:#007bff;color:#fff}
-.cancelled{background:#dc3545;color:#fff}
-select,input,button{padding:7px;margin-top:6px;width:100%}
-button{cursor:pointer;background:#000;color:#fff;border:none;border-radius:8px}
-hr{border:none;border-top:1px solid #ddd;margin:10px 0}
-.timeline{font-size:12px;color:#555;margin-top:8px}
-.addr{background:#f8f9fa;border-radius:8px;padding:10px;font-size:13px}
-</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
 
-<h2>Admin Orders Panel</h2>
-<div id="orders"></div>
+<h2>✅ Fully Paid Orders</h2>
+<p id="paidSummary"></p>
+<div id="paidOrders"></div>
+
+<hr>
+
+<h2>⏳ Advance / Pending Payment Orders</h2>
+<p id="pendingSummary"></p>
+<div id="pendingOrders"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
@@ -45,17 +33,19 @@ const app = initializeApp({
   projectId: "iryastone-uk"
 });
 const db = getFirestore(app);
-const box = document.getElementById("orders");
 
+const paidBox = document.getElementById("paidOrders");
+const pendingBox = document.getElementById("pendingOrders");
+
+/* ---------- UTIL ---------- */
 const nowISO = ()=> new Date().toISOString();
-const hoursBetween = (a,b)=> (new Date(b)-new Date(a))/36e5;
 
 /* ---------- NOTIFICATION (MAX 10) ---------- */
 async function notify(userId,title,msg){
-  const col = collection(db,"users",userId,"notifications");
-  await addDoc(col,{ title, message:msg, createdAt:nowISO(), read:false });
+  const ref = collection(db,"users",userId,"notifications");
+  await addDoc(ref,{ title, message:msg, createdAt:nowISO(), read:false });
 
-  const q = query(col, orderBy("createdAt","desc"));
+  const q = query(ref, orderBy("createdAt","desc"));
   const snap = await getDocs(q);
   let i=0;
   for(const d of snap.docs){
@@ -64,123 +54,125 @@ async function notify(userId,title,msg){
   }
 }
 
+/* ---------- BUILD ORDER HTML ---------- */
+function buildOrderHTML(o){
+return `
+<div style="border:1px solid #ccc;padding:15px;margin-bottom:15px">
+<b>Order:</b> ${o.orderNumber}<br>
+<b>Status:</b> ${o.status}<br>
+<b>Payment:</b> ${o.paymentStatus}<br>
+<b>Total:</b> £${o.total} |
+<b>Paid:</b> £${o.submittedAmount||0} |
+<b>Remaining:</b> £${o.remainingPayment||0}<br>
+
+<b>Tracking:</b> ${o.trackingNumber||"-"}<br><br>
+
+<b>Shipping Address</b><br>
+${o.shippingAddress?.fullName||""}<br>
+${o.shippingAddress?.address1||""}, ${o.shippingAddress?.city||""}<br>
+${o.shippingAddress?.state||""} ${o.shippingAddress?.postalCode||""}<br>
+${o.shippingAddress?.country||""}<br><br>
+
+<select id="pay-${o._id}">
+<option value="">Payment Type</option>
+<option value="advance">Advance</option>
+<option value="full">Full</option>
+</select>
+
+<input id="paid-${o._id}" placeholder="Paid Amount">
+<input id="txn-${o._id}" placeholder="Reference Number">
+
+<button onclick="updatePayment('${o.userId}','${o._id}','${o.orderNumber}',${o.total})">
+Confirm Payment
+</button>
+
+<hr>
+
+<select id="status-${o._id}">
+<option value="">Select Status</option>
+<option value="processing">Processing</option>
+<option value="ready_to_ship">Ready to Ship</option>
+<option value="shipped">Shipped</option>
+<option value="out_for_delivery">Out for Delivery</option>
+<option value="delivered">Delivered</option>
+<option value="cancelled">Cancelled</option>
+</select>
+
+<input id="track-${o._id}" placeholder="Tracking Number">
+
+<button onclick="updateStatus('${o.userId}','${o._id}','${o.orderNumber}')">
+Update Status
+</button>
+</div>`;
+}
+
 /* ---------- LOAD ORDERS ---------- */
 async function loadOrders(){
-  box.innerHTML="";
-  const snap = await getDocs(collectionGroup(db,"orders"));
-  let orders=[];
-  snap.forEach(d=>{ let o=d.data(); o._id=d.id; orders.push(o); });
-  orders.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+paidBox.innerHTML=""; pendingBox.innerHTML="";
+let pT=0,pR=0,pC=0;
+let nT=0,nR=0,nRem=0,nC=0;
 
-  for(const o of orders){
-    if(!o.items?.length) continue;
+const snap = await getDocs(collectionGroup(db,"orders"));
+for(const d of snap.docs){
+  const o=d.data(); o._id=d.id;
 
-    if(o.paymentStatus!=="fully_paid" && o.createdAt){
-      if(hoursBetween(o.createdAt,nowISO())>=24 && o.status!=="cancelled"){
-        await updateDoc(doc(db,"users",o.userId,"orders",o._id),{
-          status:"cancelled", cancelledAt:nowISO()
-        });
-        await notify(o.userId,"Order Cancelled",
-          `Order ${o.orderNumber} cancelled due to pending payment.`);
-        continue;
-      }
-    }
-
-    let badge =
-      o.status==="cancelled"?"cancelled":
-      o.status==="delivered"?"delivered":
-      o.status==="out_for_delivery"?"out":
-      o.status==="shipped"?"shipped":
-      o.status==="processing"?"processing":
-      o.paymentStatus==="fully_paid"?"paid":"advance";
-
-    let products="";
-    for(const it of o.items){
-      products+=`
-      <div class="flex">
-        <div>
-          <b>${it.name}</b><br>
-          Qty ${it.quantity} | £${it.totalPrice}
-        </div>
-      </div>`;
-    }
-
-    const bill=o.billingAddress||{};
-    const ship=o.shippingAddress||{};
-
-    box.innerHTML+=`
-    <div class="order">
-      <b>${o.orderNumber}</b>
-      <span class="badge ${badge}">${o.status}</span>
-
-      <p>${o.userName} – ${o.userEmail}</p>
-      <p>Total £${o.total} | Paid £${o.submittedAmount||0} | Remaining £${o.remainingPayment||0}</p>
-
-      ${products}
-
-      <hr>
-      <b>Billing Address</b>
-      <div class="addr">
-        ${bill.fullName||""}<br>
-        ${bill.address1||""} ${bill.address2||""}<br>
-        ${bill.city||""}, ${bill.state||""} ${bill.postalCode||""}<br>
-        ${bill.country||""}<br>
-        📞 ${bill.phone||""}
-      </div>
-
-      <hr>
-      <b>Shipping Address</b>
-      <div class="addr">
-        ${ship.fullName||""}<br>
-        ${ship.address1||""} ${ship.address2||""}<br>
-        ${ship.city||""}, ${ship.state||""} ${ship.postalCode||""}<br>
-        ${ship.country||""}<br>
-        📞 ${ship.phone||""}
-      </div>
-
-      <hr>
-      <b>Order Status</b>
-      <select id="status-${o._id}">
-        <option value="">Select Status</option>
-        <option value="processing">Processing</option>
-        <option value="ready_to_ship">Ready to Ship</option>
-        <option value="shipped">Shipped</option>
-        <option value="out_for_delivery">Out for Delivery</option>
-        <option value="delivered">Delivered</option>
-        <option value="cancelled">Cancelled</option>
-      </select>
-
-      <input id="track-${o._id}" placeholder="Tracking Number">
-      <button onclick="updateStatus('${o.userId}','${o._id}','${o.orderNumber}')">
-        Update Order
-      </button>
-
-      <div class="timeline">
-        ${(o.statusHistory||[]).map(h=>`• ${h.status} – ${h.at}`).join("<br>")}
-      </div>
-    </div>`;
+  if(o.paymentStatus==="fully_paid"){
+    pC++; pT+=o.total||0; pR+=o.submittedAmount||0;
+    paidBox.innerHTML+=buildOrderHTML(o);
+  }else{
+    nC++; nT+=o.total||0; nR+=o.submittedAmount||0; nRem+=o.remainingPayment||0;
+    pendingBox.innerHTML+=buildOrderHTML(o);
   }
 }
 
-/* ---------- STATUS ---------- */
+paidSummary.innerHTML=`Orders ${pC} | Total £${pT} | Received £${pR}`;
+pendingSummary.innerHTML=`Orders ${nC} | Total £${nT} | Paid £${nR} | Remaining £${nRem}`;
+}
+
+/* ---------- PAYMENT UPDATE ---------- */
+window.updatePayment = async (userId,id,ord,total)=>{
+const type=document.getElementById(`pay-${id}`).value;
+const paid=Number(document.getElementById(`paid-${id}`).value);
+const ref=document.getElementById(`txn-${id}`).value||"";
+
+if(!type||!paid) return alert("Enter payment");
+
+let remaining=Math.max(total-paid,0);
+await updateDoc(doc(db,"users",userId,"orders",id),{
+paymentStatus:type==="full"?"fully_paid":"advance_paid",
+submittedAmount:paid,
+remainingPayment:remaining,
+transactionReference:ref,
+updatedAt:nowISO()
+});
+
+await notify(userId,"Payment Confirmed",
+type==="full"
+?`Full payment £${paid} confirmed.\nRef: ${ref}`
+:`Advance £${paid} received.\nRemaining £${remaining}\nRef: ${ref}`);
+
+loadOrders();
+};
+
+/* ---------- STATUS UPDATE (TRACKING EVERY STATUS) ---------- */
 window.updateStatus = async (userId,id,ord)=>{
-  const st=document.getElementById(`status-${id}`).value;
-  const track=document.getElementById(`track-${id}`).value||"";
-  if(!st) return alert("Select status");
+const st=document.getElementById(`status-${id}`).value;
+const tr=document.getElementById(`track-${id}`).value||"";
+if(!st) return;
 
-  const ref=doc(db,"users",userId,"orders",id);
-  const snap=await getDoc(ref);
-  const data=snap.data();
+const ref=doc(db,"users",userId,"orders",id);
+const snap=await getDoc(ref);
+const o=snap.data();
 
-  await updateDoc(ref,{
-    status:st,
-    trackingNumber:track,
-    updatedAt:nowISO(),
-    statusHistory:[...(data.statusHistory||[]),{status:st,at:nowISO()}]
-  });
+await updateDoc(ref,{
+status:st,
+trackingNumber:tr,
+updatedAt:nowISO(),
+statusHistory:[...(o.statusHistory||[]),{status:st,at:nowISO()}]
+});
 
-  await notify(userId,"Order Update",`Order ${ord} is now ${st.replaceAll("_"," ")}`);
-  loadOrders();
+await notify(userId,"Order Update",`Order ${ord} is now ${st}`);
+loadOrders();
 };
 
 loadOrders();
