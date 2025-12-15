@@ -1,7 +1,7 @@
 // firebase-config.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-import { 
-    getAuth, 
+import {
+    getAuth,
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     signInWithPopup,
@@ -10,11 +10,11 @@ import {
     sendPasswordResetEmail,
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-import { 
-    getFirestore, 
-    doc, 
-    setDoc, 
-    getDoc, 
+import {
+    getFirestore,
+    doc,
+    setDoc,
+    getDoc,
     updateDoc,
     collection,
     addDoc,
@@ -28,6 +28,7 @@ import {
 
 // Firebase configuration
 const firebaseConfig = {
+    // IMPORTANT: Replace with your actual Firebase configuration keys
     apiKey: "AIzaSyDNwzhOkQQLAQbkiNFTFEGSpWJdKaxbTRk",
     authDomain: "iryastone-uk.firebaseapp.com",
     projectId: "iryastone-uk",
@@ -42,6 +43,10 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
+
+// ============================================
+// AUTHENTICATION & USER MANAGEMENT FUNCTIONS
+// ============================================
 
 // Get current user ID
 function getCurrentUserId() {
@@ -65,6 +70,12 @@ function storeUserData(user) {
 function clearUserData() {
     localStorage.removeItem('irya_stone_user');
     localStorage.removeItem('irya_stone_notifications');
+    // Clear all specific user notification caches
+    Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('irya_notifications_')) {
+            localStorage.removeItem(key);
+        }
+    });
 }
 
 // User Registration
@@ -72,7 +83,7 @@ async function registerUser(email, password, additionalData = {}) {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-        
+
         // Store user data in Firestore
         await setDoc(doc(db, "users", user.uid), {
             email: user.email,
@@ -82,10 +93,10 @@ async function registerUser(email, password, additionalData = {}) {
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         });
-        
+
         // Store in localStorage
         storeUserData(user);
-        
+
         return { success: true, user: user };
     } catch (error) {
         console.error("Registration error:", error);
@@ -98,10 +109,10 @@ async function loginUser(email, password) {
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-        
+
         // Store in localStorage
         storeUserData(user);
-        
+
         return { success: true, user: user };
     } catch (error) {
         console.error("Login error:", error);
@@ -114,10 +125,10 @@ async function signInWithGoogle() {
     try {
         const result = await signInWithPopup(auth, googleProvider);
         const user = result.user;
-        
+
         // Check if user exists in Firestore
         const userDoc = await getDoc(doc(db, "users", user.uid));
-        
+
         if (!userDoc.exists()) {
             // Create new user document
             await setDoc(doc(db, "users", user.uid), {
@@ -133,13 +144,14 @@ async function signInWithGoogle() {
             // Update existing user
             await updateDoc(doc(db, "users", user.uid), {
                 lastLogin: new Date().toISOString(),
-                photoURL: user.photoURL || userDoc.data().photoURL
+                photoURL: user.photoURL || userDoc.data().photoURL,
+                updatedAt: new Date().toISOString()
             });
         }
-        
+
         // Store in localStorage
         storeUserData(user);
-        
+
         return { success: true, user: user };
     } catch (error) {
         console.error("Google sign-in error:", error);
@@ -182,165 +194,16 @@ function subscribeToAuth(callback) {
     });
 }
 
-// ============================================
-// NOTIFICATION FUNCTIONS
-// ============================================
-
-// Create notification for user
-async function createNotification(userId, notificationData) {
+// Get user data
+async function getUserData(userId) {
     try {
-        const notification = {
-            ...notificationData,
-            userId: userId,
-            isRead: false,
-            createdAt: new Date().toISOString(),
-            readAt: null
-        };
-        
-        const notificationsRef = collection(db, "users", userId, "notifications");
-        const docRef = await addDoc(notificationsRef, notification);
-        
-        // Update local storage
-        await updateLocalNotifications(userId);
-        
-        return { success: true, id: docRef.id };
-    } catch (error) {
-        console.error("Create notification error:", error);
-        return { success: false, error: error.message };
-    }
-}
-
-// Get user notifications
-async function getUserNotifications(userId, limitCount = 20) {
-    try {
-        // Check local storage first for cached notifications
-        const cachedNotifications = localStorage.getItem(`irya_notifications_${userId}`);
-        if (cachedNotifications) {
-            const parsed = JSON.parse(cachedNotifications);
-            // Return cached if less than 5 minutes old
-            if (parsed.timestamp && (Date.now() - parsed.timestamp < 300000)) {
-                return { success: true, notifications: parsed.notifications };
-            }
+        const userDoc = await getDoc(doc(db, "users", userId));
+        if (userDoc.exists()) {
+            return { success: true, data: userDoc.data() };
         }
-        
-        // Fetch from Firestore
-        const notificationsRef = collection(db, "users", userId, "notifications");
-        const q = query(notificationsRef, orderBy("createdAt", "desc"), limit(limitCount));
-        const querySnapshot = await getDocs(q);
-        
-        const notifications = [];
-        querySnapshot.forEach((doc) => {
-            notifications.push({ id: doc.id, ...doc.data() });
-        });
-        
-        // Cache in localStorage
-        localStorage.setItem(`irya_notifications_${userId}`, JSON.stringify({
-            notifications: notifications,
-            timestamp: Date.now()
-        }));
-        
-        return { success: true, notifications: notifications };
+        return { success: false, error: "User not found" };
     } catch (error) {
-        console.error("Get notifications error:", error);
-        return { success: false, error: error.message };
-    }
-}
-
-// Mark notification as read
-async function markNotificationAsRead(userId, notificationId) {
-    try {
-        const notificationRef = doc(db, "users", userId, "notifications", notificationId);
-        await updateDoc(notificationRef, {
-            isRead: true,
-            readAt: new Date().toISOString()
-        });
-        
-        // Update local storage
-        await updateLocalNotifications(userId);
-        
-        return { success: true };
-    } catch (error) {
-        console.error("Mark as read error:", error);
-        return { success: false, error: error.message };
-    }
-}
-
-// Mark all notifications as read
-async function markAllNotificationsAsRead(userId) {
-    try {
-        const notifications = await getUserNotifications(userId, 50);
-        if (!notifications.success) return notifications;
-        
-        const batchPromises = notifications.notifications
-            .filter(n => !n.isRead)
-            .map(n => markNotificationAsRead(userId, n.id));
-        
-        await Promise.all(batchPromises);
-        
-        return { success: true };
-    } catch (error) {
-        console.error("Mark all as read error:", error);
-        return { success: false, error: error.message };
-    }
-}
-
-// Delete notification
-async function deleteNotification(userId, notificationId) {
-    try {
-        await deleteDoc(doc(db, "users", userId, "notifications", notificationId));
-        
-        // Update local storage
-        await updateLocalNotifications(userId);
-        
-        return { success: true };
-    } catch (error) {
-        console.error("Delete notification error:", error);
-        return { success: false, error: error.message };
-    }
-}
-
-// Get unread notification count
-async function getUnreadNotificationCount(userId) {
-    try {
-        const notifications = await getUserNotifications(userId, 100);
-        if (!notifications.success) return { success: false, error: notifications.error };
-        
-        const unreadCount = notifications.notifications.filter(n => !n.isRead).length;
-        return { success: true, count: unreadCount };
-    } catch (error) {
-        console.error("Get unread count error:", error);
-        return { success: false, error: error.message };
-    }
-}
-
-// Update local notifications cache
-async function updateLocalNotifications(userId) {
-    try {
-        const result = await getUserNotifications(userId);
-        if (result.success) {
-            localStorage.removeItem(`irya_notifications_${userId}`);
-        }
-    } catch (error) {
-        console.error("Update local cache error:", error);
-    }
-}
-
-// Send admin notification (for admin users)
-async function sendAdminNotification(adminId, notificationData) {
-    try {
-        const notification = {
-            ...notificationData,
-            isAdmin: true,
-            isRead: false,
-            createdAt: new Date().toISOString()
-        };
-        
-        const notificationsRef = collection(db, "users", adminId, "adminNotifications");
-        const docRef = await addDoc(notificationsRef, notification);
-        
-        return { success: true, id: docRef.id };
-    } catch (error) {
-        console.error("Send admin notification error:", error);
+        console.error("Get user data error:", error);
         return { success: false, error: error.message };
     }
 }
@@ -360,22 +223,229 @@ async function isUserAdmin(userId) {
     }
 }
 
-// Get user data
-async function getUserData(userId) {
+// ============================================
+// NOTIFICATION FUNCTIONS
+// ============================================
+
+// Update local notifications cache
+async function updateLocalNotifications(userId) {
+    // A simplified approach: clear cache to force fresh fetch next time
     try {
-        const userDoc = await getDoc(doc(db, "users", userId));
-        if (userDoc.exists()) {
-            return { success: true, data: userDoc.data() };
-        }
-        return { success: false, error: "User not found" };
+        localStorage.removeItem(`irya_notifications_${userId}`);
     } catch (error) {
-        console.error("Get user data error:", error);
+        console.error("Update local cache error:", error);
+    }
+}
+
+// Create notification for user
+async function createNotification(userId, notificationData) {
+    try {
+        const notification = {
+            ...notificationData,
+            userId: userId,
+            isRead: false,
+            createdAt: new Date().toISOString(),
+            readAt: null
+        };
+
+        const notificationsRef = collection(db, "users", userId, "notifications");
+        const docRef = await addDoc(notificationsRef, notification);
+
+        // Update local storage
+        await updateLocalNotifications(userId);
+
+        return { success: true, id: docRef.id };
+    } catch (error) {
+        console.error("Create notification error:", error);
         return { success: false, error: error.message };
     }
 }
 
+// Get user notifications
+async function getUserNotifications(userId, limitCount = 20) {
+    try {
+        // Check local storage first for cached notifications
+        const cachedNotifications = localStorage.getItem(`irya_notifications_${userId}`);
+        if (cachedNotifications) {
+            const parsed = JSON.parse(cachedNotifications);
+            // Return cached if less than 5 minutes old (300000 ms)
+            if (parsed.timestamp && (Date.now() - parsed.timestamp < 300000)) {
+                return { success: true, notifications: parsed.notifications };
+            }
+        }
+
+        // Fetch from Firestore
+        const notificationsRef = collection(db, "users", userId, "notifications");
+        const q = query(notificationsRef, orderBy("createdAt", "desc"), limit(limitCount));
+        const querySnapshot = await getDocs(q);
+
+        const notifications = [];
+        querySnapshot.forEach((doc) => {
+            notifications.push({ id: doc.id, ...doc.data() });
+        });
+
+        // Cache in localStorage
+        localStorage.setItem(`irya_notifications_${userId}`, JSON.stringify({
+            notifications: notifications,
+            timestamp: Date.now()
+        }));
+
+        return { success: true, notifications: notifications };
+    } catch (error) {
+        console.error("Get notifications error:", error);
+        return { success: false, error: error.message };
+    }
+}
+
+// Mark notification as read
+async function markNotificationAsRead(userId, notificationId) {
+    try {
+        const notificationRef = doc(db, "users", userId, "notifications", notificationId);
+        await updateDoc(notificationRef, {
+            isRead: true,
+            readAt: new Date().toISOString()
+        });
+
+        // Update local storage
+        await updateLocalNotifications(userId);
+
+        return { success: true };
+    } catch (error) {
+        console.error("Mark as read error:", error);
+        return { success: false, error: error.message };
+    }
+}
+
+// Mark all notifications as read
+async function markAllNotificationsAsRead(userId) {
+    try {
+        // Fetch up to 50 notifications to process (adjust limit as needed)
+        const notificationsResult = await getUserNotifications(userId, 50);
+        if (!notificationsResult.success) return notificationsResult;
+
+        const batchPromises = notificationsResult.notifications
+            .filter(n => !n.isRead)
+            // Use updateDoc directly for Firestore updates
+            .map(n => updateDoc(doc(db, "users", userId, "notifications", n.id), {
+                isRead: true,
+                readAt: new Date().toISOString()
+            }));
+
+        await Promise.all(batchPromises);
+
+        // Clear local cache to force reload with all read
+        await updateLocalNotifications(userId);
+
+        return { success: true };
+    } catch (error) {
+        console.error("Mark all as read error:", error);
+        return { success: false, error: error.message };
+    }
+}
+
+// Delete notification
+async function deleteNotification(userId, notificationId) {
+    try {
+        await deleteDoc(doc(db, "users", userId, "notifications", notificationId));
+
+        // Update local storage
+        await updateLocalNotifications(userId);
+
+        return { success: true };
+    } catch (error) {
+        console.error("Delete notification error:", error);
+        return { success: false, error: error.message };
+    }
+}
+
+// Get unread notification count
+async function getUnreadNotificationCount(userId) {
+    try {
+        // Fetch a reasonable amount (100) to get an accurate count
+        const notificationsResult = await getUserNotifications(userId, 100);
+        if (!notificationsResult.success) return { success: false, error: notificationsResult.error };
+
+        const unreadCount = notificationsResult.notifications.filter(n => !n.isRead).length;
+        return { success: true, count: unreadCount };
+    } catch (error) {
+        console.error("Get unread count error:", error);
+        return { success: false, error: error.message };
+    }
+}
+
+// Send admin notification (for admin users)
+async function sendAdminNotification(adminId, notificationData) {
+    try {
+        const notification = {
+            ...notificationData,
+            isAdmin: true, // Marker for admin notifications
+            isRead: false,
+            createdAt: new Date().toISOString()
+        };
+
+        const notificationsRef = collection(db, "users", adminId, "adminNotifications");
+        const docRef = await addDoc(notificationsRef, notification);
+
+        return { success: true, id: docRef.id };
+    } catch (error) {
+        console.error("Send admin notification error:", error);
+        return { success: false, error: error.message };
+    }
+}
+
+// Function to create payment reminder notification
+async function createPaymentReminderNotification(userId, orderData) {
+    try {
+        if (typeof orderData.remainingPayment !== 'number' || typeof orderData.orderNumber === 'undefined') {
+             throw new Error("Invalid orderData provided for payment reminder.");
+        }
+        
+        const notification = {
+            title: '💰 Payment Reminder',
+            message: `Remaining payment of £${orderData.remainingPayment.toFixed(2)} is due for order **${orderData.orderNumber}**. Please complete payment within 1 hour.`,
+            orderId: orderData.id || null,
+            orderNumber: orderData.orderNumber,
+            userId: userId,
+            type: 'payment_remaining_warning',
+        };
+
+        const result = await createNotification(userId, notification);
+        return result.success;
+    } catch (error) {
+        console.error("❌ Error creating payment reminder:", error);
+        return false;
+    }
+}
+
+// Function to create order status notification
+async function createOrderStatusNotification(userId, orderData, status, message) {
+    try {
+        if (typeof orderData.orderNumber === 'undefined' || typeof status !== 'string') {
+             throw new Error("Invalid orderData or status provided for order status notification.");
+        }
+        
+        const capitalizedStatus = status.charAt(0).toUpperCase() + status.slice(1);
+        const notification = {
+            title: `📦 Order ${capitalizedStatus}`,
+            message: message || `Your order **${orderData.orderNumber}** has been updated to **${capitalizedStatus}**.`,
+            orderId: orderData.id || null,
+            orderNumber: orderData.orderNumber,
+            userId: userId,
+            type: `order_${status.toLowerCase().replace(/\s/g, '_')}`,
+        };
+
+        const result = await createNotification(userId, notification);
+        return result.success;
+    } catch (error) {
+        console.error("❌ Error creating order status notification:", error);
+        return false;
+    }
+}
+
+
 // Export all functions
 export {
+    app,
     auth,
     db,
     getCurrentUserId,
@@ -385,7 +455,11 @@ export {
     signOutUser,
     resetPassword,
     subscribeToAuth,
-    
+
+    // User Data Functions
+    getUserData,
+    isUserAdmin,
+
     // Notification functions
     createNotification,
     getUserNotifications,
@@ -394,6 +468,6 @@ export {
     deleteNotification,
     getUnreadNotificationCount,
     sendAdminNotification,
-    isUserAdmin,
-    getUserData
+    createPaymentReminderNotification, // Exported new function
+    createOrderStatusNotification     // Exported new function
 };
