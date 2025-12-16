@@ -1010,6 +1010,143 @@ const stats = {
     }
 };
 
+/* ========== ENHANCED NOTIFICATION SYSTEM ========== */
+
+/**
+ * Send order-linked notification
+ * @param {string} userId - User ID
+ * @param {string} orderId - Order document ID
+ * @param {string} orderNumber - Human readable order number (e.g., IRYA-1765)
+ * @param {string} title - Notification title
+ * @param {string} message - Notification message
+ * @returns {Promise} - Notification creation promise
+ */
+async function sendOrderNotification(userId, orderId, orderNumber, title, message) {
+    try {
+        const notificationRef = collection(db, "users", userId, "notifications");
+        
+        const notificationData = {
+            title: title,
+            message: message,
+            orderId: orderId,           // Link to order document ID
+            orderNumber: orderNumber,   // Human readable order number
+            type: "order",              // Type for filtering
+            createdAt: new Date().toISOString(),
+            read: false,
+            readAt: null
+        };
+        
+        await addDoc(notificationRef, notificationData);
+        console.log(`Order notification sent: ${title} for order ${orderNumber}`);
+        return true;
+    } catch (error) {
+        console.error("Error sending order notification:", error);
+        return false;
+    }
+}
+
+/**
+ * Send payment notification with order linking
+ * @param {Object} order - Order object
+ * @param {Object} paymentInfo - Payment information
+ * @returns {Promise} - Notification creation promise
+ */
+async function sendPaymentNotification(order, paymentInfo) {
+    const { newPaid, remaining, referenceNumber, paymentType, paymentNotes } = paymentInfo;
+    
+    let title = "";
+    let message = "";
+    
+    if (paymentType === 'full') {
+        title = "Payment Completed";
+        message = `Full payment £${newPaid.toFixed(2)} confirmed for order ${order.orderNumber}.`;
+    } else if (paymentType === 'advance') {
+        title = "Advance Payment Received";
+        message = `Advance payment £${newPaid.toFixed(2)} received for order ${order.orderNumber}. Remaining balance: £${remaining.toFixed(2)}.`;
+    } else {
+        title = "Payment Updated";
+        message = `Payment updated to £${newPaid.toFixed(2)} for order ${order.orderNumber}. Remaining: £${remaining.toFixed(2)}.`;
+    }
+    
+    if (referenceNumber) {
+        message += ` Reference: ${referenceNumber}`;
+    }
+    
+    if (paymentNotes) {
+        message += ` Notes: ${paymentNotes}`;
+    }
+    
+    return sendOrderNotification(
+        order.userId,
+        order._id,
+        order.orderNumber,
+        title,
+        message
+    );
+}
+
+/**
+ * Send status update notification with order linking
+ * @param {Object} order - Order object
+ * @param {Object} statusInfo - Status update information
+ * @returns {Promise} - Notification creation promise
+ */
+async function sendStatusNotification(order, statusInfo) {
+    const { newStatus, trackingNumber, statusNotes, statusDateTime } = statusInfo;
+    
+    const statusText = newStatus.replace(/_/g, ' ');
+    const title = `Order ${statusText}`;
+    let message = `Your order ${order.orderNumber} is now ${statusText}.`;
+    
+    if (trackingNumber) {
+        message += ` Tracking Number: ${trackingNumber}`;
+    }
+    
+    if (statusNotes) {
+        message += ` Notes: ${statusNotes}`;
+    }
+    
+    // Add specific messages for certain statuses
+    if (newStatus === "ready_to_ship" && order.remainingPayment > 0) {
+        message += ` IMPORTANT: Please clear the remaining payment of £${order.remainingPayment.toFixed(2)} within 1 hour to avoid cancellation.`;
+    }
+    
+    if (newStatus === "cancelled") {
+        message += ` Note: The advance payment is non-refundable.`;
+    }
+    
+    return sendOrderNotification(
+        order.userId,
+        order._id,
+        order.orderNumber,
+        title,
+        message
+    );
+}
+
+/**
+ * Send cancellation notification with order linking
+ * @param {Object} order - Order object
+ * @param {string} reason - Reason for cancellation
+ * @returns {Promise} - Notification creation promise
+ */
+async function sendCancellationNotification(order, reason = "Payment not cleared within 1 hour") {
+    const title = "Order Cancelled";
+    let message = `Your order ${order.orderNumber} has been cancelled. Reason: ${reason}.`;
+    
+    if (order.remainingPayment > 0) {
+        message += ` The advance payment of £${order.submittedAmount.toFixed(2)} is non-refundable.`;
+    }
+    
+    return sendOrderNotification(
+        order.userId,
+        order._id,
+        order.orderNumber,
+        title,
+        message
+    );
+}
+
 /* ---------- UTILITY FUNCTIONS ---------- */
 const now = () => new Date().toISOString();
 const hoursDiff = (a, b) => (new Date(b) - new Date(a)) / 36e5;
@@ -1097,17 +1234,24 @@ async function loadOrders() {
             const order = d.data();
             order._id = d.id;
             order._ref = d.ref;
+            order._userId = d.ref.parent.parent?.id; // Extract userId from path
 
             /* AUTO CANCEL LOGIC */
             if (order.status === "ready_to_ship" && order.remainingPayment > 0) {
                 const readyTime = order.readyToShipAt || order.updatedAt;
                 if (hoursDiff(readyTime, now()) >= 1) {
+                    // Auto-cancel order
                     await updateDoc(doc(db, "users", order.userId, "orders", order._id), {
                         status: "cancelled",
                         cancelledAt: now()
                     });
-                    await notify(order.userId, "Order Cancelled",
-                        `Order ${order.orderNumber} cancelled. Remaining payment not cleared. Advance non-refundable.`);
+                    
+                    // Send cancellation notification with order linking
+                    await sendCancellationNotification(
+                        order,
+                        "Remaining payment not cleared within 1 hour"
+                    );
+                    
                     continue;
                 }
             }
@@ -1577,21 +1721,14 @@ window.savePayment = async function() {
         // Update order in Firestore
         await updateDoc(orderRef, updateData);
         
-        // Send notification
-        let message = '';
-        if (paymentType === 'full') {
-            message = `Full payment £${newPaid.toFixed(2)} confirmed for order ${order.orderNumber}. Reference: ${referenceNumber}`;
-        } else if (paymentType === 'advance') {
-            message = `Advance payment £${newPaid.toFixed(2)} received for order ${order.orderNumber}. Remaining: £${remaining.toFixed(2)}. Reference: ${referenceNumber}`;
-        } else {
-            message = `Payment updated to £${newPaid.toFixed(2)} for order ${order.orderNumber}. Remaining: £${remaining.toFixed(2)}. Reference: ${referenceNumber}`;
-        }
-        
-        if (paymentNotes) {
-            message += `\nNotes: ${paymentNotes}`;
-        }
-        
-        await notify(order.userId, "Payment Updated", message);
+        // Send order-linked notification
+        await sendPaymentNotification(order, {
+            newPaid,
+            remaining,
+            referenceNumber,
+            paymentType,
+            paymentNotes
+        });
         
         // Show success message
         alert(`Payment saved successfully!\n\nOrder: ${order.orderNumber}\nNew Amount: £${newPaid.toFixed(2)}\nRemaining: £${remaining.toFixed(2)}\nStatus: ${paymentStatus}\nReference: ${referenceNumber}`);
@@ -1692,10 +1829,6 @@ window.saveStatus = async function() {
     // Handle specific status updates
     if (selectedStatus === "ready_to_ship") {
         updateData.readyToShipAt = statusDateTime ? new Date(statusDateTime).toISOString() : now();
-        if (orderData.remainingPayment > 0) {
-            await notify(order.userId, "Payment Pending",
-                `Remaining payment clear within 1 hour or order will be cancelled. Advance non-refundable.`);
-        }
     }
     
     if (selectedStatus === "shipped") {
@@ -1719,16 +1852,13 @@ window.saveStatus = async function() {
     try {
         await updateDoc(orderRef, updateData);
         
-        // Send notification
-        let message = `Order ${order.orderNumber} is now ${selectedStatus.replace(/_/g, ' ')}`;
-        if (trackingNumber) {
-            message += `\nTracking Number: ${trackingNumber}`;
-        }
-        if (statusNotes) {
-            message += `\nNotes: ${statusNotes}`;
-        }
-        
-        await notify(order.userId, "Order Status Updated", message);
+        // Send order-linked notification
+        await sendStatusNotification(order, {
+            newStatus: selectedStatus,
+            trackingNumber,
+            statusNotes,
+            statusDateTime
+        });
         
         // Show success message
         alert(`Status updated successfully!\n\nOrder: ${order.orderNumber}\nNew Status: ${selectedStatus.replace(/_/g, ' ')}\nDate: ${formatDateTime(statusDateTime)}${trackingNumber ? `\nTracking: ${trackingNumber}` : ''}`);
@@ -1742,17 +1872,6 @@ window.saveStatus = async function() {
         alert("Error updating status: " + error.message);
     }
 };
-
-/* ---------- NOTIFICATION ---------- */
-async function notify(userId, title, msg) {
-    const ref = collection(db, "users", userId, "notifications");
-    await addDoc(ref, {
-        title,
-        message: msg,
-        createdAt: now(),
-        read: false
-    });
-}
 
 /* ---------- EXPORT DATA ---------- */
 window.exportData = function() {
