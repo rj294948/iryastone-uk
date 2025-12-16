@@ -1842,7 +1842,7 @@ function checkNotificationRedirect() {
       console.log("📌 Processing notification redirect:", redirectData);
       
       // Extract order information
-      const { orderId, orderNumber, notificationType, action } = redirectData;
+      const { orderId, orderNumber, notificationType } = redirectData;
       
       if (orderId || orderNumber) {
         // Scroll to the specific order
@@ -2133,7 +2133,7 @@ function trackOnWebsite(trackingNumber) {
 }
 
 // ============================================
-// PAY REMAINING AMOUNT
+// PAY REMAINING AMOUNT (UPDATED)
 // ============================================
 
 function payRemainingAmount(orderId, orderNumber) {
@@ -2164,14 +2164,18 @@ function payRemainingAmount(orderId, orderNumber) {
       items: order.items || [],
       userId: currentUserId,
       userEmail: userEmail,
-      userName: userName
+      userName: userName,
+      paymentType: 'remaining_payment',
+      source: 'orders_page'
     };
     
     // Save to localStorage
     localStorage.setItem('irya_pending_payment_order', JSON.stringify(checkoutData));
     
-    // Redirect to checkout page
-    window.location.href = `checkout.html?order=${order.id}&type=remaining_payment&user=${currentUserId}`;
+    // Redirect to checkout page with all necessary parameters
+    const checkoutUrl = `checkout.html?order=${order.id}&type=remaining_payment&user=${currentUserId}&amount=${remainingAmount}`;
+    console.log("🔗 Redirecting to checkout:", checkoutUrl);
+    window.location.href = checkoutUrl;
     
   } catch (error) {
     console.error("❌ Error in pay remaining amount:", error);
@@ -2404,7 +2408,7 @@ function createOrderDetailsHTML(order) {
 }
 
 // ============================================
-// NOTIFICATIONS - UPDATED FOR ORDER REDIRECT
+// NOTIFICATIONS - ENHANCED FOR REDIRECTION
 // ============================================
 
 async function loadNotifications() {
@@ -2490,11 +2494,16 @@ function createNotificationElement(note) {
   let color = '#c9a227';
   let actionText = '';
   let badgeText = 'Info';
+  let isPaymentNotification = false;
+  let isTrackingNotification = false;
   
   if (notificationType === 'payment_remaining_warning' || 
       note.title?.includes('Payment Pending') ||
+      note.title?.includes('Remaining Payment') ||
       note.message?.includes('Remaining payment') ||
-      note.message?.includes('within 1 hour')) {
+      note.message?.includes('remaining balance') ||
+      note.message?.includes('within 1 hour') ||
+      note.message?.includes('clear the remaining payment')) {
     icon = 'fa-exclamation-triangle';
     color = '#ff6b6b';
     actionText = `<span style="color: var(--payment-pending);">
@@ -2502,9 +2511,13 @@ function createNotificationElement(note) {
     </span>`;
     badgeText = 'Payment';
     notificationType = 'payment_remaining';
+    isPaymentNotification = true;
   } else if (notificationType === 'payment_updated' ||
+             notificationType === 'payment_completed' ||
              note.title?.includes('Payment Updated') ||
-             note.title?.includes('Payment Received')) {
+             note.title?.includes('Payment Received') ||
+             note.title?.includes('Advance Payment') ||
+             note.title?.includes('Full Payment')) {
     icon = 'fa-money-bill-wave';
     color = '#ff922b';
     actionText = `<span style="color: var(--payment-advance);">
@@ -2522,6 +2535,7 @@ function createNotificationElement(note) {
     </span>`;
     badgeText = 'Shipping';
     notificationType = 'order_shipped';
+    isTrackingNotification = true;
   } else if (notificationType === 'order_out_for_delivery' ||
              note.title?.includes('Out for Delivery')) {
     icon = 'fa-truck';
@@ -2531,6 +2545,7 @@ function createNotificationElement(note) {
     </span>`;
     badgeText = 'Delivery';
     notificationType = 'order_out_for_delivery';
+    isTrackingNotification = true;
   } else if (notificationType === 'order_delivered' ||
              note.title?.includes('Delivered')) {
     icon = 'fa-check-double';
@@ -2551,7 +2566,15 @@ function createNotificationElement(note) {
   // Set click handler
   div.onclick = (event) => {
     event.stopPropagation();
-    handleNotificationClick(note.id, orderId, orderNumber, notificationType);
+    handleNotificationClick(
+      note.id, 
+      orderId, 
+      orderNumber, 
+      notificationType,
+      isPaymentNotification,
+      isTrackingNotification,
+      note.message
+    );
   };
   
   div.innerHTML = `
@@ -2572,6 +2595,8 @@ function createNotificationElement(note) {
   div.setAttribute('data-order-id', orderId || '');
   div.setAttribute('data-order-number', orderNumber || '');
   div.setAttribute('data-type', notificationType);
+  div.setAttribute('data-is-payment', isPaymentNotification);
+  div.setAttribute('data-is-tracking', isTrackingNotification);
   
   return div;
 }
@@ -2609,13 +2634,23 @@ function extractOrderInfoFromMessage(message) {
   return null;
 }
 
-async function handleNotificationClick(notificationId, orderId, orderNumber, notificationType) {
+async function handleNotificationClick(
+  notificationId, 
+  orderId, 
+  orderNumber, 
+  notificationType,
+  isPaymentNotification,
+  isTrackingNotification,
+  message
+) {
   try {
     console.log("📌 Notification clicked:", {
       notificationId,
       orderId,
       orderNumber,
       notificationType,
+      isPaymentNotification,
+      isTrackingNotification,
       currentUserId
     });
     
@@ -2631,25 +2666,13 @@ async function handleNotificationClick(notificationId, orderId, orderNumber, not
     // Close notification dropdown
     closeNotifications();
     
-    // Save redirect data for when orders load
-    const redirectData = {
-      orderId: orderId,
-      orderNumber: orderNumber,
-      notificationType: notificationType,
-      userId: currentUserId,
-      timestamp: new Date().toISOString()
-    };
-    
-    localStorage.setItem('irya_notification_redirect', JSON.stringify(redirectData));
-    
     // Handle based on notification type
-    if (notificationType === 'payment_remaining') {
-      handlePaymentNotification(orderId, orderNumber);
-    } else if (notificationType === 'order_shipped' || 
-               notificationType === 'order_out_for_delivery') {
-      handleTrackingNotification(orderId, orderNumber);
+    if (isPaymentNotification) {
+      handlePaymentNotificationClick(orderId, orderNumber, message);
+    } else if (isTrackingNotification) {
+      handleTrackingNotificationClick(orderId, orderNumber);
     } else {
-      handleOrderDetailsNotification(orderId, orderNumber);
+      handleGeneralNotificationClick(orderId, orderNumber);
     }
     
   } catch (error) {
@@ -2659,84 +2682,133 @@ async function handleNotificationClick(notificationId, orderId, orderNumber, not
   }
 }
 
-function handlePaymentNotification(orderId, orderNumber) {
-  console.log("💰 Handling payment notification");
+function handlePaymentNotificationClick(orderId, orderNumber, message) {
+  console.log("💰 Handling payment notification click");
+  
+  // Try to find the order
+  let order = null;
   
   if (orderId) {
-    // Directly trigger payment for this order
-    const order = orders.find(o => o.id === orderId);
-    if (order) {
+    order = orders.find(o => o.id === orderId);
+  } 
+  
+  if (!order && orderNumber) {
+    order = orders.find(o => o.orderNumber === orderNumber);
+  }
+  
+  if (order) {
+    // Check if order has remaining payment
+    const paidAmount = order.submittedAmount || order.advancePayment || 0;
+    const totalAmount = order.total || 0;
+    const remainingAmount = order.remainingPayment || (totalAmount - paidAmount);
+    
+    if (remainingAmount > 0) {
+      // Direct redirect to checkout for remaining payment
       payRemainingAmount(order.id, order.orderNumber || orderNumber);
     } else {
-      // Search for the order
-      showMessage(`Order ${orderNumber || orderId} not found. Searching...`);
-      document.getElementById('searchInput').value = orderNumber || orderId || '';
-      searchOrders();
-    }
-  } else if (orderNumber) {
-    // Find order by order number
-    const order = orders.find(o => o.orderNumber === orderNumber);
-    if (order) {
-      payRemainingAmount(order.id, orderNumber);
-    } else {
-      showMessage(`Order ${orderNumber} not found. Searching...`);
-      document.getElementById('searchInput').value = orderNumber;
-      searchOrders();
+      // No remaining amount, show order details
+      showMessage("This order is already fully paid.");
+      showOrderDetails(order.id);
     }
   } else {
-    showMessage("Cannot process payment notification. Order information missing.");
+    // Order not found in current list, try to search
+    showMessage(`Order ${orderNumber || orderId} not found. Searching...`);
+    
+    if (orderNumber) {
+      document.getElementById('searchInput').value = orderNumber;
+    } else if (orderId) {
+      document.getElementById('searchInput').value = orderId;
+    }
+    
+    searchOrders();
+    
+    // Try to extract payment info from message
+    const amountMatch = message.match(/£([\d\.]+)/);
+    if (amountMatch && amountMatch[1]) {
+      const paymentAmount = parseFloat(amountMatch[1]);
+      setTimeout(() => {
+        const orderFound = orders.find(o => 
+          o.orderNumber === orderNumber || o.id === orderId
+        );
+        if (orderFound && paymentAmount > 0) {
+          // Still redirect to checkout with extracted amount
+          const checkoutData = {
+            orderId: orderFound.id,
+            orderNumber: orderFound.orderNumber,
+            remainingAmount: paymentAmount,
+            totalAmount: orderFound.total || 0,
+            paidAmount: orderFound.submittedAmount || 0,
+            orderType: 'existing_order',
+            items: orderFound.items || [],
+            userId: currentUserId,
+            userEmail: userEmail,
+            userName: userName,
+            paymentType: 'remaining_payment',
+            source: 'notification'
+          };
+          
+          localStorage.setItem('irya_pending_payment_order', JSON.stringify(checkoutData));
+          window.location.href = `checkout.html?order=${orderFound.id}&type=remaining_payment&user=${currentUserId}&amount=${paymentAmount}`;
+        }
+      }, 1000);
+    }
   }
 }
 
-function handleTrackingNotification(orderId, orderNumber) {
-  console.log("🚚 Handling tracking notification");
+function handleTrackingNotificationClick(orderId, orderNumber) {
+  console.log("🚚 Handling tracking notification click");
+  
+  let order = null;
   
   if (orderId) {
-    const order = orders.find(o => o.id === orderId);
-    if (order && order.trackingNumber) {
+    order = orders.find(o => o.id === orderId);
+  }
+  
+  if (!order && orderNumber) {
+    order = orders.find(o => o.orderNumber === orderNumber);
+  }
+  
+  if (order) {
+    if (order.trackingNumber) {
       showTrackingModal(order.id);
-    } else if (order) {
+    } else {
       showMessage(`Order ${order.orderNumber} doesn't have tracking information yet.`);
       showOrderDetails(order.id);
-    } else {
-      showMessage(`Order ${orderNumber || orderId} not found.`);
     }
-  } else if (orderNumber) {
-    const order = orders.find(o => o.orderNumber === orderNumber);
-    if (order && order.trackingNumber) {
-      showTrackingModal(order.id);
-    } else if (order) {
-      showMessage(`Order ${orderNumber} doesn't have tracking information yet.`);
-      showOrderDetails(order.id);
-    } else {
-      showMessage(`Order ${orderNumber} not found.`);
+  } else {
+    showMessage(`Order ${orderNumber || orderId} not found.`);
+    if (orderNumber) {
+      document.getElementById('searchInput').value = orderNumber;
+    } else if (orderId) {
+      document.getElementById('searchInput').value = orderId;
     }
+    searchOrders();
   }
 }
 
-function handleOrderDetailsNotification(orderId, orderNumber) {
-  console.log("📦 Handling order details notification");
+function handleGeneralNotificationClick(orderId, orderNumber) {
+  console.log("📦 Handling general notification click");
+  
+  let order = null;
   
   if (orderId) {
-    const order = orders.find(o => o.id === orderId);
-    if (order) {
-      showOrderDetails(order.id);
-    } else {
-      showMessage(`Order ${orderNumber || orderId} not found. Searching...`);
-      document.getElementById('searchInput').value = orderNumber || orderId || '';
-      searchOrders();
-    }
-  } else if (orderNumber) {
-    const order = orders.find(o => o.orderNumber === orderNumber);
-    if (order) {
-      showOrderDetails(order.id);
-    } else {
-      showMessage(`Order ${orderNumber} not found. Searching...`);
-      document.getElementById('searchInput').value = orderNumber;
-      searchOrders();
-    }
+    order = orders.find(o => o.id === orderId);
+  }
+  
+  if (!order && orderNumber) {
+    order = orders.find(o => o.orderNumber === orderNumber);
+  }
+  
+  if (order) {
+    showOrderDetails(order.id);
   } else {
-    showMessage("Cannot open order details. Order information missing.");
+    showMessage(`Order ${orderNumber || orderId} not found. Searching...`);
+    if (orderNumber) {
+      document.getElementById('searchInput').value = orderNumber;
+    } else if (orderId) {
+      document.getElementById('searchInput').value = orderId;
+    }
+    searchOrders();
   }
 }
 
@@ -3019,7 +3091,6 @@ function showMessage(message) {
       @keyframes slideOut {
         from { transform: translateX(0); opacity: 1; }
         to { transform: translateX(100%); opacity: 0; }
-      }
     </style>
     <div style="display: flex; align-items: center; gap: 10px;">
       <i class="fas fa-check-circle"></i>
