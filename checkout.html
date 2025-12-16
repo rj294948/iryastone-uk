@@ -1336,6 +1336,366 @@ document.addEventListener('DOMContentLoaded', async function() {
 });
 
 // ============================================
+// MISSING FUNCTIONS THAT WERE CAUSING ERRORS
+// ============================================
+
+function selectPaymentOption(paymentType) {
+    console.log("selectPaymentOption called with:", paymentType);
+    
+    const advanceOption = document.getElementById('advancePaymentOption');
+    const fullOption = document.getElementById('fullPaymentOption');
+    const remainingOption = document.getElementById('remainingPaymentOption');
+    
+    // Remove selected class from all options
+    [advanceOption, fullOption, remainingOption].forEach(option => {
+        if (option) option.classList.remove('selected');
+    });
+    
+    // Add selected class to clicked option
+    if (paymentType === 'advance' && advanceOption) {
+        advanceOption.classList.add('selected');
+        document.getElementById('advancePayment').checked = true;
+    } else if (paymentType === 'full' && fullOption) {
+        fullOption.classList.add('selected');
+        document.getElementById('fullPayment').checked = true;
+    } else if (paymentType === 'remaining' && remainingOption) {
+        remainingOption.classList.add('selected');
+        document.getElementById('remainingPayment').checked = true;
+    }
+    
+    currentPaymentType = paymentType;
+    
+    // Update payment breakdown
+    updatePaymentBreakdown();
+}
+
+function selectPaymentMethod(method) {
+    console.log("selectPaymentMethod called with:", method);
+    
+    // Remove active class from all methods
+    document.querySelectorAll('.payment-method').forEach(element => {
+        element.classList.remove('active');
+        element.querySelector('.fa-check-circle').style.color = '';
+    });
+    
+    // Add active class to selected method
+    const selectedMethod = document.querySelector(`[data-method="${method}"]`);
+    if (selectedMethod) {
+        selectedMethod.classList.add('active');
+        selectedMethod.querySelector('.fa-check-circle').style.color = 'var(--primary-gold)';
+    }
+    
+    selectedPaymentMethod = method;
+    
+    // Show/hide payment method specific containers
+    document.getElementById('stripeCardElement').style.display = method === 'stripe' ? 'block' : 'none';
+    document.getElementById('paypalButtonsContainer').style.display = method === 'paypal' ? 'block' : 'none';
+}
+
+function initializePaymentOptions() {
+    console.log("initializePaymentOptions called");
+    
+    // Set default payment type
+    selectPaymentOption('advance');
+    selectPaymentMethod('bank');
+}
+
+function initializeFormValidation() {
+    console.log("initializeFormValidation called");
+    
+    // Add input validation
+    const formInputs = document.querySelectorAll('#addressForm input, #addressForm select');
+    formInputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            validateField(this);
+        });
+    });
+}
+
+function validateField(field) {
+    const value = field.value.trim();
+    const fieldName = field.id || field.name;
+    
+    if (field.required && !value) {
+        field.style.borderColor = '#ff4757';
+        return false;
+    }
+    
+    // Email validation
+    if (field.type === 'email' && value) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) {
+            field.style.borderColor = '#ff4757';
+            return false;
+        }
+    }
+    
+    // Phone validation
+    if (field.type === 'tel' && value) {
+        const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+        if (!phoneRegex.test(value.replace(/[\s\-\(\)]/g, ''))) {
+            field.style.borderColor = '#ff4757';
+            return false;
+        }
+    }
+    
+    field.style.borderColor = '#e0e0e0';
+    return true;
+}
+
+function validateForm() {
+    console.log("validateForm called");
+    
+    let isValid = true;
+    
+    // Check required fields
+    const requiredFields = document.querySelectorAll('#addressForm input[required], #addressForm select[required]');
+    requiredFields.forEach(field => {
+        if (!validateField(field)) {
+            isValid = false;
+        }
+    });
+    
+    // Check terms agreement
+    const agreeTerms = document.getElementById('agreeTerms');
+    if (agreeTerms && !agreeTerms.checked) {
+        showError('Please agree to the terms and conditions');
+        isValid = false;
+    }
+    
+    return isValid;
+}
+
+function updatePaymentBreakdown() {
+    console.log("updatePaymentBreakdown called");
+    
+    // Get total amount from order summary
+    const totalAmountText = document.getElementById('total').textContent;
+    const totalAmount = parseFloat(totalAmountText.replace(/[^0-9.-]+/g, "")) || 0;
+    
+    const totalOrderValue = document.getElementById('totalOrderValue');
+    const advanceAmount = document.getElementById('advanceAmount');
+    const remainingAmount = document.getElementById('remainingAmount');
+    const payNowAmount = document.getElementById('payNowAmount');
+    const advanceLabel = document.getElementById('advanceLabel');
+    const remainingLabel = document.getElementById('remainingLabel');
+    const payNowLabel = document.getElementById('payNowLabel');
+    
+    if (!totalOrderValue || !advanceAmount) return;
+    
+    if (currentPaymentType === 'full') {
+        // Full payment with 5% discount
+        const discount = totalAmount * 0.05;
+        const discountedTotal = totalAmount - discount;
+        
+        totalOrderValue.textContent = `£${totalAmount.toFixed(2)}`;
+        advanceAmount.textContent = `-£${discount.toFixed(2)} (5% discount)`;
+        remainingAmount.textContent = `£${discountedTotal.toFixed(2)}`;
+        payNowAmount.textContent = `£${discountedTotal.toFixed(2)}`;
+        
+        if (advanceLabel) advanceLabel.textContent = '5% Discount:';
+        if (remainingLabel) remainingLabel.textContent = 'Amount After Discount:';
+        if (payNowLabel) payNowLabel.textContent = 'Amount to Pay Now:';
+        
+    } else if (currentPaymentType === 'advance') {
+        // 30% advance payment
+        const advance = totalAmount * 0.3;
+        const remaining = totalAmount * 0.7;
+        
+        totalOrderValue.textContent = `£${totalAmount.toFixed(2)}`;
+        advanceAmount.textContent = `£${advance.toFixed(2)}`;
+        remainingAmount.textContent = `£${remaining.toFixed(2)}`;
+        payNowAmount.textContent = `£${advance.toFixed(2)}`;
+        
+        if (advanceLabel) advanceLabel.textContent = '30% Advance:';
+        if (remainingLabel) remainingLabel.textContent = '70% After Shipping:';
+        if (payNowLabel) payNowLabel.textContent = 'Amount to Pay Now:';
+        
+    } else if (currentPaymentType === 'remaining') {
+        // For existing order payment
+        if (existingOrderData) {
+            const paidAmount = existingOrderData.submittedAmount || existingOrderData.advancePayment || 0;
+            const remaining = existingOrderData.remainingPayment || (totalAmount - paidAmount);
+            
+            totalOrderValue.textContent = `£${totalAmount.toFixed(2)}`;
+            advanceAmount.textContent = `£${paidAmount.toFixed(2)}`;
+            remainingAmount.textContent = `£${remaining.toFixed(2)}`;
+            payNowAmount.textContent = `£${remaining.toFixed(2)}`;
+            
+            if (advanceLabel) advanceLabel.textContent = 'Already Paid:';
+            if (remainingLabel) remainingLabel.textContent = 'Remaining Balance:';
+            if (payNowLabel) payNowLabel.textContent = 'Amount to Pay Now:';
+        }
+    }
+}
+
+function updateCartBadge() {
+    console.log("updateCartBadge called");
+    
+    try {
+        const cartData = localStorage.getItem('irya_stone_cart');
+        if (cartData) {
+            const cartItems = JSON.parse(cartData);
+            const totalItems = cartItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            
+            const cartBadge = document.getElementById('cartBadge');
+            if (cartBadge) {
+                cartBadge.textContent = totalItems > 0 ? totalItems : '0';
+            }
+        }
+    } catch (error) {
+        console.error('Error updating cart badge:', error);
+    }
+}
+
+async function loadOrderItems() {
+    console.log("loadOrderItems called");
+    
+    try {
+        const orderItemsDiv = document.getElementById('orderItems');
+        if (!orderItemsDiv) return;
+        
+        let items = [];
+        
+        // For existing order flow
+        if (isExistingOrderFlow && existingOrderData) {
+            items = existingOrderData.items || [];
+            await loadProductImagesForItems(items);
+        } else {
+            // For regular checkout
+            const cartData = localStorage.getItem('irya_stone_cart');
+            if (cartData) {
+                items = JSON.parse(cartData);
+                await loadProductImagesForItems(items);
+            }
+        }
+        
+        // Display items
+        if (items.length > 0) {
+            const itemsHTML = items.map(item => {
+                const imageUrl = item.imageUrl || item.image || getDefaultImage(item.category);
+                const itemName = item.name || item.stoneName || 'Product';
+                const itemPrice = item.calculatedPrice || item.totalPrice || (item.price * item.quantity);
+                
+                return `
+                    <div class="order-item">
+                        <div class="order-item-image">
+                            <img src="${imageUrl}" 
+                                 alt="${itemName}" 
+                                 onerror="this.src='${getDefaultImage(item.category)}'">
+                        </div>
+                        <div class="order-item-details">
+                            <div class="order-item-name">${itemName}</div>
+                            <div class="order-item-info">${item.category || 'General'}</div>
+                            <div class="order-item-info">Quantity: ${item.quantity || 1}</div>
+                            <div class="order-item-price">£${itemPrice.toFixed(2)}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            orderItemsDiv.innerHTML = itemsHTML;
+            
+            // Calculate and update totals
+            calculateAndUpdateTotals(items);
+        } else {
+            orderItemsDiv.innerHTML = '<p style="color: var(--text-light); text-align: center; padding: 20px;">Your cart is empty</p>';
+        }
+        
+    } catch (error) {
+        console.error('Error loading order items:', error);
+    }
+}
+
+async function loadProductImagesForItems(items) {
+    console.log("loadProductImagesForItems called with", items.length, "items");
+    
+    if (!firebaseDB || items.length === 0) return;
+    
+    try {
+        for (let item of items) {
+            // Check if item has a productId and we need to fetch image from Firestore
+            if (item.productId && (!item.imageUrl || item.imageUrl.includes('unsplash'))) {
+                console.log("Fetching product image for productId:", item.productId);
+                
+                try {
+                    const productDoc = await firebaseDB.collection('products').doc(item.productId).get();
+                    
+                    if (productDoc.exists) {
+                        const productData = productDoc.data();
+                        
+                        // Check for images in the product data
+                        if (productData.images && productData.images.length > 0) {
+                            // Get the first image URL
+                            item.imageUrl = productData.images[0];
+                            console.log("Found product image:", item.imageUrl);
+                        } else if (productData.imageUrl) {
+                            item.imageUrl = productData.imageUrl;
+                            console.log("Found product imageUrl:", item.imageUrl);
+                        } else if (productData.image) {
+                            item.imageUrl = productData.image;
+                            console.log("Found product image:", item.imageUrl);
+                        }
+                    }
+                } catch (firestoreError) {
+                    console.error('Error fetching product from Firestore:', firestoreError);
+                }
+            }
+            
+            // If still no image, use default based on category
+            if (!item.imageUrl) {
+                item.imageUrl = getDefaultImage(item.category);
+            }
+        }
+        
+        console.log("All product images loaded");
+        
+    } catch (error) {
+        console.error('Error loading product images:', error);
+    }
+}
+
+function calculateAndUpdateTotals(items) {
+    console.log("calculateAndUpdateTotals called");
+    
+    try {
+        const subtotalEl = document.getElementById('subtotal');
+        const taxEl = document.getElementById('tax');
+        const shippingEl = document.getElementById('shipping');
+        const totalEl = document.getElementById('total');
+        
+        if (!subtotalEl || !totalEl) return;
+        
+        // Calculate subtotal
+        const subtotal = items.reduce((sum, item) => {
+            const itemPrice = item.calculatedPrice || item.totalPrice || (item.price * item.quantity);
+            return sum + itemPrice;
+        }, 0);
+        
+        // Calculate tax (20% VAT)
+        const tax = subtotal * 0.2;
+        
+        // Calculate shipping (free for orders over £500, otherwise £50)
+        const shipping = subtotal >= 500 ? 0 : 50;
+        
+        // Calculate total
+        const total = subtotal + tax + shipping;
+        
+        // Update display
+        subtotalEl.textContent = `£${subtotal.toFixed(2)}`;
+        taxEl.textContent = `£${tax.toFixed(2)}`;
+        shippingEl.textContent = shipping === 0 ? 'FREE' : `£${shipping.toFixed(2)}`;
+        totalEl.textContent = `£${total.toFixed(2)}`;
+        
+        // Also update payment breakdown
+        updatePaymentBreakdown();
+        
+    } catch (error) {
+        console.error('Error calculating totals:', error);
+    }
+}
+
+// ============================================
 // LOAD EXISTING ORDER FROM NOTIFICATION
 // ============================================
 
@@ -1366,6 +1726,9 @@ async function loadExistingOrder(orderId, userId) {
             
             // Update payment breakdown
             updatePaymentBreakdownForExistingOrder();
+            
+            // Load order items with proper images
+            await loadOrderItems();
             
         } else {
             console.error("Failed to load existing order");
@@ -1399,8 +1762,8 @@ async function loadOrderFromFirebase(orderId, userId) {
                 .get();
             
             if (userOrderDoc.exists) {
-                existingOrderData = userOrderDoc.data();
-                console.log("Order found in user's collection");
+                existingOrderData = { id: userOrderDoc.id, ...userOrderDoc.data() };
+                console.log("Order found in user's collection:", existingOrderData.orderNumber);
                 return existingOrderData;
             }
         } catch (userError) {
@@ -1413,8 +1776,8 @@ async function loadOrderFromFirebase(orderId, userId) {
             .get();
         
         if (mainOrderDoc.exists) {
-            existingOrderData = mainOrderDoc.data();
-            console.log("Order found in main collection");
+            existingOrderData = { id: mainOrderDoc.id, ...mainOrderDoc.data() };
+            console.log("Order found in main collection:", existingOrderData.orderNumber);
             
             // Verify user ID matches
             if (existingOrderData.userId && existingOrderData.userId !== userId) {
@@ -1570,56 +1933,6 @@ function updatePaymentBreakdownForExistingOrder() {
     if (advanceLabel) advanceLabel.textContent = 'Already Paid:';
     if (remainingLabel) remainingLabel.textContent = 'Remaining Balance:';
     if (payNowLabel) payNowLabel.textContent = 'Amount to Pay Now:';
-    
-    // Update main order summary
-    updateOrderSummaryForExistingOrder();
-}
-
-function updateOrderSummaryForExistingOrder() {
-    if (!existingOrderData) return;
-    
-    const orderItemsDiv = document.getElementById('orderItems');
-    const subtotalEl = document.getElementById('subtotal');
-    const taxEl = document.getElementById('tax');
-    const shippingEl = document.getElementById('shipping');
-    const totalEl = document.getElementById('total');
-    
-    if (!orderItemsDiv) return;
-    
-    // Display order items
-    if (existingOrderData.items && Array.isArray(existingOrderData.items)) {
-        const itemsHTML = existingOrderData.items.map(item => {
-            const itemName = item.name || item.stoneName || 'Product';
-            const itemPrice = item.calculatedPrice || item.totalPrice || (item.price * item.quantity);
-            const imageUrl = item.image || getDefaultImage(item.category);
-            
-            return `
-                <div class="order-item">
-                    <div class="order-item-image">
-                        <img src="${imageUrl}" 
-                             alt="${itemName}" 
-                             onerror="this.src='${getDefaultImage(item.category)}'">
-                    </div>
-                    <div class="order-item-details">
-                        <div class="order-item-name">${itemName}</div>
-                        <div class="order-item-info">${item.category || 'General'}</div>
-                        <div class="order-item-info">Quantity: ${item.quantity || 1}</div>
-                        <div class="order-item-price">£${itemPrice.toFixed(2)}</div>
-                    </div>
-                </div>
-            `;
-        }).join('');
-        
-        orderItemsDiv.innerHTML = itemsHTML;
-    } else {
-        orderItemsDiv.innerHTML = '<p style="color: var(--text-light); text-align: center; padding: 20px;">No items found in order</p>';
-    }
-    
-    // Update price breakdown
-    if (subtotalEl) subtotalEl.textContent = `£${existingOrderData.subtotal?.toFixed(2) || '0.00'}`;
-    if (taxEl) taxEl.textContent = `£${existingOrderData.tax?.toFixed(2) || '0.00'}`;
-    if (shippingEl) shippingEl.textContent = existingOrderData.shipping === 0 ? 'FREE' : `£${existingOrderData.shipping?.toFixed(2) || '0.00'}`;
-    if (totalEl) totalEl.textContent = `£${existingOrderData.total?.toFixed(2) || '0.00'}`;
 }
 
 // ============================================
@@ -1857,7 +2170,7 @@ function showBankTransferDetailsForExistingOrder(paymentData) {
                             style="padding: 12px 20px; background: var(--primary-gold); color: white; border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
                         <i class="fas fa-copy"></i> Copy Reference
                     </button>
-                    <button onclick="completeExistingOrderPayment('${paymentData.paymentId}', '${paymentData.orderId}')" 
+                    <button onclick="completeExistingOrderPayment('${paymentData.orderId}')" 
                             style="padding: 12px 20px; background: #40c057; color: white; border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
                         <i class="fas fa-check-circle"></i> Mark as Paid
                     </button>
@@ -1873,7 +2186,7 @@ function showBankTransferDetailsForExistingOrder(paymentData) {
     document.body.insertAdjacentHTML('beforeend', bankDetailsHTML);
 }
 
-async function completeExistingOrderPayment(paymentId, orderId) {
+async function completeExistingOrderPayment(orderId) {
     try {
         showLoading(true);
         
@@ -1881,46 +2194,39 @@ async function completeExistingOrderPayment(paymentId, orderId) {
             throw new Error('Firebase not initialized');
         }
         
-        // Update payment status
-        const paymentRef = firebaseDB.collection('payments').doc(paymentId);
-        await paymentRef.update({
-            status: 'completed',
-            completedAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        });
+        // Calculate new payment details
+        const paidAmount = existingOrderData.submittedAmount || existingOrderData.advancePayment || 0;
+        const remainingAmount = existingOrderData.remainingPayment || (existingOrderData.total - paidAmount);
+        const newPaidAmount = paidAmount + remainingAmount;
         
         // Update order with new payment
         const orderRef = firebaseDB.collection('orders').doc(orderId);
-        const orderDoc = await orderRef.get();
-        const orderData = orderDoc.data();
-        
-        const newPaidAmount = (orderData.submittedAmount || 0) + (existingOrderData.remainingPayment || 0);
-        const newRemaining = 0;
         
         await orderRef.update({
             submittedAmount: newPaidAmount,
-            remainingPayment: newRemaining,
+            remainingPayment: 0,
             paymentStatus: 'fully_paid',
+            status: 'processing',
             updatedAt: new Date().toISOString(),
             paymentHistory: firebase.firestore.FieldValue.arrayUnion({
-                paymentId: paymentId,
-                amount: existingOrderData.remainingPayment || 0,
+                paymentId: 'bank_' + Date.now(),
+                amount: remainingAmount,
                 type: 'remaining_payment',
-                method: selectedPaymentMethod,
+                method: 'bank_transfer',
                 status: 'completed',
                 date: new Date().toISOString(),
-                reference: `BANK-${paymentId.substring(0, 8)}`
+                reference: `${existingOrderData.orderNumber}-REM`
             })
         });
         
         // Send notification to user
-        await sendPaymentNotificationToUser(orderData);
+        await sendPaymentNotificationToUser();
         
         // Close modal and redirect
         closeBankDetailsModal();
         
         // Redirect to order confirmation
-        window.location.href = `order-confirmation.html?order=${orderData.orderNumber}&payment=bank&type=remaining`;
+        window.location.href = `order-confirmation.html?order=${existingOrderData.orderNumber}&payment=bank&type=remaining`;
         
     } catch (error) {
         console.error('Error completing existing order payment:', error);
@@ -1930,24 +2236,24 @@ async function completeExistingOrderPayment(paymentId, orderId) {
     }
 }
 
-async function sendPaymentNotificationToUser(orderData) {
+async function sendPaymentNotificationToUser() {
     try {
         if (!firebaseDB) return;
         
         const notification = {
             title: 'Payment Received - Order Updated',
-            message: `Your remaining payment of £${existingOrderData.remainingPayment?.toFixed(2) || '0.00'} has been received for order ${orderData.orderNumber}. Order status will be updated shortly.`,
-            orderId: orderData.id,
-            orderNumber: orderData.orderNumber,
+            message: `Your remaining payment of £${existingOrderData.remainingPayment?.toFixed(2) || '0.00'} has been received for order ${existingOrderData.orderNumber}. Order status will be updated shortly.`,
+            orderId: existingOrderData.id,
+            orderNumber: existingOrderData.orderNumber,
             type: 'payment_confirmed',
-            userId: orderData.userId,
+            userId: existingOrderData.userId,
             createdAt: new Date().toISOString(),
             read: false,
             readAt: null
         };
         
         const notificationRef = firebaseDB.collection('users')
-            .doc(orderData.userId)
+            .doc(existingOrderData.userId)
             .collection('notifications')
             .doc();
         
@@ -2046,7 +2352,21 @@ async function validateAndProcessPayment() {
 }
 
 // ============================================
-// AUTHENTICATION SYSTEM (Remains same)
+// REGULAR PAYMENT PROCESSING
+// ============================================
+
+async function processRegularPayment() {
+    console.log("Processing regular payment...");
+    
+    if (!validateForm()) {
+        return;
+    }
+    
+    showError('Regular payment processing coming soon. For demo, use the existing order payment flow.');
+}
+
+// ============================================
+// AUTHENTICATION SYSTEM
 // ============================================
 
 class CheckoutAuthSystem {
@@ -2176,20 +2496,7 @@ class CheckoutAuthSystem {
 }
 
 // ============================================
-// ORIGINAL FUNCTIONS (for regular checkout)
-// ============================================
-
-// [Keep all the original functions for regular checkout flow - they remain the same]
-// Only the validateAndProcessPayment function needs to route to different functions
-
-async function processRegularPayment() {
-    // Original payment processing logic
-    console.log("Processing regular payment...");
-    // ... existing code for regular payment processing
-}
-
-// ============================================
-// HELPER FUNCTIONS (Remain same)
+// HELPER FUNCTIONS
 // ============================================
 
 function getDefaultImage(category) {
@@ -2227,6 +2534,32 @@ function showNotification(message) {
 
 function showError(message) {
     alert(message);
+}
+
+function showPaymentProcessing(message) {
+    const modal = document.getElementById('paymentModal');
+    const paymentTitle = document.getElementById('paymentTitle');
+    const paymentMessage = document.getElementById('paymentMessage');
+    const paymentSpinner = document.getElementById('paymentSpinner');
+    
+    if (modal && paymentTitle && paymentMessage && paymentSpinner) {
+        paymentTitle.textContent = 'Processing Payment';
+        paymentMessage.textContent = message || 'Please wait while we process your payment...';
+        paymentSpinner.style.display = 'block';
+        modal.style.display = 'flex';
+    }
+}
+
+function hidePaymentProcessing() {
+    const modal = document.getElementById('paymentModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+function cancelPayment() {
+    hidePaymentProcessing();
+    showNotification('Payment cancelled');
 }
 
 function goBack() {
