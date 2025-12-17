@@ -117,19 +117,72 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth(app);
-
-// ================= STRIPE =================
-const stripe = Stripe("YOUR_STRIPE_PUBLISHABLE_KEY");
-const elements = stripe.elements();
-const card = elements.create('card');
-card.mount('#card-element');
-
+// ================= AUTH SYSTEM =================
+// Existing CheckoutAuthSystem will be used
+const authSystem = new CheckoutAuthSystem();
+let currentUserId = null;
 let subtotal = 0;
 
 async function loadCheckout() {
-  const user = auth.currentUser;
-  if(!user){ alert('Please login'); return; }
+  // INIT AUTH (LOGIN / GUEST)
+  const user = await authSystem.init();
+  currentUserId = authSystem.getUserId();
+
+  const container = document.getElementById('cartItems');
+  container.innerHTML = '';
+  subtotal = 0;
+
+  // ================= BUY NOW ITEMS =================
+  const buyNowSnap = await getDocs(collection(db, 'buyNowItems'));
+  buyNowSnap.forEach(docSnap => {
+    const item = docSnap.data();
+    if(item.userId === currentUserId && item.isBuyNow === true){
+      const price = (item.price || 0) * (item.quantity || 1);
+      subtotal += price;
+
+      container.innerHTML += `
+        <div class="product">
+          <img src="${item.image}" />
+          <div>
+            <strong>${item.name}</strong><br>
+            Buy Now Item<br>
+            Qty: ${item.quantity}<br>
+            £${price}
+          </div>
+        </div>`;
+    }
+  });
+
+  // ================= CART ITEMS =================
+  const cartRef = doc(db,'users',currentUserId,'userCarts','cart');
+  const cartSnap = await getDoc(cartRef);
+
+  if(cartSnap.exists()){
+    const items = cartSnap.data().items || [];
+    items.forEach(item => {
+      const price = (item.price || 0) * (item.quantity || 1);
+      subtotal += price;
+
+      container.innerHTML += `
+        <div class="product">
+          <img src="${item.image}" />
+          <div>
+            <strong>${item.name}</strong><br>
+            Cart Item<br>
+            Qty: ${item.quantity}<br>
+            £${price}
+          </div>
+        </div>`;
+    });
+  }
+
+  const advance = subtotal * 0.3;
+  document.getElementById('subtotal').innerText = subtotal.toFixed(2);
+  document.getElementById('advance').innerText = advance.toFixed(2);
+  document.getElementById('payNow').innerText = advance.toFixed(2);
+}
+
+loadCheckout();
 
   const cartRef = doc(db,'users',user.uid,'userCarts','cart');
   const snap = await getDoc(cartRef);
