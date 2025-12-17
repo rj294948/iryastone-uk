@@ -480,6 +480,57 @@ body {
 .status-cancelled { background: #ffe3e3; color: var(--cancelled); border: 1px solid #ffa8a8; }
 .status-returned { background: #e9ecef; color: var(--returned); border: 1px solid #ced4da; }
 
+/* ===== WARNING BANNER ===== */
+.warning-banner {
+    background: linear-gradient(135deg, #ff6b6b, #ff922b);
+    color: white;
+    padding: 15px;
+    border-radius: var(--border-radius);
+    margin: 15px 0;
+    animation: warningPulse 2s infinite;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-left: 5px solid #ff6b6b;
+}
+
+@keyframes warningPulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(255, 107, 107, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0); }
+}
+
+.warning-content {
+    flex: 1;
+}
+
+.warning-title {
+    font-weight: 600;
+    margin-bottom: 5px;
+    font-size: 15px;
+}
+
+.warning-message {
+    font-size: 13px;
+    opacity: 0.9;
+}
+
+.warning-action-btn {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: 1px solid white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+}
+
+.warning-action-btn:hover {
+    background: rgba(255,255,255,0.3);
+}
+
 /* ===== MAIN CONTAINER ===== */
 .container {
     max-width: 1200px;
@@ -1229,6 +1280,7 @@ body {
           <h3>Notifications</h3>
           <div class="notification-actions">
             <button onclick="markAllAsRead()">Mark all read</button>
+            <button onclick="window.location.href='notifications.html'">View All</button>
           </div>
         </div>
         <div class="notification-list" id="notificationList">
@@ -1296,6 +1348,11 @@ body {
     <i class="fas fa-box"></i>
     <span>Orders</span>
   </a>
+  <a href="notifications.html" class="nav-btn">
+    <i class="fas fa-bell"></i>
+    <span>Alerts</span>
+    <span class="cart-badge" id="bottomNavBadge">0</span>
+  </a>
   <a href="account.html" class="nav-btn">
     <i class="fas fa-user"></i>
     <span>Account</span>
@@ -1317,7 +1374,9 @@ import {
   where,
   limit,
   getDoc,
-  Timestamp
+  Timestamp,
+  addDoc,
+  deleteDoc
 } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
 // Firebase Configuration
@@ -1433,6 +1492,9 @@ async function loadOrders() {
     // Check if we have a notification redirect
     checkNotificationRedirect();
     
+    // Check for warning notifications
+    checkWarningNotifications();
+    
   } catch (error) {
     console.error("❌ Error loading orders:", error);
     showEmptyState("Failed to load orders. Please try again.");
@@ -1504,6 +1566,9 @@ async function setupOrdersListener() {
         
         console.log(`✅ Loaded ${orders.length} orders for user: ${currentUserId}`);
         displayOrders(orders);
+        
+        // Check for warning notifications after orders are loaded
+        checkWarningNotifications();
         
       }, 
       (error) => {
@@ -1634,8 +1699,13 @@ function displayOrders(ordersList) {
     const isCancelled = orderStatus === 'cancelled' || orderStatus === 'returned';
     const cardClass = isCancelled ? 'order-card cancelled' : 'order-card';
     
+    // Check if this order has warning
+    const hasWarning = checkOrderWarning(order);
+    
     ordersHTML += `
       <div class="${cardClass}" data-order-id="${order.id}" data-order-number="${order.orderNumber || ''}">
+        ${hasWarning ? createWarningBanner(order) : ''}
+        
         <div class="order-header">
           <div class="order-info">
             <h3>${order.orderNumber || 'Order #' + order.id.substring(0, 8)}</h3>
@@ -1774,11 +1844,11 @@ function displayOrders(ordersList) {
             <i class="fas fa-file-invoice"></i> Invoice
           </button>
           ${!isCancelled && orderStatus !== 'delivered' && orderStatus !== 'returned' && remainingAmount > 0 ? `
-          <button class="btn btn-danger" onclick="payRemainingAmount('${order.id}', '${order.orderNumber || order.id}')">
+          <button class="btn btn-danger" onclick="payRemainingAmount('${order.id}', '${order.orderNumber || order.id}', ${remainingAmount})">
             <i class="fas fa-money-bill-wave"></i> Pay Remaining
           </button>
           ` : ''}
-          ${!isCancelled && orderStatus !== 'delivered' && orderStatus !== 'returned' && remainingAmount <= 0 ? `
+          ${!isCancelled && orderStatus !== 'delivered' && orderStatus !== 'returned' && remainingAmount <= 0 && orderStatus !== 'ready_to_ship' ? `
           <button class="btn btn-danger" onclick="cancelOrder('${order.id}')">
             <i class="fas fa-times"></i> Cancel
           </button>
@@ -1805,6 +1875,61 @@ function displayOrders(ordersList) {
       }
     }, 500);
   }
+}
+
+function checkOrderWarning(order) {
+  const orderStatus = order.status || order.orderStatus || 'payment_pending';
+  const paidAmount = order.submittedAmount || order.advancePayment || 0;
+  const totalAmount = order.total || 0;
+  const remainingAmount = order.remainingPayment || (totalAmount - paidAmount);
+  
+  // Check for ready_to_ship status with remaining payment
+  if (orderStatus === 'ready_to_ship' && remainingAmount > 0) {
+    return {
+      type: 'warning',
+      title: 'URGENT: Payment Required',
+      message: `Your order is ready to ship but remaining payment of £${remainingAmount.toFixed(2)} is pending. Complete payment within 1 hour to avoid order cancellation. No refund will be issued for cancelled orders.`,
+      action: 'payNow'
+    };
+  }
+  
+  // Check for payment pending status
+  if (orderStatus === 'payment_pending' || remainingAmount > 0) {
+    return {
+      type: 'payment',
+      title: 'Payment Pending',
+      message: `Remaining payment of £${remainingAmount.toFixed(2)} is pending. Complete payment to proceed with your order.`,
+      action: 'payNow'
+    };
+  }
+  
+  return null;
+}
+
+function createWarningBanner(order) {
+  const warning = checkOrderWarning(order);
+  if (!warning) return '';
+  
+  return `
+    <div class="warning-banner">
+      <i class="fas fa-exclamation-triangle" style="font-size: 20px;"></i>
+      <div class="warning-content">
+        <div class="warning-title">${warning.title}</div>
+        <div class="warning-message">${warning.message}</div>
+      </div>
+      <button class="warning-action-btn" onclick="event.stopPropagation(); handleWarningAction('${order.id}')">
+        ${warning.action === 'payNow' ? 'Pay Now' : 'View Details'}
+      </button>
+    </div>
+  `;
+}
+
+function handleWarningAction(orderId) {
+  const order = orders.find(o => o.id === orderId);
+  if (!order) return;
+  
+  const remainingAmount = order.remainingPayment || (order.total - (order.submittedAmount || order.advancePayment || 0));
+  payRemainingAmount(order.id, order.orderNumber || order.id, remainingAmount);
 }
 
 function getAddressHTML(address) {
@@ -1885,6 +2010,104 @@ function checkNotificationRedirect() {
       console.error("❌ Error processing notification redirect:", error);
       localStorage.removeItem('irya_notification_redirect');
     }
+  }
+}
+
+// ============================================
+// CHECK WARNING NOTIFICATIONS
+// ============================================
+
+function checkWarningNotifications() {
+  orders.forEach(order => {
+    const orderStatus = order.status || order.orderStatus || 'payment_pending';
+    const paidAmount = order.submittedAmount || order.advancePayment || 0;
+    const totalAmount = order.total || 0;
+    const remainingAmount = order.remainingPayment || (totalAmount - paidAmount);
+    
+    // Check for ready_to_ship with pending payment
+    if (orderStatus === 'ready_to_ship' && remainingAmount > 0) {
+      // Check if warning notification already exists
+      const hasWarningNotification = notifications.some(n => 
+        n.orderId === order.id && 
+        n.type === 'warning' && 
+        n.title && n.title.includes('URGENT')
+      );
+      
+      if (!hasWarningNotification) {
+        // Create warning notification
+        createWarningNotification(order);
+      }
+    }
+    
+    // Check for payment pending
+    if ((orderStatus === 'payment_pending' || remainingAmount > 0) && orderStatus !== 'ready_to_ship') {
+      // Check if payment notification already exists
+      const hasPaymentNotification = notifications.some(n => 
+        n.orderId === order.id && 
+        n.type === 'payment'
+      );
+      
+      if (!hasPaymentNotification) {
+        // Create payment notification
+        createPaymentNotification(order);
+      }
+    }
+  });
+}
+
+async function createWarningNotification(order) {
+  try {
+    if (!db || !currentUserId) return;
+    
+    const remainingAmount = order.remainingPayment || (order.total - (order.submittedAmount || order.advancePayment || 0));
+    
+    const warningNotification = {
+      title: `URGENT: Payment Required - ${order.orderNumber || order.id.substring(0, 8)}`,
+      message: `Your order ${order.orderNumber || ''} is ready to ship but remaining payment of £${remainingAmount.toFixed(2)} is pending. Complete payment within 1 hour to avoid order cancellation. No refund will be issued for cancelled orders.`,
+      type: 'warning',
+      priority: 'high',
+      orderId: order.id,
+      orderNumber: order.orderNumber,
+      createdAt: new Date().toISOString(),
+      read: false,
+      userId: currentUserId
+    };
+    
+    const notificationsRef = collection(db, "users", currentUserId, "notifications");
+    await addDoc(notificationsRef, warningNotification);
+    
+    console.log("⚠️ Warning notification created for order:", order.id);
+    
+  } catch (error) {
+    console.error("❌ Error creating warning notification:", error);
+  }
+}
+
+async function createPaymentNotification(order) {
+  try {
+    if (!db || !currentUserId) return;
+    
+    const remainingAmount = order.remainingPayment || (order.total - (order.submittedAmount || order.advancePayment || 0));
+    
+    const paymentNotification = {
+      title: `Payment Pending - ${order.orderNumber || order.id.substring(0, 8)}`,
+      message: `Remaining payment of £${remainingAmount.toFixed(2)} is pending for order ${order.orderNumber || ''}. Please complete payment to proceed with your order.`,
+      type: 'payment',
+      priority: 'medium',
+      orderId: order.id,
+      orderNumber: order.orderNumber,
+      createdAt: new Date().toISOString(),
+      read: false,
+      userId: currentUserId
+    };
+    
+    const notificationsRef = collection(db, "users", currentUserId, "notifications");
+    await addDoc(notificationsRef, paymentNotification);
+    
+    console.log("💰 Payment notification created for order:", order.id);
+    
+  } catch (error) {
+    console.error("❌ Error creating payment notification:", error);
   }
 }
 
@@ -2136,7 +2359,7 @@ function trackOnWebsite(trackingNumber) {
 // PAY REMAINING AMOUNT (UPDATED)
 // ============================================
 
-function payRemainingAmount(orderId, orderNumber) {
+function payRemainingAmount(orderId, orderNumber, amount) {
   try {
     const order = orders.find(o => o.id === orderId);
     if (!order) {
@@ -2146,7 +2369,7 @@ function payRemainingAmount(orderId, orderNumber) {
     
     const paidAmount = order.submittedAmount || order.advancePayment || 0;
     const totalAmount = order.total || 0;
-    const remainingAmount = order.remainingPayment || (totalAmount - paidAmount);
+    const remainingAmount = amount || order.remainingPayment || (totalAmount - paidAmount);
     
     if (remainingAmount <= 0) {
       showMessage("No remaining amount to pay");
@@ -2165,8 +2388,11 @@ function payRemainingAmount(orderId, orderNumber) {
       userId: currentUserId,
       userEmail: userEmail,
       userName: userName,
+      shippingAddress: order.shippingAddress,
+      billingAddress: order.billingAddress,
       paymentType: 'remaining_payment',
-      source: 'orders_page'
+      source: 'orders_page',
+      isUrgent: order.status === 'ready_to_ship'
     };
     
     // Save to localStorage
@@ -2386,7 +2612,7 @@ function createOrderDetailsHTML(order) {
     
     <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 30px;">
       ${remainingAmount > 0 ? `
-      <button onclick="payRemainingAmount('${order.id}', '${order.orderNumber || order.id}')" 
+      <button onclick="payRemainingAmount('${order.id}', '${order.orderNumber || order.id}', ${remainingAmount})" 
               style="background: var(--payment-pending); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
         <i class="fas fa-money-bill-wave"></i> Pay Remaining £${remainingAmount.toFixed(2)}
       </button>
@@ -2496,21 +2722,31 @@ function createNotificationElement(note) {
   let badgeText = 'Info';
   let isPaymentNotification = false;
   let isTrackingNotification = false;
+  let isWarningNotification = false;
   
-  if (notificationType === 'payment_remaining_warning' || 
-      note.title?.includes('Payment Pending') ||
-      note.title?.includes('Remaining Payment') ||
-      note.message?.includes('Remaining payment') ||
-      note.message?.includes('remaining balance') ||
-      note.message?.includes('within 1 hour') ||
-      note.message?.includes('clear the remaining payment')) {
+  if (note.type === 'warning' || note.title?.includes('URGENT')) {
     icon = 'fa-exclamation-triangle';
     color = '#ff6b6b';
     actionText = `<span style="color: var(--payment-pending);">
       <i class="fas fa-money-bill-wave"></i> Pay Now
     </span>`;
+    badgeText = 'Urgent';
+    notificationType = 'warning';
+    isPaymentNotification = true;
+    isWarningNotification = true;
+  } else if (notificationType === 'payment_remaining_warning' || 
+      note.title?.includes('Payment Pending') ||
+      note.title?.includes('Remaining Payment') ||
+      note.message?.includes('Remaining payment') ||
+      note.message?.includes('remaining balance') ||
+      note.type === 'payment') {
+    icon = 'fa-exclamation-triangle';
+    color = '#ff922b';
+    actionText = `<span style="color: var(--payment-advance);">
+      <i class="fas fa-money-bill-wave"></i> Pay Now
+    </span>`;
     badgeText = 'Payment';
-    notificationType = 'payment_remaining';
+    notificationType = 'payment';
     isPaymentNotification = true;
   } else if (notificationType === 'payment_updated' ||
              notificationType === 'payment_completed' ||
@@ -2573,6 +2809,7 @@ function createNotificationElement(note) {
       notificationType,
       isPaymentNotification,
       isTrackingNotification,
+      isWarningNotification,
       note.message
     );
   };
@@ -2597,6 +2834,7 @@ function createNotificationElement(note) {
   div.setAttribute('data-type', notificationType);
   div.setAttribute('data-is-payment', isPaymentNotification);
   div.setAttribute('data-is-tracking', isTrackingNotification);
+  div.setAttribute('data-is-warning', isWarningNotification);
   
   return div;
 }
@@ -2641,6 +2879,7 @@ async function handleNotificationClick(
   notificationType,
   isPaymentNotification,
   isTrackingNotification,
+  isWarningNotification,
   message
 ) {
   try {
@@ -2651,6 +2890,7 @@ async function handleNotificationClick(
       notificationType,
       isPaymentNotification,
       isTrackingNotification,
+      isWarningNotification,
       currentUserId
     });
     
@@ -2667,8 +2907,8 @@ async function handleNotificationClick(
     closeNotifications();
     
     // Handle based on notification type
-    if (isPaymentNotification) {
-      handlePaymentNotificationClick(orderId, orderNumber, message);
+    if (isPaymentNotification || isWarningNotification) {
+      handlePaymentNotificationClick(orderId, orderNumber, message, isWarningNotification);
     } else if (isTrackingNotification) {
       handleTrackingNotificationClick(orderId, orderNumber);
     } else {
@@ -2682,8 +2922,8 @@ async function handleNotificationClick(
   }
 }
 
-function handlePaymentNotificationClick(orderId, orderNumber, message) {
-  console.log("💰 Handling payment notification click");
+function handlePaymentNotificationClick(orderId, orderNumber, message, isWarning) {
+  console.log("💰 Handling payment notification click", { isWarning });
   
   // Try to find the order
   let order = null;
@@ -2704,7 +2944,7 @@ function handlePaymentNotificationClick(orderId, orderNumber, message) {
     
     if (remainingAmount > 0) {
       // Direct redirect to checkout for remaining payment
-      payRemainingAmount(order.id, order.orderNumber || orderNumber);
+      payRemainingAmount(order.id, order.orderNumber || orderNumber, remainingAmount);
     } else {
       // No remaining amount, show order details
       showMessage("This order is already fully paid.");
@@ -2744,7 +2984,8 @@ function handlePaymentNotificationClick(orderId, orderNumber, message) {
             userEmail: userEmail,
             userName: userName,
             paymentType: 'remaining_payment',
-            source: 'notification'
+            source: 'notification',
+            isUrgent: isWarning
           };
           
           localStorage.setItem('irya_pending_payment_order', JSON.stringify(checkoutData));
@@ -2842,16 +3083,23 @@ async function markAllAsRead() {
 
 function updateNotificationBadge(count = null) {
   const badge = document.getElementById("notificationBadge");
-  if (!badge) return;
+  const bottomNavBadge = document.getElementById("bottomNavBadge");
   
   const unreadCount = count !== null ? count : notifications.filter(n => !n.read).length;
   
-  if (unreadCount > 0) {
-    badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
-    badge.style.display = 'flex';
-  } else {
-    badge.style.display = 'none';
-  }
+  [badge, bottomNavBadge].forEach(badgeElement => {
+    if (badgeElement) {
+      if (unreadCount > 0) {
+        badgeElement.textContent = unreadCount > 99 ? '99+' : unreadCount;
+        badgeElement.style.display = 'flex';
+      } else {
+        badgeElement.style.display = 'none';
+      }
+    }
+  });
+  
+  // Also update in localStorage for other pages
+  localStorage.setItem('irya_unread_notifications', unreadCount.toString());
 }
 
 // ============================================
