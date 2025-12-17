@@ -1059,16 +1059,16 @@ const checkoutState = {
 };
 
 // ============================================
-// SIMPLIFIED AUTH SYSTEM
+// AUTH SYSTEM (SAME AS CART)
 // ============================================
 
 class SimpleAuthSystem {
     constructor() {
-        this.authKey = 'irya_stone_user';
+        this.authKey = 'irya_stone_auth_user';
         this.currentUser = null;
     }
     
-    init() {
+    async init() {
         return new Promise((resolve) => {
             const userData = localStorage.getItem(this.authKey);
             if (userData) {
@@ -1096,26 +1096,45 @@ class SimpleAuthSystem {
                     resolve(this);
                 });
             } else {
+                if (!this.currentUser) {
+                    let guestId = localStorage.getItem('irya_guest_id');
+                    if (!guestId) {
+                        guestId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                        localStorage.setItem('irya_guest_id', guestId);
+                    }
+                    this.currentUser = {
+                        uid: guestId,
+                        displayName: 'Guest',
+                        isFirebaseUser: false,
+                        isGuest: true
+                    };
+                    localStorage.setItem(this.authKey, JSON.stringify(this.currentUser));
+                }
                 resolve(this);
             }
         });
     }
     
     isLoggedIn() {
-        return this.currentUser !== null && this.currentUser.isFirebaseUser;
+        return this.currentUser && this.currentUser.isFirebaseUser === true;
     }
     
     getUserId() {
-        if (this.isLoggedIn()) {
-            return this.currentUser.uid;
+        if (!this.currentUser) {
+            let guestId = localStorage.getItem('irya_guest_id');
+            if (!guestId) {
+                guestId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('irya_guest_id', guestId);
+            }
+            this.currentUser = {
+                uid: guestId,
+                displayName: 'Guest',
+                isFirebaseUser: false,
+                isGuest: true
+            };
+            localStorage.setItem(this.authKey, JSON.stringify(this.currentUser));
         }
-        
-        let guestId = localStorage.getItem('irya_guest_id');
-        if (!guestId) {
-            guestId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('irya_guest_id', guestId);
-        }
-        return guestId;
+        return this.currentUser.uid;
     }
     
     getUserName() {
@@ -1132,125 +1151,138 @@ class SimpleAuthSystem {
 // ============================================
 
 class CheckoutCartSystem {
-    constructor() {
+    constructor(authSystem) {
+        this.authSystem = authSystem;
         this.localCartKey = 'irya_local_cart_';
         this.buyNowKey = 'irya_buynow_cart_';
-        this.cartItems = [];
-        this.buyNowItem = null;
+        this.orderItems = [];
         this.userId = null;
+        this.isBuyNowFlow = false;
     }
     
     async init() {
-        // Get user ID
-        this.userId = await this.getUserId();
-        
-        // Check if this is a Buy Now flow
-        this.isBuyNowFlow = localStorage.getItem('irya_is_buynow_flow') === 'true';
-        
-        if (this.isBuyNowFlow) {
-            await this.loadBuyNowItem();
-        } else {
-            await this.loadCartItems();
-        }
-        
+        this.userId = this.authSystem.getUserId();
+        await this.loadOrderItems();
         return this;
     }
     
-    async getUserId() {
-        // Try to get from auth system
-        if (authSystem) {
-            return authSystem.getUserId();
-        }
-        
-        // Check localStorage
-        const userData = localStorage.getItem('irya_stone_user');
-        if (userData) {
-            try {
-                const user = JSON.parse(userData);
-                if (user.uid) {
-                    return user.uid;
-                }
-            } catch (e) {
-                // Continue to guest ID
-            }
-        }
-        
-        // Guest ID
-        let guestId = localStorage.getItem('irya_guest_id');
-        if (!guestId) {
-            guestId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('irya_guest_id', guestId);
-        }
-        return guestId;
-    }
-    
-    async loadCartItems() {
+    async loadOrderItems() {
         try {
-            const cartKey = this.localCartKey + this.userId;
-            const cartData = localStorage.getItem(cartKey);
-            this.cartItems = cartData ? JSON.parse(cartData) : [];
+            // Check if this is a Buy Now flow
+            const urlParams = new URLSearchParams(window.location.search);
+            this.isBuyNowFlow = urlParams.get('buynow') === 'true' || 
+                                localStorage.getItem('irya_is_buynow_flow') === 'true';
             
-            // Also check Firebase if user is logged in
-            if (authSystem && authSystem.isLoggedIn() && firebaseDB) {
-                const cartDoc = await firebaseDB.collection('userCarts').doc(this.userId).get();
-                if (cartDoc.exists) {
-                    const firebaseCart = cartDoc.data().items || [];
-                    if (firebaseCart.length > 0) {
-                        this.cartItems = firebaseCart;
-                    }
-                }
+            if (this.isBuyNowFlow) {
+                await this.loadBuyNowItems();
+            } else {
+                await this.loadCartItems();
             }
             
-            return this.cartItems;
+            console.log("Loaded order items:", this.orderItems.length, "Buy Now:", this.isBuyNowFlow);
+            return this.orderItems;
         } catch (error) {
-            console.error('Error loading cart items:', error);
-            this.cartItems = [];
+            console.error('Error loading order items:', error);
+            this.orderItems = [];
             return [];
         }
     }
     
-    async loadBuyNowItem() {
-        try {
-            const buyNowKey = this.buyNowKey + this.userId;
-            const buyNowData = localStorage.getItem(buyNowKey);
-            
-            if (buyNowData) {
-                const items = JSON.parse(buyNowData);
-                this.buyNowItem = items.length > 0 ? items[0] : null;
+    async loadCartItems() {
+        const cartKey = this.localCartKey + this.userId;
+        const cartData = localStorage.getItem(cartKey);
+        this.orderItems = cartData ? JSON.parse(cartData) : [];
+        
+        // Also try Firebase if logged in
+        if (this.authSystem.isLoggedIn() && firebaseDB) {
+            try {
+                const cartDoc = await firebaseDB.collection('userCarts').doc(this.userId).get();
+                if (cartDoc.exists) {
+                    const firebaseCart = cartDoc.data().items || [];
+                    if (firebaseCart.length > 0) {
+                        // Merge with local cart
+                        const mergedCart = this.mergeCarts(this.orderItems, firebaseCart);
+                        this.orderItems = mergedCart;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading from Firebase:', error);
             }
-            
-            // Also check session storage
+        }
+    }
+    
+    async loadBuyNowItems() {
+        try {
+            // First try session storage
             const sessionBuyNow = sessionStorage.getItem('irya_current_buynow');
             if (sessionBuyNow) {
-                this.buyNowItem = JSON.parse(sessionBuyNow);
+                this.orderItems = [JSON.parse(sessionBuyNow)];
+                return;
             }
             
-            return this.buyNowItem;
+            // Then try localStorage
+            const buyNowKey = this.buyNowKey + this.userId;
+            const buyNowData = localStorage.getItem(buyNowKey);
+            if (buyNowData) {
+                this.orderItems = JSON.parse(buyNowData);
+            }
         } catch (error) {
-            console.error('Error loading buy now item:', error);
-            this.buyNowItem = null;
-            return null;
+            console.error('Error loading buy now items:', error);
+            this.orderItems = [];
         }
+    }
+    
+    mergeCarts(localCart, firebaseCart) {
+        const mergedMap = new Map();
+        
+        localCart.forEach(item => {
+            const key = item.uniqueId || item.id;
+            mergedMap.set(key, item);
+        });
+        
+        firebaseCart.forEach(item => {
+            const key = item.uniqueId || item.id;
+            if (!mergedMap.has(key)) {
+                mergedMap.set(key, item);
+            }
+        });
+        
+        return Array.from(mergedMap.values());
     }
     
     getOrderItems() {
-        if (this.isBuyNowFlow && this.buyNowItem) {
-            return [this.buyNowItem];
-        }
-        return this.cartItems;
+        return this.orderItems;
     }
     
     getItemCount() {
-        const items = this.getOrderItems();
-        return items.reduce((total, item) => total + (item.quantity || 1), 0);
+        return this.orderItems.reduce((total, item) => total + (item.quantity || 1), 0);
     }
     
     getSubtotal() {
-        const items = this.getOrderItems();
-        return items.reduce((total, item) => {
-            const itemTotal = item.calculatedPrice || (item.price * item.quantity);
+        return this.orderItems.reduce((total, item) => {
+            const itemTotal = item.calculatedPrice || (item.price * (item.quantity || 1));
             return total + itemTotal;
         }, 0);
+    }
+    
+    getTax() {
+        return this.getSubtotal() * 0.2; // 20% VAT
+    }
+    
+    getShippingCost(shippingMethod = 'standard') {
+        return shippingMethod === 'express' ? 45.00 : 25.00;
+    }
+    
+    getTotal(shippingMethod = 'standard') {
+        const subtotal = this.getSubtotal();
+        const tax = this.getTax();
+        const shipping = this.getShippingCost(shippingMethod);
+        return subtotal + tax + shipping;
+    }
+    
+    getAdvancePayment(shippingMethod = 'standard') {
+        const total = this.getTotal(shippingMethod);
+        return total * 0.3;
     }
     
     clearBuyNowData() {
@@ -1258,8 +1290,6 @@ class CheckoutCartSystem {
         localStorage.removeItem(buyNowKey);
         localStorage.removeItem('irya_is_buynow_flow');
         sessionStorage.removeItem('irya_current_buynow');
-        this.buyNowItem = null;
-        this.isBuyNowFlow = false;
     }
     
     async clearCartAfterOrder() {
@@ -1269,10 +1299,9 @@ class CheckoutCartSystem {
             // Clear local cart
             const cartKey = this.localCartKey + this.userId;
             localStorage.removeItem(cartKey);
-            this.cartItems = [];
             
             // Clear Firebase cart if logged in
-            if (authSystem && authSystem.isLoggedIn() && firebaseDB) {
+            if (this.authSystem.isLoggedIn() && firebaseDB) {
                 try {
                     await firebaseDB.collection('userCarts').doc(this.userId).delete();
                 } catch (error) {
@@ -1288,8 +1317,10 @@ class CheckoutCartSystem {
     updateCartBadge() {
         const cartBadge = document.getElementById('cartBadge');
         if (cartBadge) {
-            cartBadge.textContent = this.getItemCount();
-            cartBadge.style.display = this.getItemCount() > 0 ? 'flex' : 'none';
+            // If cart is empty, show 0
+            const count = this.isBuyNowFlow ? 0 : this.getItemCount();
+            cartBadge.textContent = count;
+            cartBadge.style.display = count > 0 ? 'flex' : 'none';
         }
     }
 }
@@ -1364,6 +1395,11 @@ function goToStep(step) {
     document.getElementById('reviewSection').style.display = step === 3 ? 'block' : 'none';
     
     checkoutState.currentStep = step;
+    
+    // If going to step 3, update review content
+    if (step === 3) {
+        updateOrderReview();
+    }
     
     // Scroll to top of form
     window.scrollTo({ top: 180, behavior: 'smooth' });
@@ -1468,8 +1504,8 @@ function validatePaymentMethod() {
     // Save payment data to state
     checkoutState.orderData.payment = {
         method: checkoutState.paymentMethod,
-        status: checkoutState.paymentMethod === 'cod' ? 'pending' : 'pending',
-        advancePayment: checkoutState.advancePayment,
+        status: 'pending',
+        advancePayment: checkoutState.paymentMethod === 'cod',
         advanceAmount: calculateAdvanceAmount()
     };
     
@@ -1486,6 +1522,11 @@ function detectCardBrand(cardNumber) {
     if (/^3(?:0[0-5]|[68])/.test(cleaned)) return 'Diners Club';
     
     return 'Unknown';
+}
+
+function calculateAdvanceAmount() {
+    const total = checkoutState.orderData.totals.total || 0;
+    return total * 0.3;
 }
 
 // ============================================
@@ -1530,7 +1571,6 @@ function selectPaymentMethod(method) {
     }
     
     // Update advance payment display
-    checkoutState.advancePayment = method === 'cod';
     updateOrderSummary();
 }
 
@@ -1543,10 +1583,10 @@ function updateOrderSummary() {
     
     const items = cartSystem.getOrderItems();
     const subtotal = cartSystem.getSubtotal();
-    const shipping = checkoutState.shippingCost;
-    const tax = subtotal * 0.2; // 20% VAT
+    const shipping = cartSystem.getShippingCost(checkoutState.shippingMethod);
+    const tax = cartSystem.getTax();
     const total = subtotal + shipping + tax;
-    const advanceAmount = total * 0.3;
+    const advanceAmount = checkoutState.paymentMethod === 'cod' ? total * 0.3 : 0;
     
     // Update amounts
     document.getElementById('subtotalAmount').textContent = formatPrice(subtotal);
@@ -1558,7 +1598,7 @@ function updateOrderSummary() {
     const advanceRow = document.getElementById('advancePaymentRow');
     const advanceAmountEl = document.getElementById('advanceAmount');
     
-    if (checkoutState.advancePayment) {
+    if (checkoutState.paymentMethod === 'cod') {
         advanceRow.style.display = 'flex';
         advanceAmountEl.textContent = formatPrice(advanceAmount);
     } else {
@@ -1573,20 +1613,35 @@ function updateOrderSummary() {
             return;
         }
         
-        const itemsHTML = items.slice(0, 3).map(item => `
+        const itemsHTML = items.slice(0, 3).map(item => {
+            const itemPrice = item.calculatedPrice || (item.price * (item.quantity || 1));
+            let specsHTML = '';
+            
+            if (item.calculationData) {
+                const calc = item.calculationData;
+                if (calc.unit === 'sqft' || calc.unit === 'sqm') {
+                    specsHTML = `<div style="font-size: 11px; color: var(--text-light);">${calc.length || 0} × ${calc.width || 0} ${calc.unit}</div>`;
+                } else if (calc.unit === 'weight') {
+                    specsHTML = `<div style="font-size: 11px; color: var(--text-light);">${calc.weight || 0} kg</div>`;
+                }
+            }
+            
+            return `
             <div class="order-item">
                 <div class="order-item-image">
-                    <img src="${item.image || 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=800'}" 
+                    <img src="${item.image || 'https://images.unsplash.com/photo-1544931170-3ca1337cce88'}" 
                          alt="${item.name}"
-                         onerror="this.src='https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=800'">
+                         onerror="this.src='https://images.unsplash.com/photo-1544931170-3ca1337cce88'">
                 </div>
                 <div class="order-item-details">
                     <div class="order-item-name">${item.stone_name || item.name}</div>
                     <div class="order-item-quantity">Quantity: ${item.quantity || 1}</div>
-                    <div class="order-item-price">${formatPrice(item.calculatedPrice || (item.price * (item.quantity || 1)))}</div>
+                    ${specsHTML}
+                    <div class="order-item-price">${formatPrice(itemPrice)}</div>
                 </div>
             </div>
-        `).join('');
+            `;
+        }).join('');
         
         if (items.length > 3) {
             orderItemsList.innerHTML = itemsHTML + `
@@ -1609,9 +1664,6 @@ function updateOrderSummary() {
     };
     
     checkoutState.orderData.items = items;
-    
-    // Update review section
-    updateOrderReview();
 }
 
 function updateOrderReview() {
@@ -1620,6 +1672,7 @@ function updateOrderReview() {
     
     const shipping = checkoutState.orderData.shipping;
     const payment = checkoutState.orderData.payment;
+    const totals = checkoutState.orderData.totals;
     
     reviewContent.innerHTML = `
         <div style="margin-bottom: 25px;">
@@ -1648,25 +1701,25 @@ function updateOrderReview() {
             <div style="background: var(--bg-light); padding: 15px; border-radius: 8px;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
                     <span>Subtotal:</span>
-                    <span>${formatPrice(checkoutState.orderData.totals.subtotal)}</span>
+                    <span>${formatPrice(totals.subtotal)}</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
                     <span>Shipping:</span>
-                    <span>${formatPrice(checkoutState.orderData.totals.shipping)}</span>
+                    <span>${formatPrice(totals.shipping)}</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
                     <span>Tax (VAT):</span>
-                    <span>${formatPrice(checkoutState.orderData.totals.tax)}</span>
+                    <span>${formatPrice(totals.tax)}</span>
                 </div>
                 ${payment.method === 'cod' ? `
                 <div style="display: flex; justify-content: space-between; margin-bottom: 10px; color: var(--primary-gold); font-weight: 600;">
                     <span>Advance Payment (30%):</span>
-                    <span>${formatPrice(checkoutState.orderData.totals.advanceAmount)}</span>
+                    <span>${formatPrice(totals.advanceAmount)}</span>
                 </div>
                 ` : ''}
                 <div style="display: flex; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd; font-weight: 700; font-size: 18px;">
                     <span>${payment.method === 'cod' ? 'Balance After Shipping:' : 'Total Amount:'}</span>
-                    <span>${formatPrice(payment.method === 'cod' ? checkoutState.orderData.totals.total - checkoutState.orderData.totals.advanceAmount : checkoutState.orderData.totals.total)}</span>
+                    <span>${formatPrice(payment.method === 'cod' ? totals.total - totals.advanceAmount : totals.total)}</span>
                 </div>
             </div>
         </div>
@@ -1681,11 +1734,6 @@ function getPaymentMethodName(method) {
         case 'cod': return 'Advance Payment (30%)';
         default: return 'Unknown';
     }
-}
-
-function calculateAdvanceAmount() {
-    const total = checkoutState.orderData.totals.total || 0;
-    return total * 0.3;
 }
 
 // ============================================
@@ -1706,6 +1754,12 @@ async function placeOrder() {
         return;
     }
     
+    // Check if there are items
+    if (!cartSystem || cartSystem.getOrderItems().length === 0) {
+        showError('reviewError', 'Your cart is empty. Please add items to your cart first.');
+        return;
+    }
+    
     showLoading(true);
     
     try {
@@ -1715,9 +1769,9 @@ async function placeOrder() {
         // Prepare order data
         const orderData = {
             id: orderId,
-            userId: await cartSystem.getUserId(),
-            userEmail: authSystem ? authSystem.getUserEmail() : checkoutState.orderData.shipping.email,
-            userName: authSystem ? authSystem.getUserName() : checkoutState.orderData.shipping.fullName,
+            userId: cartSystem.userId,
+            userEmail: checkoutState.orderData.shipping.email,
+            userName: checkoutState.orderData.shipping.fullName,
             items: checkoutState.orderData.items,
             shipping: checkoutState.orderData.shipping,
             payment: checkoutState.orderData.payment,
@@ -1727,7 +1781,7 @@ async function placeOrder() {
             estimatedDelivery: calculateDeliveryDate(),
             notes: checkoutState.orderData.shipping.notes,
             source: cartSystem.isBuyNowFlow ? 'buy_now' : 'cart',
-            isAdvancePayment: checkoutState.advancePayment,
+            isAdvancePayment: checkoutState.orderData.payment.advancePayment,
             advancePaid: false,
             balancePaid: false
         };
@@ -1739,7 +1793,7 @@ async function placeOrder() {
         }
         
         // Save order to localStorage for offline access
-        const userOrdersKey = 'irya_user_orders_' + (await cartSystem.getUserId());
+        const userOrdersKey = 'irya_user_orders_' + cartSystem.userId;
         const existingOrders = JSON.parse(localStorage.getItem(userOrdersKey) || '[]');
         existingOrders.push(orderData);
         localStorage.setItem(userOrdersKey, JSON.stringify(existingOrders));
@@ -1747,13 +1801,13 @@ async function placeOrder() {
         // Clear cart after successful order
         await cartSystem.clearCartAfterOrder();
         
-        // Redirect to confirmation page
+        // Save order data for confirmation page
         sessionStorage.setItem('irya_last_order_id', orderId);
         sessionStorage.setItem('irya_last_order_data', JSON.stringify(orderData));
         
         showNotification('Order placed successfully!');
         
-        // Redirect after a short delay
+        // Redirect to confirmation page
         setTimeout(() => {
             window.location.href = `order-confirmation.html?id=${orderId}`;
         }, 1500);
@@ -1796,10 +1850,10 @@ function showPrivacy() {
 
 function updateCartBadge() {
     const cartBadge = document.getElementById('cartBadge');
-    if (cartBadge && cartSystem) {
-        const count = cartSystem.getItemCount();
-        cartBadge.textContent = count;
-        cartBadge.style.display = count > 0 ? 'flex' : 'none';
+    if (cartBadge) {
+        // Show 0 if no items
+        cartBadge.textContent = '0';
+        cartBadge.style.display = 'none';
     }
 }
 
@@ -1849,14 +1903,14 @@ document.addEventListener('DOMContentLoaded', async function() {
         await authSystem.init();
         
         // Initialize Cart System
-        cartSystem = new CheckoutCartSystem();
+        cartSystem = new CheckoutCartSystem(authSystem);
         await cartSystem.init();
         
         // Check if there are items to checkout
-        if (cartSystem.getItemCount() === 0) {
+        if (cartSystem.getOrderItems().length === 0) {
             showNotification('Your cart is empty!');
             setTimeout(() => {
-                window.location.href = 'cart.html';
+                window.location.href = cartSystem.isBuyNowFlow ? 'products.html' : 'cart.html';
             }, 1500);
             return;
         }
