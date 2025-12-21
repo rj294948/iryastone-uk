@@ -949,7 +949,7 @@ import {
     doc, 
     getDoc,
     setDoc,
-    addDoc,  // ← ADDED THIS
+    addDoc,
     updateDoc,
     arrayUnion,
     serverTimestamp,
@@ -976,9 +976,9 @@ const db = getFirestore(app);
 // Global Variables
 let currentUserId = null;
 let currentOrder = null;
-let orderType = null; // 'buynow', 'cart', 'pending_payment'
+let orderType = null;
 let currentStep = 1;
-let selectedPaymentMethod = 'stripe'; // Changed to stripe as default (fastest)
+let selectedPaymentMethod = 'stripe';
 let orderData = {
     items: [],
     subtotal: 0,
@@ -1008,7 +1008,6 @@ document.addEventListener('DOMContentLoaded', async function() {
 // Get User ID
 async function getUserId() {
     try {
-        // Check localStorage for user
         const savedUser = localStorage.getItem('irya_stone_auth_user');
         if (savedUser) {
             const user = JSON.parse(savedUser);
@@ -1016,7 +1015,6 @@ async function getUserId() {
             return currentUserId;
         }
 
-        // Check for guest user
         let guestId = localStorage.getItem('irya_guest_id');
         if (!guestId) {
             guestId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
@@ -1045,7 +1043,6 @@ async function loadOrderData() {
         
         console.log('URL Params:', { orderId, isBuyNow, isPendingPayment });
         
-        // Determine order type
         if (isPendingPayment && orderId) {
             orderType = 'pending_payment';
             await loadPendingPaymentOrder(orderId);
@@ -1057,7 +1054,6 @@ async function loadOrderData() {
             await loadCartOrder();
         }
         
-        // Update UI based on order type
         updateOrderTypeUI();
         updateOrderSummary();
         
@@ -1074,19 +1070,15 @@ async function loadOrderData() {
 // Load Pending Payment Order
 async function loadPendingPaymentOrder(orderId) {
     try {
-        // Check localStorage for payment data
         const storedPayment = localStorage.getItem('irya_pending_payment_order');
         if (storedPayment) {
             currentOrder = JSON.parse(storedPayment);
             orderData.alreadyPaid = currentOrder.paidAmount || 0;
             orderData.remainingPayment = currentOrder.remainingAmount || 0;
-            
-            // Load order details from Firebase
             await loadOrderDetails(currentOrder.orderId);
             return;
         }
         
-        // Load from Firebase
         await loadOrderDetails(orderId);
         
         const paidAmount = currentOrder.submittedAmount || currentOrder.advancePayment || 0;
@@ -1096,7 +1088,6 @@ async function loadPendingPaymentOrder(orderId) {
         orderData.alreadyPaid = paidAmount;
         orderData.remainingPayment = remainingAmount;
         
-        // Update page title for pending payment
         document.getElementById('pageTitle').textContent = 'Complete Payment';
         document.getElementById('pageSubtitle').textContent = 'Pay the remaining amount for your order';
         
@@ -1115,21 +1106,15 @@ async function loadBuyNowOrder() {
         
         if (buyNowData) {
             const buyNowItems = JSON.parse(buyNowData);
-            
-            // Convert buy now items to order data
             orderData.items = buyNowItems.map(item => ({
                 ...item,
                 type: 'buynow'
             }));
             
-            // Calculate totals
             calculateOrderTotals();
-            
-            // Update page title
             document.getElementById('pageTitle').textContent = 'Buy Now Checkout';
             
         } else {
-            // Check session storage
             const sessionBuyNow = sessionStorage.getItem('irya_current_buynow');
             if (sessionBuyNow) {
                 const item = JSON.parse(sessionBuyNow);
@@ -1155,15 +1140,12 @@ async function loadCartOrder() {
         
         if (cartData) {
             const cartItems = JSON.parse(cartData);
-            
-            // Filter out buy now items
             orderData.items = cartItems.filter(item => !item.isBuyNow);
             
             if (orderData.items.length === 0) {
                 throw new Error('Cart is empty');
             }
             
-            // Calculate totals
             calculateOrderTotals();
             
         } else {
@@ -1179,7 +1161,6 @@ async function loadCartOrder() {
 // Load Order Details from Firebase
 async function loadOrderDetails(orderId) {
     try {
-        // Try user-specific collection first
         try {
             const orderDoc = await getDoc(doc(db, "users", currentUserId, "orders", orderId));
             if (orderDoc.exists()) {
@@ -1191,7 +1172,6 @@ async function loadOrderDetails(orderId) {
             console.log('Trying main orders collection...');
         }
         
-        // Try main orders collection
         const ordersRef = collection(db, "orders");
         const orderQuery = query(ordersRef, where("__name__", "==", orderId));
         const orderSnapshot = await getDocs(orderQuery);
@@ -1219,19 +1199,10 @@ function calculateOrderTotals() {
         subtotal += itemTotal;
     });
     
-    // Shipping - basic calculation
     orderData.shipping = subtotal > 500 ? 0 : 25;
-    
-    // Tax - 20% VAT
     orderData.tax = subtotal * 0.2;
-    
-    // Total
     orderData.total = subtotal + orderData.shipping + orderData.tax;
-    
-    // Advance payment (30%)
     orderData.advancePayment = orderData.total * 0.3;
-    
-    // Remaining payment (70%)
     orderData.remainingPayment = orderData.total * 0.7;
 }
 
@@ -1305,7 +1276,6 @@ function updateOrderTypeUI() {
 function updateOrderSummary() {
     const orderItemsSummary = document.getElementById('orderItemsSummary');
     
-    // Update order items display
     if (orderData.items.length > 0) {
         let itemsHTML = '';
         
@@ -1338,14 +1308,12 @@ function updateOrderSummary() {
         orderItemsSummary.innerHTML = '<p style="text-align: center; color: var(--text-light);">No items</p>';
     }
     
-    // Update amounts
     document.getElementById('subtotalAmount').textContent = formatPrice(orderData.subtotal);
     document.getElementById('shippingAmount').textContent = formatPrice(orderData.shipping);
     document.getElementById('taxAmount').textContent = formatPrice(orderData.tax);
     document.getElementById('alreadyPaidAmount').textContent = formatPrice(orderData.alreadyPaid);
     document.getElementById('remainingPaymentAmount').textContent = formatPrice(orderData.remainingPayment);
     
-    // Update total based on order type
     if (orderType === 'pending_payment') {
         document.getElementById('totalAmount').textContent = formatPrice(orderData.remainingPayment);
     } else {
@@ -1357,7 +1325,6 @@ function updateOrderSummary() {
 function nextStep() {
     if (currentStep === 4) return;
     
-    // Validate current step
     if (!validateStep(currentStep)) {
         return;
     }
@@ -1377,12 +1344,10 @@ function goBack() {
 }
 
 function updateStepDisplay() {
-    // Hide all steps
     document.querySelectorAll('.step').forEach(step => {
         step.style.display = 'none';
     });
     
-    // Show current step
     const stepElements = [
         'orderTypeStep',
         'shippingStep',
@@ -1394,7 +1359,6 @@ function updateStepDisplay() {
         document.getElementById(stepElements[currentStep - 1]).style.display = 'block';
     }
     
-    // Update buttons
     const backBtn = document.getElementById('backBtn');
     const nextBtn = document.getElementById('nextBtn');
     
@@ -1412,7 +1376,6 @@ function updateStepDisplay() {
         document.getElementById('placeOrderBtn').style.display = 'none';
     }
     
-    // Update review content on step 4
     if (currentStep === 4) {
         updateReviewContent();
     }
@@ -1420,7 +1383,6 @@ function updateStepDisplay() {
 
 function validateStep(step) {
     if (step === 2) {
-        // Validate shipping details
         const requiredFields = [
             'shippingName',
             'shippingEmail',
@@ -1440,7 +1402,6 @@ function validateStep(step) {
             }
         }
         
-        // Validate email
         const email = document.getElementById('shippingEmail').value;
         if (!isValidEmail(email)) {
             alert('Please enter a valid email address');
@@ -1448,13 +1409,11 @@ function validateStep(step) {
         }
         
     } else if (step === 3) {
-        // Validate payment method selection
         if (!selectedPaymentMethod) {
             alert('Please select a payment method');
             return false;
         }
         
-        // Validate card details if Stripe selected
         if (selectedPaymentMethod === 'stripe') {
             const cardNumber = document.getElementById('cardNumber').value;
             const cardExpiry = document.getElementById('cardExpiry').value;
@@ -1480,7 +1439,6 @@ function isValidEmail(email) {
 function selectPaymentMethod(method) {
     selectedPaymentMethod = method;
     
-    // Update UI
     document.querySelectorAll('.payment-method').forEach(el => {
         el.classList.remove('selected');
         el.querySelector('.fa-check-circle').style.display = 'none';
@@ -1490,11 +1448,9 @@ function selectPaymentMethod(method) {
     selectedMethod.classList.add('selected');
     selectedMethod.querySelector('.fa-check-circle').style.display = 'block';
     
-    // Show relevant details
     document.getElementById('bankDetails').style.display = method === 'bank' ? 'block' : 'none';
     document.getElementById('cardDetails').style.display = method === 'stripe' ? 'block' : 'none';
     
-    // Generate bank reference if bank transfer
     if (method === 'bank') {
         const reference = `IRYA-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
         document.getElementById('bankReference').textContent = reference;
@@ -1590,21 +1546,18 @@ function updateReviewContent() {
     `;
 }
 
-// Save Address Function - FIXED
+// Save Address Function
 async function saveAddress(addressData) {
     try {
         if (!currentUserId || currentUserId.startsWith('guest_')) {
-            // For guest users, just save to localStorage
             localStorage.setItem('irya_saved_address', JSON.stringify(addressData));
             return null;
         }
         
-        // Get or create user document
         const userDocRef = doc(db, "users", currentUserId);
         const userDocSnap = await getDoc(userDocRef);
         
         if (!userDocSnap.exists()) {
-            // If user document doesn't exist, create it
             await setDoc(userDocRef, {
                 createdAt: serverTimestamp(),
                 addresses: [],
@@ -1613,7 +1566,6 @@ async function saveAddress(addressData) {
             });
         }
         
-        // Add address to user document
         const addressesCollection = collection(userDocRef, "addresses");
         const addressDocRef = await addDoc(addressesCollection, {
             ...addressData,
@@ -1631,7 +1583,7 @@ async function saveAddress(addressData) {
     }
 }
 
-// Record Payment in User Payments - NEW FUNCTION
+// Record Payment in User Payments
 async function recordPaymentInUserPayments(orderId, orderData) {
     try {
         if (!currentUserId || currentUserId.startsWith('guest_')) {
@@ -1641,12 +1593,14 @@ async function recordPaymentInUserPayments(orderId, orderData) {
         const userDocRef = doc(db, "users", currentUserId);
         const paymentsCollection = collection(userDocRef, "payments");
         
+        const paymentStatus = selectedPaymentMethod === 'bank' ? 'pending' : 'confirmed';
+        
         const paymentData = {
             orderId: orderId,
             orderNumber: orderData.orderNumber,
             amount: orderData.paymentDueNow,
             method: selectedPaymentMethod,
-            status: selectedPaymentMethod === 'bank' ? 'pending' : 'completed',
+            status: paymentStatus,
             type: orderType === 'pending_payment' ? 'remaining_payment' : 'advance',
             reference: orderData.paymentReference || `IRYA-${Date.now()}`,
             createdAt: new Date().toISOString(),
@@ -1663,85 +1617,152 @@ async function recordPaymentInUserPayments(orderId, orderData) {
     }
 }
 
-// Save Order to Firebase - FIXED
+// CRITICAL FIX: Update Order Status after Payment
+async function updateOrderStatusAfterPayment(orderId, paymentStatus) {
+    try {
+        // Update in user's orders collection
+        const userOrderRef = doc(db, "users", currentUserId, "orders", orderId);
+        
+        const updateData = {
+            paymentStatus: paymentStatus,
+            status: paymentStatus === 'confirmed' ? 'confirmed' : 'payment_pending',
+            updatedAt: new Date().toISOString()
+        };
+        
+        // Add to status history
+        await updateDoc(userOrderRef, {
+            ...updateData,
+            statusHistory: arrayUnion({
+                status: paymentStatus === 'confirmed' ? 'confirmed' : 'payment_pending',
+                at: new Date().toISOString(),
+                notes: `Payment ${paymentStatus === 'confirmed' ? 'confirmed' : 'pending'} via ${selectedPaymentMethod}`
+            })
+        });
+        
+        // Also update in main orders collection
+        const mainOrderRef = doc(db, "orders", orderId);
+        await updateDoc(mainOrderRef, updateData);
+        
+        console.log(`Order ${orderId} status updated to:`, paymentStatus);
+        
+    } catch (error) {
+        console.error('Error updating order status:', error);
+    }
+}
+
+// Save Order to Firebase - FIXED FOR NEW ORDERS
 async function saveOrderToFirebase(orderData) {
     try {
-        // Generate order ID
+        // Generate unique order ID
         const orderId = 'order_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         
-        // Prepare order data without serverTimestamp() in arrays
+        // Determine payment status
+        const paymentStatus = selectedPaymentMethod === 'bank' ? 'pending' : 'confirmed';
+        const orderStatus = paymentStatus === 'confirmed' ? 'confirmed' : 'payment_pending';
+        
+        // Prepare order data
         const orderDataForFirebase = {
-            ...orderData,
-            // Use string dates instead of serverTimestamp() in arrays
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            
-            // Initialize status history without serverTimestamp() in array
-            statusHistory: [{
-                status: orderType === 'pending_payment' ? 'pending' : 'confirmed',
-                at: new Date().toISOString(),
-                notes: 'Order created'
-            }],
-            
-            // Initialize payment history
-            paymentHistory: [],
-            
-            // Set payment status based on method
-            paymentStatus: selectedPaymentMethod === 'bank' ? 'pending' : 'completed',
-            status: selectedPaymentMethod === 'bank' ? 'payment_pending' : 'confirmed',
-            
-            // Add user info
+            id: orderId,
+            orderNumber: orderData.orderNumber,
             userId: currentUserId,
             userEmail: orderData.userEmail,
             userName: orderData.userName,
+            items: orderData.items,
+            subtotal: orderData.subtotal,
+            shipping: orderData.shipping,
+            tax: orderData.tax,
+            total: orderData.total,
+            advancePayment: orderData.advancePayment,
+            remainingPayment: orderData.remainingPayment,
+            submittedAmount: orderData.paymentDueNow, // Amount being submitted now
+            paymentDueNow: orderData.paymentDueNow,
+            shippingAddress: orderData.shippingAddress,
+            billingAddress: orderData.billingAddress || orderData.shippingAddress,
+            paymentMethod: selectedPaymentMethod,
+            paymentStatus: paymentStatus,
+            paymentType: orderType === 'pending_payment' ? 'remaining_payment' : 'advance',
+            status: orderStatus,
+            notes: orderData.notes,
+            source: orderType,
+            isLoggedIn: !currentUserId.startsWith('guest_'),
+            isBuyNowOrder: orderType === 'buynow',
             
-            // Add payment reference for bank transfer
-            ...(selectedPaymentMethod === 'bank' ? {
-                paymentReference: orderData.paymentReference,
-                bankTransferDetails: {
-                    accountName: "IRYA STONE LTD",
-                    accountNumber: "12345678",
-                    sortCode: "40-04-15",
-                    reference: orderData.paymentReference,
-                    amount: orderData.paymentDueNow,
-                    currency: "GBP"
-                }
-            } : {})
+            // Dates
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            
+            // Initialize arrays
+            statusHistory: [{
+                status: orderStatus,
+                at: new Date().toISOString(),
+                notes: `Order created. Payment ${paymentStatus} via ${selectedPaymentMethod}`
+            }],
+            
+            paymentHistory: []
         };
         
-        // Add payment entry based on payment method
-        if (selectedPaymentMethod === 'bank' || orderType === 'pending_payment') {
-            const paymentEntry = {
+        // Add bank transfer details if applicable
+        if (selectedPaymentMethod === 'bank') {
+            orderDataForFirebase.paymentReference = orderData.paymentReference || `IRYA-${Date.now()}`;
+            orderDataForFirebase.bankTransferDetails = {
+                accountName: "IRYA STONE LTD",
+                accountNumber: "12345678",
+                sortCode: "40-04-15",
+                reference: orderDataForFirebase.paymentReference,
                 amount: orderData.paymentDueNow,
-                date: new Date().toISOString(),
-                method: selectedPaymentMethod,
-                paymentId: 'payment_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
-                reference: orderData.paymentReference || `IRYA-${Date.now()}`,
-                status: 'pending',
-                type: orderType === 'pending_payment' ? 'remaining_payment' : 'advance'
+                currency: "GBP"
             };
-            
-            orderDataForFirebase.paymentHistory.push(paymentEntry);
         }
         
-        // For pending payments, update existing order
+        // Add initial payment entry to payment history
+        const paymentEntry = {
+            amount: orderData.paymentDueNow,
+            date: new Date().toISOString(),
+            method: selectedPaymentMethod,
+            paymentId: 'payment_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+            reference: orderDataForFirebase.paymentReference || `IRYA-${Date.now()}`,
+            status: paymentStatus,
+            type: orderType === 'pending_payment' ? 'remaining_payment' : 'advance'
+        };
+        
+        orderDataForFirebase.paymentHistory.push(paymentEntry);
+        
+        // FOR PENDING PAYMENT: Update existing order
         if (orderType === 'pending_payment' && currentOrder && currentOrder.id) {
-            // Get existing order
+            console.log('Updating existing order for pending payment:', currentOrder.id);
+            
+            // Calculate new values
+            const newSubmittedAmount = (currentOrder.submittedAmount || 0) + orderData.paymentDueNow;
+            const newRemainingPayment = Math.max(0, (currentOrder.remainingPayment || 0) - orderData.paymentDueNow);
+            
+            // Update existing order
             const existingOrderRef = doc(db, "users", currentUserId, "orders", currentOrder.id);
             
-            // Update existing order with new payment
             await updateDoc(existingOrderRef, {
-                remainingPayment: 0, // Set remaining to 0 as it's being paid
-                submittedAmount: currentOrder.submittedAmount + orderData.paymentDueNow,
-                paymentHistory: arrayUnion(...orderDataForFirebase.paymentHistory),
+                remainingPayment: newRemainingPayment,
+                submittedAmount: newSubmittedAmount,
+                paymentHistory: arrayUnion(paymentEntry),
+                paymentStatus: paymentStatus,
+                status: paymentStatus === 'confirmed' ? 'confirmed' : currentOrder.status,
                 updatedAt: new Date().toISOString()
             });
             
-            console.log('Updated existing order with payment:', currentOrder.id);
+            // Also update main orders collection
+            const mainOrderRef = doc(db, "orders", currentOrder.id);
+            await updateDoc(mainOrderRef, {
+                remainingPayment: newRemainingPayment,
+                submittedAmount: newSubmittedAmount,
+                paymentStatus: paymentStatus,
+                status: paymentStatus === 'confirmed' ? 'confirmed' : currentOrder.status,
+                updatedAt: new Date().toISOString()
+            });
+            
+            console.log('Updated existing order:', currentOrder.id);
             return currentOrder.id;
             
         } else {
-            // For new orders, save to both collections
+            // FOR NEW ORDERS: Save new order
+            console.log('Creating new order:', orderId);
             
             // Save to user's orders collection
             const userOrderRef = doc(db, "users", currentUserId, "orders", orderId);
@@ -1825,7 +1846,7 @@ async function prepareOrderData() {
             // Same as shipping for now
         },
         paymentMethod: selectedPaymentMethod,
-        paymentStatus: selectedPaymentMethod === 'bank' ? 'pending' : 'completed',
+        paymentStatus: selectedPaymentMethod === 'bank' ? 'pending' : 'confirmed',
         status: selectedPaymentMethod === 'bank' ? 'payment_pending' : 'confirmed',
         notes: notes,
         source: orderType,
@@ -1841,7 +1862,7 @@ async function prepareOrderData() {
     return orderDataObj;
 }
 
-// Place Order - UPDATED WITH ADDRESS SAVING
+// Place Order - UPDATED WITH PROPER CONFIRMATION
 async function placeOrder() {
     const placeOrderBtn = document.getElementById('placeOrderBtn');
     placeOrderBtn.disabled = true;
@@ -1852,7 +1873,7 @@ async function placeOrder() {
         const orderDataObj = await prepareOrderData();
         
         // Save address to Firestore
-        const shouldSaveAddress = true; // Always save address
+        const shouldSaveAddress = true;
         if (shouldSaveAddress) {
             const addressData = {
                 fullName: orderDataObj.shippingAddress.fullName,
@@ -1874,7 +1895,7 @@ async function placeOrder() {
         // Show payment processing modal
         showPaymentProcessing();
         
-        // Simulate payment processing based on method
+        // Simulate payment processing
         setTimeout(async () => {
             try {
                 // Save to Firebase
@@ -1882,6 +1903,10 @@ async function placeOrder() {
                 
                 // Record payment in user payments collection
                 await recordPaymentInUserPayments(orderId, orderDataObj);
+                
+                // CRITICAL: Update order status after payment
+                const paymentStatus = selectedPaymentMethod === 'bank' ? 'pending' : 'confirmed';
+                await updateOrderStatusAfterPayment(orderId, paymentStatus);
                 
                 // Handle success based on payment method
                 if (selectedPaymentMethod === 'bank') {
@@ -1901,7 +1926,7 @@ async function placeOrder() {
                 placeOrderBtn.innerHTML = '<i class="fas fa-lock"></i> Place Order';
                 hidePaymentProcessing();
             }
-        }, 2000); // Simulate 2-second processing time
+        }, 2000);
         
     } catch (error) {
         console.error('Error preparing order:', error);
@@ -1956,7 +1981,6 @@ function showBankTransferDetails(orderId, orderData) {
         </div>
     `;
     
-    // Store order ID
     detailsDiv.setAttribute('data-order-id', orderId);
     detailsDiv.setAttribute('data-order-data', JSON.stringify(orderData));
     
@@ -1991,11 +2015,13 @@ function closeBankModal() {
 }
 
 function showSuccess(orderId, orderData) {
-    // Update success details
     const successDetails = document.getElementById('successDetails');
     const successMessage = document.getElementById('successMessage');
     
-    if (selectedPaymentMethod === 'bank') {
+    // Determine payment confirmation status
+    const isPaymentConfirmed = selectedPaymentMethod !== 'bank';
+    
+    if (!isPaymentConfirmed) {
         successMessage.textContent = 'Order created! Please complete bank transfer to confirm.';
         successDetails.innerHTML = `
             <div style="margin-bottom: 8px;"><strong>Order Number:</strong> ${orderData.orderNumber}</div>
@@ -2013,41 +2039,38 @@ function showSuccess(orderId, orderData) {
             <div style="margin-bottom: 8px;"><strong>Order Number:</strong> ${orderData.orderNumber}</div>
             <div style="margin-bottom: 8px;"><strong>Total Amount:</strong> ${formatPrice(orderData.total)}</div>
             <div style="margin-bottom: 8px;"><strong>Advance Paid:</strong> ${formatPrice(orderData.advancePayment)}</div>
+            <div style="margin-bottom: 8px;"><strong>Remaining to Pay:</strong> ${formatPrice(orderData.remainingPayment)}</div>
             <div style="margin-bottom: 8px;"><strong>Payment Method:</strong> ${selectedPaymentMethod === 'stripe' ? 'Credit/Debit Card (Stripe)' : 'PayPal'}</div>
             <div style="margin-top: 10px; font-size: 12px; color: var(--success-green);">
                 <i class="fas fa-check-circle"></i> 
                 <strong>Payment Status:</strong> Confirmed instantly
             </div>
+            <div style="margin-top: 10px; font-size: 12px; color: var(--text-light);">
+                <i class="fas fa-info-circle"></i> 
+                <strong>Order Status:</strong> Confirmed
+            </div>
         `;
     }
     
-    // Store order ID for view order button
     successDetails.setAttribute('data-order-id', orderId);
-    
-    // Show modal
     document.getElementById('successModal').style.display = 'flex';
     hidePaymentProcessing();
 }
 
 function clearOrderSourceData() {
-    // Clear buy now data
     const buyNowKey = 'irya_buynow_cart_' + currentUserId;
     localStorage.removeItem(buyNowKey);
     sessionStorage.removeItem('irya_current_buynow');
     localStorage.removeItem('irya_is_buynow_flow');
     
-    // Clear pending payment data
     localStorage.removeItem('irya_pending_payment_order');
     
-    // Clear cart for buy now and pending payment
     if (orderType === 'buynow' || orderType === 'pending_payment') {
-        // Only clear the specific items from cart
         const cartKey = 'irya_local_cart_' + currentUserId;
         const cartData = localStorage.getItem(cartKey);
         
         if (cartData) {
             const cartItems = JSON.parse(cartData);
-            // Remove items that match our order items
             const orderItemIds = orderData.items.map(item => item.uniqueId || item.id);
             const updatedCart = cartItems.filter(item => 
                 !orderItemIds.includes(item.uniqueId || item.id)
@@ -2109,7 +2132,6 @@ function goToOrders() {
 
 // Setup Event Listeners
 function setupEventListeners() {
-    // Card input formatting
     const cardNumberInput = document.getElementById('cardNumber');
     if (cardNumberInput) {
         cardNumberInput.addEventListener('input', function(e) {
@@ -2135,14 +2157,10 @@ function setupEventListeners() {
         });
     }
     
-    // Set default values
     document.getElementById('shippingName').value = localStorage.getItem('irya_user_name') || '';
     document.getElementById('shippingEmail').value = localStorage.getItem('irya_user_email') || '';
     
-    // Set default payment method to Stripe (fastest)
     selectPaymentMethod('stripe');
-    
-    // Show first step
     updateStepDisplay();
 }
 
@@ -2157,6 +2175,5 @@ window.retryLoad = retryLoad;
 window.copyBankDetails = copyBankDetails;
 window.closeBankModal = closeBankModal;
 </script>
-
 </body>
 </html>
