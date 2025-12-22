@@ -2133,7 +2133,7 @@ function trackOnWebsite(trackingNumber) {
 }
 
 // ============================================
-// PAY REMAINING AMOUNT (UPDATED)
+// PAY REMAINING AMOUNT (UPDATED - notification-checkout.html में redirect)
 // ============================================
 
 function payRemainingAmount(orderId, orderNumber) {
@@ -2153,7 +2153,7 @@ function payRemainingAmount(orderId, orderNumber) {
       return;
     }
     
-    // Prepare data for checkout page
+    // Prepare data for notification checkout page
     const checkoutData = {
       orderId: order.id,
       orderNumber: order.orderNumber || orderNumber,
@@ -2166,16 +2166,32 @@ function payRemainingAmount(orderId, orderNumber) {
       userEmail: userEmail,
       userName: userName,
       paymentType: 'remaining_payment',
-      source: 'orders_page'
+      source: 'orders_page',
+      orderDetails: {
+        shippingAddress: order.shippingAddress,
+        billingAddress: order.billingAddress,
+        paymentMethod: order.paymentMethod,
+        status: order.status,
+        orderStatus: order.orderStatus,
+        createdAt: order.createdAt,
+        estimatedDelivery: order.estimatedDelivery
+      }
     };
     
-    // Save to localStorage
+    // Save to localStorage for notification-checkout.html
     localStorage.setItem('irya_pending_payment_order', JSON.stringify(checkoutData));
     
-    // Redirect to checkout page with all necessary parameters
-    const checkoutUrl = `checkout.html?order=${order.id}&type=remaining_payment&user=${currentUserId}&amount=${remainingAmount}`;
-    console.log("🔗 Redirecting to checkout:", checkoutUrl);
-    window.location.href = checkoutUrl;
+    // REDIRECT TO notification-checkout.html with parameters
+    const checkoutUrl = `notification-checkout.html?order_id=${order.id}&type=remaining_payment&user=${currentUserId}&amount=${remainingAmount}`;
+    console.log("🔗 Redirecting to notification checkout:", checkoutUrl);
+    
+    // Show loading message
+    showMessage("Redirecting to payment page...");
+    
+    // Redirect after short delay
+    setTimeout(() => {
+      window.location.href = checkoutUrl;
+    }, 500);
     
   } catch (error) {
     console.error("❌ Error in pay remaining amount:", error);
@@ -2703,8 +2719,8 @@ function handlePaymentNotificationClick(orderId, orderNumber, message) {
     const remainingAmount = order.remainingPayment || (totalAmount - paidAmount);
     
     if (remainingAmount > 0) {
-      // Direct redirect to checkout for remaining payment
-      payRemainingAmount(order.id, order.orderNumber || orderNumber);
+      // Direct redirect to notification checkout for remaining payment
+      redirectToNotificationCheckout(order, orderNumber, remainingAmount);
     } else {
       // No remaining amount, show order details
       showMessage("This order is already fully paid.");
@@ -2731,28 +2747,53 @@ function handlePaymentNotificationClick(orderId, orderNumber, message) {
           o.orderNumber === orderNumber || o.id === orderId
         );
         if (orderFound && paymentAmount > 0) {
-          // Still redirect to checkout with extracted amount
-          const checkoutData = {
-            orderId: orderFound.id,
-            orderNumber: orderFound.orderNumber,
-            remainingAmount: paymentAmount,
-            totalAmount: orderFound.total || 0,
-            paidAmount: orderFound.submittedAmount || 0,
-            orderType: 'existing_order',
-            items: orderFound.items || [],
-            userId: currentUserId,
-            userEmail: userEmail,
-            userName: userName,
-            paymentType: 'remaining_payment',
-            source: 'notification'
-          };
-          
-          localStorage.setItem('irya_pending_payment_order', JSON.stringify(checkoutData));
-          window.location.href = `checkout.html?order=${orderFound.id}&type=remaining_payment&user=${currentUserId}&amount=${paymentAmount}`;
+          // Redirect to notification checkout with extracted amount
+          redirectToNotificationCheckout(orderFound, orderNumber, paymentAmount);
         }
       }, 1000);
     }
   }
+}
+
+function redirectToNotificationCheckout(order, orderNumber, amount) {
+  // Prepare data for notification checkout page
+  const checkoutData = {
+    orderId: order.id,
+    orderNumber: order.orderNumber || orderNumber,
+    remainingAmount: amount,
+    totalAmount: order.total || 0,
+    paidAmount: order.submittedAmount || order.advancePayment || 0,
+    orderType: 'existing_order',
+    items: order.items || [],
+    userId: currentUserId,
+    userEmail: userEmail,
+    userName: userName,
+    paymentType: 'remaining_payment',
+    source: 'notification',
+    orderDetails: {
+      shippingAddress: order.shippingAddress,
+      billingAddress: order.billingAddress,
+      paymentMethod: order.paymentMethod,
+      status: order.status,
+      orderStatus: order.orderStatus,
+      createdAt: order.createdAt,
+      estimatedDelivery: order.estimatedDelivery
+    }
+  };
+  
+  localStorage.setItem('irya_pending_payment_order', JSON.stringify(checkoutData));
+  
+  // REDIRECT TO notification-checkout.html
+  const checkoutUrl = `notification-checkout.html?order_id=${order.id}&type=remaining_payment&user=${currentUserId}&amount=${amount}`;
+  console.log("🔗 Redirecting to notification checkout:", checkoutUrl);
+  
+  // Show loading message
+  showMessage("Redirecting to payment page...");
+  
+  // Redirect after short delay
+  setTimeout(() => {
+    window.location.href = checkoutUrl;
+  }, 500);
 }
 
 function handleTrackingNotificationClick(orderId, orderNumber) {
