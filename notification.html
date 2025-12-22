@@ -409,6 +409,37 @@ body {
     line-height: 1.6;
 }
 
+/* ===== NOTIFICATION HIGHLIGHT ===== */
+.notification-highlight {
+    background: rgba(255, 107, 107, 0.05);
+    border-left: 4px solid var(--payment-pending);
+    padding: 12px 15px;
+    margin: 10px 0;
+    border-radius: 0 6px 6px 0;
+}
+
+.notification-highlight .highlight-title {
+    font-weight: 600;
+    color: var(--payment-pending);
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.notification-highlight .highlight-amount {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--payment-pending);
+    margin: 8px 0;
+}
+
+.notification-highlight .highlight-deadline {
+    font-size: 12px;
+    color: #666;
+    font-style: italic;
+}
+
 /* ===== PRODUCT IMAGE IN NOTIFICATION ===== */
 .notification-product {
     display: flex;
@@ -520,6 +551,33 @@ body {
 
 .action-btn-small.info:hover {
     background: #228be6;
+}
+
+/* ===== PAY NOW BUTTON SPECIAL ===== */
+.pay-now-btn {
+    background: linear-gradient(135deg, #ff6b6b, #ff4757);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+
+.pay-now-btn:hover {
+    background: linear-gradient(135deg, #ff4757, #ff3838);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+}
+
+.pay-now-btn:active {
+    transform: translateY(0);
 }
 
 /* ===== EMPTY STATE ===== */
@@ -654,7 +712,7 @@ body {
         flex-direction: column;
     }
     
-    .action-btn-small {
+    .action-btn-small, .pay-now-btn {
         width: 100%;
         justify-content: center;
     }
@@ -740,7 +798,7 @@ body {
     </div>
   </div>
   
-  <!-- Notification Filter - Status Based -->
+  <!-- Notification Filter -->
   <div class="notification-filter">
     <button class="filter-btn active" onclick="filterNotifications('all')">
       <i class="fas fa-bell"></i> All
@@ -926,6 +984,13 @@ async function setupNotificationsListener() {
             notification.type = determineNotificationType(notification);
           }
           
+          // Extract payment information from message
+          const extractedInfo = extractPaymentInfoFromMessage(notification.message || '');
+          if (extractedInfo.amount > 0) {
+            notification.remainingAmount = extractedInfo.amount;
+            notification.deadline = extractedInfo.deadline;
+          }
+          
           // Set notification status based on content
           if (!notification.status) {
             notification.status = determineNotificationStatus(notification);
@@ -977,27 +1042,21 @@ function determineNotificationType(notification) {
   const orderStatus = notification.orderStatus || '';
   const paymentStatus = notification.paymentStatus || '';
   
-  // Check for payment-related notifications FIRST
-  if (paymentStatus === 'pending' || 
-      paymentStatus === 'payment_pending' ||
-      title.toLowerCase().includes('payment pending') ||
-      message.toLowerCase().includes('payment pending') ||
-      message.toLowerCase().includes('remaining payment') ||
-      message.toLowerCase().includes('remaining balance') ||
-      message.toLowerCase().includes('clear the remaining payment') ||
-      message.toLowerCase().includes('within 1 hour')) {
+  // Check for payment pending notifications
+  if (message.includes('remaining payment') || 
+      message.includes('clear the remaining payment') ||
+      message.includes('within 1 hour') ||
+      message.includes('remaining balance') ||
+      message.includes('IMPORTANT: Please clear')) {
     return 'payment_pending';
   }
   
-  if (paymentStatus === 'advance_paid' || 
-      title.toLowerCase().includes('advance payment') ||
-      message.toLowerCase().includes('advance payment')) {
+  // Check for other payment status
+  if (paymentStatus === 'advance_paid') {
     return 'payment_advance';
   }
   
-  if (paymentStatus === 'fully_paid' || 
-      title.toLowerCase().includes('payment completed') ||
-      message.toLowerCase().includes('full payment')) {
+  if (paymentStatus === 'fully_paid') {
     return 'payment_full';
   }
   
@@ -1048,6 +1107,32 @@ function determineNotificationType(notification) {
   return 'system';
 }
 
+function extractPaymentInfoFromMessage(message) {
+  const result = {
+    amount: 0,
+    deadline: null
+  };
+  
+  if (!message) return result;
+  
+  // Extract amount (e.g., £59.50)
+  const amountMatch = message.match(/£([\d\.]+)/);
+  if (amountMatch && amountMatch[1]) {
+    result.amount = parseFloat(amountMatch[1]);
+  }
+  
+  // Extract deadline (e.g., within 1 hour)
+  if (message.includes('within 1 hour')) {
+    result.deadline = '1 hour';
+  } else if (message.includes('within 24 hours')) {
+    result.deadline = '24 hours';
+  } else if (message.includes('within 48 hours')) {
+    result.deadline = '48 hours';
+  }
+  
+  return result;
+}
+
 function determineNotificationStatus(notification) {
   const type = notification.type || '';
   
@@ -1074,7 +1159,6 @@ async function fetchProductImage(notification) {
   try {
     let productId = notification.productId;
     
-    // If no productId but has orderId, try to fetch order details first
     if (!productId && notification.orderId) {
       try {
         // Try to get order from users collection
@@ -1090,21 +1174,7 @@ async function fetchProductImage(notification) {
           }
         }
       } catch (error) {
-        console.log("Order details not found in users collection, trying main orders collection");
-        try {
-          const orderRef = doc(db, "orders", notification.orderId);
-          const orderDoc = await getDoc(orderRef);
-          if (orderDoc.exists()) {
-            const orderData = orderDoc.data();
-            if (orderData.items && orderData.items.length > 0) {
-              productId = orderData.items[0].productId || orderData.items[0].id;
-              notification.productName = orderData.items[0].name;
-              notification.productPrice = orderData.items[0].price || orderData.items[0].totalPrice;
-            }
-          }
-        } catch (error2) {
-          console.log("Order not found in main orders collection either");
-        }
+        console.log("Order details not found in users collection");
       }
     }
     
@@ -1138,7 +1208,7 @@ async function fetchProductImage(notification) {
         return;
       }
     } catch (productError) {
-      console.log("Products collection में नहीं मिला, stone collection try कर रहा हूं");
+      console.log("Products collection में नहीं मिला");
     }
     
     // Try stone collection
@@ -1258,25 +1328,38 @@ function displayNotifications(notificationsList) {
     // Extract order info
     const orderInfo = extractOrderInfo(notification);
     
-    // Check if it's a payment notification
-    const isPaymentNotification = notificationType === 'payment_pending' || 
-                                 notificationType === 'payment_advance' ||
-                                 notificationType === 'payment_full' ||
-                                 (notification.title && notification.title.toLowerCase().includes('payment')) ||
-                                 (notification.message && notification.message.toLowerCase().includes('payment'));
-    
-    // Check if it's a shipping notification
-    const isShippingNotification = ['shipped', 'out_for_delivery', 'delivered', 'ready_to_ship'].includes(notificationType);
+    // Check if it's a payment pending notification
+    const isPaymentPending = notificationType === 'payment_pending' || 
+                            (notification.message && 
+                             (notification.message.includes('remaining payment') ||
+                              notification.message.includes('clear the remaining payment')));
     
     // Determine action button
     let actionButtonHTML = '';
-    if (isPaymentNotification && notificationType === 'payment_pending') {
+    if (isPaymentPending && notification.remainingAmount) {
       actionButtonHTML = `
-        <button class="action-btn-small danger" onclick="event.stopPropagation(); handlePaymentAction('${notification.id}', '${orderInfo.orderId}', '${orderInfo.orderNumber}', '${orderInfo.amount}')">
-          <i class="fas fa-money-bill-wave"></i> Pay Now
+        <div class="notification-highlight">
+          <div class="highlight-title">
+            <i class="fas fa-exclamation-circle"></i> Payment Required
+          </div>
+          <div class="highlight-amount">£${notification.remainingAmount.toFixed(2)}</div>
+          ${notification.deadline ? `
+          <div class="highlight-deadline">
+            <i class="far fa-clock"></i> Due ${notification.deadline}
+          </div>
+          ` : ''}
+        </div>
+        <button class="pay-now-btn" onclick="event.stopPropagation(); handlePaymentAction('${notification.id}', '${orderInfo.orderId}', '${orderInfo.orderNumber}', ${notification.remainingAmount})">
+          <i class="fas fa-bolt"></i> PAY NOW
         </button>
       `;
-    } else if (isShippingNotification || notificationType === 'order') {
+    } else if (notificationType === 'payment_advance' || notificationType === 'payment_full') {
+      actionButtonHTML = `
+        <button class="action-btn-small success" onclick="event.stopPropagation(); handleOrderDetailsAction('${notification.id}', '${orderInfo.orderId}', '${orderInfo.orderNumber}')">
+          <i class="fas fa-eye"></i> View Order
+        </button>
+      `;
+    } else {
       actionButtonHTML = `
         <button class="action-btn-small info" onclick="event.stopPropagation(); handleTrackOrderAction('${notification.id}', '${orderInfo.orderId}', '${orderInfo.orderNumber}')">
           <i class="fas fa-truck"></i> Track Order
@@ -1304,8 +1387,9 @@ function displayNotifications(notificationsList) {
         <div class="notification-message">
           ${notification.message || ''}
           ${notification.orderNumber ? `<br><small><strong>Order:</strong> ${notification.orderNumber}</small>` : ''}
-          ${orderInfo.amount > 0 ? `<br><small><strong>Amount:</strong> £${orderInfo.amount.toFixed(2)}</small>` : ''}
         </div>
+        
+        ${actionButtonHTML}
         
         ${notification.productImage ? `
         <div class="notification-product">
@@ -1331,8 +1415,6 @@ function displayNotifications(notificationsList) {
             <i class="fas fa-check"></i> Mark as read
           </button>
           ` : ''}
-          
-          ${actionButtonHTML}
           
           <button class="action-btn-small" onclick="event.stopPropagation(); deleteNotification('${notification.id}')">
             <i class="fas fa-trash"></i> Delete
@@ -1360,17 +1442,9 @@ function extractOrderInfo(notification) {
     }
   }
   
-  // Try to extract amount from message
-  let amount = 0;
-  const amountMatch = message.match(/£([\d\.]+)/);
-  if (amountMatch && amountMatch[1]) {
-    amount = parseFloat(amountMatch[1]);
-  }
-  
   return {
     orderId: orderId,
-    orderNumber: extractedOrderNumber,
-    amount: amount
+    orderNumber: extractedOrderNumber
   };
 }
 
@@ -1441,18 +1515,19 @@ async function handleNotificationClick(notificationId, type, orderId, orderNumbe
     // First mark as read
     await markAsRead(notificationId);
     
-    // Check if it's a payment notification
-    const isPaymentNotification = type === 'payment_pending' || 
-                                 type === 'payment_advance' ||
-                                 type === 'payment_full' ||
-                                 (type && type.includes('payment'));
+    // Check if it's a payment pending notification
+    const isPaymentPending = type === 'payment_pending' || 
+                            (type && type.includes('payment_pending'));
     
-    if (isPaymentNotification && type === 'payment_pending') {
+    if (isPaymentPending) {
       // Payment pending notifications go to checkout
-      redirectToNotificationCheckout(orderId, orderNumber);
+      handlePaymentAction(notificationId, orderId, orderNumber);
+    } else if (type === 'payment_advance' || type === 'payment_full') {
+      // Payment completed notifications go to order details
+      handleOrderDetailsAction(notificationId, orderId, orderNumber);
     } else {
-      // ALL other notifications (including payment_advance, payment_full, shipping, order, etc.) go to orders.html with tracking
-      redirectToOrdersPage(orderId, orderNumber, true); // true means open tracking modal
+      // ALL other notifications go to orders.html with tracking
+      handleTrackOrderAction(notificationId, orderId, orderNumber);
     }
     
   } catch (error) {
@@ -1461,7 +1536,7 @@ async function handleNotificationClick(notificationId, type, orderId, orderNumbe
   }
 }
 
-async function handlePaymentAction(notificationId, orderId, orderNumber, amount) {
+async function handlePaymentAction(notificationId, orderId, orderNumber, amount = 0) {
   try {
     // Mark as read
     await markAsRead(notificationId);
@@ -1487,6 +1562,19 @@ async function handleTrackOrderAction(notificationId, orderId, orderNumber) {
   }
 }
 
+async function handleOrderDetailsAction(notificationId, orderId, orderNumber) {
+  try {
+    // Mark as read
+    await markAsRead(notificationId);
+    
+    // Redirect to orders page
+    redirectToOrdersPage(orderId, orderNumber, false);
+    
+  } catch (error) {
+    console.error("❌ Error in order details action:", error);
+  }
+}
+
 // ============================================
 // REDIRECT FUNCTIONS
 // ============================================
@@ -1494,37 +1582,85 @@ async function handleTrackOrderAction(notificationId, orderId, orderNumber) {
 function redirectToNotificationCheckout(orderId, orderNumber, amount = 0) {
   console.log("💰 Redirecting to notification checkout:", { orderId, orderNumber, amount });
   
-  const redirectData = {
-    orderId: orderId,
-    orderNumber: orderNumber,
-    amount: amount,
-    notificationType: 'payment_pending',
-    source: 'notifications_page',
-    timestamp: new Date().toISOString()
-  };
-  
-  localStorage.setItem('irya_notification_redirect', JSON.stringify(redirectData));
-  
-  let checkoutUrl = 'notification-checkout.html';
-  
-  if (orderId) {
-    checkoutUrl += `?order_id=${orderId}&type=payment_remaining`;
-  } else if (orderNumber) {
-    checkoutUrl += `?order_number=${encodeURIComponent(orderNumber)}&type=payment_remaining`;
-  } else {
-    checkoutUrl += '?type=payment_remaining';
+  // First, try to get the actual order from Firestore to get exact remaining amount
+  try {
+    // Try to get order from Firestore
+    const orderRef = doc(db, "users", currentUserId, "orders", orderId);
+    getDoc(orderRef).then(orderDoc => {
+      if (orderDoc.exists()) {
+        const orderData = orderDoc.data();
+        const paidAmount = orderData.submittedAmount || orderData.advancePayment || 0;
+        const totalAmount = orderData.total || 0;
+        const actualRemaining = orderData.remainingPayment || (totalAmount - paidAmount);
+        
+        // Use actual amount from order if available, otherwise use extracted amount
+        const finalAmount = actualRemaining > 0 ? actualRemaining : amount;
+        
+        const redirectData = {
+          orderId: orderId,
+          orderNumber: orderNumber,
+          amount: finalAmount,
+          totalAmount: totalAmount,
+          paidAmount: paidAmount,
+          notificationType: 'payment_pending',
+          source: 'notifications_page',
+          timestamp: new Date().toISOString()
+        };
+        
+        localStorage.setItem('irya_pending_payment_order', JSON.stringify(redirectData));
+        
+        let checkoutUrl = `notification-checkout.html?order_id=${orderId}&type=remaining_payment&amount=${finalAmount}`;
+        
+        console.log("🔗 Redirecting to:", checkoutUrl);
+        showMessage("Redirecting to payment page...");
+        
+        setTimeout(() => {
+          window.location.href = checkoutUrl;
+        }, 500);
+      }
+    }).catch(error => {
+      // Fallback to extracted amount if order not found
+      console.log("Order not found, using extracted amount");
+      proceedWithExtractedAmount();
+    });
+  } catch (error) {
+    console.log("Error fetching order, using extracted amount");
+    proceedWithExtractedAmount();
   }
   
-  if (amount > 0) {
-    checkoutUrl += `&amount=${amount}`;
+  function proceedWithExtractedAmount() {
+    const redirectData = {
+      orderId: orderId,
+      orderNumber: orderNumber,
+      amount: amount,
+      notificationType: 'payment_pending',
+      source: 'notifications_page',
+      timestamp: new Date().toISOString()
+    };
+    
+    localStorage.setItem('irya_pending_payment_order', JSON.stringify(redirectData));
+    
+    let checkoutUrl = 'notification-checkout.html';
+    
+    if (orderId) {
+      checkoutUrl += `?order_id=${orderId}&type=remaining_payment`;
+    } else if (orderNumber) {
+      checkoutUrl += `?order_number=${encodeURIComponent(orderNumber)}&type=remaining_payment`;
+    } else {
+      checkoutUrl += '?type=remaining_payment';
+    }
+    
+    if (amount > 0) {
+      checkoutUrl += `&amount=${amount}`;
+    }
+    
+    console.log("🔗 Redirecting to:", checkoutUrl);
+    showMessage("Redirecting to payment page...");
+    
+    setTimeout(() => {
+      window.location.href = checkoutUrl;
+    }, 500);
   }
-  
-  console.log("🔗 Redirecting to:", checkoutUrl);
-  showMessage("Redirecting to payment page...");
-  
-  setTimeout(() => {
-    window.location.href = checkoutUrl;
-  }, 500);
 }
 
 function redirectToOrdersPage(orderId, orderNumber, trackOrder = false) {
@@ -1853,6 +1989,7 @@ window.clearAllNotifications = clearAllNotifications;
 window.handleNotificationClick = handleNotificationClick;
 window.handlePaymentAction = handlePaymentAction;
 window.handleTrackOrderAction = handleTrackOrderAction;
+window.handleOrderDetailsAction = handleOrderDetailsAction;
 window.redirectToNotificationCheckout = redirectToNotificationCheckout;
 window.redirectToOrdersPage = redirectToOrdersPage;
 </script>
