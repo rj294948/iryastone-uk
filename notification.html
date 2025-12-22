@@ -368,10 +368,59 @@ body {
     line-height: 1.6;
 }
 
+/* ===== PRODUCT IMAGE IN NOTIFICATION ===== */
+.notification-product {
+    display: flex;
+    gap: 15px;
+    margin: 15px 0;
+    padding: 15px;
+    background: var(--bg-light);
+    border-radius: 8px;
+    border: 1px solid #f0f0f0;
+}
+
+.product-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product-details {
+    flex: 1;
+}
+
+.product-name {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: var(--stone-dark);
+}
+
+.product-meta {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-bottom: 8px;
+}
+
+.product-price {
+    font-weight: 600;
+    color: var(--primary-gold);
+    font-size: 14px;
+}
+
+/* ===== NOTIFICATION ACTIONS ===== */
 .notification-actions {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
+    margin-top: 15px;
 }
 
 .action-btn-small {
@@ -541,6 +590,15 @@ body {
         align-self: flex-start;
     }
     
+    .notification-product {
+        flex-direction: column;
+    }
+    
+    .product-image {
+        width: 100%;
+        height: 150px;
+    }
+    
     .notification-actions {
         flex-direction: column;
     }
@@ -697,7 +755,8 @@ import {
   doc,
   deleteDoc,
   where,
-  getDocs
+  getDocs,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
 // Firebase Configuration
@@ -800,7 +859,7 @@ async function setupNotificationsListener() {
     const notificationsQuery = query(notificationsRef, orderBy("createdAt", "desc"));
     
     notificationsUnsubscribe = onSnapshot(notificationsQuery,
-      (snapshot) => {
+      async (snapshot) => {
         notifications = [];
         
         if (snapshot.empty) {
@@ -809,9 +868,12 @@ async function setupNotificationsListener() {
           return;
         }
         
-        snapshot.forEach((doc) => {
-          const notification = doc.data();
-          notification.id = doc.id;
+        // Process each notification
+        const notificationPromises = [];
+        
+        for (const docSnapshot of snapshot.docs) {
+          const notification = docSnapshot.data();
+          notification.id = docSnapshot.id;
           
           // Add missing fields for backward compatibility
           if (!notification.type) {
@@ -822,8 +884,18 @@ async function setupNotificationsListener() {
             notification.priority = determinePriority(notification);
           }
           
+          // Fetch product images if productId is available
+          if (notification.productId) {
+            notificationPromises.push(fetchProductImage(notification));
+          }
+          
           notifications.push(notification);
-        });
+        }
+        
+        // Wait for all product images to load
+        if (notificationPromises.length > 0) {
+          await Promise.all(notificationPromises);
+        }
         
         console.log(`✅ Loaded ${notifications.length} notifications for user: ${currentUserId}`);
         displayNotifications(notifications);
@@ -854,6 +926,77 @@ async function setupNotificationsListener() {
   }
 }
 
+// Fetch product image from Firestore
+async function fetchProductImage(notification) {
+  try {
+    if (!notification.productId) return;
+    
+    const productDoc = await getDoc(doc(db, "products", notification.productId));
+    
+    if (productDoc.exists()) {
+      const productData = productDoc.data();
+      
+      // Extract image URL from images array
+      if (productData.images && Array.isArray(productData.images) && productData.images.length > 0) {
+        if (typeof productData.images[0] === 'string') {
+          notification.productImage = productData.images[0];
+        } else if (productData.images[0].url) {
+          notification.productImage = productData.images[0].url;
+        } else if (productData.images[0].imageUrl) {
+          notification.productImage = productData.images[0].imageUrl;
+        }
+      } else if (productData.imageUrl) {
+        notification.productImage = productData.imageUrl;
+      } else if (productData.image) {
+        notification.productImage = productData.image;
+      }
+      
+      // Set product details
+      notification.productName = productData.name || productData.title || "Stone Product";
+      notification.productCategory = productData.category || "Stone";
+      notification.productPrice = productData.price || productData.startingPrice || 0;
+    }
+    
+    // If still no image, try stone collection
+    if (!notification.productImage) {
+      try {
+        const stoneDoc = await getDoc(doc(db, "stone", notification.productId));
+        if (stoneDoc.exists()) {
+          const stoneData = stoneDoc.data();
+          notification.productImage = stoneData.imageUrl || stoneData.image;
+        }
+      } catch (stoneError) {
+        console.log("Stone collection में image नहीं मिली");
+      }
+    }
+    
+    // Set default image if none found
+    if (!notification.productImage) {
+      notification.productImage = getDefaultImage(notification.productCategory);
+    }
+    
+  } catch (error) {
+    console.warn("⚠️ Product image fetch error:", error);
+    notification.productImage = getDefaultImage();
+  }
+}
+
+function getDefaultImage(category) {
+  const categoryLower = (category || '').toLowerCase();
+  
+  if (categoryLower.includes('sand')) {
+    return 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=800&q=80';
+  } else if (categoryLower.includes('kota')) {
+    return 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80';
+  } else if (categoryLower.includes('granite')) {
+    return 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800&q=80';
+  } else if (categoryLower.includes('marble')) {
+    return 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80';
+  }
+  
+  return 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=800&q=80';
+}
+
 function determineNotificationType(notification) {
   const title = notification.title || '';
   const message = notification.message || '';
@@ -866,7 +1009,8 @@ function determineNotificationType(notification) {
       message.toLowerCase().includes('paid') ||
       message.toLowerCase().includes('amount') ||
       message.toLowerCase().includes('£') ||
-      message.toLowerCase().includes('$')) {
+      message.toLowerCase().includes('$') ||
+      title.toLowerCase().includes('remaining')) {
     return 'payment';
   }
   
@@ -895,12 +1039,13 @@ function determinePriority(notification) {
   if (title.toLowerCase().includes('urgent') || 
       title.toLowerCase().includes('important') ||
       message.toLowerCase().includes('urgent') ||
-      message.toLowerCase().includes('important')) {
+      message.toLowerCase().includes('important') ||
+      title.toLowerCase().includes('warning')) {
     return 'high';
   }
   
-  if (title.toLowerCase().includes('warning') || 
-      message.toLowerCase().includes('warning')) {
+  if (title.toLowerCase().includes('remaining') || 
+      message.toLowerCase().includes('remaining')) {
     return 'medium';
   }
   
@@ -966,14 +1111,21 @@ function displayNotifications(notificationsList) {
     const typeClass = `notification-type ${notification.type || 'system'}`;
     const typeText = getTypeText(notification.type);
     
-    // Extract action data
-    const actionData = extractActionData(notification);
+    // Extract order info
+    const orderInfo = extractOrderInfo(notification);
+    
+    // Check if it's a payment remaining notification
+    const isPaymentRemaining = notification.type === 'payment' && 
+                              (notification.title?.toLowerCase().includes('remaining') ||
+                               notification.message?.toLowerCase().includes('remaining'));
     
     notificationsHTML += `
       <div class="notification-item ${isUnread ? 'unread' : ''}" 
            data-id="${notification.id}"
            data-type="${notification.type}"
-           onclick="handleNotificationClick('${notification.id}', '${actionData.type}', '${actionData.orderId}', '${actionData.orderNumber}')">
+           data-order-id="${orderInfo.orderId}"
+           data-order-number="${orderInfo.orderNumber}"
+           onclick="handleNotificationClick('${notification.id}', '${notification.type}', '${orderInfo.orderId}', '${orderInfo.orderNumber}', ${isPaymentRemaining})">
         <div class="notification-header">
           <div class="notification-title">
             ${notification.title || 'Notification'}
@@ -988,22 +1140,28 @@ function displayNotifications(notificationsList) {
           ${notification.message || ''}
         </div>
         
+        ${notification.productImage ? `
+        <div class="notification-product">
+          <div class="product-image">
+            <img src="${notification.productImage}" 
+                 alt="${notification.productName || 'Product'}" 
+                 loading="lazy"
+                 onerror="this.src='${getDefaultImage()}'">
+          </div>
+          <div class="product-details">
+            <div class="product-name">${notification.productName || 'Product'}</div>
+            <div class="product-meta">${notification.productCategory || 'Stone Product'}</div>
+            ${notification.productPrice ? `
+            <div class="product-price">£${notification.productPrice.toFixed(2)}</div>
+            ` : ''}
+          </div>
+        </div>
+        ` : ''}
+        
         <div class="notification-actions">
           ${isUnread ? `
           <button class="action-btn-small success" onclick="event.stopPropagation(); markAsRead('${notification.id}')">
             <i class="fas fa-check"></i> Mark as read
-          </button>
-          ` : ''}
-          
-          ${actionData.type === 'payment' ? `
-          <button class="action-btn-small primary" onclick="event.stopPropagation(); handlePaymentAction('${notification.id}', '${actionData.orderId}', '${actionData.orderNumber}')">
-            <i class="fas fa-money-bill-wave"></i> View Payment
-          </button>
-          ` : ''}
-          
-          ${actionData.type === 'order' ? `
-          <button class="action-btn-small primary" onclick="event.stopPropagation(); handleOrderAction('${notification.id}', '${actionData.orderId}', '${actionData.orderNumber}')">
-            <i class="fas fa-eye"></i> View Order
           </button>
           ` : ''}
           
@@ -1018,24 +1176,11 @@ function displayNotifications(notificationsList) {
   notificationsListDiv.innerHTML = notificationsHTML;
 }
 
-function extractActionData(notification) {
+function extractOrderInfo(notification) {
   const title = notification.title || '';
   const message = notification.message || '';
   const orderId = notification.orderId || '';
   const orderNumber = notification.orderNumber || '';
-  
-  let type = 'general';
-  
-  // Determine action type
-  if (title.toLowerCase().includes('payment') || 
-      message.toLowerCase().includes('payment') ||
-      notification.type === 'payment') {
-    type = 'payment';
-  } else if (title.toLowerCase().includes('order') || 
-             message.toLowerCase().includes('order') ||
-             notification.type === 'order') {
-    type = 'order';
-  }
   
   // Extract order number from message if not provided
   let extractedOrderNumber = orderNumber;
@@ -1046,10 +1191,17 @@ function extractActionData(notification) {
     }
   }
   
+  // Try to extract amount from message
+  let amount = 0;
+  const amountMatch = message.match(/£([\d\.]+)/);
+  if (amountMatch && amountMatch[1]) {
+    amount = parseFloat(amountMatch[1]);
+  }
+  
   return {
-    type: type,
     orderId: orderId,
-    orderNumber: extractedOrderNumber
+    orderNumber: extractedOrderNumber,
+    amount: amount
   };
 }
 
@@ -1108,93 +1260,98 @@ function getEmptyMessageForFilter(filter) {
 }
 
 // ============================================
-// NOTIFICATION ACTIONS
+// NOTIFICATION ACTIONS - UPDATED FOR DIRECT REDIRECT
 // ============================================
 
-async function handleNotificationClick(notificationId, type, orderId, orderNumber) {
+async function handleNotificationClick(notificationId, type, orderId, orderNumber, isPaymentRemaining) {
   try {
     // First mark as read if unread
     await markAsRead(notificationId);
     
     // Handle based on type
-    switch(type) {
-      case 'payment':
-        await handlePaymentNotification(orderId, orderNumber);
-        break;
-      case 'order':
-        await handleOrderNotification(orderId, orderNumber);
-        break;
-      default:
-        // Just mark as read
-        break;
+    if (type === 'payment' || isPaymentRemaining) {
+      // Payment type notifications: Redirect to notification-checkout.html
+      redirectToNotificationCheckout(orderId, orderNumber);
+    } else {
+      // Order and other notifications: Redirect to orders.html
+      redirectToOrdersPage(orderId, orderNumber);
     }
     
   } catch (error) {
     console.error("❌ Error handling notification click:", error);
+    showMessage("Failed to process notification");
   }
 }
 
-async function handlePaymentNotification(orderId, orderNumber) {
-  console.log("💰 Handling payment notification:", { orderId, orderNumber });
+// ============================================
+// REDIRECT FUNCTIONS
+// ============================================
+
+function redirectToNotificationCheckout(orderId, orderNumber) {
+  console.log("💰 Redirecting to notification checkout:", { orderId, orderNumber });
   
-  // Try to find the order in localStorage or redirect to orders page
-  const pendingPaymentOrder = localStorage.getItem('irya_pending_payment_order');
+  // Save order info for notification-checkout page
+  const redirectData = {
+    orderId: orderId,
+    orderNumber: orderNumber,
+    source: 'notifications_page',
+    timestamp: new Date().toISOString()
+  };
   
-  if (pendingPaymentOrder) {
-    try {
-      const paymentData = JSON.parse(pendingPaymentOrder);
-      
-      // Check if this matches our notification
-      if ((orderId && paymentData.orderId === orderId) || 
-          (orderNumber && paymentData.orderNumber === orderNumber)) {
-        
-        // Redirect to checkout with pending payment
-        window.location.href = `checkout.html?order=${paymentData.orderId}&type=remaining_payment`;
-        return;
-      }
-    } catch (error) {
-      console.error("Error parsing payment data:", error);
-    }
-  }
+  localStorage.setItem('irya_notification_redirect', JSON.stringify(redirectData));
   
-  // If no pending payment found, redirect to orders page
-  let redirectUrl = 'orders.html';
+  // Redirect to notification-checkout.html
+  let checkoutUrl = 'notification-checkout.html';
   
   if (orderId) {
-    redirectUrl += `?order_id=${orderId}`;
+    checkoutUrl += `?order_id=${orderId}&type=payment_notification`;
   } else if (orderNumber) {
-    // We'll search by order number on orders page
-    localStorage.setItem('irya_search_order_number', orderNumber);
-    redirectUrl += `?search=${encodeURIComponent(orderNumber)}`;
+    checkoutUrl += `?order_number=${encodeURIComponent(orderNumber)}&type=payment_notification`;
+  } else {
+    checkoutUrl += '?type=payment_notification';
   }
   
-  window.location.href = redirectUrl;
+  console.log("🔗 Redirecting to:", checkoutUrl);
+  showMessage("Redirecting to payment page...");
+  
+  setTimeout(() => {
+    window.location.href = checkoutUrl;
+  }, 500);
 }
 
-async function handleOrderNotification(orderId, orderNumber) {
-  console.log("📦 Handling order notification:", { orderId, orderNumber });
+function redirectToOrdersPage(orderId, orderNumber) {
+  console.log("📦 Redirecting to orders page:", { orderId, orderNumber });
   
-  let redirectUrl = 'orders.html';
+  // Save order info for orders page
+  const redirectData = {
+    orderId: orderId,
+    orderNumber: orderNumber,
+    notificationType: 'order_notification',
+    timestamp: new Date().toISOString()
+  };
+  
+  localStorage.setItem('irya_notification_redirect', JSON.stringify(redirectData));
+  
+  // Redirect to orders.html
+  let ordersUrl = 'orders.html';
   
   if (orderId) {
-    redirectUrl += `?order_id=${orderId}`;
+    ordersUrl += `?order_id=${orderId}`;
   } else if (orderNumber) {
-    localStorage.setItem('irya_search_order_number', orderNumber);
-    redirectUrl += `?search=${encodeURIComponent(orderNumber)}`;
+    ordersUrl += `?search=${encodeURIComponent(orderNumber)}`;
   }
   
-  window.location.href = redirectUrl;
+  console.log("🔗 Redirecting to:", ordersUrl);
+  showMessage("Redirecting to order details...");
+  
+  setTimeout(() => {
+    window.location.href = ordersUrl;
+  }, 500);
 }
 
-async function handlePaymentAction(notificationId, orderId, orderNumber) {
-  event?.stopPropagation();
-  await handlePaymentNotification(orderId, orderNumber);
-}
-
-async function handleOrderAction(notificationId, orderId, orderNumber) {
-  event?.stopPropagation();
-  await handleOrderNotification(orderId, orderNumber);
-}
+// ============================================
+// NOTIFICATION MANAGEMENT FUNCTIONS
+// ============================================
 
 async function markAsRead(notificationId) {
   try {
@@ -1348,20 +1505,17 @@ function filterNotifications(filter) {
 // ============================================
 
 function updateBadges(unreadCount) {
-  // Update notification badge in header
-  const notificationBadge = document.getElementById('notificationBadge');
+  // Update notification badge in bottom nav
   const bottomNavBadge = document.getElementById('bottomNavBadge');
   
-  [notificationBadge, bottomNavBadge].forEach(badge => {
-    if (badge) {
-      if (unreadCount > 0) {
-        badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
-        badge.style.display = 'flex';
-      } else {
-        badge.style.display = 'none';
-      }
+  if (bottomNavBadge) {
+    if (unreadCount > 0) {
+      bottomNavBadge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+      bottomNavBadge.style.display = 'flex';
+    } else {
+      bottomNavBadge.style.display = 'none';
     }
-  });
+  }
   
   // Also update in localStorage for other pages
   localStorage.setItem('irya_unread_notifications', unreadCount.toString());
@@ -1472,8 +1626,17 @@ document.addEventListener('DOMContentLoaded', async function() {
       // Clear it after using
       localStorage.removeItem('irya_search_order_number');
       
-      // You could highlight or filter notifications for this order
-      console.log("Searching for order:", searchOrderNumber);
+      // Filter to show notifications for this order
+      const orderNotifications = notifications.filter(n => {
+        const orderInfo = extractOrderInfo(n);
+        return orderInfo.orderNumber === searchOrderNumber;
+      });
+      
+      if (orderNotifications.length > 0) {
+        currentFilter = 'all';
+        displayNotifications(orderNotifications);
+        showMessage(`Showing notifications for order ${searchOrderNumber}`);
+      }
     }
     
   } catch (error) {
@@ -1491,8 +1654,9 @@ window.markAsRead = markAsRead;
 window.markAllAsRead = markAllAsRead;
 window.deleteNotification = deleteNotification;
 window.clearAllNotifications = clearAllNotifications;
-window.handlePaymentAction = handlePaymentAction;
-window.handleOrderAction = handleOrderAction;
+window.handleNotificationClick = handleNotificationClick;
+window.redirectToNotificationCheckout = redirectToNotificationCheckout;
+window.redirectToOrdersPage = redirectToOrdersPage;
 </script>
 
 </body>
