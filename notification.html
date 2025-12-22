@@ -748,17 +748,14 @@ body {
     <button class="filter-btn" onclick="filterNotifications('unread')">
       <i class="fas fa-envelope"></i> Unread
     </button>
-    <button class="filter-btn" onclick="filterNotifications('payment_pending')">
-      <i class="fas fa-clock"></i> Payment Pending
-    </button>
-    <button class="filter-btn" onclick="filterNotifications('payment_advance')">
-      <i class="fas fa-money-bill-wave"></i> Advance Paid
-    </button>
-    <button class="filter-btn" onclick="filterNotifications('payment_full')">
-      <i class="fas fa-check-circle"></i> Payment Completed
+    <button class="filter-btn" onclick="filterNotifications('payment')">
+      <i class="fas fa-money-bill-wave"></i> Payments
     </button>
     <button class="filter-btn" onclick="filterNotifications('shipping')">
-      <i class="fas fa-truck"></i> Shipping Updates
+      <i class="fas fa-truck"></i> Shipping
+    </button>
+    <button class="filter-btn" onclick="filterNotifications('order')">
+      <i class="fas fa-box"></i> Orders
     </button>
   </div>
   
@@ -924,12 +921,12 @@ async function setupNotificationsListener() {
           const notification = docSnapshot.data();
           notification.id = docSnapshot.id;
           
-          // Determine notification type based on order status
+          // Determine notification type based on content
           if (!notification.type) {
             notification.type = determineNotificationType(notification);
           }
           
-          // Set notification status based on order status
+          // Set notification status based on content
           if (!notification.status) {
             notification.status = determineNotificationStatus(notification);
           }
@@ -980,43 +977,72 @@ function determineNotificationType(notification) {
   const orderStatus = notification.orderStatus || '';
   const paymentStatus = notification.paymentStatus || '';
   
-  // First check for order status based notifications
-  if (orderStatus) {
-    return orderStatus; // payment_pending, advance_paid, fully_paid, processing, shipped, etc.
-  }
-  
-  // Then check for payment status
-  if (paymentStatus === 'pending') return 'payment_pending';
-  if (paymentStatus === 'advance_paid') return 'payment_advance';
-  if (paymentStatus === 'fully_paid') return 'payment_full';
-  
-  // Fallback to content analysis
-  if (title.toLowerCase().includes('payment') || 
-      message.toLowerCase().includes('payment') ||
-      message.toLowerCase().includes('£') ||
-      message.toLowerCase().includes('remaining')) {
+  // Check for payment-related notifications FIRST
+  if (paymentStatus === 'pending' || 
+      paymentStatus === 'payment_pending' ||
+      title.toLowerCase().includes('payment pending') ||
+      message.toLowerCase().includes('payment pending') ||
+      message.toLowerCase().includes('remaining payment') ||
+      message.toLowerCase().includes('remaining balance') ||
+      message.toLowerCase().includes('clear the remaining payment') ||
+      message.toLowerCase().includes('within 1 hour')) {
     return 'payment_pending';
   }
   
-  if (title.toLowerCase().includes('shipped') || 
-      message.toLowerCase().includes('shipped') ||
-      message.toLowerCase().includes('tracking')) {
+  if (paymentStatus === 'advance_paid' || 
+      title.toLowerCase().includes('advance payment') ||
+      message.toLowerCase().includes('advance payment')) {
+    return 'payment_advance';
+  }
+  
+  if (paymentStatus === 'fully_paid' || 
+      title.toLowerCase().includes('payment completed') ||
+      message.toLowerCase().includes('full payment')) {
+    return 'payment_full';
+  }
+  
+  // Check for order status
+  if (orderStatus === 'shipped' || 
+      title.toLowerCase().includes('shipped') ||
+      message.toLowerCase().includes('has been shipped')) {
     return 'shipped';
   }
   
-  if (title.toLowerCase().includes('delivered') || 
-      message.toLowerCase().includes('delivered')) {
+  if (orderStatus === 'delivered' || 
+      title.toLowerCase().includes('delivered')) {
     return 'delivered';
   }
   
-  if (title.toLowerCase().includes('cancelled') || 
-      message.toLowerCase().includes('cancelled')) {
+  if (orderStatus === 'out_for_delivery' || 
+      title.toLowerCase().includes('out for delivery')) {
+    return 'out_for_delivery';
+  }
+  
+  if (orderStatus === 'processing' || 
+      title.toLowerCase().includes('processing')) {
+    return 'processing';
+  }
+  
+  if (orderStatus === 'cancelled' || 
+      title.toLowerCase().includes('cancelled')) {
     return 'cancelled';
   }
   
-  if (title.toLowerCase().includes('processing') || 
-      message.toLowerCase().includes('processing')) {
-    return 'processing';
+  if (orderStatus === 'ready_to_ship' || 
+      title.toLowerCase().includes('ready to ship')) {
+    return 'ready_to_ship';
+  }
+  
+  // Generic categories based on content
+  if (title.toLowerCase().includes('order') || 
+      message.toLowerCase().includes('order')) {
+    return 'order';
+  }
+  
+  if (title.toLowerCase().includes('shipping') || 
+      message.toLowerCase().includes('shipping') ||
+      message.toLowerCase().includes('tracking')) {
+    return 'shipping';
   }
   
   return 'system';
@@ -1027,15 +1053,16 @@ function determineNotificationStatus(notification) {
   
   const statusMap = {
     'payment_pending': 'Payment Pending',
-    'payment_advance': 'Advance Payment Received',
+    'payment_advance': 'Advance Payment',
     'payment_full': 'Payment Completed',
-    'processing': 'Processing',
+    'processing': 'Order Processing',
     'ready_to_ship': 'Ready to Ship',
     'shipped': 'Shipped',
     'out_for_delivery': 'Out for Delivery',
     'delivered': 'Delivered',
     'cancelled': 'Cancelled',
-    'returned': 'Returned',
+    'order': 'Order Update',
+    'shipping': 'Shipping Update',
     'system': 'System Update'
   };
   
@@ -1063,7 +1090,21 @@ async function fetchProductImage(notification) {
           }
         }
       } catch (error) {
-        console.log("Order details not found, trying main orders collection");
+        console.log("Order details not found in users collection, trying main orders collection");
+        try {
+          const orderRef = doc(db, "orders", notification.orderId);
+          const orderDoc = await getDoc(orderRef);
+          if (orderDoc.exists()) {
+            const orderData = orderDoc.data();
+            if (orderData.items && orderData.items.length > 0) {
+              productId = orderData.items[0].productId || orderData.items[0].id;
+              notification.productName = orderData.items[0].name;
+              notification.productPrice = orderData.items[0].price || orderData.items[0].totalPrice;
+            }
+          }
+        } catch (error2) {
+          console.log("Order not found in main orders collection either");
+        }
       }
     }
     
@@ -1157,28 +1198,15 @@ function displayNotifications(notificationsList) {
     case 'unread':
       filteredNotifications = notificationsList.filter(n => !n.read);
       break;
-    case 'payment_pending':
+    case 'payment':
       filteredNotifications = notificationsList.filter(n => 
         n.type === 'payment_pending' || 
-        (n.title && n.title.toLowerCase().includes('payment pending')) ||
-        (n.message && (n.message.toLowerCase().includes('payment pending') || 
-                       n.message.toLowerCase().includes('remaining payment')))
-      );
-      break;
-    case 'payment_advance':
-      filteredNotifications = notificationsList.filter(n => 
-        n.type === 'payment_advance' || 
-        n.type === 'advance_paid' ||
-        (n.title && (n.title.toLowerCase().includes('advance') || 
-                     n.title.toLowerCase().includes('partial payment')))
-      );
-      break;
-    case 'payment_full':
-      filteredNotifications = notificationsList.filter(n => 
-        n.type === 'payment_full' || 
-        n.type === 'fully_paid' ||
-        (n.title && n.title.toLowerCase().includes('payment completed')) ||
-        (n.message && n.message.toLowerCase().includes('full payment'))
+        n.type === 'payment_advance' ||
+        n.type === 'payment_full' ||
+        (n.title && n.title.toLowerCase().includes('payment')) ||
+        (n.message && (n.message.toLowerCase().includes('payment') || 
+                       n.message.toLowerCase().includes('£') ||
+                       n.message.toLowerCase().includes('amount')))
       );
       break;
     case 'shipping':
@@ -1189,7 +1217,17 @@ function displayNotifications(notificationsList) {
         n.type === 'ready_to_ship' ||
         (n.title && (n.title.toLowerCase().includes('shipped') || 
                      n.title.toLowerCase().includes('delivered') ||
-                     n.title.toLowerCase().includes('tracking')))
+                     n.title.toLowerCase().includes('tracking') ||
+                     n.title.toLowerCase().includes('shipping')))
+      );
+      break;
+    case 'order':
+      filteredNotifications = notificationsList.filter(n => 
+        n.type === 'order' ||
+        n.type === 'processing' ||
+        n.type === 'cancelled' ||
+        (n.title && n.title.toLowerCase().includes('order')) ||
+        (n.message && n.message.toLowerCase().includes('order'))
       );
       break;
     case 'all':
@@ -1201,7 +1239,7 @@ function displayNotifications(notificationsList) {
     notificationsListDiv.innerHTML = `
       <div class="empty-state">
         <i class="fas fa-bell-slash"></i>
-        <h3>No ${currentFilter === 'all' ? '' : getFilterText(currentFilter)} notifications</h3>
+        <h3>No ${currentFilter === 'all' ? '' : currentFilter} notifications</h3>
         <p>${getEmptyMessageForFilter(currentFilter)}</p>
       </div>
     `;
@@ -1220,37 +1258,28 @@ function displayNotifications(notificationsList) {
     // Extract order info
     const orderInfo = extractOrderInfo(notification);
     
-    // Check if it's a payment remaining notification
-    const isPaymentRemaining = notificationType === 'payment_pending' || 
-                              (notification.title && notification.title.toLowerCase().includes('remaining')) ||
-                              (notification.message && notification.message.toLowerCase().includes('remaining'));
-    
-    // Check if it's a payment completed notification
-    const isPaymentCompleted = notificationType === 'payment_full' || 
-                               notificationType === 'fully_paid' ||
-                               (notification.message && notification.message.toLowerCase().includes('full payment'));
+    // Check if it's a payment notification
+    const isPaymentNotification = notificationType === 'payment_pending' || 
+                                 notificationType === 'payment_advance' ||
+                                 notificationType === 'payment_full' ||
+                                 (notification.title && notification.title.toLowerCase().includes('payment')) ||
+                                 (notification.message && notification.message.toLowerCase().includes('payment'));
     
     // Check if it's a shipping notification
     const isShippingNotification = ['shipped', 'out_for_delivery', 'delivered', 'ready_to_ship'].includes(notificationType);
     
-    // Determine action button text and class
+    // Determine action button
     let actionButtonHTML = '';
-    if (isPaymentRemaining) {
+    if (isPaymentNotification && notificationType === 'payment_pending') {
       actionButtonHTML = `
         <button class="action-btn-small danger" onclick="event.stopPropagation(); handlePaymentAction('${notification.id}', '${orderInfo.orderId}', '${orderInfo.orderNumber}', '${orderInfo.amount}')">
           <i class="fas fa-money-bill-wave"></i> Pay Now
         </button>
       `;
-    } else if (isShippingNotification) {
+    } else if (isShippingNotification || notificationType === 'order') {
       actionButtonHTML = `
-        <button class="action-btn-small info" onclick="event.stopPropagation(); handleShippingAction('${notification.id}', '${orderInfo.orderId}', '${orderInfo.orderNumber}')">
+        <button class="action-btn-small info" onclick="event.stopPropagation(); handleTrackOrderAction('${notification.id}', '${orderInfo.orderId}', '${orderInfo.orderNumber}')">
           <i class="fas fa-truck"></i> Track Order
-        </button>
-      `;
-    } else if (isPaymentCompleted) {
-      actionButtonHTML = `
-        <button class="action-btn-small success" onclick="event.stopPropagation(); handleOrderDetailsAction('${notification.id}', '${orderInfo.orderId}', '${orderInfo.orderNumber}')">
-          <i class="fas fa-eye"></i> View Order
         </button>
       `;
     }
@@ -1261,7 +1290,7 @@ function displayNotifications(notificationsList) {
            data-type="${notificationType}"
            data-order-id="${orderInfo.orderId}"
            data-order-number="${orderInfo.orderNumber}"
-           onclick="handleNotificationClick('${notification.id}', '${notificationType}', '${orderInfo.orderId}', '${orderInfo.orderNumber}', ${isPaymentRemaining})">
+           onclick="handleNotificationClick('${notification.id}', '${notificationType}', '${orderInfo.orderId}', '${orderInfo.orderNumber}')">
         <div class="notification-header">
           <div class="notification-title">
             ${notification.title || 'Notification'}
@@ -1383,34 +1412,21 @@ function getTypeText(type) {
     'out_for_delivery': 'Out for Delivery',
     'delivered': 'Delivered',
     'cancelled': 'Cancelled',
-    'returned': 'Returned',
+    'order': 'Order Update',
+    'shipping': 'Shipping Update',
     'system': 'System'
   };
   
   return typeMap[type] || type.replace(/_/g, ' ').toUpperCase();
 }
 
-function getFilterText(filter) {
-  const filterMap = {
-    'all': '',
-    'unread': 'unread',
-    'payment_pending': 'payment pending',
-    'payment_advance': 'advance payment',
-    'payment_full': 'payment completed',
-    'shipping': 'shipping'
-  };
-  
-  return filterMap[filter] || filter;
-}
-
 function getEmptyMessageForFilter(filter) {
   const messages = {
     'all': 'You will see notifications here when you have new updates.',
     'unread': 'You have no unread notifications.',
-    'payment_pending': 'No payment pending notifications.',
-    'payment_advance': 'No advance payment notifications.',
-    'payment_full': 'No payment completed notifications.',
-    'shipping': 'No shipping notifications.'
+    'payment': 'No payment notifications.',
+    'shipping': 'No shipping notifications.',
+    'order': 'No order notifications.'
   };
   
   return messages[filter] || messages['all'];
@@ -1420,18 +1436,23 @@ function getEmptyMessageForFilter(filter) {
 // NOTIFICATION ACTIONS HANDLERS
 // ============================================
 
-async function handleNotificationClick(notificationId, type, orderId, orderNumber, isPaymentRemaining) {
+async function handleNotificationClick(notificationId, type, orderId, orderNumber) {
   try {
     // First mark as read
     await markAsRead(notificationId);
     
-    // Handle based on type
-    if (type === 'payment_pending' || isPaymentRemaining) {
+    // Check if it's a payment notification
+    const isPaymentNotification = type === 'payment_pending' || 
+                                 type === 'payment_advance' ||
+                                 type === 'payment_full' ||
+                                 (type && type.includes('payment'));
+    
+    if (isPaymentNotification && type === 'payment_pending') {
+      // Payment pending notifications go to checkout
       redirectToNotificationCheckout(orderId, orderNumber);
-    } else if (['shipped', 'out_for_delivery', 'delivered', 'ready_to_ship', 'processing'].includes(type)) {
-      redirectToOrdersPage(orderId, orderNumber, true); // true means open tracking modal
     } else {
-      redirectToOrdersPage(orderId, orderNumber, false); // false means just go to orders page
+      // ALL other notifications (including payment_advance, payment_full, shipping, order, etc.) go to orders.html with tracking
+      redirectToOrdersPage(orderId, orderNumber, true); // true means open tracking modal
     }
     
   } catch (error) {
@@ -1453,7 +1474,7 @@ async function handlePaymentAction(notificationId, orderId, orderNumber, amount)
   }
 }
 
-async function handleShippingAction(notificationId, orderId, orderNumber) {
+async function handleTrackOrderAction(notificationId, orderId, orderNumber) {
   try {
     // Mark as read
     await markAsRead(notificationId);
@@ -1462,20 +1483,7 @@ async function handleShippingAction(notificationId, orderId, orderNumber) {
     redirectToOrdersPage(orderId, orderNumber, true);
     
   } catch (error) {
-    console.error("❌ Error in shipping action:", error);
-  }
-}
-
-async function handleOrderDetailsAction(notificationId, orderId, orderNumber) {
-  try {
-    // Mark as read
-    await markAsRead(notificationId);
-    
-    // Redirect to orders page
-    redirectToOrdersPage(orderId, orderNumber, false);
-    
-  } catch (error) {
-    console.error("❌ Error in order details action:", error);
+    console.error("❌ Error in track order action:", error);
   }
 }
 
@@ -1844,8 +1852,7 @@ window.deleteNotification = deleteNotification;
 window.clearAllNotifications = clearAllNotifications;
 window.handleNotificationClick = handleNotificationClick;
 window.handlePaymentAction = handlePaymentAction;
-window.handleShippingAction = handleShippingAction;
-window.handleOrderDetailsAction = handleOrderDetailsAction;
+window.handleTrackOrderAction = handleTrackOrderAction;
 window.redirectToNotificationCheckout = redirectToNotificationCheckout;
 window.redirectToOrdersPage = redirectToOrdersPage;
 </script>
