@@ -65,11 +65,15 @@ header {
     z-index: 1000;
     gap: 10px;
     transform: translateY(0);
-    transition: transform 0.3s ease;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 header.hidden {
     transform: translateY(-100%);
+}
+
+header.show {
+    transform: translateY(0);
 }
 
 .logo {
@@ -478,7 +482,7 @@ header.hidden {
 }
 
 /* ============================================
-   CATEGORIES SECTION - 2 ROWS × 3 COLUMNS SLIDER
+   CATEGORIES SECTION - 1 ROW × 2 BIG IMAGES SLIDER
    ============================================ */
 
 .categories-section {
@@ -489,47 +493,48 @@ header.hidden {
 .categories-slider-container {
     position: relative;
     overflow: hidden;
-    padding: 40px 16px;
+    padding: 40px 0;
     background: var(--bg-light);
+    width: 100%;
 }
 
 .categories-slider-wrapper {
     display: flex;
     transition: transform 0.5s ease;
+    width: 100%;
 }
 
-/* Each slide: 2 rows × 3 columns grid */
+/* Each slide: 1 row × 2 columns grid - BIG IMAGES */
 .categories-slide {
     flex: 0 0 100%;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-    gap: 15px;
-    padding: 0 15px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0; /* NO MARGIN */
     box-sizing: border-box;
-    min-height: 400px;
+    width: 100%;
+    padding: 0;
+    margin: 0;
 }
 
-/* Category card styling */
+/* Category card styling - BIG HEIGHT */
 .category-card {
     background: var(--white);
-    border-radius: var(--border-radius);
     overflow: hidden;
-    box-shadow: var(--shadow-sm);
     transition: var(--transition);
-    border: 1px solid #f0f0f0;
+    border: none;
     cursor: pointer;
     text-decoration: none;
     color: inherit;
     display: block;
     position: relative;
-    height: 180px; /* Fixed height for uniform cards */
+    height: 300px; /* BIG HEIGHT */
+    margin: 0;
+    padding: 0;
+    width: 100%;
 }
 
 .category-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-md);
-    border-color: var(--primary-gold);
+    transform: scale(1.02);
 }
 
 .category-image {
@@ -537,7 +542,6 @@ header.hidden {
     height: 100%;
     overflow: hidden;
     position: relative;
-    background: #f5f5f5;
 }
 
 .category-image img {
@@ -558,13 +562,13 @@ header.hidden {
     right: 0;
     background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
     color: white;
-    padding: 15px 12px 10px;
+    padding: 25px 20px 20px;
 }
 
 .category-name {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 3px;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 5px;
     font-family: 'Roboto Slab', serif;
     white-space: nowrap;
     overflow: hidden;
@@ -572,8 +576,9 @@ header.hidden {
 }
 
 .category-count {
-    font-size: 13px;
+    font-size: 16px;
     opacity: 0.9;
+    font-weight: 500;
 }
 
 /* Slider Navigation */
@@ -581,12 +586,13 @@ header.hidden {
     display: flex;
     justify-content: center;
     gap: 10px;
-    margin-top: 20px;
+    margin-top: 30px;
+    padding: 0 20px;
 }
 
 .cat-slider-dot {
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     background: #ddd;
     cursor: pointer;
@@ -603,9 +609,9 @@ header.hidden {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 40px;
-    height: 40px;
-    background: var(--white);
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.9);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -613,9 +619,9 @@ header.hidden {
     cursor: pointer;
     border: none;
     color: var(--stone-dark);
-    font-size: 16px;
+    font-size: 18px;
     transition: var(--transition);
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-md);
     z-index: 10;
 }
 
@@ -623,114 +629,103 @@ header.hidden {
 .cat-slider-next:hover {
     background: var(--primary-gold);
     color: white;
+    transform: translateY(-50%) scale(1.1);
 }
 
 .cat-slider-prev {
-    left: 25px;
+    left: 20px;
 }
 
 .cat-slider-next {
-    right: 25px;
+    right: 20px;
 }
 
-/* Desktop: 3 columns × 2 rows (same as mobile) */
+/* Desktop adjustments */
 @media (min-width: 768px) {
     .categories-slide {
-        grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: repeat(2, 1fr);
-        gap: 20px;
-        min-height: 420px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0;
     }
     
     .category-card {
-        height: 200px;
+        height: 350px; /* EVEN BIGGER ON DESKTOP */
+    }
+    
+    .category-name {
+        font-size: 28px;
+    }
+    
+    .category-count {
+        font-size: 18px;
     }
     
     .cat-slider-prev {
-        left: 40px;
+        left: 30px;
     }
     
     .cat-slider-next {
-        right: 40px;
+        right: 30px;
     }
 }
 
 /* For very small screens */
 @media (max-width: 480px) {
-    .categories-slide {
-        gap: 10px;
-        padding: 0 10px;
-        min-height: 350px;
-    }
-    
     .category-card {
-        height: 160px;
+        height: 250px;
     }
     
     .category-name {
+        font-size: 20px;
+    }
+    
+    .category-count {
         font-size: 14px;
     }
 }
 
 /* ============================================
-   STONE USES SECTION - AUTO SLIDER
+   STONE USES SECTION - PRODUCT STYLE BOXES
    ============================================ */
 
 .uses-section {
     background: var(--bg-light);
-    overflow: hidden;
 }
 
-/* Uses Slider Container */
-.uses-slider-container {
-    position: relative;
-    overflow: hidden;
+.uses-content {
     padding: 40px 16px;
 }
 
-.uses-slider-wrapper {
-    display: flex;
-    transition: transform 0.5s ease;
-}
-
-.uses-slide {
-    flex: 0 0 100%;
+/* Uses Grid - Same as Product Grid */
+.uses-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    padding: 0 15px;
-    box-sizing: border-box;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
 }
 
-/* For desktop: 4 in single row */
-@media (min-width: 768px) {
-    .uses-slide {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
-
+/* Use card - Same as Product card */
 .use-card {
     background: var(--white);
     border-radius: var(--border-radius);
-    overflow: hidden;
     box-shadow: var(--shadow-sm);
     transition: var(--transition);
     border: 1px solid #f0f0f0;
+    position: relative;
+    overflow: hidden;
     cursor: pointer;
     text-decoration: none;
     color: inherit;
     display: block;
-    position: relative;
-    height: 160px;
+    height: 250px; /* SAME HEIGHT AS PRODUCTS */
 }
 
 .use-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-md);
     border-color: var(--primary-gold);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-5px);
 }
 
-.use-image {
+.use-image-container {
     width: 100%;
     height: 100%;
     overflow: hidden;
@@ -738,31 +733,38 @@ header.hidden {
     background: #f5f5f5;
 }
 
-.use-image img {
+.use-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.5s ease;
 }
 
-.use-card:hover .use-image img {
+.use-card:hover .use-image {
     transform: scale(1.05);
 }
 
-.use-overlay {
+/* Use Info Overlay */
+.use-info-overlay {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
     background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
     color: white;
-    padding: 15px 12px 10px;
+    padding: 20px 15px 15px;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+}
+
+.use-card:hover .use-info-overlay {
+    transform: translateY(0);
 }
 
 .use-name {
     font-size: 16px;
     font-weight: 600;
-    margin-bottom: 3px;
+    margin-bottom: 5px;
     font-family: 'Roboto Slab', serif;
     white-space: nowrap;
     overflow: hidden;
@@ -770,65 +772,17 @@ header.hidden {
 }
 
 .use-count {
-    font-size: 13px;
-    opacity: 0.9;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--gold-light);
+    font-family: 'Roboto Slab', serif;
 }
 
-/* Slider Navigation */
-.slider-nav {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.slider-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: #ddd;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.slider-dot.active {
-    background: var(--primary-gold);
-    transform: scale(1.2);
-}
-
-.slider-prev,
-.slider-next {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 40px;
-    height: 40px;
-    background: var(--white);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    border: none;
-    color: var(--stone-dark);
-    font-size: 16px;
-    transition: var(--transition);
-    box-shadow: var(--shadow-sm);
-    z-index: 10;
-}
-
-.slider-prev:hover,
-.slider-next:hover {
-    background: var(--primary-gold);
-    color: white;
-}
-
-.slider-prev {
-    left: 25px;
-}
-
-.slider-next {
-    right: 25px;
+/* Desktop adjustments */
+@media (min-width: 768px) {
+    .use-card {
+        height: 280px; /* SAME AS PRODUCTS ON DESKTOP */
+    }
 }
 
 /* ============================================
@@ -1067,11 +1021,15 @@ header.hidden {
     z-index: 999;
     box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
     transform: translateY(0);
-    transition: transform 0.3s ease;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .bottom-nav.hidden {
     transform: translateY(100%);
+}
+
+.bottom-nav.show {
+    transform: translateY(0);
 }
 
 .nav-btn {
@@ -1236,7 +1194,8 @@ header.hidden {
 
 /* Responsive */
 @media (min-width: 768px) {
-    .product-grid {
+    .product-grid,
+    .uses-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         gap: 20px;
@@ -1350,7 +1309,7 @@ header.hidden {
     </div>
 </section>
 
-<!-- Categories Section - UPDATED 2x3 SLIDER -->
+<!-- Categories Section - UPDATED 1 ROW × 2 BIG IMAGES SLIDER -->
 <section class="categories-section" id="categories">
     <div class="section-title-wrapper">
         <h2>Shop by Category</h2>
@@ -1373,25 +1332,22 @@ header.hidden {
     </div>
 </section>
 
-<!-- Stone Uses Section with Slider -->
+<!-- Stone Uses Section - PRODUCT STYLE GRID -->
 <section class="uses-section" id="uses">
     <div class="section-title-wrapper">
         <h2>Sandstone & Kota Stone Uses</h2>
         <p class="subtitle">Discover the versatile applications of our premium natural stones</p>
     </div>
     
-    <div class="uses-slider-container">
-        <button class="slider-prev">
-            <i class="fas fa-chevron-left"></i>
-        </button>
-        <div class="uses-slider-wrapper" id="usesSliderWrapper">
-            <!-- Slides will be loaded here -->
+    <div class="uses-content">
+        <div class="uses-grid" id="usesGrid">
+            <!-- Uses will be loaded here -->
         </div>
-        <button class="slider-next">
-            <i class="fas fa-chevron-right"></i>
-        </button>
-        <div class="slider-nav" id="usesSliderNav">
-            <!-- Dots will be added here -->
+        
+        <div class="view-all-container">
+            <a href="products.html" class="view-all-btn">
+                <i class="fas fa-eye"></i> Explore All Uses
+            </a>
         </div>
     </div>
 </section>
@@ -1957,7 +1913,7 @@ function initializeFirebase() {
 }
 
 // ============================================
-// CATEGORIES SLIDER - 2 ROWS × 3 COLUMNS
+// CATEGORIES SLIDER - 1 ROW × 2 BIG IMAGES
 // ============================================
 
 let categoriesSlider = {
@@ -1980,8 +1936,8 @@ let categoriesSlider = {
         wrapper.innerHTML = '';
         nav.innerHTML = '';
         
-        // Group categories into slides of 6 items each (2 rows × 3 columns)
-        const itemsPerSlide = 6;
+        // Group categories into slides of 2 items each (1 row × 2 columns)
+        const itemsPerSlide = 2;
         const slides = [];
         
         for (let i = 0; i < categories.length; i += itemsPerSlide) {
@@ -2116,7 +2072,7 @@ let categoriesSlider = {
 };
 
 // ============================================
-// LOAD CATEGORIES WITH 2×3 SLIDER
+// LOAD CATEGORIES WITH 1×2 BIG IMAGES SLIDER
 // ============================================
 
 async function loadCategoriesSlider() {
@@ -2183,63 +2139,33 @@ function loadDefaultCategoriesSlider() {
     const defaultCategories = [
         {
             name: 'Sand Stone',
-            image: 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=800',
+            image: 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=1200',
             count: 25
         },
         {
             name: 'Kota Stone',
-            image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800',
+            image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1200',
             count: 18
         },
         {
             name: 'Granite',
-            image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800',
+            image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=1200',
             count: 15
         },
         {
             name: 'Marble',
-            image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800',
+            image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=1200',
             count: 12
         },
         {
             name: 'Limestone',
-            image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800',
+            image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200',
             count: 10
         },
         {
             name: 'Slate',
-            image: 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=800',
+            image: 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=1200',
             count: 8
-        },
-        {
-            name: 'Quartzite',
-            image: 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=800',
-            count: 6
-        },
-        {
-            name: 'Basalt',
-            image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800',
-            count: 5
-        },
-        {
-            name: 'Travertine',
-            image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800',
-            count: 7
-        },
-        {
-            name: 'Cobbles',
-            image: 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=800',
-            count: 4
-        },
-        {
-            name: 'Boulders',
-            image: 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=800',
-            count: 3
-        },
-        {
-            name: 'Aggregates',
-            image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800',
-            count: 9
         }
     ];
     
@@ -2247,174 +2173,19 @@ function loadDefaultCategoriesSlider() {
 }
 
 // ============================================
-// STONE USES SLIDER SYSTEM
+// LOAD STONE USES - PRODUCT STYLE GRID
 // ============================================
 
-let usesSlider = {
-    currentSlide: 0,
-    totalSlides: 0,
-    autoSlideInterval: null,
-    slideDuration: 5000, // 5 seconds
+async function loadStoneUsesGrid() {
+    const usesGrid = document.getElementById('usesGrid');
     
-    init: function(uses) {
-        this.createSlides(uses);
-        this.setupNavigation();
-        this.startAutoSlide();
-        this.setupSwipe();
-    },
+    if (!usesGrid) return;
     
-    createSlides: function(uses) {
-        const wrapper = document.getElementById('usesSliderWrapper');
-        const nav = document.getElementById('usesSliderNav');
-        
-        wrapper.innerHTML = '';
-        nav.innerHTML = '';
-        
-        // Group uses into slides of 4 items each
-        const itemsPerSlide = 4;
-        const slides = [];
-        
-        for (let i = 0; i < uses.length; i += itemsPerSlide) {
-            slides.push(uses.slice(i, i + itemsPerSlide));
-        }
-        
-        this.totalSlides = slides.length;
-        
-        // Create slides
-        slides.forEach((slideUses, slideIndex) => {
-            const slide = document.createElement('div');
-            slide.className = 'uses-slide';
-            slide.setAttribute('data-slide', slideIndex);
-            
-            const usesHTML = slideUses.map(use => `
-                <a href="products.html?usage=${encodeURIComponent(use.name)}" class="use-card">
-                    <div class="use-image">
-                        <img src="${use.image}" alt="${use.name}" 
-                             onerror="this.src='${getDefaultUseImage(use.name)}'">
-                        <div class="use-overlay">
-                            <div class="use-name">${use.name}</div>
-                            <div class="use-count">${use.count} products</div>
-                        </div>
-                    </div>
-                </a>
-            `).join('');
-            
-            slide.innerHTML = usesHTML;
-            wrapper.appendChild(slide);
-            
-            // Create dot for each slide
-            const dot = document.createElement('div');
-            dot.className = `slider-dot ${slideIndex === 0 ? 'active' : ''}`;
-            dot.setAttribute('data-slide', slideIndex);
-            dot.addEventListener('click', () => this.goToSlide(slideIndex));
-            nav.appendChild(dot);
-        });
-        
-        this.updateSlider();
-    },
-    
-    setupNavigation: function() {
-        const prevBtn = document.querySelector('.slider-prev');
-        const nextBtn = document.querySelector('.slider-next');
-        
-        if (prevBtn) {
-            prevBtn.addEventListener('click', () => this.prevSlide());
-        }
-        
-        if (nextBtn) {
-            nextBtn.addEventListener('click', () => this.nextSlide());
-        }
-    },
-    
-    setupSwipe: function() {
-        const wrapper = document.getElementById('usesSliderWrapper');
-        let startX = 0;
-        let endX = 0;
-        
-        wrapper.addEventListener('touchstart', (e) => {
-            startX = e.touches[0].clientX;
-        }, false);
-        
-        wrapper.addEventListener('touchmove', (e) => {
-            endX = e.touches[0].clientX;
-        }, false);
-        
-        wrapper.addEventListener('touchend', () => {
-            const threshold = 50;
-            const diff = startX - endX;
-            
-            if (Math.abs(diff) > threshold) {
-                if (diff > 0) {
-                    this.nextSlide();
-                } else {
-                    this.prevSlide();
-                }
-            }
-        }, false);
-    },
-    
-    nextSlide: function() {
-        this.currentSlide = (this.currentSlide + 1) % this.totalSlides;
-        this.updateSlider();
-        this.restartAutoSlide();
-    },
-    
-    prevSlide: function() {
-        this.currentSlide = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
-        this.updateSlider();
-        this.restartAutoSlide();
-    },
-    
-    goToSlide: function(slideIndex) {
-        this.currentSlide = slideIndex;
-        this.updateSlider();
-        this.restartAutoSlide();
-    },
-    
-    updateSlider: function() {
-        const wrapper = document.getElementById('usesSliderWrapper');
-        const dots = document.querySelectorAll('.slider-dot');
-        const slideWidth = 100; // percentage
-        
-        wrapper.style.transform = `translateX(-${this.currentSlide * slideWidth}%)`;
-        
-        dots.forEach((dot, index) => {
-            dot.classList.toggle('active', index === this.currentSlide);
-        });
-    },
-    
-    startAutoSlide: function() {
-        if (this.totalSlides > 1) {
-            this.autoSlideInterval = setInterval(() => {
-                this.nextSlide();
-            }, this.slideDuration);
-        }
-    },
-    
-    restartAutoSlide: function() {
-        if (this.autoSlideInterval) {
-            clearInterval(this.autoSlideInterval);
-        }
-        this.startAutoSlide();
-    },
-    
-    stopAutoSlide: function() {
-        if (this.autoSlideInterval) {
-            clearInterval(this.autoSlideInterval);
-        }
-    }
-};
-
-// ============================================
-// LOAD STONE USES WITH SLIDER
-// ============================================
-
-async function loadStoneUsesFromFirebase() {
     try {
         if (!firebaseDB) {
             const initialized = initializeFirebase();
             if (!initialized) {
-                loadDefaultUses();
+                loadDefaultUsesGrid();
                 return;
             }
         }
@@ -2451,21 +2222,52 @@ async function loadStoneUsesFromFirebase() {
             // Convert to array and sort by count
             const uses = Array.from(usesMap.values())
                 .sort((a, b) => b.count - a.count)
-                .slice(0, 12); // Get up to 12 uses for slider
+                .slice(0, 8); // Get up to 8 uses
             
-            // Initialize slider with uses
-            usesSlider.init(uses);
+            // Display uses in grid
+            displayUsesGrid(uses);
         } else {
-            loadDefaultUses();
+            loadDefaultUsesGrid();
         }
         
     } catch (error) {
         console.error('Error loading stone uses:', error);
-        loadDefaultUses();
+        loadDefaultUsesGrid();
     }
 }
 
-function loadDefaultUses() {
+function displayUsesGrid(uses) {
+    const usesGrid = document.getElementById('usesGrid');
+    if (!usesGrid) return;
+    
+    if (uses.length === 0) {
+        usesGrid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-light);">
+                <i class="fas fa-tools" style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;"></i>
+                <h3>No uses found</h3>
+                <p>Check back soon for updates</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const usesHTML = uses.map(use => `
+        <a href="products.html?usage=${encodeURIComponent(use.name)}" class="use-card">
+            <div class="use-image-container">
+                <img src="${use.image}" alt="${use.name}" class="use-image" 
+                     onerror="this.src='${getDefaultUseImage(use.name)}'">
+                <div class="use-info-overlay">
+                    <div class="use-name">${use.name}</div>
+                    <div class="use-count">${use.count} products</div>
+                </div>
+            </div>
+        </a>
+    `).join('');
+    
+    usesGrid.innerHTML = usesHTML;
+}
+
+function loadDefaultUsesGrid() {
     const defaultUses = [
         {
             name: 'Wall Cladding',
@@ -2509,7 +2311,7 @@ function loadDefaultUses() {
         }
     ];
     
-    usesSlider.init(defaultUses);
+    displayUsesGrid(defaultUses);
 }
 
 function getDefaultUseImage(use) {
@@ -2795,20 +2597,20 @@ function getDefaultImage(category) {
     const categoryLower = (category || '').toLowerCase();
     
     if (categoryLower.includes('sand')) {
-        return 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=800';
+        return 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=1200';
     } else if (categoryLower.includes('kota')) {
-        return 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800';
+        return 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1200';
     } else if (categoryLower.includes('granite')) {
-        return 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800';
+        return 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=1200';
     } else if (categoryLower.includes('marble')) {
-        return 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800';
+        return 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=1200';
     } else if (categoryLower.includes('limestone')) {
-        return 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800';
+        return 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200';
     } else if (categoryLower.includes('slate')) {
-        return 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=800';
+        return 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=1200';
     }
     
-    return 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=800';
+    return 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=1200';
 }
 
 function formatPrice(price, unit = 'piece') {
@@ -2866,34 +2668,76 @@ function applyFilters() {
 }
 
 // ============================================
-// SCROLL HANDLING
+// SCROLL HANDLING - SMART SHOW/HIDE
 // ============================================
 
 let lastScrollTop = 0;
+let scrollTimeout;
+let isScrolling = false;
 const header = document.getElementById('mainHeader');
 const bottomNav = document.getElementById('bottomNav');
 const scrollTopBtn = document.getElementById('scrollTopBtn');
 const heroSection = document.getElementById('heroSection');
 
+// Configuration
+const SCROLL_THRESHOLD = 100; // Minimum scroll to trigger hide
+const SHOW_THRESHOLD = 30; // Fast scroll threshold to show
+const HIDE_DELAY = 1500; // Time after which to hide on slow scroll
+
 function handleScroll() {
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollDelta = scrollTop - lastScrollTop;
+    const scrollSpeed = Math.abs(scrollDelta);
     
-    if (scrollTop > lastScrollTop && scrollTop > 100) {
-        header.classList.add('hidden');
-        bottomNav.classList.add('hidden');
-    } else {
+    // Clear any existing timeout
+    clearTimeout(scrollTimeout);
+    
+    // If scrolling up fast, show header/footer immediately
+    if (scrollDelta < -SHOW_THRESHOLD) {
         header.classList.remove('hidden');
         bottomNav.classList.remove('hidden');
+        header.classList.add('show');
+        bottomNav.classList.add('show');
+        isScrolling = false;
+    }
+    // If scrolling down and past threshold, hide immediately
+    else if (scrollDelta > 5 && scrollTop > SCROLL_THRESHOLD) {
+        header.classList.add('hidden');
+        bottomNav.classList.add('hidden');
+        header.classList.remove('show');
+        bottomNav.classList.remove('show');
+        isScrolling = true;
+    }
+    // If slow scrolling up, set timeout to hide
+    else if (scrollDelta < 0 && scrollDelta > -SHOW_THRESHOLD && !isScrolling) {
+        scrollTimeout = setTimeout(() => {
+            if (scrollTop > SCROLL_THRESHOLD) {
+                header.classList.add('hidden');
+                bottomNav.classList.add('hidden');
+                header.classList.remove('show');
+                bottomNav.classList.remove('show');
+            }
+        }, HIDE_DELAY);
+    }
+    // If at top of page, always show
+    else if (scrollTop <= SCROLL_THRESHOLD) {
+        header.classList.remove('hidden');
+        bottomNav.classList.remove('hidden');
+        header.classList.add('show');
+        bottomNav.classList.add('show');
+        isScrolling = false;
     }
     
     lastScrollTop = scrollTop;
     
+    // Handle scroll to top button
     if (scrollTop > 500) {
         scrollTopBtn.classList.add('visible');
     } else {
         scrollTopBtn.classList.remove('visible');
     }
     
+    // Adjust hero margin
     if (header.classList.contains('hidden')) {
         heroSection.style.marginTop = '0';
     } else {
@@ -2925,7 +2769,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Load all sections
     await Promise.all([
         loadCategoriesSlider(),
-        loadStoneUsesFromFirebase(),
+        loadStoneUsesGrid(),
         loadProductsFromFirebase()
     ]);
     
@@ -2996,9 +2840,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
     
-    // Pause auto slide on hover for both sliders
+    // Pause auto slide on hover for categories slider
     const categoriesSliderContainer = document.querySelector('.categories-slider-container');
-    const usesSliderContainer = document.querySelector('.uses-slider-container');
     
     if (categoriesSliderContainer) {
         categoriesSliderContainer.addEventListener('mouseenter', () => {
@@ -3007,16 +2850,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         categoriesSliderContainer.addEventListener('mouseleave', () => {
             categoriesSlider.restartAutoSlide();
-        });
-    }
-    
-    if (usesSliderContainer) {
-        usesSliderContainer.addEventListener('mouseenter', () => {
-            usesSlider.stopAutoSlide();
-        });
-        
-        usesSliderContainer.addEventListener('mouseleave', () => {
-            usesSlider.restartAutoSlide();
         });
     }
     
