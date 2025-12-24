@@ -403,48 +403,116 @@ header.hidden {
     line-height: 1.6;
 }
 
-/* Categories Section */
+/* ============================================
+   SECTION TITLE BACKGROUNDS - NO GAPS
+   ============================================ */
+
+/* Common styles for all section titles */
+.section-title-wrapper {
+    position: relative;
+    padding: 60px 20px;
+    margin: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 0;
+    overflow: hidden;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+/* Overlay for better text readability */
+.section-title-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7); /* Dark overlay */
+    z-index: -1;
+}
+
+/* Specific section backgrounds */
+.categories-section .section-title-wrapper {
+    background-image: url('https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?auto=format&fit=crop&w=1600&q=80');
+    background-color: #2c3e50; /* Fallback color */
+}
+
+.uses-section .section-title-wrapper {
+    background-image: url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=1600&q=80');
+    background-color: #34495e; /* Fallback color */
+}
+
+.products .section-title-wrapper {
+    background-image: url('https://images.unsplash.com/photo-1565538810643-b5bdb714032a?auto=format&fit=crop&w=1600&q=80');
+    background-color: #2c3e50; /* Fallback color */
+}
+
+/* Title text styling */
+.section-title-wrapper h2 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: var(--white);
+    font-family: 'Roboto Slab', serif;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.section-title-wrapper .subtitle {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.6;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Remove gaps between sections */
+.categories-section,
+.uses-section,
+.products {
+    margin-top: 0;
+    padding-top: 0;
+}
+
+/* ============================================
+   CATEGORIES SECTION - 2 ROWS × 3 COLUMNS SLIDER
+   ============================================ */
+
 .categories-section {
-    padding: 40px 16px;
     background: var(--white);
 }
 
-.categories-section h2 {
-    font-size: 28px;
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 10px;
-    color: var(--stone-dark);
-    font-family: 'Roboto Slab', serif;
-}
-
-.categories-section .subtitle {
-    text-align: center;
-    color: var(--text-light);
-    margin-bottom: 30px;
-    font-size: 16px;
-}
-
-/* Categories Grid - Mobile Optimized */
-.categories-grid {
-    display: flex;
-    overflow-x: auto;
-    gap: 15px;
-    padding: 10px 0 20px;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-}
-
-.categories-grid::-webkit-scrollbar {
-    display: none;
-}
-
-.category-card {
-    flex: 0 0 auto;
-    width: 85%;
-    max-width: 300px;
+/* Categories Slider Container */
+.categories-slider-container {
+    position: relative;
+    overflow: hidden;
+    padding: 40px 16px;
     background: var(--bg-light);
+}
+
+.categories-slider-wrapper {
+    display: flex;
+    transition: transform 0.5s ease;
+}
+
+/* Each slide: 2 rows × 3 columns grid */
+.categories-slide {
+    flex: 0 0 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 15px;
+    padding: 0 15px;
+    box-sizing: border-box;
+    min-height: 400px;
+}
+
+/* Category card styling */
+.category-card {
+    background: var(--white);
     border-radius: var(--border-radius);
     overflow: hidden;
     box-shadow: var(--shadow-sm);
@@ -455,8 +523,7 @@ header.hidden {
     color: inherit;
     display: block;
     position: relative;
-    height: 200px;
-    scroll-snap-align: start;
+    height: 180px; /* Fixed height for uniform cards */
 }
 
 .category-card:hover {
@@ -491,49 +558,134 @@ header.hidden {
     right: 0;
     background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
     color: white;
-    padding: 20px 15px 15px;
+    padding: 15px 12px 10px;
 }
 
 .category-name {
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 600;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
     font-family: 'Roboto Slab', serif;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .category-count {
-    font-size: 14px;
+    font-size: 13px;
     opacity: 0.9;
 }
 
-/* Stone Uses Section - AUTO SLIDER */
+/* Slider Navigation */
+.cat-slider-nav {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.cat-slider-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #ddd;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.cat-slider-dot.active {
+    background: var(--primary-gold);
+    transform: scale(1.2);
+}
+
+.cat-slider-prev,
+.cat-slider-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    color: var(--stone-dark);
+    font-size: 16px;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+    z-index: 10;
+}
+
+.cat-slider-prev:hover,
+.cat-slider-next:hover {
+    background: var(--primary-gold);
+    color: white;
+}
+
+.cat-slider-prev {
+    left: 25px;
+}
+
+.cat-slider-next {
+    right: 25px;
+}
+
+/* Desktop: 3 columns × 2 rows (same as mobile) */
+@media (min-width: 768px) {
+    .categories-slide {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 20px;
+        min-height: 420px;
+    }
+    
+    .category-card {
+        height: 200px;
+    }
+    
+    .cat-slider-prev {
+        left: 40px;
+    }
+    
+    .cat-slider-next {
+        right: 40px;
+    }
+}
+
+/* For very small screens */
+@media (max-width: 480px) {
+    .categories-slide {
+        gap: 10px;
+        padding: 0 10px;
+        min-height: 350px;
+    }
+    
+    .category-card {
+        height: 160px;
+    }
+    
+    .category-name {
+        font-size: 14px;
+    }
+}
+
+/* ============================================
+   STONE USES SECTION - AUTO SLIDER
+   ============================================ */
+
 .uses-section {
-    padding: 40px 16px;
     background: var(--bg-light);
     overflow: hidden;
-}
-
-.uses-section h2 {
-    font-size: 28px;
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 10px;
-    color: var(--stone-dark);
-    font-family: 'Roboto Slab', serif;
-}
-
-.uses-section .subtitle {
-    text-align: center;
-    color: var(--text-light);
-    margin-bottom: 30px;
-    font-size: 16px;
 }
 
 /* Uses Slider Container */
 .uses-slider-container {
     position: relative;
     overflow: hidden;
-    padding: 10px 0 30px;
+    padding: 40px 16px;
 }
 
 .uses-slider-wrapper {
@@ -608,10 +760,13 @@ header.hidden {
 }
 
 .use-name {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
     margin-bottom: 3px;
     font-family: 'Roboto Slab', serif;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .use-count {
@@ -669,17 +824,24 @@ header.hidden {
 }
 
 .slider-prev {
-    left: 10px;
+    left: 25px;
 }
 
 .slider-next {
-    right: 10px;
+    right: 25px;
 }
 
-/* Products Section */
+/* ============================================
+   PRODUCTS SECTION - ORIGINAL HEIGHT
+   ============================================ */
+
 .products {
-    padding: 40px 16px;
     background: var(--white);
+}
+
+/* Products Content */
+.products-content {
+    padding: 40px 16px;
 }
 
 .section-header {
@@ -702,7 +864,7 @@ header.hidden {
     color: var(--primary-gold);
 }
 
-/* Product Grid */
+/* Product Grid - ORIGINAL HEIGHT */
 .product-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -722,7 +884,7 @@ header.hidden {
     text-decoration: none;
     color: inherit;
     display: block;
-    height: 250px;
+    height: 250px; /* ORIGINAL HEIGHT */
 }
 
 .image-card:hover {
@@ -748,6 +910,13 @@ header.hidden {
 
 .image-card:hover .card-image {
     transform: scale(1.05);
+}
+
+/* Desktop product height */
+@media (min-width: 768px) {
+    .image-card {
+        height: 280px; /* ORIGINAL DESKTOP HEIGHT */
+    }
 }
 
 /* Add to Cart Icon */
@@ -1067,27 +1236,12 @@ header.hidden {
 
 /* Responsive */
 @media (min-width: 768px) {
-    .categories-grid,
     .product-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         gap: 20px;
         overflow: visible;
         padding: 0;
-    }
-    
-    .category-card,
-    .image-card {
-        width: 100%;
-        height: auto;
-    }
-    
-    .category-card {
-        height: 200px;
-    }
-    
-    .image-card {
-        height: 280px;
     }
     
     .section-header {
@@ -1111,13 +1265,12 @@ header.hidden {
         font-size: 16px;
     }
     
-    .categories-section h2,
-    .uses-section h2 {
+    .section-title-wrapper h2 {
         font-size: 24px;
     }
     
-    .section-header h2 {
-        font-size: 18px;
+    .section-title-wrapper .subtitle {
+        font-size: 16px;
     }
     
     .nav-btn {
@@ -1197,20 +1350,35 @@ header.hidden {
     </div>
 </section>
 
-<!-- Categories Section -->
+<!-- Categories Section - UPDATED 2x3 SLIDER -->
 <section class="categories-section" id="categories">
-    <h2>Shop by Category</h2>
-    <p class="subtitle">Browse our premium collection of natural stones</p>
+    <div class="section-title-wrapper">
+        <h2>Shop by Category</h2>
+        <p class="subtitle">Browse our premium collection of natural stones</p>
+    </div>
     
-    <div class="categories-grid" id="categoriesGrid">
-        <!-- Categories will be dynamically loaded -->
+    <div class="categories-slider-container">
+        <button class="cat-slider-prev">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="categories-slider-wrapper" id="categoriesSliderWrapper">
+            <!-- Slides will be loaded here -->
+        </div>
+        <button class="cat-slider-next">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+        <div class="cat-slider-nav" id="categoriesSliderNav">
+            <!-- Dots will be added here -->
+        </div>
     </div>
 </section>
 
 <!-- Stone Uses Section with Slider -->
 <section class="uses-section" id="uses">
-    <h2>Sandstone & Kota Stone Uses</h2>
-    <p class="subtitle">Discover the versatile applications of our premium natural stones</p>
+    <div class="section-title-wrapper">
+        <h2>Sandstone & Kota Stone Uses</h2>
+        <p class="subtitle">Discover the versatile applications of our premium natural stones</p>
+    </div>
     
     <div class="uses-slider-container">
         <button class="slider-prev">
@@ -1230,59 +1398,66 @@ header.hidden {
 
 <!-- Products Section -->
 <section class="products" id="products">
-    <div class="section-header">
-        <h2>
-            <i class="fas fa-gem"></i> 
-            All Stone Products
-        </h2>
-        <div class="filter-controls">
-            <select id="categoryFilter" class="filter-select">
-                <option value="all">All Categories</option>
-                <option value="Sand Stone">Sand Stone</option>
-                <option value="Kota Stone">Kota Stone</option>
-                <option value="Granite">Granite</option>
-                <option value="Limestone">Limestone</option>
-                <option value="Marble">Marble</option>
-                <option value="Slate">Slate</option>
-            </select>
-            
-            <select id="priceFilter" class="filter-select">
-                <option value="all">All Prices</option>
-                <option value="0-30">Under £30</option>
-                <option value="30-60">£30 - £60</option>
-                <option value="60-100">£60 - £100</option>
-                <option value="100+">Over £100</option>
-            </select>
-            
-            <select id="usageFilter" class="filter-select">
-                <option value="all">All Uses</option>
-                <option value="Wall Cladding">Wall Cladding</option>
-                <option value="Flooring">Flooring</option>
-                <option value="Kitchen Countertops">Kitchen Countertops</option>
-                <option value="Garden Paving">Garden Paving</option>
-                <option value="Pool Surround">Pool Surround</option>
-                <option value="Patio Flooring">Patio Flooring</option>
-            </select>
-            
-            <select id="sortFilter" class="filter-select">
-                <option value="newest">Newest First</option>
-                <option value="price_low">Price: Low to High</option>
-                <option value="price_high">Price: High to Low</option>
-                <option value="name">Name A-Z</option>
-            </select>
+    <div class="section-title-wrapper">
+        <h2><i class="fas fa-gem"></i> All Stone Products</h2>
+        <p class="subtitle">Find the perfect stone for your project</p>
+    </div>
+    
+    <div class="products-content">
+        <div class="section-header">
+            <h2>
+                <i class="fas fa-filter"></i> 
+                Filter Products
+            </h2>
+            <div class="filter-controls">
+                <select id="categoryFilter" class="filter-select">
+                    <option value="all">All Categories</option>
+                    <option value="Sand Stone">Sand Stone</option>
+                    <option value="Kota Stone">Kota Stone</option>
+                    <option value="Granite">Granite</option>
+                    <option value="Limestone">Limestone</option>
+                    <option value="Marble">Marble</option>
+                    <option value="Slate">Slate</option>
+                </select>
+                
+                <select id="priceFilter" class="filter-select">
+                    <option value="all">All Prices</option>
+                    <option value="0-30">Under £30</option>
+                    <option value="30-60">£30 - £60</option>
+                    <option value="60-100">£60 - £100</option>
+                    <option value="100+">Over £100</option>
+                </select>
+                
+                <select id="usageFilter" class="filter-select">
+                    <option value="all">All Uses</option>
+                    <option value="Wall Cladding">Wall Cladding</option>
+                    <option value="Flooring">Flooring</option>
+                    <option value="Kitchen Countertops">Kitchen Countertops</option>
+                    <option value="Garden Paving">Garden Paving</option>
+                    <option value="Pool Surround">Pool Surround</option>
+                    <option value="Patio Flooring">Patio Flooring</option>
+                </select>
+                
+                <select id="sortFilter" class="filter-select">
+                    <option value="newest">Newest First</option>
+                    <option value="price_low">Price: Low to High</option>
+                    <option value="price_high">Price: High to Low</option>
+                    <option value="name">Name A-Z</option>
+                </select>
+            </div>
         </div>
-    </div>
-    
-    <!-- Products Grid -->
-    <div class="product-grid" id="productGrid">
-        <!-- Products will load here from Firebase -->
-    </div>
-    
-    <div class="view-all-container">
-        <!-- Original link to product.html -->
-        <a href="product.html" class="view-all-btn">
-            <i class="fas fa-eye"></i> View All Products
-        </a>
+        
+        <!-- Products Grid -->
+        <div class="product-grid" id="productGrid">
+            <!-- Products will load here from Firebase -->
+        </div>
+        
+        <div class="view-all-container">
+            <!-- Original link to product.html -->
+            <a href="product.html" class="view-all-btn">
+                <i class="fas fa-eye"></i> View All Products
+            </a>
+        </div>
     </div>
 </section>
 
@@ -1782,25 +1957,184 @@ function initializeFirebase() {
 }
 
 // ============================================
-// LOAD CATEGORIES
+// CATEGORIES SLIDER - 2 ROWS × 3 COLUMNS
 // ============================================
 
-async function loadCategories() {
-    const categoriesGrid = document.getElementById('categoriesGrid');
+let categoriesSlider = {
+    currentSlide: 0,
+    totalSlides: 0,
+    autoSlideInterval: null,
+    slideDuration: 6000, // 6 seconds
     
-    if (!categoriesGrid) return;
+    init: function(categories) {
+        this.createSlides(categories);
+        this.setupNavigation();
+        this.startAutoSlide();
+        this.setupSwipe();
+    },
+    
+    createSlides: function(categories) {
+        const wrapper = document.getElementById('categoriesSliderWrapper');
+        const nav = document.getElementById('categoriesSliderNav');
+        
+        wrapper.innerHTML = '';
+        nav.innerHTML = '';
+        
+        // Group categories into slides of 6 items each (2 rows × 3 columns)
+        const itemsPerSlide = 6;
+        const slides = [];
+        
+        for (let i = 0; i < categories.length; i += itemsPerSlide) {
+            slides.push(categories.slice(i, i + itemsPerSlide));
+        }
+        
+        this.totalSlides = slides.length;
+        
+        // Create slides
+        slides.forEach((slideCategories, slideIndex) => {
+            const slide = document.createElement('div');
+            slide.className = 'categories-slide';
+            slide.setAttribute('data-slide', slideIndex);
+            
+            const categoriesHTML = slideCategories.map(category => `
+                <a href="products.html?category=${encodeURIComponent(category.name)}" class="category-card">
+                    <div class="category-image">
+                        <img src="${category.image}" alt="${category.name}" 
+                             onerror="this.src='${getDefaultImage(category.name)}'">
+                        <div class="category-overlay">
+                            <div class="category-name">${category.name}</div>
+                            <div class="category-count">${category.count} products</div>
+                        </div>
+                    </div>
+                </a>
+            `).join('');
+            
+            slide.innerHTML = categoriesHTML;
+            wrapper.appendChild(slide);
+            
+            // Create dot for each slide
+            const dot = document.createElement('div');
+            dot.className = `cat-slider-dot ${slideIndex === 0 ? 'active' : ''}`;
+            dot.setAttribute('data-slide', slideIndex);
+            dot.addEventListener('click', () => this.goToSlide(slideIndex));
+            nav.appendChild(dot);
+        });
+        
+        this.updateSlider();
+    },
+    
+    setupNavigation: function() {
+        const prevBtn = document.querySelector('.cat-slider-prev');
+        const nextBtn = document.querySelector('.cat-slider-next');
+        
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => this.prevSlide());
+        }
+        
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => this.nextSlide());
+        }
+    },
+    
+    setupSwipe: function() {
+        const wrapper = document.getElementById('categoriesSliderWrapper');
+        let startX = 0;
+        let endX = 0;
+        
+        wrapper.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+        }, false);
+        
+        wrapper.addEventListener('touchmove', (e) => {
+            endX = e.touches[0].clientX;
+        }, false);
+        
+        wrapper.addEventListener('touchend', () => {
+            const threshold = 50;
+            const diff = startX - endX;
+            
+            if (Math.abs(diff) > threshold) {
+                if (diff > 0) {
+                    this.nextSlide();
+                } else {
+                    this.prevSlide();
+                }
+            }
+        }, false);
+    },
+    
+    nextSlide: function() {
+        this.currentSlide = (this.currentSlide + 1) % this.totalSlides;
+        this.updateSlider();
+        this.restartAutoSlide();
+    },
+    
+    prevSlide: function() {
+        this.currentSlide = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
+        this.updateSlider();
+        this.restartAutoSlide();
+    },
+    
+    goToSlide: function(slideIndex) {
+        this.currentSlide = slideIndex;
+        this.updateSlider();
+        this.restartAutoSlide();
+    },
+    
+    updateSlider: function() {
+        const wrapper = document.getElementById('categoriesSliderWrapper');
+        const dots = document.querySelectorAll('.cat-slider-dot');
+        const slideWidth = 100; // percentage
+        
+        wrapper.style.transform = `translateX(-${this.currentSlide * slideWidth}%)`;
+        
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === this.currentSlide);
+        });
+    },
+    
+    startAutoSlide: function() {
+        if (this.totalSlides > 1) {
+            this.autoSlideInterval = setInterval(() => {
+                this.nextSlide();
+            }, this.slideDuration);
+        }
+    },
+    
+    restartAutoSlide: function() {
+        if (this.autoSlideInterval) {
+            clearInterval(this.autoSlideInterval);
+        }
+        this.startAutoSlide();
+    },
+    
+    stopAutoSlide: function() {
+        if (this.autoSlideInterval) {
+            clearInterval(this.autoSlideInterval);
+        }
+    }
+};
+
+// ============================================
+// LOAD CATEGORIES WITH 2×3 SLIDER
+// ============================================
+
+async function loadCategoriesSlider() {
+    const sliderWrapper = document.getElementById('categoriesSliderWrapper');
+    
+    if (!sliderWrapper) return;
     
     try {
         if (!firebaseDB) {
             const initialized = initializeFirebase();
             if (!initialized) {
-                loadDefaultCategories();
+                loadDefaultCategoriesSlider();
                 return;
             }
         }
         
         // Load categories from products
-        const querySnapshot = await firebaseDB.collection("products").limit(50).get();
+        const querySnapshot = await firebaseDB.collection("products").limit(100).get();
         
         if (!querySnapshot.empty) {
             const categoryMap = new Map();
@@ -1831,40 +2165,21 @@ async function loadCategories() {
             
             // Get all categories sorted by count
             const allCategories = Array.from(categoryMap.values())
-                .sort((a, b) => b.count - a.count)
-                .slice(0, 8); // Limit to 8 categories
+                .sort((a, b) => b.count - a.count);
             
-            // ORIGINAL LINK STRUCTURE: products.html?category=
-            const categoriesHTML = allCategories.map(category => `
-                <a href="products.html?category=${encodeURIComponent(category.name)}" class="category-card">
-                    <div class="category-image">
-                        <img src="${category.image}" alt="${category.name}"
-                             onerror="this.src='${getDefaultImage(category.name)}'">
-                        <div class="category-overlay">
-                            <div class="category-name">${category.name}</div>
-                            <div class="category-count">${category.count} products</div>
-                        </div>
-                    </div>
-                </a>
-            `).join('');
-            
-            categoriesGrid.innerHTML = categoriesHTML;
-            
+            // Initialize slider with categories
+            categoriesSlider.init(allCategories);
         } else {
-            loadDefaultCategories();
+            loadDefaultCategoriesSlider();
         }
         
     } catch (error) {
         console.error('Error loading categories:', error);
-        loadDefaultCategories();
+        loadDefaultCategoriesSlider();
     }
 }
 
-function loadDefaultCategories() {
-    const categoriesGrid = document.getElementById('categoriesGrid');
-    
-    if (!categoriesGrid) return;
-    
+function loadDefaultCategoriesSlider() {
     const defaultCategories = [
         {
             name: 'Sand Stone',
@@ -1895,22 +2210,40 @@ function loadDefaultCategories() {
             name: 'Slate',
             image: 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=800',
             count: 8
+        },
+        {
+            name: 'Quartzite',
+            image: 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=800',
+            count: 6
+        },
+        {
+            name: 'Basalt',
+            image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800',
+            count: 5
+        },
+        {
+            name: 'Travertine',
+            image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800',
+            count: 7
+        },
+        {
+            name: 'Cobbles',
+            image: 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=800',
+            count: 4
+        },
+        {
+            name: 'Boulders',
+            image: 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=800',
+            count: 3
+        },
+        {
+            name: 'Aggregates',
+            image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800',
+            count: 9
         }
     ];
     
-    const categoriesHTML = defaultCategories.map(category => `
-        <a href="products.html?category=${encodeURIComponent(category.name)}" class="category-card">
-            <div class="category-image">
-                <img src="${category.image}" alt="${category.name}">
-                <div class="category-overlay">
-                    <div class="category-name">${category.name}</div>
-                    <div class="category-count">${category.count} products</div>
-                </div>
-            </div>
-        </a>
-    `).join('');
-    
-    categoriesGrid.innerHTML = categoriesHTML;
+    categoriesSlider.init(defaultCategories);
 }
 
 // ============================================
@@ -2051,9 +2384,11 @@ let usesSlider = {
     },
     
     startAutoSlide: function() {
-        this.autoSlideInterval = setInterval(() => {
-            this.nextSlide();
-        }, this.slideDuration);
+        if (this.totalSlides > 1) {
+            this.autoSlideInterval = setInterval(() => {
+                this.nextSlide();
+            }, this.slideDuration);
+        }
     },
     
     restartAutoSlide: function() {
@@ -2075,12 +2410,7 @@ let usesSlider = {
 // ============================================
 
 async function loadStoneUsesFromFirebase() {
-    const usesSliderWrapper = document.getElementById('usesSliderWrapper');
-    if (!usesSliderWrapper) return;
-    
     try {
-        showLoading(true);
-        
         if (!firebaseDB) {
             const initialized = initializeFirebase();
             if (!initialized) {
@@ -2132,8 +2462,6 @@ async function loadStoneUsesFromFirebase() {
     } catch (error) {
         console.error('Error loading stone uses:', error);
         loadDefaultUses();
-    } finally {
-        showLoading(false);
     }
 }
 
@@ -2323,7 +2651,6 @@ function displayProducts(products) {
         return;
     }
     
-    // ORIGINAL LINK STRUCTURE: product.html?id=
     const productsHTML = products.map(product => {
         const formattedPrice = formatPrice(product.price, product.price_unit);
         const isInWishlist = wishlistSystem.isInWishlist(product.id);
@@ -2475,6 +2802,10 @@ function getDefaultImage(category) {
         return 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800';
     } else if (categoryLower.includes('marble')) {
         return 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800';
+    } else if (categoryLower.includes('limestone')) {
+        return 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800';
+    } else if (categoryLower.includes('slate')) {
+        return 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=800';
     }
     
     return 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=800';
@@ -2593,7 +2924,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     // Load all sections
     await Promise.all([
-        loadCategories(),
+        loadCategoriesSlider(),
         loadStoneUsesFromFirebase(),
         loadProductsFromFirebase()
     ]);
@@ -2665,8 +2996,20 @@ document.addEventListener('DOMContentLoaded', async function() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
     
-    // Pause auto slide on hover
+    // Pause auto slide on hover for both sliders
+    const categoriesSliderContainer = document.querySelector('.categories-slider-container');
     const usesSliderContainer = document.querySelector('.uses-slider-container');
+    
+    if (categoriesSliderContainer) {
+        categoriesSliderContainer.addEventListener('mouseenter', () => {
+            categoriesSlider.stopAutoSlide();
+        });
+        
+        categoriesSliderContainer.addEventListener('mouseleave', () => {
+            categoriesSlider.restartAutoSlide();
+        });
+    }
+    
     if (usesSliderContainer) {
         usesSliderContainer.addEventListener('mouseenter', () => {
             usesSlider.stopAutoSlide();
