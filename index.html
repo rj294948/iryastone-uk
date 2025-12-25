@@ -58,21 +58,21 @@ header {
     top: 0;
     left: 0;
     right: 0;
-    background: rgba(0, 0, 0, 0.3); /* More transparent */
-    backdrop-filter: blur(5px); /* Less blur for more transparency */
-    padding: 10px 16px;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+    padding: 8px 12px; /* Reduced padding */
     display: flex;
     align-items: center;
     justify-content: space-between;
     z-index: 1000;
-    gap: 10px;
+    gap: 8px; /* Reduced gap */
     transform: translateY(0);
     transition: all 0.3s ease;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 header.scrolled {
-    background: rgba(0, 0, 0, 0.5); /* Slightly darker on scroll */
+    background: rgba(0, 0, 0, 0.5);
 }
 
 header.hidden {
@@ -86,18 +86,18 @@ header.show {
 .logo {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px; /* Reduced gap */
     font-weight: 600;
-    min-width: 120px;
+    min-width: 110px; /* Reduced */
 }
 
 .logo i {
     color: var(--primary-gold);
-    font-size: 20px;
+    font-size: 18px; /* Smaller */
 }
 
 .logo span {
-    font-size: 16px;
+    font-size: 15px; /* Smaller */
     font-weight: 700;
     color: var(--white);
     font-family: 'Roboto Slab', serif;
@@ -106,18 +106,18 @@ header.show {
 /* Search Box */
 .search-box {
     flex: 1;
-    margin: 0 10px;
+    margin: 0 8px; /* Reduced */
     position: relative;
-    max-width: 500px;
+    max-width: 450px; /* Slightly smaller */
 }
 
 .search-box input {
     width: 100%;
-    padding: 8px 35px 8px 12px;
-    border-radius: 20px;
+    padding: 7px 32px 7px 10px; /* Reduced padding */
+    border-radius: 18px; /* Smaller */
     border: 1px solid rgba(255, 255, 255, 0.3);
     background: rgba(255, 255, 255, 0.15);
-    font-size: 13px;
+    font-size: 12px; /* Smaller */
     transition: var(--transition);
     color: var(--white);
 }
@@ -135,11 +135,11 @@ header.show {
 
 .search-box i {
     position: absolute;
-    right: 12px;
+    right: 10px;
     top: 50%;
     transform: translateY(-50%);
     color: rgba(255, 255, 255, 0.7);
-    font-size: 13px;
+    font-size: 12px; /* Smaller */
     cursor: pointer;
 }
 
@@ -154,8 +154,8 @@ header.show {
     box-shadow: var(--shadow-lg);
     z-index: 1001;
     display: none;
-    margin-top: 5px;
-    max-height: 350px;
+    margin-top: 4px; /* Reduced */
+    max-height: 320px; /* Smaller */
     overflow-y: auto;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -165,13 +165,13 @@ header.show {
 }
 
 .search-result-item {
-    padding: 10px 12px;
+    padding: 8px 10px; /* Reduced */
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     cursor: pointer;
     transition: var(--transition);
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px; /* Reduced */
     color: var(--white);
     text-decoration: none;
 }
@@ -181,8 +181,8 @@ header.show {
 }
 
 .search-result-image {
-    width: 35px;
-    height: 35px;
+    width: 32px; /* Smaller */
+    height: 32px; /* Smaller */
     border-radius: 6px;
     overflow: hidden;
     background: rgba(255, 255, 255, 0.1);
@@ -202,28 +202,29 @@ header.show {
 }
 
 .search-result-name {
-    font-size: 13px;
+    font-size: 12px; /* Smaller */
     font-weight: 500;
     color: var(--white);
     margin-bottom: 2px;
 }
 
 .search-result-category {
-    font-size: 11px;
+    font-size: 10px; /* Smaller */
     color: rgba(255, 255, 255, 0.6);
 }
 
 .search-result-price {
-    font-size: 13px;
+    font-size: 12px; /* Smaller */
     font-weight: 600;
     color: var(--primary-gold);
     white-space: nowrap;
 }
 
 .no-results {
-    padding: 15px;
+    padding: 12px; /* Reduced */
     text-align: center;
     color: rgba(255, 255, 255, 0.6);
+    font-size: 12px;
 }
 
 /* User Profile */
@@ -231,24 +232,24 @@ header.show {
     position: relative;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px; /* Reduced */
 }
 
 .profile-btn {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px; /* Reduced */
     background: linear-gradient(135deg, var(--primary-gold), var(--gold-dark));
     color: var(--white);
-    padding: 8px 15px;
-    border-radius: 20px;
-    font-size: 13px;
+    padding: 7px 12px; /* Reduced */
+    border-radius: 18px; /* Smaller */
+    font-size: 12px; /* Smaller */
     font-weight: 500;
     cursor: pointer;
     border: none;
     transition: var(--transition);
     white-space: nowrap;
-    min-width: 70px;
+    min-width: 65px; /* Smaller */
 }
 
 .profile-btn:hover {
@@ -257,7 +258,7 @@ header.show {
 }
 
 .profile-btn i {
-    font-size: 12px;
+    font-size: 11px; /* Smaller */
 }
 
 .profile-dropdown {
@@ -268,10 +269,10 @@ header.show {
     backdrop-filter: blur(10px);
     border-radius: var(--border-radius);
     box-shadow: var(--shadow-lg);
-    min-width: 180px;
+    min-width: 170px; /* Smaller */
     z-index: 1001;
     display: none;
-    margin-top: 8px;
+    margin-top: 6px; /* Reduced */
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -281,35 +282,36 @@ header.show {
 }
 
 .profile-info {
-    padding: 12px 15px;
+    padding: 10px 12px; /* Reduced */
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .profile-info .user-name {
     font-weight: 600;
-    font-size: 14px;
-    margin-bottom: 4px;
+    font-size: 13px; /* Smaller */
+    margin-bottom: 3px;
     color: var(--white);
 }
 
 .profile-info .user-email {
-    font-size: 11px;
+    font-size: 10px; /* Smaller */
     color: rgba(255, 255, 255, 0.6);
 }
 
 .dropdown-menu {
-    padding: 8px 0;
+    padding: 6px 0; /* Reduced */
 }
 
 .dropdown-item {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px 15px;
+    gap: 8px; /* Reduced */
+    padding: 8px 12px; /* Reduced */
     color: var(--white);
     text-decoration: none;
     transition: var(--transition);
     cursor: pointer;
+    font-size: 12px;
 }
 
 .dropdown-item:hover {
@@ -318,10 +320,10 @@ header.show {
 }
 
 .dropdown-item i {
-    width: 18px;
+    width: 16px; /* Smaller */
     text-align: center;
     color: var(--primary-gold);
-    font-size: 14px;
+    font-size: 13px; /* Smaller */
 }
 
 .signout-btn {
@@ -341,15 +343,15 @@ header.show {
 .signin-btn {
     background: linear-gradient(135deg, var(--primary-gold), var(--gold-dark));
     color: var(--white);
-    padding: 8px 15px;
-    border-radius: 20px;
-    font-size: 13px;
+    padding: 7px 12px; /* Reduced */
+    border-radius: 18px; /* Smaller */
+    font-size: 12px; /* Smaller */
     font-weight: 500;
     cursor: pointer;
     border: none;
     transition: var(--transition);
     white-space: nowrap;
-    min-width: 70px;
+    min-width: 65px; /* Smaller */
     text-decoration: none;
     display: inline-block;
     text-align: center;
@@ -361,8 +363,8 @@ header.show {
 }
 
 .action-btn {
-    width: 35px;
-    height: 35px;
+    width: 32px; /* Smaller */
+    height: 32px; /* Smaller */
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.15);
     border: none;
@@ -370,7 +372,7 @@ header.show {
     align-items: center;
     justify-content: center;
     color: var(--white);
-    font-size: 14px;
+    font-size: 13px; /* Smaller */
     cursor: pointer;
     transition: var(--transition);
     position: relative;
@@ -387,11 +389,11 @@ header.show {
    HERO SECTION
    ============================================ */
 .hero {
-    padding: 120px 20px 30px;
+    padding: 100px 15px 25px; /* Reduced padding */
     text-align: center;
     position: relative;
     overflow: hidden;
-    min-height: 70vh;
+    min-height: 60vh; /* Smaller */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -408,44 +410,49 @@ header.show {
 
 .hero-content {
     max-width: 700px;
-    padding: 0 20px;
+    padding: 0 15px;
     z-index: 2;
 }
 
 .hero h1 {
-    font-size: 32px;
+    font-size: 28px; /* Smaller */
     font-weight: 700;
-    margin-bottom: 15px;
+    margin-bottom: 12px; /* Reduced */
     font-family: 'Roboto Slab', serif;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     line-height: 1.2;
 }
 
 .hero p {
-    font-size: 16px;
+    font-size: 14px; /* Smaller */
     opacity: 0.9;
-    margin-bottom: 30px;
+    margin-bottom: 25px; /* Reduced */
     max-width: 500px;
     margin-left: auto;
     margin-right: auto;
-    line-height: 1.5;
+    line-height: 1.4;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .hero-buttons {
     display: flex;
-    gap: 10px;
+    gap: 8px; /* Reduced */
     justify-content: center;
     flex-wrap: wrap;
 }
 
+.hero-buttons .signin-btn {
+    padding: 8px 16px;
+    font-size: 13px;
+}
+
 /* ============================================
-   SECTION TITLES - SMALLER FONT, LESS PADDING, STONE IMAGES
+   SECTION TITLES - REDUCED PADDING
    ============================================ */
 
 .section-title-wrapper {
     position: relative;
-    padding: 30px 20px !important; /* Reduced padding */
+    padding: 25px 15px !important; /* Further reduced padding */
     margin: 0;
     background-size: cover;
     background-position: center;
@@ -465,7 +472,7 @@ header.show {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.6); /* Less dark for better image visibility */
+    background: rgba(0, 0, 0, 0.5); /* Lighter overlay */
     z-index: -1;
 }
 
@@ -477,33 +484,35 @@ header.show {
 
 .uses-section .section-title-wrapper {
     background-image: 
-        url('https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80'); /* Mining/Sandstone image */
+        url('https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80');
 }
 
 .products .section-title-wrapper {
     background-image: 
-        url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1600&q=80'); /* Mining/Sandstone image */
+        url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1600&q=80');
 }
 
-/* Title text styling - SMALLER FONT */
+/* Title text styling - SMALLER AND COOLER */
 .section-title-wrapper h2 {
-    font-size: 22px !important; /* Smaller font */
-    font-weight: 600 !important; /* Less bold */
-    margin-bottom: 8px !important; /* Less margin */
+    font-size: 20px !important; /* Further reduced */
+    font-weight: 600 !important;
+    margin-bottom: 6px !important; /* Further reduced */
     color: var(--white);
     font-family: 'Roboto Slab', serif;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
     letter-spacing: 0.5px;
+    text-transform: uppercase;
 }
 
 .section-title-wrapper .subtitle {
-    font-size: 14px !important; /* Smaller font */
+    font-size: 13px !important; /* Further reduced */
     color: rgba(255, 255, 255, 0.9);
     max-width: 700px;
     margin: 0 auto;
     line-height: 1.4;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     font-weight: 400;
+    opacity: 0.9;
 }
 
 /* Remove gaps between sections */
@@ -515,7 +524,7 @@ header.show {
 }
 
 /* ============================================
-   CATEGORIES SECTION - 1 ROW × 2 BIG IMAGES SLIDER
+   CATEGORIES SECTION - VERTICAL TALL IMAGES
    ============================================ */
 
 .categories-section {
@@ -526,7 +535,7 @@ header.show {
 .categories-slider-container {
     position: relative;
     overflow: hidden;
-    padding: 30px 0; /* Reduced padding */
+    padding: 20px 0; /* Further reduced */
     background: var(--bg-light);
     width: 100%;
 }
@@ -537,19 +546,19 @@ header.show {
     width: 100%;
 }
 
-/* Each slide: 1 row × 2 columns grid - BIG IMAGES */
+/* Each slide: 1 row × 2 columns grid - TALL VERTICAL IMAGES */
 .categories-slide {
     flex: 0 0 100%;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 0;
+    gap: 8px; /* Reduced gap */
     box-sizing: border-box;
     width: 100%;
-    padding: 0;
+    padding: 0 10px; /* Reduced padding */
     margin: 0;
 }
 
-/* Category card styling */
+/* Category card styling - TALL VERTICAL */
 .category-card {
     background: var(--white);
     overflow: hidden;
@@ -560,14 +569,16 @@ header.show {
     color: inherit;
     display: block;
     position: relative;
-    height: 180px; /* Reduced height */
+    height: 220px; /* Increased height for vertical look */
     margin: 0;
     padding: 0;
     width: 100%;
+    border-radius: 10px; /* Added border radius */
+    box-shadow: var(--shadow-sm);
 }
 
 .category-card:hover {
-    transform: scale(1.02);
+    transform: translateY(-3px);
     box-shadow: var(--shadow-md);
 }
 
@@ -576,12 +587,13 @@ header.show {
     height: 100%;
     overflow: hidden;
     position: relative;
+    border-radius: 10px;
 }
 
 .category-image img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: cover; /* Changed to cover for better vertical fill */
     transition: transform 0.5s ease;
 }
 
@@ -596,11 +608,12 @@ header.show {
     right: 0;
     background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
     color: white;
-    padding: 15px 12px 10px;
+    padding: 12px 10px 8px; /* Reduced padding */
+    border-radius: 0 0 10px 10px;
 }
 
 .category-name {
-    font-size: 16px;
+    font-size: 15px; /* Adjusted */
     font-weight: 600;
     margin-bottom: 3px;
     font-family: 'Roboto Slab', serif;
@@ -610,7 +623,7 @@ header.show {
 }
 
 .category-count {
-    font-size: 13px;
+    font-size: 12px; /* Smaller */
     opacity: 0.9;
 }
 
@@ -618,14 +631,14 @@ header.show {
 .cat-slider-nav {
     display: flex;
     justify-content: center;
-    gap: 8px;
-    margin-top: 20px;
-    padding: 0 20px;
+    gap: 6px; /* Reduced */
+    margin-top: 15px; /* Reduced */
+    padding: 0 15px;
 }
 
 .cat-slider-dot {
-    width: 8px;
-    height: 8px;
+    width: 7px; /* Smaller */
+    height: 7px; /* Smaller */
     border-radius: 50%;
     background: rgba(0, 0, 0, 0.2);
     cursor: pointer;
@@ -642,8 +655,8 @@ header.show {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 35px;
-    height: 35px;
+    width: 30px; /* Smaller */
+    height: 30px; /* Smaller */
     background: rgba(255, 255, 255, 0.9);
     border-radius: 50%;
     display: flex;
@@ -652,7 +665,7 @@ header.show {
     cursor: pointer;
     border: none;
     color: var(--stone-dark);
-    font-size: 14px;
+    font-size: 12px; /* Smaller */
     transition: var(--transition);
     box-shadow: var(--shadow-sm);
     z-index: 10;
@@ -666,15 +679,15 @@ header.show {
 }
 
 .cat-slider-prev {
-    left: 10px;
+    left: 5px; /* Closer to edge */
 }
 
 .cat-slider-next {
-    right: 10px;
+    right: 5px; /* Closer to edge */
 }
 
 /* ============================================
-   STONE USES SECTION - 2 ROWS × 3 COLUMNS WITH SQUARE IMAGES
+   STONE USES SECTION - TALL VERTICAL IMAGES
    ============================================ */
 
 .uses-section {
@@ -685,7 +698,7 @@ header.show {
 .uses-slider-container {
     position: relative;
     overflow: hidden;
-    padding: 30px 12px; /* Reduced padding */
+    padding: 20px 10px; /* Further reduced */
     background: var(--white);
 }
 
@@ -695,22 +708,22 @@ header.show {
     width: 100%;
 }
 
-/* Each slide: 2 rows × 3 columns grid */
+/* Each slide: 2 rows × 3 columns grid - TALL VERTICAL */
 .uses-slide {
     flex: 0 0 100%;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(2, 1fr);
-    gap: 12px; /* Reduced gap */
-    padding: 0 10px;
+    gap: 10px; /* Reduced gap */
+    padding: 0 8px; /* Reduced */
     box-sizing: border-box;
     width: 100%;
 }
 
-/* Use card styling - SQUARE IMAGES WITH CLEAR VISIBILITY */
+/* Use card styling - TALL VERTICAL IMAGES */
 .use-card {
     background: var(--white);
-    border-radius: 10px; /* Smaller radius */
+    border-radius: 8px; /* Smaller */
     box-shadow: var(--shadow-sm);
     transition: var(--transition);
     border: 1px solid #f0f0f0;
@@ -719,7 +732,7 @@ header.show {
     color: inherit;
     display: block;
     position: relative;
-    height: 120px; /* Smaller square */
+    height: 160px; /* Increased height for vertical look */
     overflow: hidden;
 }
 
@@ -739,7 +752,7 @@ header.show {
 .use-image {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Fill the square */
+    object-fit: cover; /* Changed to cover for better vertical fill */
     transition: transform 0.5s ease;
 }
 
@@ -755,11 +768,12 @@ header.show {
     right: 0;
     background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
     color: white;
-    padding: 10px 8px 6px;
+    padding: 8px 6px 5px; /* Reduced */
+    border-radius: 0 0 8px 8px;
 }
 
 .use-name {
-    font-size: 13px;
+    font-size: 12px; /* Smaller */
     font-weight: 600;
     margin-bottom: 2px;
     font-family: 'Roboto Slab', serif;
@@ -769,7 +783,7 @@ header.show {
 }
 
 .use-count {
-    font-size: 11px;
+    font-size: 10px; /* Smaller */
     opacity: 0.9;
 }
 
@@ -777,13 +791,13 @@ header.show {
 .use-slider-nav {
     display: flex;
     justify-content: center;
-    gap: 8px;
-    margin-top: 20px;
+    gap: 6px; /* Reduced */
+    margin-top: 15px; /* Reduced */
 }
 
 .use-slider-dot {
-    width: 7px;
-    height: 7px;
+    width: 6px; /* Smaller */
+    height: 6px; /* Smaller */
     border-radius: 50%;
     background: rgba(0, 0, 0, 0.2);
     cursor: pointer;
@@ -800,8 +814,8 @@ header.show {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 30px;
-    height: 30px;
+    width: 28px; /* Smaller */
+    height: 28px; /* Smaller */
     background: var(--white);
     border-radius: 50%;
     display: flex;
@@ -810,7 +824,7 @@ header.show {
     cursor: pointer;
     border: none;
     color: var(--stone-dark);
-    font-size: 12px;
+    font-size: 11px; /* Smaller */
     transition: var(--transition);
     box-shadow: var(--shadow-sm);
     z-index: 10;
@@ -823,11 +837,11 @@ header.show {
 }
 
 .use-slider-prev {
-    left: 15px;
+    left: 10px; /* Closer to edge */
 }
 
 .use-slider-next {
-    right: 15px;
+    right: 10px; /* Closer to edge */
 }
 
 /* ============================================
@@ -840,41 +854,41 @@ header.show {
 
 /* Products Content */
 .products-content {
-    padding: 30px 12px; /* Reduced padding */
+    padding: 20px 10px; /* Further reduced */
 }
 
 .section-header {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    margin-bottom: 20px;
+    gap: 12px; /* Reduced */
+    margin-bottom: 15px; /* Reduced */
 }
 
 .section-header h2 {
-    font-size: 16px;
+    font-size: 15px; /* Smaller */
     font-weight: 600;
     color: var(--stone-dark);
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px; /* Reduced */
 }
 
 .section-header h2 i {
     color: var(--primary-gold);
-    font-size: 14px;
+    font-size: 13px; /* Smaller */
 }
 
 /* Product Grid */
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Smaller cards */
-    gap: 15px;
-    margin-bottom: 25px;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* Even smaller */
+    gap: 12px; /* Reduced */
+    margin-bottom: 20px; /* Reduced */
 }
 
 .image-card {
     background: var(--white);
-    border-radius: 8px; /* Smaller radius */
+    border-radius: 8px;
     box-shadow: var(--shadow-sm);
     transition: var(--transition);
     border: 1px solid #f0f0f0;
@@ -884,7 +898,7 @@ header.show {
     text-decoration: none;
     color: inherit;
     display: block;
-    height: 160px; /* Smaller height */
+    height: 150px; /* Slightly reduced */
 }
 
 .image-card:hover {
@@ -915,10 +929,10 @@ header.show {
 /* Add to Cart Icon */
 .add-cart-icon {
     position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 30px;
-    height: 30px;
+    top: 6px; /* Reduced */
+    right: 6px; /* Reduced */
+    width: 28px; /* Smaller */
+    height: 28px; /* Smaller */
     background: var(--primary-gold);
     color: white;
     border-radius: 50%;
@@ -932,6 +946,7 @@ header.show {
     z-index: 2;
     border: none;
     box-shadow: var(--shadow-sm);
+    font-size: 12px;
 }
 
 .image-card:hover .add-cart-icon {
@@ -947,10 +962,10 @@ header.show {
 /* Wishlist Icon */
 .wishlist-icon {
     position: absolute;
-    top: 8px;
-    left: 8px;
-    width: 30px;
-    height: 30px;
+    top: 6px; /* Reduced */
+    left: 6px; /* Reduced */
+    width: 28px; /* Smaller */
+    height: 28px; /* Smaller */
     background: var(--white);
     color: var(--text-dark);
     border-radius: 50%;
@@ -964,6 +979,7 @@ header.show {
     z-index: 2;
     border: none;
     box-shadow: var(--shadow-sm);
+    font-size: 12px;
 }
 
 .image-card:hover .wishlist-icon {
@@ -988,9 +1004,10 @@ header.show {
     right: 0;
     background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
     color: white;
-    padding: 12px 8px 8px;
+    padding: 10px 6px 6px; /* Reduced */
     transform: translateY(100%);
     transition: transform 0.3s ease;
+    border-radius: 0 0 8px 8px;
 }
 
 .image-card:hover .product-info-overlay {
@@ -998,9 +1015,9 @@ header.show {
 }
 
 .product-name {
-    font-size: 12px;
+    font-size: 11px; /* Smaller */
     font-weight: 600;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
     font-family: 'Roboto Slab', serif;
     white-space: nowrap;
     overflow: hidden;
@@ -1008,7 +1025,7 @@ header.show {
 }
 
 .product-price {
-    font-size: 13px;
+    font-size: 12px; /* Smaller */
     font-weight: 600;
     color: var(--gold-light);
     font-family: 'Roboto Slab', serif;
@@ -1018,8 +1035,8 @@ header.show {
 .filter-controls {
     display: flex;
     overflow-x: auto;
-    gap: 10px;
-    padding: 5px 0 15px;
+    gap: 8px; /* Reduced */
+    padding: 3px 0 10px; /* Reduced */
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
 }
@@ -1029,14 +1046,14 @@ header.show {
 }
 
 .filter-select {
-    padding: 8px 12px;
+    padding: 7px 10px; /* Reduced */
     border-radius: 15px;
     border: 1px solid #e0e0e0;
     background: var(--white);
     color: var(--text-dark);
-    font-size: 12px;
+    font-size: 11px; /* Smaller */
     cursor: pointer;
-    min-width: 120px;
+    min-width: 110px; /* Smaller */
     flex-shrink: 0;
     transition: var(--transition);
 }
@@ -1059,11 +1076,11 @@ header.show {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.3); /* More transparent */
-    backdrop-filter: blur(5px); /* Less blur */
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
     display: flex;
     justify-content: space-around;
-    padding: 10px 0;
+    padding: 8px 0; /* Reduced */
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     z-index: 999;
     box-shadow: 0 -1px 10px rgba(0,0,0,0.2);
@@ -1072,7 +1089,7 @@ header.show {
 }
 
 .bottom-nav.scrolled {
-    background: rgba(0, 0, 0, 0.5); /* Slightly darker on scroll */
+    background: rgba(0, 0, 0, 0.5);
 }
 
 .bottom-nav.hidden {
@@ -1085,17 +1102,17 @@ header.show {
 
 .nav-btn {
     text-align: center;
-    font-size: 10px;
+    font-size: 9px; /* Smaller */
     color: rgba(255, 255, 255, 0.8);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3px;
+    gap: 2px; /* Reduced */
     transition: var(--transition);
     cursor: pointer;
-    padding: 6px 8px;
-    border-radius: 10px;
-    min-width: 55px;
+    padding: 5px 6px; /* Reduced */
+    border-radius: 8px; /* Smaller */
+    min-width: 50px; /* Smaller */
     text-decoration: none;
 }
 
@@ -1110,20 +1127,20 @@ header.show {
 }
 
 .nav-btn i {
-    font-size: 16px;
+    font-size: 15px; /* Smaller */
 }
 
 /* Cart Badge */
 .cart-badge {
     position: absolute;
-    top: -4px;
-    right: -4px;
+    top: -3px; /* Reduced */
+    right: -3px; /* Reduced */
     background: #ff4757;
     color: var(--white);
-    font-size: 9px;
+    font-size: 8px; /* Smaller */
     font-weight: 600;
-    width: 16px;
-    height: 16px;
+    width: 14px; /* Smaller */
+    height: 14px; /* Smaller */
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -1137,8 +1154,8 @@ header.show {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 40px;
-    height: 40px;
+    width: 35px; /* Smaller */
+    height: 35px; /* Smaller */
     border: 3px solid rgba(201, 162, 39, 0.3);
     border-radius: 50%;
     border-top-color: var(--primary-gold);
@@ -1153,19 +1170,19 @@ header.show {
 /* Notification */
 .notification {
     position: fixed;
-    top: 15px;
-    right: 15px;
+    top: 12px; /* Reduced */
+    right: 12px; /* Reduced */
     background: var(--primary-gold);
     color: white;
-    padding: 10px 15px;
-    border-radius: 8px;
+    padding: 8px 12px; /* Reduced */
+    border-radius: 6px; /* Smaller */
     box-shadow: var(--shadow-md);
     z-index: 9999;
     transform: translateX(100%);
     transition: transform 0.3s ease;
-    max-width: 250px;
+    max-width: 220px; /* Smaller */
     display: none;
-    font-size: 13px;
+    font-size: 12px; /* Smaller */
 }
 
 .notification.show {
@@ -1176,28 +1193,28 @@ header.show {
 /* Error Message */
 .error-message {
     position: fixed;
-    top: 15px;
+    top: 12px; /* Reduced */
     left: 50%;
     transform: translateX(-50%);
     background: #ff4757;
     color: white;
-    padding: 10px 15px;
-    border-radius: 8px;
+    padding: 8px 12px; /* Reduced */
+    border-radius: 6px; /* Smaller */
     box-shadow: var(--shadow-md);
     z-index: 9999;
     display: none;
-    max-width: 250px;
+    max-width: 220px; /* Smaller */
     text-align: center;
-    font-size: 13px;
+    font-size: 12px; /* Smaller */
 }
 
 /* Scroll to Top Button */
 .scroll-top {
     position: fixed;
-    bottom: 70px;
-    right: 15px;
-    width: 40px;
-    height: 40px;
+    bottom: 65px; /* Adjusted */
+    right: 12px; /* Reduced */
+    width: 35px; /* Smaller */
+    height: 35px; /* Smaller */
     background: var(--primary-gold);
     color: white;
     border-radius: 50%;
@@ -1210,6 +1227,7 @@ header.show {
     opacity: 0;
     transform: translateY(15px);
     box-shadow: var(--shadow-sm);
+    font-size: 14px;
 }
 
 .scroll-top.visible {
@@ -1225,20 +1243,20 @@ header.show {
 /* View All Button */
 .view-all-container {
     text-align: center;
-    margin-top: 25px;
+    margin-top: 20px; /* Reduced */
 }
 
 .view-all-btn {
     display: inline-block;
-    padding: 10px 25px;
+    padding: 8px 20px; /* Reduced */
     background: var(--primary-gold);
     color: white;
-    border-radius: 20px;
+    border-radius: 18px; /* Smaller */
     text-decoration: none;
     font-weight: 500;
     transition: var(--transition);
     border: 1px solid var(--primary-gold);
-    font-size: 13px;
+    font-size: 12px; /* Smaller */
 }
 
 .view-all-btn:hover {
@@ -1251,87 +1269,92 @@ header.show {
 /* Responsive */
 @media (min-width: 768px) {
     .hero {
-        padding: 140px 20px 40px;
-        min-height: 80vh;
+        padding: 120px 20px 30px; /* Still reduced */
+        min-height: 70vh;
     }
     
     .hero h1 {
-        font-size: 40px;
+        font-size: 32px;
     }
     
     .hero p {
-        font-size: 18px;
+        font-size: 16px;
+    }
+    
+    .section-title-wrapper {
+        padding: 30px 20px !important; /* Still reduced */
     }
     
     .section-title-wrapper h2 {
-        font-size: 24px !important;
+        font-size: 22px !important;
     }
     
     .section-title-wrapper .subtitle {
-        font-size: 15px !important;
+        font-size: 14px !important;
     }
     
     .category-card {
-        height: 200px;
+        height: 250px; /* Taller on desktop */
     }
     
     .use-card {
-        height: 140px;
+        height: 180px; /* Taller on desktop */
     }
     
     .product-grid {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 20px;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 15px;
     }
     
     .image-card {
-        height: 180px;
+        height: 170px;
     }
 }
 
 @media (max-width: 480px) {
     .hero {
-        padding: 100px 15px 25px;
-        min-height: 60vh;
+        padding: 90px 12px 20px; /* Further reduced */
+        min-height: 55vh; /* Smaller */
     }
     
     .hero h1 {
-        font-size: 24px;
+        font-size: 22px; /* Smaller */
     }
     
     .hero p {
-        font-size: 14px;
+        font-size: 13px; /* Smaller */
     }
     
     .section-title-wrapper {
-        padding: 25px 15px !important;
+        padding: 20px 12px !important; /* Further reduced */
     }
     
     .section-title-wrapper h2 {
-        font-size: 18px !important;
+        font-size: 18px !important; /* Smaller */
     }
     
     .section-title-wrapper .subtitle {
-        font-size: 12px !important;
+        font-size: 12px !important; /* Smaller */
     }
     
     .categories-slide {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* Single column on mobile */
+        gap: 10px;
     }
     
     .category-card {
-        height: 150px;
+        height: 180px; /* Adjusted for mobile */
     }
     
     .uses-slide {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, 1fr); /* 2 columns on mobile */
         grid-template-rows: repeat(3, 1fr);
-        gap: 10px;
+        gap: 8px;
         padding: 0 5px;
     }
     
     .use-card {
-        height: 100px;
+        height: 130px; /* Adjusted for mobile */
     }
     
     .use-name {
@@ -1339,12 +1362,12 @@ header.show {
     }
     
     .nav-btn {
-        min-width: 50px;
+        min-width: 45px; /* Smaller */
         padding: 4px;
     }
     
     .nav-btn span {
-        font-size: 9px;
+        font-size: 8px; /* Smaller */
     }
 }
 </style>
@@ -1381,7 +1404,7 @@ header.show {
     </div>
 
     <!-- Header Actions -->
-    <div style="display: flex; gap: 8px; align-items: center;">
+    <div style="display: flex; gap: 6px; align-items: center;">
         <!-- Wishlist icon -->
         <a href="wishlist.html" class="action-btn" title="Wishlist">
             <i class="far fa-heart"></i>
@@ -1608,7 +1631,6 @@ class AuthSystem {
                     
                     this.saveUserToLocalStorage();
                     
-                    // Load user cart from Firebase when logged in
                     if (cartSystem) {
                         cartSystem.loadUserCart();
                     }
@@ -1699,7 +1721,7 @@ class AuthSystem {
                 <button class="profile-btn" id="profileDropdownBtn">
                     <i class="fas fa-user"></i>
                     <span>${firstName}</span>
-                    <i class="fas fa-chevron-down" style="font-size: 10px;"></i>
+                    <i class="fas fa-chevron-down" style="font-size: 9px;"></i>
                 </button>
                 <div class="profile-dropdown" id="profileDropdown">
                     <div class="profile-info">
@@ -1728,7 +1750,6 @@ class AuthSystem {
                 </div>
             `;
             
-            // Setup dropdown behavior
             const dropdownBtn = document.getElementById('profileDropdownBtn');
             const dropdown = document.getElementById('profileDropdown');
             
@@ -1898,7 +1919,6 @@ class CartSystem {
             
             showNotification(`${product.stone_name} added to cart!`);
             
-            // Animate cart button
             const cartBtn = document.querySelector('a[href="cart.html"]');
             if (cartBtn) {
                 cartBtn.style.transform = 'scale(1.1)';
@@ -2057,7 +2077,6 @@ let categoriesSlider = {
         wrapper.innerHTML = '';
         nav.innerHTML = '';
         
-        // Group categories into slides of 2 items each
         const itemsPerSlide = 2;
         const slides = [];
         
@@ -2067,7 +2086,6 @@ let categoriesSlider = {
         
         this.totalSlides = slides.length;
         
-        // Create slides
         slides.forEach((slideCategories, slideIndex) => {
             const slide = document.createElement('div');
             slide.className = 'categories-slide';
@@ -2089,7 +2107,6 @@ let categoriesSlider = {
             slide.innerHTML = categoriesHTML;
             wrapper.appendChild(slide);
             
-            // Create dot for each slide
             const dot = document.createElement('div');
             dot.className = `cat-slider-dot ${slideIndex === 0 ? 'active' : ''}`;
             dot.setAttribute('data-slide', slideIndex);
@@ -2216,7 +2233,6 @@ let usesSlider = {
         wrapper.innerHTML = '';
         nav.innerHTML = '';
         
-        // Group uses into slides of 6 items each
         const itemsPerSlide = 6;
         const slides = [];
         
@@ -2226,7 +2242,6 @@ let usesSlider = {
         
         this.totalSlides = slides.length;
         
-        // Create slides
         slides.forEach((slideUses, slideIndex) => {
             const slide = document.createElement('div');
             slide.className = 'uses-slide';
@@ -2248,7 +2263,6 @@ let usesSlider = {
             slide.innerHTML = usesHTML;
             wrapper.appendChild(slide);
             
-            // Create dot for each slide
             const dot = document.createElement('div');
             dot.className = `use-slider-dot ${slideIndex === 0 ? 'active' : ''}`;
             dot.setAttribute('data-slide', slideIndex);
@@ -2369,7 +2383,6 @@ async function loadCategoriesSlider() {
             }
         }
         
-        // Load categories from products
         const querySnapshot = await firebaseDB.collection("products").limit(50).get();
         
         if (!querySnapshot.empty) {
@@ -2379,7 +2392,6 @@ async function loadCategoriesSlider() {
                 const data = doc.data();
                 const category = data.category || 'Natural Stone';
                 
-                // Get image from Firebase (FROM FIREBASE URL)
                 let image = data.image || '';
                 if (!image && data.images && Array.isArray(data.images) && data.images.length > 0) {
                     image = data.images[0];
@@ -2399,11 +2411,9 @@ async function loadCategoriesSlider() {
                 }
             });
             
-            // Get all categories sorted by count
             const allCategories = Array.from(categoryMap.values())
                 .sort((a, b) => b.count - a.count);
             
-            // Initialize slider with categories
             categoriesSlider.init(allCategories);
         } else {
             loadDefaultCategoriesSlider();
@@ -2419,32 +2429,32 @@ function loadDefaultCategoriesSlider() {
     const defaultCategories = [
         {
             name: 'Sand Stone',
-            image: 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=600',
+            image: 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=600&h=800', // Vertical image
             count: 25
         },
         {
             name: 'Kota Stone',
-            image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=600',
+            image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=600&h=800', // Vertical image
             count: 18
         },
         {
             name: 'Granite',
-            image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=600',
+            image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=600&h=800', // Vertical image
             count: 15
         },
         {
             name: 'Marble',
-            image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=600',
+            image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=600&h=800', // Vertical image
             count: 12
         },
         {
             name: 'Limestone',
-            image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=600',
+            image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=600&h=800', // Vertical image
             count: 10
         },
         {
             name: 'Slate',
-            image: 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=600',
+            image: 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=600&h=800', // Vertical image
             count: 8
         }
     ];
@@ -2475,7 +2485,6 @@ async function loadStoneUsesSlider() {
                 const data = doc.data();
                 const usage = data.usage || data.uses || 'General Use';
                 
-                // Get image from Firebase (FROM FIREBASE URL)
                 let image = data.image || '';
                 if (!image && data.images && Array.isArray(data.images) && data.images.length > 0) {
                     image = data.images[0];
@@ -2495,11 +2504,9 @@ async function loadStoneUsesSlider() {
                 }
             });
             
-            // Convert to array and sort by count
             const uses = Array.from(usesMap.values())
                 .sort((a, b) => b.count - a.count);
             
-            // Initialize slider with uses
             usesSlider.init(uses);
         } else {
             loadDefaultUsesSlider();
@@ -2515,62 +2522,62 @@ function loadDefaultUsesSlider() {
     const defaultUses = [
         {
             name: 'Wall Cladding',
-            image: 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=400&h=400',
+            image: 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=400&h=600', // Vertical image
             count: 15
         },
         {
             name: 'Flooring',
-            image: 'https://images.unsplash.com/photo-1565538810643-b5bdb714032a?auto=format&fit=crop&w=400&h=400',
+            image: 'https://images.unsplash.com/photo-1565538810643-b5bdb714032a?auto=format&fit=crop&w=400&h=600', // Vertical image
             count: 20
         },
         {
             name: 'Kitchen Countertops',
-            image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=400&h=400',
+            image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=400&h=600', // Vertical image
             count: 12
         },
         {
             name: 'Garden Paving',
-            image: 'https://images.unsplash.com/photo-1565538810643-b5bdb714032a?auto=format&fit=crop&w=400&h=400',
+            image: 'https://images.unsplash.com/photo-1565538810643-b5bdb714032a?auto=format&fit=crop&w=400&h=600', // Vertical image
             count: 18
         },
         {
             name: 'Pool Surround',
-            image: 'https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?auto=format&fit=crop&w=400&h=400',
+            image: 'https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?auto=format&fit=crop&w=400&h=600', // Vertical image
             count: 8
         },
         {
             name: 'Patio Flooring',
-            image: 'https://images.unsplash.com/photo-1565538810643-b5bdb714032a?auto=format&fit=crop&w=400&h=400',
+            image: 'https://images.unsplash.com/photo-1565538810643-b5bdb714032a?auto=format&fit=crop&w=400&h=600', // Vertical image
             count: 14
         },
         {
             name: 'Staircase',
-            image: 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=400&h=400',
+            image: 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=400&h=600', // Vertical image
             count: 10
         },
         {
             name: 'Fireplace',
-            image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=400&h=400',
+            image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=400&h=600', // Vertical image
             count: 6
         },
         {
             name: 'Bathroom Walls',
-            image: 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=400&h=400',
+            image: 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=400&h=600', // Vertical image
             count: 9
         },
         {
             name: 'Driveway',
-            image: 'https://images.unsplash.com/photo-1565538810643-b5bdb714032a?auto=format&fit=crop&w=400&h=400',
+            image: 'https://images.unsplash.com/photo-1565538810643-b5bdb714032a?auto=format&fit=crop&w=400&h=600', // Vertical image
             count: 11
         },
         {
             name: 'Commercial Flooring',
-            image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=400&h=400',
+            image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=400&h=600', // Vertical image
             count: 7
         },
         {
             name: 'Landscaping',
-            image: 'https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?auto=format&fit=crop&w=400&h=400',
+            image: 'https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?auto=format&fit=crop&w=400&h=600', // Vertical image
             count: 13
         }
     ];
@@ -2582,22 +2589,22 @@ function getDefaultUseImage(use) {
     const useLower = (use || '').toLowerCase();
     
     if (useLower.includes('wall') || useLower.includes('cladding')) {
-        return 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=400&h=400';
+        return 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=400&h=600';
     } else if (useLower.includes('floor') || useLower.includes('paving') || useLower.includes('patio')) {
-        return 'https://images.unsplash.com/photo-1565538810643-b5bdb714032a?auto=format&fit=crop&w=400&h=400';
+        return 'https://images.unsplash.com/photo-1565538810643-b5bdb714032a?auto=format&fit=crop&w=400&h=600';
     } else if (useLower.includes('kitchen') || useLower.includes('counter')) {
-        return 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=400&h=400';
+        return 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=400&h=600';
     } else if (useLower.includes('pool')) {
-        return 'https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?auto=format&fit=crop&w=400&h=400';
+        return 'https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?auto=format&fit=crop&w=400&h=600';
     } else if (useLower.includes('bathroom')) {
-        return 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=400&h=400';
+        return 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=400&h=600';
     }
     
-    return 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=400&h=400';
+    return 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=400&h=600';
 }
 
 // ============================================
-// LOAD PRODUCTS FROM FIREBASE (ACTUAL FIREBASE DATA)
+// LOAD PRODUCTS FROM FIREBASE
 // ============================================
 
 async function loadProductsFromFirebase() {
@@ -2618,12 +2625,10 @@ async function loadProductsFromFirebase() {
         
         let query = firebaseDB.collection("products");
         
-        // Apply category filter
         if (currentCategory !== 'all') {
             query = query.where("category", "==", currentCategory);
         }
         
-        // Apply price filter
         if (currentPriceFilter !== 'all') {
             const priceRange = currentPriceFilter.split('-');
             if (priceRange.length === 2) {
@@ -2636,12 +2641,10 @@ async function loadProductsFromFirebase() {
             }
         }
         
-        // Apply usage filter
         if (currentUsageFilter !== 'all') {
             query = query.where("usage", "==", currentUsageFilter);
         }
         
-        // Apply sorting
         if (currentSort === 'price_low') {
             query = query.orderBy("price", "asc");
         } else if (currentSort === 'price_high') {
@@ -2681,11 +2684,10 @@ async function loadProductsFromFirebase() {
                 type: data.type || ''
             };
             
-            // Get image from Firebase (USE FIREBASE URL)
             if (data.images && Array.isArray(data.images) && data.images.length > 0) {
-                product.image = data.images[0]; // First image from Firebase
+                product.image = data.images[0];
             } else if (typeof data.image === 'string') {
-                product.image = data.image; // Single image from Firebase
+                product.image = data.image;
             } else {
                 product.image = getDefaultImage(product.category);
             }
@@ -2710,10 +2712,10 @@ function displayProducts(products) {
     
     if (products.length === 0) {
         container.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align: center; padding: 30px; color: var(--text-light);">
-                <i class="fas fa-box-open" style="font-size: 36px; margin-bottom: 15px; opacity: 0.5;"></i>
-                <h3 style="font-size: 16px; margin-bottom: 10px;">No products found</h3>
-                <p style="font-size: 14px;">Try selecting a different category or filter</p>
+            <div style="grid-column: 1 / -1; text-align: center; padding: 25px; color: var(--text-light);">
+                <i class="fas fa-box-open" style="font-size: 30px; margin-bottom: 12px; opacity: 0.5;"></i>
+                <h3 style="font-size: 14px; margin-bottom: 8px;">No products found</h3>
+                <p style="font-size: 12px;">Try selecting a different category or filter</p>
             </div>
         `;
         return;
@@ -2863,20 +2865,20 @@ function getDefaultImage(category) {
     const categoryLower = (category || '').toLowerCase();
     
     if (categoryLower.includes('sand')) {
-        return 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=400';
+        return 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=400&h=600';
     } else if (categoryLower.includes('kota')) {
-        return 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=400';
+        return 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=400&h=600';
     } else if (categoryLower.includes('granite')) {
-        return 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=400';
+        return 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=400&h=600';
     } else if (categoryLower.includes('marble')) {
-        return 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=400';
+        return 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=400&h=600';
     } else if (categoryLower.includes('limestone')) {
-        return 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=400';
+        return 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=400&h=600';
     } else if (categoryLower.includes('slate')) {
-        return 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=400';
+        return 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=400&h=600';
     }
     
-    return 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=400';
+    return 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=400&h=600';
 }
 
 function formatPrice(price, unit = 'piece') {
@@ -2903,7 +2905,7 @@ function showDefaultProducts() {
             category: 'Sand Stone',
             description: 'Beautiful green sandstone with natural patterns.',
             price: 38.00,
-            image: 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=400',
+            image: 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=400&h=400',
             price_unit: 'sqft',
             finish: 'Natural',
             size: 'Custom',
@@ -2923,13 +2925,11 @@ function hideSearchResults() {
 }
 
 function applyFilters() {
-    // Update current filters from dropdowns
     currentCategory = document.getElementById('categoryFilter').value;
     currentPriceFilter = document.getElementById('priceFilter').value;
     currentUsageFilter = document.getElementById('usageFilter').value;
     currentSort = document.getElementById('sortFilter').value;
     
-    // Reload products with new filters
     loadProductsFromFirebase();
 }
 
@@ -2949,10 +2949,8 @@ function handleScroll() {
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     const scrollDelta = scrollTop - lastScrollTop;
     
-    // Clear any existing timeout
     clearTimeout(scrollTimeout);
     
-    // Add scrolled class for transparency effect
     if (scrollTop > 50) {
         header.classList.add('scrolled');
         bottomNav.classList.add('scrolled');
@@ -2961,7 +2959,6 @@ function handleScroll() {
         bottomNav.classList.remove('scrolled');
     }
     
-    // Hide/show logic for header and bottom nav
     if (scrollDelta > 5 && scrollTop > 100) {
         header.classList.add('hidden');
         bottomNav.classList.add('hidden');
@@ -2978,14 +2975,12 @@ function handleScroll() {
     
     lastScrollTop = scrollTop;
     
-    // Handle scroll to top button
     if (scrollTop > 300) {
         scrollTopBtn.classList.add('visible');
     } else {
         scrollTopBtn.classList.remove('visible');
     }
     
-    // Adjust hero margin
     if (header.classList.contains('hidden')) {
         heroSection.style.marginTop = '0';
     } else {
@@ -3014,14 +3009,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     wishlistSystem.init();
     updateWishlistUI();
     
-    // Load all sections
     await Promise.all([
         loadCategoriesSlider(),
         loadStoneUsesSlider(),
         loadProductsFromFirebase()
     ]);
     
-    // Event Listeners for Filters
     const categoryFilter = document.getElementById('categoryFilter');
     const priceFilter = document.getElementById('priceFilter');
     const usageFilter = document.getElementById('usageFilter');
@@ -3043,7 +3036,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         sortFilter.addEventListener('change', applyFilters);
     }
     
-    // Search
     const searchInput = document.getElementById('searchInput');
     const searchIcon = document.getElementById('searchIcon');
     const searchResults = document.getElementById('searchResults');
@@ -3074,7 +3066,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     }
     
-    // Scroll to top
     if (scrollTopBtn) {
         scrollTopBtn.addEventListener('click', function() {
             window.scrollTo({
@@ -3084,11 +3075,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     }
     
-    // Scroll handling
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
     
-    // Pause auto slide on hover for both sliders
     const categoriesSliderContainer = document.querySelector('.categories-slider-container');
     const usesSliderContainer = document.querySelector('.uses-slider-container');
     
@@ -3112,7 +3101,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     }
     
-    // Make systems globally available
     window.authSystem = authSystem;
     window.cartSystem = cartSystem;
     window.wishlistSystem = wishlistSystem;
