@@ -397,12 +397,15 @@ header.show {
 /* ============================================
    HERO SECTION
    ============================================ */
+/* ============================================
+   HERO SECTION - REDUCED HEIGHT
+   ============================================ */
 .hero {
-    padding: 80px 15px 25px;
+    padding: 70px 15px 20px; /* Top padding reduced further */
     text-align: center;
     position: relative;
     overflow: hidden;
-    min-height: 55vh;
+    min-height: 45vh; /* SIGNIFICANTLY REDUCED from 55vh */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -421,21 +424,22 @@ header.show {
     max-width: 700px;
     padding: 0 15px;
     z-index: 2;
+    margin-top: -10px; /* Content shifted up slightly */
 }
 
 .hero h1 {
-    font-size: 28px;
+    font-size: 26px; /* Slightly reduced */
     font-weight: 700;
-    margin-bottom: 12px;
+    margin-bottom: 10px; /* Reduced margin */
     font-family: 'Roboto Slab', serif;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     line-height: 1.2;
 }
 
 .hero p {
-    font-size: 14px;
+    font-size: 13px; /* Slightly reduced */
     opacity: 0.9;
-    margin-bottom: 25px;
+    margin-bottom: 20px; /* Reduced margin */
     max-width: 500px;
     margin-left: auto;
     margin-right: auto;
@@ -448,12 +452,63 @@ header.show {
     gap: 8px;
     justify-content: center;
     flex-wrap: wrap;
+    margin-top: 5px; /* Reduced margin */
 }
 
 .hero-buttons .signin-btn {
-    padding: 8px 16px;
-    font-size: 13px;
+    padding: 7px 14px; /* Reduced padding */
+    font-size: 12px; /* Smaller font */
     height: auto;
+}
+
+/* Responsive adjustments for smaller hero */
+@media (min-width: 768px) {
+    .hero {
+        padding: 85px 20px 25px; /* Reduced from 100px */
+        min-height: 50vh; /* Reduced from 65vh */
+    }
+    
+    .hero h1 {
+        font-size: 30px; /* Reduced from 32px */
+        margin-bottom: 12px;
+    }
+    
+    .hero p {
+        font-size: 14px; /* Reduced from 16px */
+        margin-bottom: 22px;
+    }
+    
+    .hero-buttons .signin-btn {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero {
+        padding: 60px 12px 15px; /* Reduced from 70px */
+        min-height: 40vh; /* Reduced from 50vh */
+    }
+    
+    .hero h1 {
+        font-size: 20px; /* Reduced from 22px */
+        margin-bottom: 8px;
+    }
+    
+    .hero p {
+        font-size: 12px; /* Reduced from 13px */
+        margin-bottom: 16px;
+    }
+    
+    .hero-buttons {
+        gap: 6px;
+        margin-top: 3px;
+    }
+    
+    .hero-buttons .signin-btn {
+        padding: 6px 12px;
+        font-size: 11px;
+    }
 }
 
 /* ============================================
