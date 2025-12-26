@@ -58,8 +58,8 @@ header {
     top: 0;
     left: 0;
     right: 0;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(10px);
     padding: 8px 15px;
     display: flex;
     align-items: center;
@@ -67,14 +67,15 @@ header {
     z-index: 1000;
     gap: 8px;
     transform: translateY(0);
-    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), background 0.3s ease;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
     height: 60px;
 }
 
 header.scrolled {
-    background: rgba(0, 0, 0, 0.95);
+    background: rgba(0, 0, 0, 0.98);
+    backdrop-filter: blur(15px);
 }
 
 header.hidden {
@@ -996,21 +997,22 @@ header.show {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.9);
-    backdrop-filter: blur(10px);
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(15px);
     display: flex;
     justify-content: space-around;
     padding: 10px 0;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     z-index: 999;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
     transform: translateY(0);
-    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), background 0.3s ease;
     height: 65px;
 }
 
 .bottom-nav.scrolled {
-    background: rgba(0, 0, 0, 0.95);
+    background: rgba(0, 0, 0, 0.98);
+    backdrop-filter: blur(20px);
 }
 
 .bottom-nav.hidden {
@@ -1765,7 +1767,18 @@ let availableUses = [];
 let availableColors = [];
 
 // ============================================
-// AUTHENTICATION SYSTEM
+// IMPROVED SCROLL VARIABLES
+// ============================================
+let lastScrollTop = 0;
+let scrollTimeout;
+let isScrolling = false;
+let lastScrollTime = 0;
+let scrollThreshold = 10; // Minimum pixels to trigger hide/show
+let fastScrollThreshold = 100; // Pixels per second for fast scroll
+let lastScrollPosition = 0;
+
+// ============================================
+// AUTHENTICATION SYSTEM - FIXED
 // ============================================
 
 class AuthSystem {
@@ -1798,8 +1811,9 @@ class AuthSystem {
                     
                     this.saveUserToLocalStorage();
                     
+                    // FIXED: Use the correct method name
                     if (cartSystem) {
-                        cartSystem.loadUserCart();
+                        cartSystem.loadCart(); // Fixed from loadUserCart()
                     }
                 } else {
                     this.currentUser = this.getUserFromLocalStorage();
@@ -1963,7 +1977,7 @@ class AuthSystem {
 }
 
 // ============================================
-// FIREBASE CART SYSTEM
+// FIREBASE CART SYSTEM - FIXED
 // ============================================
 
 class CartSystem {
@@ -2221,6 +2235,80 @@ function initializeFirebase() {
 }
 
 // ============================================
+// IMPROVED SCROLL HANDLING
+// ============================================
+
+function handleScroll() {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const currentTime = Date.now();
+    
+    // Calculate scroll speed
+    const scrollDistance = Math.abs(scrollTop - lastScrollPosition);
+    const timeDiff = currentTime - lastScrollTime;
+    const scrollSpeed = timeDiff > 0 ? scrollDistance / (timeDiff / 1000) : 0;
+    
+    // Determine scroll direction
+    const scrollDirection = scrollTop > lastScrollPosition ? 'down' : 'up';
+    
+    const header = document.getElementById('mainHeader');
+    const bottomNav = document.getElementById('bottomNav');
+    
+    if (!header || !bottomNav) return;
+    
+    // Always show when near top
+    if (scrollTop < 50) {
+        header.classList.remove('hidden');
+        bottomNav.classList.remove('hidden');
+        header.classList.add('show');
+        bottomNav.classList.add('show');
+        return;
+    }
+    
+    // Add scrolled class when not at top
+    if (scrollTop > 100) {
+        header.classList.add('scrolled');
+        bottomNav.classList.add('scrolled');
+    } else {
+        header.classList.remove('scrolled');
+        bottomNav.classList.remove('scrolled');
+    }
+    
+    // Handle scrolling DOWN (hide on both slow and fast)
+    if (scrollDirection === 'down' && scrollDistance > scrollThreshold) {
+        header.classList.add('hidden');
+        bottomNav.classList.add('hidden');
+        header.classList.remove('show');
+        bottomNav.classList.remove('show');
+    }
+    
+    // Handle scrolling UP (only show on fast scroll)
+    else if (scrollDirection === 'up' && scrollDistance > scrollThreshold) {
+        // Only show if scrolling fast (user wants to go up quickly)
+        if (scrollSpeed > fastScrollThreshold) {
+            header.classList.remove('hidden');
+            bottomNav.classList.remove('hidden');
+            header.classList.add('show');
+            bottomNav.classList.add('show');
+        }
+        // Don't show on slow upward scroll
+    }
+    
+    // Update scroll position for next calculation
+    lastScrollPosition = scrollTop;
+    lastScrollTime = currentTime;
+    
+    // Update scroll to top button
+    const scrollTopBtn = document.getElementById('scrollTopBtn');
+    if (scrollTopBtn) {
+        if (scrollTop > 300) {
+            scrollTopBtn.classList.add('visible');
+        } else {
+            scrollTopBtn.classList.remove('visible');
+        }
+    }
+}
+
+// ============================================
 // LOAD CATEGORIES FROM FIREBASE
 // ============================================
 
@@ -2347,7 +2435,7 @@ function loadDefaultCategories() {
 }
 
 // ============================================
-// LOAD STONE USES FROM FIREBASE
+// LOAD STONE USES FROM FIREBASE - FIXED FOR "usage" FIELD
 // ============================================
 
 async function loadStoneUses() {
@@ -2371,8 +2459,8 @@ async function loadStoneUses() {
             
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
-                // Check both 'uses' and 'usage' fields
-                const usage = data.uses || data.usage || 'General Use';
+                // FIXED: Use "usage" field as per your Firestore data
+                const usage = data.usage || 'General Use';
                 
                 if (usage && usage.trim() !== '') {
                     let image = '';
@@ -2505,7 +2593,7 @@ function getDefaultUseImage(use) {
 }
 
 // ============================================
-// SMART FILTER SYSTEM
+// SMART FILTER SYSTEM - FIXED FOR "usage" FIELD
 // ============================================
 
 async function loadSmartFilters() {
@@ -2534,8 +2622,8 @@ async function loadSmartFilters() {
                 categoriesSet.add(data.category);
             }
             
-            // Collect uses (check both fields)
-            const usage = data.uses || data.usage;
+            // FIXED: Collect uses from "usage" field
+            const usage = data.usage;
             if (usage && usage.trim() !== '') {
                 usesSet.add(usage);
             }
@@ -2626,7 +2714,7 @@ function populateDefaultFilters() {
 }
 
 // ============================================
-// LOAD PRODUCTS FROM FIREBASE WITH SMART FILTERS
+// LOAD PRODUCTS FROM FIREBASE WITH SMART FILTERS - FIXED
 // ============================================
 
 async function loadProductsFromFirebase() {
@@ -2645,35 +2733,12 @@ async function loadProductsFromFirebase() {
             }
         }
         
+        // Simple query without composite index requirements
         let query = firebaseDB.collection("products");
         
-        // Apply category filter
-        if (currentCategory !== 'all') {
-            query = query.where("category", "==", currentCategory);
-        }
-        
-        // Apply usage filter (check both 'uses' and 'usage' fields)
-        if (currentUsageFilter !== 'all') {
-            query = query.where("uses", "==", currentUsageFilter);
-        }
-        
-        // Apply color filter
-        if (currentColorFilter !== 'all') {
-            query = query.where("color", "==", currentColorFilter);
-        }
-        
-        // Apply sorting
-        if (currentSort === 'price_low') {
-            query = query.orderBy("price", "asc");
-        } else if (currentSort === 'price_high') {
-            query = query.orderBy("price", "desc");
-        } else if (currentSort === 'name') {
-            query = query.orderBy("stone_name", "asc");
-        } else {
-            query = query.orderBy("created_at", "desc");
-        }
-        
-        const querySnapshot = await query.limit(50).get();
+        // Note: For production, you should create composite indexes in Firebase Console
+        // Currently using client-side filtering to avoid index errors
+        const querySnapshot = await query.limit(100).get();
         
         if (querySnapshot.empty) {
             showNoProducts();
@@ -2695,50 +2760,21 @@ async function loadProductsFromFirebase() {
                 size: data.size || '',
                 thickness: data.thickness || '',
                 color: data.color || '',
-                uses: data.uses || data.usage || '',
+                usage: data.usage || '', // FIXED: Using "usage" field
                 type: data.type || '',
                 sub_category: data.sub_category || '',
                 length: data.length || '',
                 width: data.width || '',
                 images: data.images || [],
-                image: data.image || ''
+                image: data.image || '',
+                created_at: data.created_at || new Date().toISOString()
             };
             
             allProducts.push(product);
         });
         
-        // Apply price filter after loading (client-side)
-        if (currentPriceFilter !== 'all') {
-            allProducts = allProducts.filter(product => {
-                const price = product.price || 0;
-                
-                switch(currentPriceFilter) {
-                    case '0-25':
-                        return price >= 0 && price <= 25;
-                    case '25-50':
-                        return price > 25 && price <= 50;
-                    case '50-100':
-                        return price > 50 && price <= 100;
-                    case '100-250':
-                        return price > 100 && price <= 250;
-                    case '250+':
-                        return price > 250;
-                    default:
-                        return true;
-                }
-            });
-        }
-        
-        // Apply additional client-side sorting if needed
-        if (currentSort === 'price_low') {
-            allProducts.sort((a, b) => (a.price || 0) - (b.price || 0));
-        } else if (currentSort === 'price_high') {
-            allProducts.sort((a, b) => (b.price || 0) - (a.price || 0));
-        } else if (currentSort === 'name') {
-            allProducts.sort((a, b) => (a.stone_name || '').localeCompare(b.stone_name || ''));
-        }
-        
-        displayProducts(allProducts);
+        // Apply all filters client-side
+        applyAllFiltersClientSide();
         
     } catch (error) {
         console.error('Error loading products:', error);
@@ -2747,6 +2783,66 @@ async function loadProductsFromFirebase() {
     } finally {
         showLoading(false);
     }
+}
+
+function applyAllFiltersClientSide() {
+    let filteredProducts = [...allProducts];
+    
+    // Apply category filter
+    if (currentCategory !== 'all') {
+        filteredProducts = filteredProducts.filter(product => 
+            product.category === currentCategory
+        );
+    }
+    
+    // Apply usage filter (using "usage" field)
+    if (currentUsageFilter !== 'all') {
+        filteredProducts = filteredProducts.filter(product => 
+            product.usage === currentUsageFilter
+        );
+    }
+    
+    // Apply color filter
+    if (currentColorFilter !== 'all') {
+        filteredProducts = filteredProducts.filter(product => 
+            product.color === currentColorFilter
+        );
+    }
+    
+    // Apply price filter
+    if (currentPriceFilter !== 'all') {
+        filteredProducts = filteredProducts.filter(product => {
+            const price = product.price || 0;
+            
+            switch(currentPriceFilter) {
+                case '0-25':
+                    return price >= 0 && price <= 25;
+                case '25-50':
+                    return price > 25 && price <= 50;
+                case '50-100':
+                    return price > 50 && price <= 100;
+                case '100-250':
+                    return price > 100 && price <= 250;
+                case '250+':
+                    return price > 250;
+                default:
+                    return true;
+            }
+        });
+    }
+    
+    // Apply sorting
+    if (currentSort === 'price_low') {
+        filteredProducts.sort((a, b) => (a.price || 0) - (b.price || 0));
+    } else if (currentSort === 'price_high') {
+        filteredProducts.sort((a, b) => (b.price || 0) - (a.price || 0));
+    } else if (currentSort === 'name') {
+        filteredProducts.sort((a, b) => (a.stone_name || '').localeCompare(b.stone_name || ''));
+    } else if (currentSort === 'newest') {
+        filteredProducts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    }
+    
+    displayProducts(filteredProducts);
 }
 
 function displayProducts(products) {
@@ -2964,7 +3060,7 @@ function showDefaultProducts() {
             images: ['https://i.ibb.co/hxTqdyM2/daad0a39e4cc.webp'],
             price_unit: 'sqft',
             color: 'Gray',
-            uses: 'Staircase'
+            usage: 'Staircase'
         }
     ];
     
@@ -2985,92 +3081,64 @@ function applyFilters() {
     currentColorFilter = document.getElementById('colorFilter').value;
     currentSort = document.getElementById('sortFilter').value;
     
-    loadProductsFromFirebase();
+    applyAllFiltersClientSide();
 }
 
 // ============================================
-// IMPROVED SCROLL HANDLING
+// SEARCH FUNCTION
 // ============================================
 
-let lastScrollTop = 0;
-let scrollTimeout;
-let scrollDirection = 'up';
-let scrollVelocity = 0;
-let lastScrollTime = Date.now();
-
-function handleScroll() {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const currentTime = Date.now();
-    const timeDiff = currentTime - lastScrollTime;
-    
-    // Calculate scroll velocity (pixels per second)
-    if (timeDiff > 0) {
-        scrollVelocity = Math.abs(scrollTop - lastScrollTop) / (timeDiff / 1000);
+function searchProducts(query) {
+    const searchResults = document.getElementById('searchResults');
+    if (!searchResults || !query.trim()) {
+        searchResults.classList.remove('active');
+        return;
     }
     
-    // Determine scroll direction
-    scrollDirection = scrollTop > lastScrollTop ? 'down' : 'up';
+    const filtered = allProducts.filter(product => 
+        product.stone_name.toLowerCase().includes(query.toLowerCase()) ||
+        (product.category && product.category.toLowerCase().includes(query.toLowerCase())) ||
+        (product.description && product.description.toLowerCase().includes(query.toLowerCase())) ||
+        (product.color && product.color.toLowerCase().includes(query.toLowerCase()))
+    ).slice(0, 8);
     
-    clearTimeout(scrollTimeout);
-    
-    const header = document.getElementById('mainHeader');
-    const bottomNav = document.getElementById('bottomNav');
-    const heroSection = document.getElementById('heroSection');
-    
-    if (!header || !bottomNav) return;
-    
-    // Show/hide header based on scroll position
-    if (scrollTop > 100) {
-        header.classList.add('scrolled');
-        bottomNav.classList.add('scrolled');
+    if (filtered.length > 0) {
+        const resultsHTML = filtered.map(product => {
+            let image = '';
+            if (product.images && product.images.length > 0) {
+                image = product.images[0];
+            } else if (product.image) {
+                image = product.image;
+            } else {
+                image = getDefaultImage(product.category);
+            }
+            
+            return `
+                <a href="product.html?id=${encodeURIComponent(product.id)}" class="search-result-item">
+                    <div class="search-result-image">
+                        <img src="${image}" alt="${product.stone_name}"
+                             onerror="this.src='${getDefaultImage(product.category)}'">
+                    </div>
+                    <div class="search-result-info">
+                        <div class="search-result-name">${product.stone_name}</div>
+                        <div class="search-result-category">${product.category || 'Stone'}</div>
+                    </div>
+                    <div class="search-result-price">${formatPrice(product.price, product.price_unit)}</div>
+                </a>
+            `;
+        }).join('');
         
-        // Show header on fast upward scroll (velocity > 50 pixels/second)
-        if (scrollDirection === 'up' && scrollVelocity > 50 && scrollTop > 150) {
-            header.classList.remove('hidden');
-            bottomNav.classList.remove('hidden');
-            header.classList.add('show');
-            bottomNav.classList.add('show');
-        } 
-        // Hide header on downward scroll
-        else if (scrollDirection === 'down' && scrollTop - lastScrollTop > 10) {
-            header.classList.add('hidden');
-            bottomNav.classList.add('hidden');
-            header.classList.remove('show');
-            bottomNav.classList.remove('show');
-        }
+        searchResults.innerHTML = resultsHTML;
     } else {
-        // Always show when near top
-        header.classList.remove('scrolled', 'hidden');
-        bottomNav.classList.remove('scrolled', 'hidden');
-        header.classList.add('show');
-        bottomNav.classList.add('show');
+        searchResults.innerHTML = `
+            <div class="no-results">
+                <i class="fas fa-search"></i>
+                <p>No products found for "${query}"</p>
+            </div>
+        `;
     }
     
-    // Update scroll position for next calculation
-    lastScrollTop = scrollTop;
-    lastScrollTime = currentTime;
-    
-    // Scroll to top button
-    const scrollTopBtn = document.getElementById('scrollTopBtn');
-    if (scrollTopBtn) {
-        if (scrollTop > 300) {
-            scrollTopBtn.classList.add('visible');
-        } else {
-            scrollTopBtn.classList.remove('visible');
-        }
-    }
-    
-    // Adjust hero margin when header is hidden
-    if (heroSection && header.classList.contains('hidden')) {
-        heroSection.style.marginTop = '0';
-    } else if (heroSection) {
-        heroSection.style.marginTop = '';
-    }
-    
-    // Reset velocity after a delay
-    scrollTimeout = setTimeout(() => {
-        scrollVelocity = 0;
-    }, 150);
+    searchResults.classList.add('active');
 }
 
 // ============================================
@@ -3170,7 +3238,17 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     }
     
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    // Improved scroll handling with throttling
+    let scrollTimeout;
+    window.addEventListener('scroll', function() {
+        if (!scrollTimeout) {
+            scrollTimeout = setTimeout(function() {
+                handleScroll();
+                scrollTimeout = null;
+            }, 50); // Throttle to 50ms
+        }
+    }, { passive: true });
+    
     handleScroll();
     
     window.authSystem = authSystem;
@@ -3179,61 +3257,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     window.toggleWishlist = toggleWishlist;
     window.addToCartDirect = addToCartDirect;
     window.applyFilters = applyFilters;
+    window.handleScroll = handleScroll;
 });
-
-// Search function
-function searchProducts(query) {
-    const searchResults = document.getElementById('searchResults');
-    if (!searchResults || !query.trim()) {
-        searchResults.classList.remove('active');
-        return;
-    }
-    
-    const filtered = allProducts.filter(product => 
-        product.stone_name.toLowerCase().includes(query.toLowerCase()) ||
-        (product.category && product.category.toLowerCase().includes(query.toLowerCase())) ||
-        (product.description && product.description.toLowerCase().includes(query.toLowerCase())) ||
-        (product.color && product.color.toLowerCase().includes(query.toLowerCase()))
-    ).slice(0, 8);
-    
-    if (filtered.length > 0) {
-        const resultsHTML = filtered.map(product => {
-            let image = '';
-            if (product.images && product.images.length > 0) {
-                image = product.images[0];
-            } else if (product.image) {
-                image = product.image;
-            } else {
-                image = getDefaultImage(product.category);
-            }
-            
-            return `
-                <a href="product.html?id=${encodeURIComponent(product.id)}" class="search-result-item">
-                    <div class="search-result-image">
-                        <img src="${image}" alt="${product.stone_name}"
-                             onerror="this.src='${getDefaultImage(product.category)}'">
-                    </div>
-                    <div class="search-result-info">
-                        <div class="search-result-name">${product.stone_name}</div>
-                        <div class="search-result-category">${product.category || 'Stone'}</div>
-                    </div>
-                    <div class="search-result-price">${formatPrice(product.price, product.price_unit)}</div>
-                </a>
-            `;
-        }).join('');
-        
-        searchResults.innerHTML = resultsHTML;
-    } else {
-        searchResults.innerHTML = `
-            <div class="no-results">
-                <i class="fas fa-search"></i>
-                <p>No products found for "${query}"</p>
-            </div>
-        `;
-    }
-    
-    searchResults.classList.add('active');
-}
 </script>
 </body>
 </html>
