@@ -1996,9 +1996,17 @@ class CartSystem {
     // ------------------------------------------
     // USER ID
     // ------------------------------------------
-    getUserId() {
-        return window.authSystem ? window.authSystem.getUserId() : 'guest';
+   getUserId() {
+    let uid = localStorage.getItem('irya_uid');
+
+    if (!uid) {
+        uid = 'guest_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+        localStorage.setItem('irya_uid', uid);
     }
+
+    return uid;
+}
+
     
     // ------------------------------------------
     // LOAD CART
