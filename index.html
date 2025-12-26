@@ -67,7 +67,7 @@ header {
     z-index: 1000;
     gap: 8px;
     transform: translateY(0);
-    transition: all 0.3s ease;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     height: 60px;
@@ -83,6 +83,7 @@ header.hidden {
 
 header.show {
     transform: translateY(0);
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .logo {
@@ -450,7 +451,7 @@ header.show {
 }
 
 /* ============================================
-   SHOP BY CATEGORY SECTION - COMPACT 3-COLUMN
+   SHOP BY CATEGORY SECTION - SINGLE ROW AUTO HEIGHT
    ============================================ */
 
 .categories-section {
@@ -459,7 +460,7 @@ header.show {
     margin-top: 0;
 }
 
-/* Title Section - Compact */
+/* Title Section */
 .categories-section .section-title-wrapper {
     background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.6));
     padding: 20px 15px !important;
@@ -512,20 +513,25 @@ header.show {
     width: 100%;
 }
 
-/* Each slide: 2 rows × 3 columns grid */
+/* Each slide: SINGLE ROW with auto height */
 .categories-slide {
     flex: 0 0 100%;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(2, 150px);
-    gap: 10px;
+    display: flex;
+    gap: 12px;
     box-sizing: border-box;
     width: 100%;
     padding: 0 12px;
     margin: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
 }
 
-/* Category card styling - Compact */
+.categories-slide::-webkit-scrollbar {
+    display: none;
+}
+
+/* Category card styling - AUTO HEIGHT based on image */
 .category-card {
     background: var(--white);
     overflow: hidden;
@@ -536,12 +542,13 @@ header.show {
     color: inherit;
     display: block;
     position: relative;
-    height: 150px;
-    min-height: 150px;
-    max-height: 150px;
-    width: 100%;
-    border-radius: 8px;
+    min-width: 280px;
+    max-width: 280px;
+    flex-shrink: 0;
+    border-radius: 12px;
     box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
 }
 
 .category-card:hover {
@@ -549,52 +556,60 @@ header.show {
     box-shadow: var(--shadow-md);
 }
 
-.category-image {
+.category-image-container {
     width: 100%;
-    height: 150px;
-    min-height: 150px;
-    max-height: 150px;
-    overflow: hidden;
     position: relative;
-    border-radius: 8px;
+    overflow: hidden;
+    border-radius: 12px 12px 0 0;
+    background: #f8f9fa;
 }
 
-.category-image img {
+.category-image {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
+    height: auto;
+    display: block;
     transition: transform 0.5s ease;
 }
 
-.category-card:hover .category-image img {
+.category-card:hover .category-image {
     transform: scale(1.05);
 }
 
-.category-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-    color: white;
-    padding: 10px 8px 6px;
-    border-radius: 0 0 8px 8px;
+.category-content {
+    padding: 12px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .category-name {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
     font-family: 'Roboto Slab', serif;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    color: var(--stone-dark);
+    line-height: 1.2;
 }
 
 .category-count {
     font-size: 11px;
-    opacity: 0.9;
+    color: var(--text-light);
+    margin-bottom: 8px;
+}
+
+.category-link {
+    margin-top: auto;
+    font-size: 11px;
+    color: var(--primary-gold);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: var(--transition);
+}
+
+.category-link:hover {
+    color: var(--gold-dark);
 }
 
 /* Slider Navigation */
@@ -657,7 +672,7 @@ header.show {
 }
 
 /* ============================================
-   STONE USES SECTION - FIT CONTENT DISPLAY
+   STONE USES SECTION - SINGLE ROW AUTO HEIGHT
    ============================================ */
 
 .uses-section {
@@ -718,22 +733,27 @@ header.show {
     width: 100%;
 }
 
-/* Each slide: 2 rows × 3 columns grid - FIT CONTENT LAYOUT */
+/* Each slide: SINGLE ROW with auto height */
 .uses-slide {
     flex: 0 0 100%;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-    gap: 10px;
+    display: flex;
+    gap: 12px;
     padding: 0 12px;
     box-sizing: border-box;
     width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
 }
 
-/* Use card styling - FIT CONTENT DISPLAY */
+.uses-slide::-webkit-scrollbar {
+    display: none;
+}
+
+/* Use card styling - AUTO HEIGHT based on image */
 .use-card {
     background: var(--white);
-    border-radius: 8px;
+    border-radius: 12px;
     box-shadow: var(--shadow-sm);
     transition: var(--transition);
     border: 1px solid #f0f0f0;
@@ -742,8 +762,11 @@ header.show {
     color: inherit;
     display: block;
     position: relative;
-    height: 160px;
-    min-height: 160px;
+    min-width: 280px;
+    max-width: 280px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
 }
 
@@ -755,56 +778,59 @@ header.show {
 
 .use-image-container {
     width: 100%;
-    height: 100%;
-    overflow: hidden;
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    overflow: hidden;
+    border-radius: 12px 12px 0 0;
+    background: #f8f9fa;
 }
 
 .use-image {
     width: 100%;
-    height: 100%;
-    object-fit: contain; /* FIT CONTENT - Shows full image */
-    object-position: center;
+    height: auto;
+    display: block;
     transition: transform 0.5s ease;
-    background: #f8f9fa;
 }
 
 .use-card:hover .use-image {
     transform: scale(1.05);
 }
 
-/* Use Info Overlay - FIXED POSITION */
-.use-info-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0.4) 50%, transparent);
-    color: white;
-    padding: 10px 8px 6px;
-    border-radius: 0 0 8px 8px;
-    z-index: 2;
+/* Use Info Content */
+.use-content {
+    padding: 12px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .use-name {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 600;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
     font-family: 'Roboto Slab', serif;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-align: center;
+    color: var(--stone-dark);
+    line-height: 1.2;
 }
 
 .use-count {
-    font-size: 10px;
-    opacity: 0.9;
-    text-align: center;
-    display: block;
+    font-size: 11px;
+    color: var(--text-light);
+    margin-bottom: 8px;
+}
+
+.use-link {
+    margin-top: auto;
+    font-size: 11px;
+    color: var(--primary-gold);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: var(--transition);
+}
+
+.use-link:hover {
+    color: var(--gold-dark);
 }
 
 /* Slider Navigation */
@@ -1154,7 +1180,7 @@ header.show {
     z-index: 999;
     box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
     transform: translateY(0);
-    transition: all 0.3s ease;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     height: 65px;
 }
 
@@ -1168,6 +1194,7 @@ header.show {
 
 .bottom-nav.show {
     transform: translateY(0);
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .nav-btn {
@@ -1413,43 +1440,24 @@ header.show {
     }
     
     .categories-slide {
-        grid-template-rows: repeat(2, 170px);
         gap: 15px;
         padding: 0 20px;
     }
     
     .category-card,
-    .category-image {
-        height: 170px;
-        min-height: 170px;
-        max-height: 170px;
-    }
-    
-    .category-name {
-        font-size: 14px;
-    }
-    
-    .category-count {
-        font-size: 12px;
-    }
-    
-    /* Uses */
-    .uses-slide {
-        gap: 12px;
-        padding: 0 20px;
-    }
-    
     .use-card {
-        height: 180px;
-        min-height: 180px;
+        min-width: 320px;
+        max-width: 320px;
     }
     
+    .category-name,
     .use-name {
-        font-size: 13px;
+        font-size: 15px;
     }
     
+    .category-count,
     .use-count {
-        font-size: 11px;
+        font-size: 12px;
     }
     
     /* Products */
@@ -1479,56 +1487,41 @@ header.show {
 }
 
 @media (max-width: 767px) {
-    /* Categories - Switch to 2 columns on mobile */
+    /* Categories - Single row scrollable */
     .categories-slide {
-        grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: repeat(3, 140px);
-        gap: 8px;
+        gap: 10px;
         padding: 0 10px;
     }
     
     .category-card,
-    .category-image {
-        height: 140px;
-        min-height: 140px;
-        max-height: 140px;
+    .use-card {
+        min-width: 250px;
+        max-width: 250px;
     }
     
     .category-overlay {
         padding: 8px 6px 4px;
     }
     
-    .category-name {
-        font-size: 12px;
+    .category-name,
+    .use-name {
+        font-size: 13px;
     }
     
-    .category-count {
-        font-size: 10px;
+    .category-count,
+    .use-count {
+        font-size: 11px;
     }
     
-    /* Uses - Switch to 2 columns on mobile */
+    /* Uses - Single row scrollable */
     .uses-slide {
-        grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: repeat(3, 1fr);
-        gap: 8px;
+        gap: 10px;
         padding: 0 10px;
     }
     
     .use-card {
-        height: 140px;
-        min-height: 140px;
-    }
-    
-    .use-info-overlay {
-        padding: 8px 6px 4px;
-    }
-    
-    .use-name {
-        font-size: 11px;
-    }
-    
-    .use-count {
-        font-size: 9px;
+        min-width: 250px;
+        max-width: 250px;
     }
 }
 
@@ -1623,38 +1616,29 @@ header.show {
     
     /* Categories */
     .categories-slide {
-        grid-template-rows: repeat(3, 130px);
-        gap: 6px;
+        gap: 8px;
         padding: 0 8px;
     }
     
     .category-card,
-    .category-image {
-        height: 130px;
-        min-height: 130px;
-        max-height: 130px;
-    }
-    
-    .category-name {
-        font-size: 11px;
-    }
-    
-    .category-count {
-        font-size: 9px;
-    }
-    
-    /* Uses */
     .use-card {
-        height: 130px;
-        min-height: 130px;
+        min-width: 220px;
+        max-width: 220px;
     }
     
+    .category-content,
+    .use-content {
+        padding: 10px;
+    }
+    
+    .category-name,
     .use-name {
-        font-size: 10px;
+        font-size: 12px;
     }
     
+    .category-count,
     .use-count {
-        font-size: 8px;
+        font-size: 10px;
     }
     
     /* Products */
@@ -1823,10 +1807,11 @@ header.show {
                 
                 <select id="priceFilter" class="filter-select">
                     <option value="all">All Prices</option>
-                    <option value="0-30">Under £30</option>
-                    <option value="30-60">£30 - £60</option>
-                    <option value="60-100">£60 - £100</option>
-                    <option value="100+">Over £100</option>
+                    <option value="0-25">Under £25</option>
+                    <option value="25-50">£25 - £50</option>
+                    <option value="50-100">£50 - £100</option>
+                    <option value="100-250">£100 - £250</option>
+                    <option value="250+">Over £250</option>
                 </select>
                 
                 <select id="usageFilter" class="filter-select">
@@ -2367,7 +2352,7 @@ function initializeFirebase() {
 }
 
 // ============================================
-// CATEGORIES SLIDER - 3 COLUMNS LAYOUT
+// CATEGORIES SLIDER - SINGLE ROW AUTO HEIGHT
 // ============================================
 
 let categoriesSlider = {
@@ -2390,44 +2375,72 @@ let categoriesSlider = {
         wrapper.innerHTML = '';
         nav.innerHTML = '';
         
-        const itemsPerSlide = 6; // 3 columns × 2 rows = 6 items per slide
-        const slides = [];
+        // Create single row with all categories
+        const slide = document.createElement('div');
+        slide.className = 'categories-slide';
+        slide.setAttribute('data-slide', 0);
         
-        for (let i = 0; i < categories.length; i += itemsPerSlide) {
-            slides.push(categories.slice(i, i + itemsPerSlide));
-        }
-        
-        this.totalSlides = slides.length;
-        
-        slides.forEach((slideCategories, slideIndex) => {
-            const slide = document.createElement('div');
-            slide.className = 'categories-slide';
-            slide.setAttribute('data-slide', slideIndex);
-            
-            const categoriesHTML = slideCategories.map(category => `
-                <a href="products.html?category=${encodeURIComponent(category.name)}" class="category-card">
-                    <div class="category-image">
-                        <img src="${category.image}" alt="${category.name}" 
-                             onerror="this.src='${getDefaultImage(category.name)}'">
-                        <div class="category-overlay">
-                            <div class="category-name">${category.name}</div>
-                            <div class="category-count">${category.count} products</div>
-                        </div>
+        const categoriesHTML = categories.map(category => `
+            <a href="products.html?category=${encodeURIComponent(category.name)}" class="category-card">
+                <div class="category-image-container">
+                    <img src="${category.image}" alt="${category.name}" 
+                         class="category-image"
+                         onerror="this.src='${getDefaultImage(category.name)}'"
+                         loading="lazy">
+                </div>
+                <div class="category-content">
+                    <div class="category-name">${category.name}</div>
+                    <div class="category-count">${category.count} products</div>
+                    <div class="category-link">
+                        Shop Now <i class="fas fa-arrow-right"></i>
                     </div>
-                </a>
-            `).join('');
-            
-            slide.innerHTML = categoriesHTML;
-            wrapper.appendChild(slide);
-            
-            const dot = document.createElement('div');
-            dot.className = `cat-slider-dot ${slideIndex === 0 ? 'active' : ''}`;
-            dot.setAttribute('data-slide', slideIndex);
-            dot.addEventListener('click', () => this.goToSlide(slideIndex));
-            nav.appendChild(dot);
-        });
+                </div>
+            </a>
+        `).join('');
+        
+        slide.innerHTML = categoriesHTML;
+        wrapper.appendChild(slide);
+        
+        this.totalSlides = 1;
+        
+        const dot = document.createElement('div');
+        dot.className = 'cat-slider-dot active';
+        dot.setAttribute('data-slide', 0);
+        dot.addEventListener('click', () => this.goToSlide(0));
+        nav.appendChild(dot);
         
         this.updateSlider();
+        
+        // Set image heights after they load
+        this.setImageHeights();
+    },
+    
+    setImageHeights: function() {
+        const images = document.querySelectorAll('.category-image');
+        images.forEach(img => {
+            img.onload = function() {
+                // Auto height based on image aspect ratio
+                const container = img.parentElement;
+                if (container) {
+                    const width = container.offsetWidth;
+                    const naturalWidth = img.naturalWidth;
+                    const naturalHeight = img.naturalHeight;
+                    const aspectRatio = naturalHeight / naturalWidth;
+                    const height = width * aspectRatio;
+                    
+                    // Set minimum and maximum heights
+                    const minHeight = 180;
+                    const maxHeight = 280;
+                    
+                    img.style.height = Math.min(Math.max(height, minHeight), maxHeight) + 'px';
+                }
+            };
+            
+            // If image already loaded
+            if (img.complete) {
+                img.onload();
+            }
+        });
     },
     
     setupNavigation: function() {
@@ -2523,7 +2536,7 @@ let categoriesSlider = {
 };
 
 // ============================================
-// USES SLIDER - FIT CONTENT DISPLAY
+// USES SLIDER - SINGLE ROW AUTO HEIGHT
 // ============================================
 
 let usesSlider = {
@@ -2546,44 +2559,71 @@ let usesSlider = {
         wrapper.innerHTML = '';
         nav.innerHTML = '';
         
-        const itemsPerSlide = 6; // 3 columns × 2 rows = 6 items per slide
-        const slides = [];
+        // Create single row with all uses
+        const slide = document.createElement('div');
+        slide.className = 'uses-slide';
+        slide.setAttribute('data-slide', 0);
         
-        for (let i = 0; i < uses.length; i += itemsPerSlide) {
-            slides.push(uses.slice(i, i + itemsPerSlide));
-        }
-        
-        this.totalSlides = slides.length;
-        
-        slides.forEach((slideUses, slideIndex) => {
-            const slide = document.createElement('div');
-            slide.className = 'uses-slide';
-            slide.setAttribute('data-slide', slideIndex);
-            
-            const usesHTML = slideUses.map(use => `
-                <a href="products.html?usage=${encodeURIComponent(use.name)}" class="use-card">
-                    <div class="use-image-container">
-                        <img src="${use.image}" alt="${use.name}" class="use-image"
-                             onerror="this.src='${getDefaultUseImage(use.name)}'">
-                        <div class="use-info-overlay">
-                            <div class="use-name">${use.name}</div>
-                            <div class="use-count">${use.count} products</div>
-                        </div>
+        const usesHTML = uses.map(use => `
+            <a href="products.html?usage=${encodeURIComponent(use.name)}" class="use-card">
+                <div class="use-image-container">
+                    <img src="${use.image}" alt="${use.name}" class="use-image"
+                         onerror="this.src='${getDefaultUseImage(use.name)}'"
+                         loading="lazy">
+                </div>
+                <div class="use-content">
+                    <div class="use-name">${use.name}</div>
+                    <div class="use-count">${use.count} products</div>
+                    <div class="use-link">
+                        View Products <i class="fas fa-arrow-right"></i>
                     </div>
-                </a>
-            `).join('');
-            
-            slide.innerHTML = usesHTML;
-            wrapper.appendChild(slide);
-            
-            const dot = document.createElement('div');
-            dot.className = `use-slider-dot ${slideIndex === 0 ? 'active' : ''}`;
-            dot.setAttribute('data-slide', slideIndex);
-            dot.addEventListener('click', () => this.goToSlide(slideIndex));
-            nav.appendChild(dot);
-        });
+                </div>
+            </a>
+        `).join('');
+        
+        slide.innerHTML = usesHTML;
+        wrapper.appendChild(slide);
+        
+        this.totalSlides = 1;
+        
+        const dot = document.createElement('div');
+        dot.className = 'use-slider-dot active';
+        dot.setAttribute('data-slide', 0);
+        dot.addEventListener('click', () => this.goToSlide(0));
+        nav.appendChild(dot);
         
         this.updateSlider();
+        
+        // Set image heights after they load
+        this.setImageHeights();
+    },
+    
+    setImageHeights: function() {
+        const images = document.querySelectorAll('.use-image');
+        images.forEach(img => {
+            img.onload = function() {
+                // Auto height based on image aspect ratio
+                const container = img.parentElement;
+                if (container) {
+                    const width = container.offsetWidth;
+                    const naturalWidth = img.naturalWidth;
+                    const naturalHeight = img.naturalHeight;
+                    const aspectRatio = naturalHeight / naturalWidth;
+                    const height = width * aspectRatio;
+                    
+                    // Set minimum and maximum heights
+                    const minHeight = 180;
+                    const maxHeight = 280;
+                    
+                    img.style.height = Math.min(Math.max(height, minHeight), maxHeight) + 'px';
+                }
+            };
+            
+            // If image already loaded
+            if (img.complete) {
+                img.onload();
+            }
+        });
     },
     
     setupNavigation: function() {
@@ -2725,7 +2765,8 @@ async function loadCategoriesSlider() {
             });
             
             const allCategories = Array.from(categoryMap.values())
-                .sort((a, b) => b.count - a.count);
+                .sort((a, b) => b.count - a.count)
+                .slice(0, 8); // Limit to 8 categories for single row
             
             categoriesSlider.init(allCategories);
         } else {
@@ -2779,26 +2820,6 @@ function loadDefaultCategoriesSlider() {
             name: 'Basalt',
             image: 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=400&h=300',
             count: 5
-        },
-        {
-            name: 'Travertine',
-            image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=400&h=300',
-            count: 7
-        },
-        {
-            name: 'Cobbles',
-            image: 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=400&h=300',
-            count: 9
-        },
-        {
-            name: 'Pebbles',
-            image: 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=400&h=300',
-            count: 11
-        },
-        {
-            name: 'Aggregates',
-            image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=400&h=300',
-            count: 14
         }
     ];
     
@@ -2848,7 +2869,8 @@ async function loadStoneUsesSlider() {
             });
             
             const uses = Array.from(usesMap.values())
-                .sort((a, b) => b.count - a.count);
+                .sort((a, b) => b.count - a.count)
+                .slice(0, 8); // Limit to 8 uses for single row
             
             usesSlider.init(uses);
         } else {
@@ -2902,26 +2924,6 @@ function loadDefaultUsesSlider() {
             name: 'Fireplace',
             image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=400&h=300',
             count: 6
-        },
-        {
-            name: 'Bathroom Walls',
-            image: 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=400&h=300',
-            count: 9
-        },
-        {
-            name: 'Driveway',
-            image: 'https://images.unsplash.com/photo-1565538810643-b5bdb714032a?auto=format&fit=crop&w=400&h=300',
-            count: 11
-        },
-        {
-            name: 'Commercial Flooring',
-            image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=400&h=300',
-            count: 7
-        },
-        {
-            name: 'Landscaping',
-            image: 'https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?auto=format&fit=crop&w=400&h=300',
-            count: 13
         }
     ];
     
@@ -2968,26 +2970,16 @@ async function loadProductsFromFirebase() {
         
         let query = firebaseDB.collection("products");
         
+        // Apply filters
         if (currentCategory !== 'all') {
             query = query.where("category", "==", currentCategory);
-        }
-        
-        if (currentPriceFilter !== 'all') {
-            const priceRange = currentPriceFilter.split('-');
-            if (priceRange.length === 2) {
-                if (priceRange[1] === '+') {
-                    query = query.where("price", ">=", parseFloat(priceRange[0]));
-                } else {
-                    query = query.where("price", ">=", parseFloat(priceRange[0]))
-                                .where("price", "<=", parseFloat(priceRange[1]));
-                }
-            }
         }
         
         if (currentUsageFilter !== 'all') {
             query = query.where("usage", "==", currentUsageFilter);
         }
         
+        // Apply sorting
         if (currentSort === 'price_low') {
             query = query.orderBy("price", "asc");
         } else if (currentSort === 'price_high') {
@@ -2998,7 +2990,7 @@ async function loadProductsFromFirebase() {
             query = query.orderBy("created_at", "desc");
         }
         
-        const querySnapshot = await query.limit(20).get();
+        const querySnapshot = await query.limit(50).get();
         
         if (querySnapshot.empty) {
             showDefaultProducts();
@@ -3037,6 +3029,37 @@ async function loadProductsFromFirebase() {
             
             allProducts.push(product);
         });
+        
+        // Apply price filter after loading (client-side)
+        if (currentPriceFilter !== 'all') {
+            allProducts = allProducts.filter(product => {
+                const price = product.price || 0;
+                
+                switch(currentPriceFilter) {
+                    case '0-25':
+                        return price >= 0 && price <= 25;
+                    case '25-50':
+                        return price > 25 && price <= 50;
+                    case '50-100':
+                        return price > 50 && price <= 100;
+                    case '100-250':
+                        return price > 100 && price <= 250;
+                    case '250+':
+                        return price > 250;
+                    default:
+                        return true;
+                }
+            });
+        }
+        
+        // Apply sorting if needed
+        if (currentSort === 'price_low') {
+            allProducts.sort((a, b) => (a.price || 0) - (b.price || 0));
+        } else if (currentSort === 'price_high') {
+            allProducts.sort((a, b) => (b.price || 0) - (a.price || 0));
+        } else if (currentSort === 'name') {
+            allProducts.sort((a, b) => (a.stone_name || '').localeCompare(b.stone_name || ''));
+        }
         
         displayProducts(allProducts);
         
@@ -3277,58 +3300,88 @@ function applyFilters() {
 }
 
 // ============================================
-// SCROLL HANDLING
+// IMPROVED SCROLL HANDLING
 // ============================================
 
 let lastScrollTop = 0;
 let scrollTimeout;
-let isScrolling = false;
-const header = document.getElementById('mainHeader');
-const bottomNav = document.getElementById('bottomNav');
-const scrollTopBtn = document.getElementById('scrollTopBtn');
-const heroSection = document.getElementById('heroSection');
+let scrollDirection = 'up';
+let scrollVelocity = 0;
+let lastScrollTime = Date.now();
 
 function handleScroll() {
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const scrollDelta = scrollTop - lastScrollTop;
+    const currentTime = Date.now();
+    const timeDiff = currentTime - lastScrollTime;
+    
+    // Calculate scroll velocity (pixels per second)
+    if (timeDiff > 0) {
+        scrollVelocity = Math.abs(scrollTop - lastScrollTop) / (timeDiff / 1000);
+    }
+    
+    // Determine scroll direction
+    scrollDirection = scrollTop > lastScrollTop ? 'down' : 'up';
     
     clearTimeout(scrollTimeout);
     
-    if (scrollTop > 50) {
+    const header = document.getElementById('mainHeader');
+    const bottomNav = document.getElementById('bottomNav');
+    const heroSection = document.getElementById('heroSection');
+    
+    if (!header || !bottomNav) return;
+    
+    // Show/hide header based on scroll position
+    if (scrollTop > 100) {
         header.classList.add('scrolled');
         bottomNav.classList.add('scrolled');
+        
+        // Show header on fast upward scroll (velocity > 50 pixels/second)
+        if (scrollDirection === 'up' && scrollVelocity > 50 && scrollTop > 150) {
+            header.classList.remove('hidden');
+            bottomNav.classList.remove('hidden');
+            header.classList.add('show');
+            bottomNav.classList.add('show');
+        } 
+        // Hide header on downward scroll
+        else if (scrollDirection === 'down' && scrollTop - lastScrollTop > 10) {
+            header.classList.add('hidden');
+            bottomNav.classList.add('hidden');
+            header.classList.remove('show');
+            bottomNav.classList.remove('show');
+        }
     } else {
-        header.classList.remove('scrolled');
-        bottomNav.classList.remove('scrolled');
-    }
-    
-    if (scrollDelta > 5 && scrollTop > 100) {
-        header.classList.add('hidden');
-        bottomNav.classList.add('hidden');
-        header.classList.remove('show');
-        bottomNav.classList.remove('show');
-        isScrolling = true;
-    } else if (scrollDelta < -5) {
-        header.classList.remove('hidden');
-        bottomNav.classList.remove('hidden');
+        // Always show when near top
+        header.classList.remove('scrolled', 'hidden');
+        bottomNav.classList.remove('scrolled', 'hidden');
         header.classList.add('show');
         bottomNav.classList.add('show');
-        isScrolling = false;
     }
     
+    // Update scroll position for next calculation
     lastScrollTop = scrollTop;
+    lastScrollTime = currentTime;
     
-    if (scrollTop > 300) {
-        scrollTopBtn.classList.add('visible');
-    } else {
-        scrollTopBtn.classList.remove('visible');
+    // Scroll to top button
+    const scrollTopBtn = document.getElementById('scrollTopBtn');
+    if (scrollTopBtn) {
+        if (scrollTop > 300) {
+            scrollTopBtn.classList.add('visible');
+        } else {
+            scrollTopBtn.classList.remove('visible');
+        }
     }
     
-    if (header.classList.contains('hidden')) {
+    // Adjust hero margin when header is hidden
+    if (heroSection && header.classList.contains('hidden')) {
         heroSection.style.marginTop = '0';
-    } else {
+    } else if (heroSection) {
         heroSection.style.marginTop = '';
     }
+    
+    // Reset velocity after a delay
+    scrollTimeout = setTimeout(() => {
+        scrollVelocity = 0;
+    }, 150);
 }
 
 // ============================================
@@ -3403,12 +3456,14 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
         
         document.addEventListener('click', function(e) {
-            if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+            if (searchResults && searchInput && 
+                !searchInput.contains(e.target) && !searchResults.contains(e.target)) {
                 hideSearchResults();
             }
         });
     }
     
+    const scrollTopBtn = document.getElementById('scrollTopBtn');
     if (scrollTopBtn) {
         scrollTopBtn.addEventListener('click', function() {
             window.scrollTo({
