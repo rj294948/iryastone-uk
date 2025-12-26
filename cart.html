@@ -11,6 +11,11 @@
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto+Slab:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
 <style>
 :root {
     --primary-gold: #c9a227;
@@ -22,9 +27,9 @@
     --text-dark: #222222;
     --text-light: #666666;
     --white: #ffffff;
-    --shadow-sm: 0 2px 10px rgba(0,0,0,0.1);
-    --shadow-md: 0 4px 15px rgba(0,0,0,0.1);
-    --shadow-lg: 0 8px 25px rgba(0,0,0,0.15);
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+    --shadow-lg: 0 8px 20px rgba(0,0,0,0.12);
     --transition: all 0.3s ease;
     --border-radius: 12px;
     --border-radius-lg: 20px;
@@ -42,93 +47,163 @@ body {
     color: var(--text-dark);
     padding-bottom: 80px;
     font-size: 14px;
+    scroll-behavior: smooth;
 }
 
-/* Header */
+/* ============================================
+   HEADER - Home Page Style
+   ============================================ */
 header {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    background: var(--white);
-    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    padding: 8px 15px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-shadow: var(--shadow-sm);
     z-index: 1000;
-    gap: 10px;
+    gap: 8px;
+    transform: translateY(0);
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    height: 60px;
+}
+
+header.scrolled {
+    background: rgba(0, 0, 0, 0.95);
+}
+
+header.hidden {
+    transform: translateY(-100%);
+}
+
+header.show {
+    transform: translateY(0);
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .logo {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     font-weight: 600;
-    min-width: 140px;
+    min-width: 120px;
 }
 
 .logo i {
     color: var(--primary-gold);
-    font-size: 24px;
+    font-size: 18px;
 }
 
 .logo span {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
-    color: var(--stone-dark);
+    color: var(--white);
     font-family: 'Roboto Slab', serif;
 }
 
-/* Back Button */
+/* Back Button - Home Page Style */
 .back-btn {
     display: flex;
     align-items: center;
-    gap: 8px;
-    background: var(--bg-light);
-    color: var(--text-dark);
-    padding: 8px 16px;
+    gap: 6px;
+    background: linear-gradient(135deg, var(--primary-gold), var(--gold-dark));
+    color: var(--white);
+    padding: 8px 14px;
     border-radius: 20px;
-    border: none;
+    font-size: 12px;
+    font-weight: 500;
     cursor: pointer;
+    border: none;
     transition: var(--transition);
+    white-space: nowrap;
+    min-width: 70px;
     text-decoration: none;
 }
 
 .back-btn:hover {
-    background: var(--primary-gold);
-    color: var(--white);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
 }
 
-/* Main Content */
+.action-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-size: 14px;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    text-decoration: none;
+}
+
+.action-btn:hover {
+    background: var(--primary-gold);
+    color: var(--white);
+    transform: scale(1.05);
+}
+
+/* ============================================
+   MAIN CONTENT
+   ============================================ */
 .main-content {
-    padding: 90px 16px 20px;
-    max-width: 1200px;
-    margin: 0 auto;
+    padding: 90px 15px 20px;
+    margin-top: 60px;
 }
 
 .page-header {
-    margin-bottom: 30px;
+    margin-bottom: 25px;
+    text-align: center;
 }
 
 .page-header h1 {
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 700;
     color: var(--stone-dark);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     font-family: 'Roboto Slab', serif;
 }
 
 .page-subtitle {
     color: var(--text-light);
-    font-size: 16px;
+    font-size: 13px;
+    max-width: 500px;
+    margin: 0 auto 15px;
 }
 
-/* Cart Layout */
+.sync-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--primary-gold);
+    padding: 6px 12px;
+    background: rgba(201, 162, 39, 0.1);
+    border-radius: 15px;
+    width: fit-content;
+    margin: 0 auto;
+}
+
+/* ============================================
+   CART LAYOUT - Mobile First
+   ============================================ */
 .cart-container {
-    display: grid;
-    grid-template-columns: 1fr 350px;
-    gap: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 /* Cart Items */
@@ -140,21 +215,24 @@ header {
 }
 
 .cart-item {
-    display: grid;
-    grid-template-columns: 120px 1fr auto;
-    gap: 20px;
-    padding: 20px;
+    padding: 15px;
     border-bottom: 1px solid #f0f0f0;
-    align-items: center;
 }
 
 .cart-item:last-child {
     border-bottom: none;
 }
 
+.cart-item-content {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 15px;
+    align-items: start;
+}
+
 .cart-item-image {
-    width: 120px;
-    height: 120px;
+    width: 100px;
+    height: 100px;
     border-radius: 10px;
     overflow: hidden;
     background: var(--bg-light);
@@ -163,7 +241,8 @@ header {
 .cart-item-image img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    padding: 8px;
 }
 
 .cart-item-details {
@@ -171,37 +250,43 @@ header {
 }
 
 .cart-item-name {
-    font-size: 18px;
+    font-size: 15px;
     font-weight: 600;
     color: var(--stone-dark);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     font-family: 'Roboto Slab', serif;
+    line-height: 1.3;
 }
 
 .cart-item-category {
     color: var(--primary-gold);
     font-weight: 500;
-    margin-bottom: 10px;
-    font-size: 14px;
+    margin-bottom: 8px;
+    font-size: 12px;
 }
 
 .cart-item-specs {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--text-light);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .cart-item-price {
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 700;
     color: var(--primary-gold);
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
 
 .cart-item-actions {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 10px;
 }
 
 .quantity-controls {
@@ -209,18 +294,18 @@ header {
     align-items: center;
     gap: 10px;
     background: var(--bg-light);
-    border-radius: 25px;
-    padding: 5px 15px;
+    border-radius: 20px;
+    padding: 4px 12px;
 }
 
 .quantity-btn {
     background: none;
     border: none;
     color: var(--text-dark);
-    font-size: 16px;
+    font-size: 14px;
     cursor: pointer;
-    width: 30px;
-    height: 30px;
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -234,9 +319,10 @@ header {
 }
 
 .quantity-value {
-    min-width: 30px;
+    min-width: 25px;
     text-align: center;
     font-weight: 600;
+    font-size: 13px;
 }
 
 .remove-btn {
@@ -244,65 +330,97 @@ header {
     border: none;
     color: #ff4757;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 12px;
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 4px;
     transition: var(--transition);
-    padding: 8px 15px;
-    border-radius: 20px;
+    padding: 6px 12px;
+    border-radius: 15px;
 }
 
 .remove-btn:hover {
     background: rgba(255, 71, 87, 0.1);
 }
 
+.buy-now-btn {
+    background: var(--primary-gold);
+    border: none;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+}
+
+.buy-now-btn:hover {
+    background: var(--gold-dark);
+    transform: translateY(-1px);
+}
+
 .cart-item-total {
-    font-size: 22px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed #f0f0f0;
+    text-align: right;
+    font-size: 16px;
     font-weight: 700;
     color: var(--stone-dark);
-    text-align: right;
-    min-width: 100px;
+}
+
+.cart-item-total .advance {
+    font-size: 11px;
+    color: var(--text-light);
+    margin-top: 4px;
+    font-weight: 500;
 }
 
 /* Empty Cart */
 .empty-cart {
     text-align: center;
-    padding: 60px 20px;
+    padding: 40px 20px;
 }
 
 .empty-cart-icon {
-    font-size: 64px;
+    font-size: 48px;
     color: var(--text-light);
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     opacity: 0.5;
 }
 
 .empty-cart h2 {
-    font-size: 24px;
+    font-size: 18px;
     color: var(--stone-dark);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .empty-cart p {
     color: var(--text-light);
-    margin-bottom: 30px;
-    max-width: 400px;
+    margin-bottom: 20px;
+    max-width: 300px;
     margin-left: auto;
     margin-right: auto;
+    font-size: 13px;
+    line-height: 1.4;
 }
 
 .continue-shopping-btn {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     background: linear-gradient(135deg, var(--primary-gold), var(--gold-dark));
     color: white;
-    padding: 12px 30px;
-    border-radius: 25px;
+    padding: 10px 20px;
+    border-radius: 20px;
     text-decoration: none;
     font-weight: 600;
     transition: var(--transition);
+    font-size: 13px;
 }
 
 .continue-shopping-btn:hover {
@@ -310,51 +428,31 @@ header {
     box-shadow: var(--shadow-md);
 }
 
-/* Buy Now Button in Cart Item */
-.buy-now-btn {
-    background: none;
-    border: 2px solid var(--primary-gold);
-    color: var(--primary-gold);
-    padding: 8px 15px;
-    border-radius: 20px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.buy-now-btn:hover {
-    background: var(--primary-gold);
-    color: white;
-}
-
-/* Order Summary */
+/* ============================================
+   ORDER SUMMARY - Mobile First
+   ============================================ */
 .order-summary {
     background: var(--white);
     border-radius: var(--border-radius);
     box-shadow: var(--shadow-sm);
-    padding: 25px;
-    position: sticky;
-    top: 100px;
-    height: fit-content;
+    padding: 20px;
+    margin-top: 20px;
 }
 
 .order-summary h2 {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 600;
     color: var(--stone-dark);
-    margin-bottom: 20px;
-    padding-bottom: 15px;
+    margin-bottom: 15px;
+    padding-bottom: 12px;
     border-bottom: 1px solid #f0f0f0;
 }
 
 .summary-row {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 15px;
-    font-size: 15px;
+    margin-bottom: 12px;
+    font-size: 13px;
 }
 
 .summary-label {
@@ -367,38 +465,38 @@ header {
 }
 
 .summary-total {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
     color: var(--stone-dark);
-    margin-top: 20px;
-    padding-top: 20px;
+    margin-top: 15px;
+    padding-top: 15px;
     border-top: 1px solid #f0f0f0;
 }
 
 .summary-total .summary-value {
     color: var(--primary-gold);
-    font-size: 24px;
+    font-size: 20px;
 }
 
 .checkout-btn {
     width: 100%;
-    padding: 16px;
+    padding: 14px;
     background: linear-gradient(135deg, var(--primary-gold), var(--gold-dark));
     color: white;
     border: none;
-    border-radius: 10px;
-    font-size: 16px;
+    border-radius: var(--border-radius);
+    font-size: 15px;
     font-weight: 600;
     cursor: pointer;
-    margin-top: 25px;
+    margin-top: 20px;
     transition: var(--transition);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
 }
 
-.checkout-btn:hover {
+.checkout-btn:hover:not(:disabled) {
     opacity: 0.9;
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
@@ -410,110 +508,121 @@ header {
     transform: none;
 }
 
-/* Promo Code */
-.promo-section {
-    margin-top: 20px;
-}
-
-.promo-input {
+.security-note {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-light);
     display: flex;
-    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.advance-note {
     margin-top: 10px;
-}
-
-.promo-input input {
-    flex: 1;
-    padding: 12px 15px;
-    border: 1px solid #e0e0e0;
+    padding: 10px;
+    background: rgba(201, 162, 39, 0.1);
     border-radius: 8px;
-    font-size: 14px;
+    font-size: 12px;
+    color: var(--primary-gold);
+    text-align: center;
 }
 
-.apply-promo-btn {
-    background: var(--bg-light);
-    color: var(--text-dark);
-    border: 1px solid #e0e0e0;
-    padding: 12px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.apply-promo-btn:hover {
-    background: #f0f0f0;
-    border-color: var(--primary-gold);
-}
-
-/* Bottom Navigation */
+/* ============================================
+   BOTTOM NAVIGATION - Home Page Style
+   ============================================ */
 .bottom-nav {
     position: fixed;
     left: 0;
     right: 0;
     bottom: 0;
-    background: var(--white);
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(10px);
     display: flex;
     justify-content: space-around;
-    padding: 12px 0;
-    border-top: 1px solid #eee;
+    padding: 10px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     z-index: 999;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
+    transform: translateY(0);
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    height: 65px;
+}
+
+.bottom-nav.scrolled {
+    background: rgba(0, 0, 0, 0.95);
+}
+
+.bottom-nav.hidden {
+    transform: translateY(100%);
+}
+
+.bottom-nav.show {
+    transform: translateY(0);
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .nav-btn {
     text-align: center;
-    font-size: 11px;
-    color: var(--text-light);
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.8);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
+    gap: 3px;
     transition: var(--transition);
     cursor: pointer;
-    padding: 5px 10px;
-    border-radius: 10px;
-    min-width: 70px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    min-width: 55px;
     text-decoration: none;
+    height: 45px;
+    justify-content: center;
 }
 
 .nav-btn:hover {
     color: var(--primary-gold);
-    background: rgba(201, 162, 39, 0.05);
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .nav-btn.active {
     color: var(--primary-gold);
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .nav-btn i {
-    font-size: 18px;
+    font-size: 16px;
 }
 
 /* Cart Badge */
 .cart-badge {
     position: absolute;
-    top: -5px;
-    right: -5px;
+    top: -2px;
+    right: -2px;
     background: #ff4757;
     color: var(--white);
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 600;
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* Loading & Notifications */
+/* ============================================
+   LOADING & NOTIFICATIONS
+   ============================================ */
 .loading-spinner {
     display: none;
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     border: 3px solid rgba(201, 162, 39, 0.3);
     border-radius: 50%;
     border-top-color: var(--primary-gold);
@@ -527,17 +636,19 @@ header {
 
 .notification {
     position: fixed;
-    top: 20px;
-    right: 20px;
+    top: 15px;
+    right: 15px;
     background: var(--primary-gold);
     color: white;
-    padding: 15px 20px;
-    border-radius: 10px;
-    box-shadow: var(--shadow-lg);
+    padding: 10px 15px;
+    border-radius: 6px;
+    box-shadow: var(--shadow-md);
     z-index: 9999;
     transform: translateX(100%);
     transition: transform 0.3s ease;
+    max-width: 250px;
     display: none;
+    font-size: 13px;
 }
 
 .notification.show {
@@ -547,83 +658,208 @@ header {
 
 .error-message {
     position: fixed;
-    top: 20px;
+    top: 15px;
     left: 50%;
     transform: translateX(-50%);
     background: #ff4757;
     color: white;
-    padding: 15px 20px;
-    border-radius: 10px;
-    box-shadow: var(--shadow-lg);
+    padding: 10px 15px;
+    border-radius: 6px;
+    box-shadow: var(--shadow-md);
     z-index: 9999;
     display: none;
-    max-width: 300px;
+    max-width: 250px;
     text-align: center;
+    font-size: 13px;
 }
 
-/* Responsive */
-@media (max-width: 992px) {
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+@media (min-width: 768px) {
+    /* Header */
+    header {
+        padding: 10px 20px;
+        height: 65px;
+    }
+    
+    .logo {
+        min-width: 140px;
+    }
+    
+    .logo i {
+        font-size: 20px;
+    }
+    
+    .logo span {
+        font-size: 18px;
+    }
+    
+    /* Main Content */
+    .main-content {
+        padding: 90px 20px 30px;
+        margin-top: 65px;
+    }
+    
+    .page-header h1 {
+        font-size: 28px;
+    }
+    
+    .page-subtitle {
+        font-size: 14px;
+    }
+    
+    /* Cart Layout */
     .cart-container {
-        grid-template-columns: 1fr;
+        flex-direction: row;
+        gap: 30px;
+    }
+    
+    .cart-items {
+        flex: 1;
     }
     
     .order-summary {
-        position: static;
-    }
-}
-
-@media (max-width: 768px) {
-    .cart-item {
-        grid-template-columns: 100px 1fr;
-        gap: 15px;
+        width: 350px;
+        margin-top: 0;
+        position: sticky;
+        top: 100px;
+        height: fit-content;
     }
     
-    .cart-item-total {
-        grid-column: 1 / -1;
-        text-align: left;
-        margin-top: 15px;
-        padding-top: 15px;
-        border-top: 1px solid #f0f0f0;
+    .cart-item-content {
+        grid-template-columns: 120px 1fr;
+        gap: 20px;
     }
     
     .cart-item-image {
-        width: 100px;
-        height: 100px;
+        width: 120px;
+        height: 120px;
     }
     
-    .main-content {
-        padding: 80px 12px 20px;
+    .cart-item-name {
+        font-size: 16px;
+    }
+    
+    .cart-item-actions {
+        flex-wrap: nowrap;
+    }
+    
+    /* Bottom Nav */
+    .bottom-nav {
+        height: 70px;
+        padding: 12px 0;
+    }
+    
+    .nav-btn {
+        min-width: 65px;
+        font-size: 11px;
+    }
+    
+    .nav-btn i {
+        font-size: 18px;
     }
 }
 
 @media (max-width: 480px) {
+    /* Header */
+    header {
+        padding: 6px 10px;
+        height: 55px;
+        gap: 5px;
+    }
+    
+    .logo {
+        min-width: 100px;
+    }
+    
+    .logo i {
+        font-size: 16px;
+    }
+    
+    .logo span {
+        font-size: 14px;
+    }
+    
+    .back-btn {
+        padding: 6px 10px;
+        font-size: 11px;
+        min-width: 60px;
+    }
+    
+    .action-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 13px;
+    }
+    
+    /* Main Content */
+    .main-content {
+        padding: 70px 12px 20px;
+        margin-top: 55px;
+    }
+    
+    .page-header h1 {
+        font-size: 20px;
+    }
+    
+    .page-subtitle {
+        font-size: 12px;
+    }
+    
+    /* Cart Items */
     .cart-item {
-        grid-template-columns: 1fr;
-        text-align: center;
+        padding: 12px;
+    }
+    
+    .cart-item-content {
+        grid-template-columns: 80px 1fr;
+        gap: 10px;
     }
     
     .cart-item-image {
-        width: 100%;
-        height: 200px;
-        margin: 0 auto;
+        width: 80px;
+        height: 80px;
+    }
+    
+    .cart-item-name {
+        font-size: 14px;
     }
     
     .cart-item-actions {
-        justify-content: center;
-        flex-wrap: wrap;
+        gap: 8px;
     }
     
-    .promo-input {
-        flex-direction: column;
+    .quantity-controls {
+        padding: 4px 10px;
+    }
+    
+    .quantity-btn {
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+    }
+    
+    .buy-now-btn,
+    .remove-btn {
+        padding: 5px 10px;
+        font-size: 11px;
+    }
+    
+    /* Bottom Nav */
+    .bottom-nav {
+        height: 60px;
+        padding: 8px 0;
     }
     
     .nav-btn {
-        min-width: 60px;
-        padding: 5px;
+        min-width: 50px;
+        font-size: 9px;
+        padding: 4px 6px;
     }
     
-    .nav-btn span {
-        font-size: 10px;
+    .nav-btn i {
+        font-size: 14px;
     }
 }
 </style>
@@ -641,7 +877,7 @@ header {
 <div class="error-message" id="errorMessage"></div>
 
 <!-- Header -->
-<header>
+<header id="mainHeader">
     <a href="index.html" class="back-btn">
         <i class="fas fa-arrow-left"></i>
         <span>Back</span>
@@ -652,11 +888,14 @@ header {
         <span>IRYA STONE</span>
     </div>
     
-    <div style="display: flex; gap: 10px;">
-        <a href="wishlist.html" class="action-btn" title="Wishlist" style="width: 40px; height: 40px; border-radius: 50%; background: var(--bg-light); display: flex; align-items: center; justify-content: center; text-decoration: none;">
+    <div style="display: flex; gap: 8px; align-items: center;">
+        <!-- Wishlist icon -->
+        <a href="wishlist.html" class="action-btn" title="Wishlist">
             <i class="far fa-heart"></i>
         </a>
-        <a href="products.html" class="action-btn" style="width: 40px; height: 40px; border-radius: 50%; background: var(--bg-light); display: flex; align-items: center; justify-content: center; text-decoration: none;">
+        
+        <!-- Products icon -->
+        <a href="product.html" class="action-btn" title="Products">
             <i class="fas fa-gem"></i>
         </a>
     </div>
@@ -667,25 +906,26 @@ header {
     <div class="page-header">
         <h1>Shopping Cart</h1>
         <p class="page-subtitle">Review your selected stone products</p>
-        <div id="syncStatus" style="margin-top: 10px;"></div>
+        <div class="sync-status" id="syncStatus">
+            <i class="fas fa-sync-alt"></i>
+            <span>Loading cart...</span>
+        </div>
     </div>
     
     <div class="cart-container">
         <!-- Cart Items Section -->
-        <div class="cart-section">
-            <div class="cart-items" id="cartItemsContainer">
-                <!-- Cart items will be loaded here -->
-                <div class="empty-cart" id="emptyCartMessage" style="display: none;">
-                    <div class="empty-cart-icon">
-                        <i class="fas fa-shopping-cart"></i>
-                    </div>
-                    <h2>Your cart is empty</h2>
-                    <p>Add some premium natural stones to your cart and they will appear here.</p>
-                    <a href="products.html" class="continue-shopping-btn">
-                        <i class="fas fa-gem"></i>
-                        Browse Products
-                    </a>
+        <div class="cart-items" id="cartItemsContainer">
+            <!-- Cart items will be loaded here -->
+            <div class="empty-cart" id="emptyCartMessage" style="display: none;">
+                <div class="empty-cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
                 </div>
+                <h2>Your cart is empty</h2>
+                <p>Add some premium natural stones to your cart and they will appear here.</p>
+                <a href="product.html" class="continue-shopping-btn">
+                    <i class="fas fa-gem"></i>
+                    Browse Products
+                </a>
             </div>
         </div>
         
@@ -708,14 +948,14 @@ header {
                 <span class="summary-value" id="taxAmount">£0.00</span>
             </div>
             
-            <div class="summary-row" id="advancePaymentRow" style="display: none;">
-                <span class="summary-label">Advance Payment (30%)</span>
-                <span class="summary-value" id="advanceAmount">£0.00</span>
-            </div>
-            
             <div class="summary-total">
                 <span class="summary-label">Total Amount</span>
                 <span class="summary-value" id="totalAmount">£0.00</span>
+            </div>
+            
+            <div class="advance-note">
+                <i class="fas fa-info-circle"></i>
+                <span>30% advance payment required for all orders</span>
             </div>
             
             <button class="checkout-btn" id="checkoutBtn" disabled>
@@ -723,34 +963,31 @@ header {
                 Proceed to Checkout
             </button>
             
-            <div style="margin-top: 20px; text-align: center; font-size: 12px; color: var(--text-light);">
-                <i class="fas fa-shield-alt"></i> Secure checkout • SSL encrypted
-            </div>
-            
-            <div style="margin-top: 15px; text-align: center; font-size: 12px; color: var(--primary-gold);">
-                <i class="fas fa-info-circle"></i> 30% advance payment required for all orders
+            <div class="security-note">
+                <i class="fas fa-shield-alt"></i>
+                <span>Secure checkout • SSL encrypted</span>
             </div>
         </div>
     </div>
 </main>
 
-<!-- Bottom Navigation -->
-<div class="bottom-nav">
+<!-- Bottom Menu -->
+<div class="bottom-nav" id="bottomNav">
     <a href="index.html" class="nav-btn">
         <i class="fas fa-home"></i>
         <span>Home</span>
     </a>
-    <a href="products.html" class="nav-btn">
+    <a href="product.html" class="nav-btn">
         <i class="fas fa-th-large"></i>
         <span>Products</span>
+    </a>
+    <a href="#" class="nav-btn" onclick="focusSearch()">
+        <i class="fas fa-search"></i>
+        <span>Search</span>
     </a>
     <a href="account.html" class="nav-btn">
         <i class="fas fa-user"></i>
         <span>Account</span>
-    </a>
-    <a href="orders.html" class="nav-btn">
-        <i class="fas fa-box"></i>
-        <span>Orders</span>
     </a>
     <a href="cart.html" class="nav-btn active">
         <i class="fas fa-shopping-cart"></i>
@@ -758,11 +995,6 @@ header {
         <span class="cart-badge" id="cartBadge">0</span>
     </a>
 </div>
-
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 
 <script>
 // ============================================
@@ -785,64 +1017,140 @@ let authSystem = null;
 let cartSystem = null;
 
 // ============================================
-// ENHANCED AUTH SYSTEM
+// IMPROVED SCROLL HANDLING
+// ============================================
+let lastScrollTop = 0;
+let scrollTimeout;
+let scrollDirection = 'up';
+let scrollVelocity = 0;
+let lastScrollTime = Date.now();
+
+function handleScroll() {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const currentTime = Date.now();
+    const timeDiff = currentTime - lastScrollTime;
+    
+    // Calculate scroll velocity
+    if (timeDiff > 0) {
+        scrollVelocity = Math.abs(scrollTop - lastScrollTop) / (timeDiff / 1000);
+    }
+    
+    // Determine scroll direction
+    scrollDirection = scrollTop > lastScrollTop ? 'down' : 'up';
+    
+    clearTimeout(scrollTimeout);
+    
+    const header = document.getElementById('mainHeader');
+    const bottomNav = document.getElementById('bottomNav');
+    
+    if (!header || !bottomNav) return;
+    
+    // Show/hide header based on scroll position
+    if (scrollTop > 50) {
+        header.classList.add('scrolled');
+        bottomNav.classList.add('scrolled');
+        
+        // Hide on down scroll
+        if (scrollDirection === 'down' && scrollTop - lastScrollTop > 5) {
+            header.classList.add('hidden');
+            bottomNav.classList.add('hidden');
+            header.classList.remove('show');
+            bottomNav.classList.remove('show');
+        }
+        // Show on fast upward scroll only
+        else if (scrollDirection === 'up' && scrollVelocity > 100 && scrollTop > 150) {
+            header.classList.remove('hidden');
+            bottomNav.classList.remove('hidden');
+            header.classList.add('show');
+            bottomNav.classList.add('show');
+        }
+    } else {
+        // Always show when near top
+        header.classList.remove('scrolled', 'hidden');
+        bottomNav.classList.remove('scrolled', 'hidden');
+        header.classList.add('show');
+        bottomNav.classList.add('show');
+    }
+    
+    // Update scroll position
+    lastScrollTop = scrollTop;
+    lastScrollTime = currentTime;
+}
+
+// ============================================
+// AUTH SYSTEM - Compatible with Home Page
 // ============================================
 
-class EnhancedAuthSystem {
+class AuthSystem {
     constructor() {
-        this.authKey = 'irya_stone_auth_user';
         this.currentUser = null;
-        this.isInitialized = false;
+        this.authKey = 'irya_stone_user';
     }
     
     async init() {
         return new Promise((resolve) => {
-            // Load user from localStorage
-            const userData = localStorage.getItem(this.authKey);
-            if (userData) {
-                try {
-                    this.currentUser = JSON.parse(userData);
-                } catch (e) {
-                    this.currentUser = null;
-                }
-            }
+            // Check localStorage for existing user
+            this.checkLocalStorage();
             
-            // Initialize Firebase Auth listener
             if (firebaseAuth) {
                 firebaseAuth.onAuthStateChanged((user) => {
                     if (user) {
-                        // User is signed in
+                        // User signed in
                         this.currentUser = {
                             uid: user.uid,
                             displayName: user.displayName || 'User',
                             email: user.email,
                             photoURL: user.photoURL,
-                            isFirebaseUser: true,
-                            providerId: user.providerId
+                            provider: user.providerId,
+                            isFirebaseUser: true
                         };
                         
-                        localStorage.setItem(this.authKey, JSON.stringify(this.currentUser));
+                        this.saveUserToLocalStorage();
                         console.log("User authenticated via Firebase:", this.currentUser.uid);
-                        
-                    } else if (this.currentUser && this.currentUser.isFirebaseUser) {
-                        // User signed out
-                        this.currentUser = null;
-                        localStorage.removeItem(this.authKey);
+                    } else {
+                        // User signed out, but keep guest data
+                        const storedUser = this.getUserFromLocalStorage();
+                        if (storedUser && !storedUser.isFirebaseUser) {
+                            this.currentUser = storedUser;
+                        } else {
+                            this.currentUser = this.createGuestUser();
+                            this.saveUserToLocalStorage();
+                        }
                     }
                     
-                    this.isInitialized = true;
                     resolve(this);
                 });
             } else {
                 // No Firebase, use guest user
                 if (!this.currentUser) {
                     this.currentUser = this.createGuestUser();
-                    localStorage.setItem(this.authKey, JSON.stringify(this.currentUser));
+                    this.saveUserToLocalStorage();
                 }
-                this.isInitialized = true;
                 resolve(this);
             }
         });
+    }
+    
+    checkLocalStorage() {
+        const userData = localStorage.getItem(this.authKey);
+        if (userData) {
+            try {
+                this.currentUser = JSON.parse(userData);
+            } catch (e) {
+                this.currentUser = null;
+            }
+        }
+    }
+    
+    saveUserToLocalStorage() {
+        if (this.currentUser) {
+            localStorage.setItem(this.authKey, JSON.stringify(this.currentUser));
+        }
+    }
+    
+    getUserFromLocalStorage() {
+        const userData = localStorage.getItem(this.authKey);
+        return userData ? JSON.parse(userData) : null;
     }
     
     createGuestUser() {
@@ -866,14 +1174,12 @@ class EnhancedAuthSystem {
     }
     
     isGuest() {
-        return !this.currentUser || this.currentUser.isFirebaseUser === false || this.currentUser.isGuest === true;
+        return !this.isLoggedIn();
     }
     
     getUserId() {
         if (!this.currentUser) {
-            const guestUser = this.createGuestUser();
-            this.currentUser = guestUser;
-            localStorage.setItem(this.authKey, JSON.stringify(this.currentUser));
+            return this.createGuestUser().uid;
         }
         return this.currentUser.uid;
     }
@@ -888,238 +1194,225 @@ class EnhancedAuthSystem {
 }
 
 // ============================================
-// ENHANCED CART SYSTEM (SUPPORTS CALCULATION DATA)
+// FIREBASE CART SYSTEM - No localStorage
 // ============================================
 
-class EnhancedCartSystem {
+class FirebaseCartSystem {
     constructor(authSystem) {
         this.authSystem = authSystem;
-        this.localCartKey = 'irya_local_cart_';
-        this.buyNowKey = 'irya_buynow_cart_';
         this.cartItems = [];
-        this.userId = null;
+        this.cartData = null;
     }
     
     async init() {
-        this.userId = this.authSystem.getUserId();
-        await this.loadCart();
-        this.updateCartBadge();
-        return this;
+        try {
+            await this.loadCartFromFirebase();
+            this.updateCartBadge();
+            return this;
+        } catch (error) {
+            console.error('Error initializing cart:', error);
+            this.cartItems = [];
+            return this;
+        }
     }
     
-    async loadCart() {
+    getUserId() {
+        return this.authSystem.getUserId();
+    }
+    
+    async loadCartFromFirebase() {
         try {
-            const cartKey = this.localCartKey + this.userId;
-            const cartData = localStorage.getItem(cartKey);
-            this.cartItems = cartData ? JSON.parse(cartData) : [];
+            if (!firebaseDB) {
+                console.warn('Firebase not available, using empty cart');
+                this.cartItems = [];
+                return [];
+            }
             
-            console.log("Loaded cart items:", this.cartItems.length);
+            const userId = this.getUserId();
             
-            // Load from Firebase if user is logged in
-            if (this.authSystem.isLoggedIn() && firebaseDB) {
-                await this.syncWithFirebase();
+            // Try to get cart from Firestore
+            const cartDoc = await firebaseDB.collection('userCarts').doc(userId).get();
+            
+            if (cartDoc.exists) {
+                this.cartData = cartDoc.data();
+                this.cartItems = this.cartData.items || [];
+                console.log("Cart loaded from Firebase:", this.cartItems.length, "items");
+            } else {
+                // Create empty cart document
+                await this.createEmptyCart();
+                this.cartItems = [];
+                console.log("Created new empty cart in Firebase");
             }
             
             return this.cartItems;
         } catch (error) {
-            console.error('Error loading cart:', error);
+            console.error('Error loading cart from Firebase:', error);
             this.cartItems = [];
             return [];
         }
     }
     
-    async syncWithFirebase() {
+    async createEmptyCart() {
         try {
-            const cartRef = firebaseDB.collection('userCarts').doc(this.userId);
-            const cartDoc = await cartRef.get();
+            const userId = this.getUserId();
+            const emptyCart = {
+                userId: userId,
+                items: [],
+                updatedAt: new Date().toISOString(),
+                itemCount: 0,
+                subtotal: 0,
+                tax: 0,
+                total: 0
+            };
             
-            if (cartDoc.exists) {
-                const firebaseCart = cartDoc.data().items || [];
-                
-                // Merge carts: prefer local items (they might have calculation data)
-                const mergedCart = this.mergeCarts(this.cartItems, firebaseCart);
-                this.cartItems = mergedCart;
-                
-                // Save merged cart back to Firebase
-                await this.saveToFirebase();
-            } else if (this.cartItems.length > 0) {
-                // Save local cart to Firebase
-                await this.saveToFirebase();
-            }
-            
+            await firebaseDB.collection('userCarts').doc(userId).set(emptyCart);
+            this.cartData = emptyCart;
         } catch (error) {
-            console.error('Error syncing with Firebase:', error);
+            console.error('Error creating empty cart:', error);
         }
     }
     
-    mergeCarts(localCart, firebaseCart) {
-        const mergedMap = new Map();
-        
-        // Add local items first (they have calculation data)
-        localCart.forEach(item => {
-            mergedMap.set(item.uniqueId || item.id, item);
-        });
-        
-        // Add Firebase items if they don't exist locally
-        firebaseCart.forEach(item => {
-            if (!mergedMap.has(item.uniqueId || item.id)) {
-                mergedMap.set(item.uniqueId || item.id, item);
-            }
-        });
-        
-        return Array.from(mergedMap.values());
-    }
-    
-    async saveCart() {
+    async saveCartToFirebase() {
         try {
-            // Save to localStorage
-            const cartKey = this.localCartKey + this.userId;
-            localStorage.setItem(cartKey, JSON.stringify(this.cartItems));
-            
-            // Update cart badge
-            this.updateCartBadge();
-            
-            // Save to Firebase if user is logged in
-            if (this.authSystem.isLoggedIn() && firebaseDB) {
-                await this.saveToFirebase();
+            if (!firebaseDB) {
+                console.warn('Firebase not available, cannot save cart');
+                return false;
             }
             
-            return true;
-        } catch (error) {
-            console.error('Error saving cart:', error);
-            return false;
-        }
-    }
-    
-    async saveToFirebase() {
-        try {
+            const userId = this.getUserId();
             const cartData = {
-                userId: this.userId,
+                userId: userId,
                 items: this.cartItems,
                 updatedAt: new Date().toISOString(),
                 itemCount: this.getCartCount(),
-                totalAmount: this.getTotalAmount(),
                 subtotal: this.getSubtotal(),
                 tax: this.getTax(),
                 total: this.getTotal()
             };
             
-            await firebaseDB.collection('userCarts').doc(this.userId).set(cartData, { merge: true });
+            await firebaseDB.collection('userCarts').doc(userId).set(cartData, { merge: true });
+            this.cartData = cartData;
+            
             console.log("Cart saved to Firebase");
-        } catch (error) {
-            console.error('Error saving to Firebase:', error);
-        }
-    }
-    
-    async addToCart(product, quantity = 1, calculationData = null, customRequirements = '') {
-        try {
-            console.log("Adding to cart:", product.stone_name, calculationData);
-            
-            // Generate unique ID based on calculation data
-            const itemId = calculationData ? 
-                `${product.id}_${JSON.stringify(calculationData)}_${Date.now()}` : 
-                `${product.id}_${quantity}_${Date.now()}`;
-            
-            const cartItem = {
-                id: product.id,
-                uniqueId: itemId,
-                name: product.stone_name,
-                stoneName: product.stone_name,
-                price: product.price,
-                priceUnit: product.price_unit || 'piece',
-                image: product.images?.[0] || product.image || this.getDefaultImage(product.category),
-                category: product.category,
-                description: product.description,
-                quantity: quantity,
-                addedAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-                userId: this.userId,
-                calculationData: calculationData,
-                customRequirements: customRequirements || '',
-                isBuyNow: false
-            };
-            
-            // Calculate price based on calculation data
-            if (calculationData) {
-                cartItem.calculatedPrice = this.calculatePrice(product, calculationData);
-                cartItem.calculationType = calculationData.mode || 'standard';
-                cartItem.calculationUnit = calculationData.unit || product.price_unit;
-                cartItem.dimensions = calculationData;
-            } else {
-                cartItem.calculatedPrice = product.price * quantity;
-            }
-            
-            // Add advance payment info
-            const totalPrice = cartItem.calculatedPrice;
-            cartItem.advancePayment = totalPrice * 0.3;
-            cartItem.remainingPayment = totalPrice * 0.7;
-            cartItem.totalPrice = totalPrice;
-            
-            // Add to cart
-            this.cartItems.push(cartItem);
-            await this.saveCart();
-            
-            showNotification(`${product.stone_name} added to cart!`);
             return true;
-            
         } catch (error) {
-            console.error('Error adding to cart:', error);
-            showError('Failed to add to cart');
+            console.error('Error saving cart to Firebase:', error);
             return false;
         }
     }
     
-    calculatePrice(product, calculationData) {
-        const mode = calculationData.mode || 'standard';
-        const unit = calculationData.unit || product.price_unit || 'piece';
-        const quantity = parseFloat(calculationData.quantity) || 1;
-        
-        let price = parseFloat(product.price);
-        let totalPrice = 0;
-        
-        switch(mode) {
-            case 'standard':
-                switch(unit) {
-                    case 'sqft':
-                        const lengthFt = parseFloat(calculationData.length) || 1;
-                        const widthFt = parseFloat(calculationData.width) || 1;
-                        const areaSqft = lengthFt * widthFt;
-                        totalPrice = price * areaSqft * quantity;
-                        break;
-                        
-                    case 'sqm':
-                        const lengthM = parseFloat(calculationData.length) || 1;
-                        const widthM = parseFloat(calculationData.width) || 1;
-                        const areaSqm = lengthM * widthM;
-                        totalPrice = price * areaSqm * quantity;
-                        break;
-                        
-                    case 'weight':
-                        const weight = parseFloat(calculationData.weight) || 1;
-                        totalPrice = price * weight * quantity;
-                        break;
-                        
-                    case 'piece':
-                    default:
-                        totalPrice = price * quantity;
-                        break;
-                }
-                break;
-                
-            default:
-                totalPrice = price * quantity;
-        }
-        
-        return parseFloat(totalPrice.toFixed(2));
-    }
-    
-    async updateQuantity(itemId, newQuantity) {
+    async addToCart(product, quantity = 1, calculationData = null) {
         try {
-            const itemIndex = this.cartItems.findIndex(item => 
-                item.uniqueId === itemId || item.id === itemId
+            console.log("Adding to cart:", product.stone_name);
+            
+            // Check if item already exists
+            const existingIndex = this.cartItems.findIndex(item => 
+                item.id === product.id && 
+                JSON.stringify(item.calculationData) === JSON.stringify(calculationData)
             );
             
-            if (itemIndex >= 0) {
+            let item;
+            
+            if (existingIndex >= 0) {
+                // Update existing item
+                item = this.cartItems[existingIndex];
+                item.quantity += quantity;
+                item.updatedAt = new Date().toISOString();
+                
+                // Recalculate price
+                item.calculatedPrice = this.calculateItemPrice(item);
+                item.totalPrice = item.calculatedPrice;
+                item.advancePayment = item.totalPrice * 0.3;
+                item.remainingPayment = item.totalPrice * 0.7;
+            } else {
+                // Create new item
+                item = {
+                    id: product.id,
+                    stone_name: product.stone_name || 'Stone Product',
+                    name: product.stone_name || 'Stone Product',
+                    price: parseFloat(product.price) || 0,
+                    priceUnit: product.price_unit || 'piece',
+                    image: product.images && product.images.length > 0 ? product.images[0] : product.image || '',
+                    category: product.category || '',
+                    description: product.description || '',
+                    quantity: quantity,
+                    calculationData: calculationData,
+                    addedAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    userId: this.getUserId()
+                };
+                
+                // Calculate price
+                item.calculatedPrice = this.calculateItemPrice(item);
+                item.totalPrice = item.calculatedPrice;
+                item.advancePayment = item.totalPrice * 0.3;
+                item.remainingPayment = item.totalPrice * 0.7;
+                
+                this.cartItems.push(item);
+            }
+            
+            // Save to Firebase
+            await this.saveCartToFirebase();
+            
+            // Update UI
+            this.updateCartBadge();
+            
+            return {
+                success: true,
+                item: item
+            };
+            
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+            return {
+                success: false,
+                error: error.message
+            };
+        }
+    }
+    
+    calculateItemPrice(item) {
+        const price = parseFloat(item.price) || 0;
+        const quantity = item.quantity || 1;
+        
+        // If there's calculation data, calculate accordingly
+        if (item.calculationData) {
+            const calc = item.calculationData;
+            const mode = calc.mode || 'standard';
+            const unit = calc.unit || item.priceUnit || 'piece';
+            
+            switch(mode) {
+                case 'area':
+                    if (unit === 'sqft') {
+                        const length = parseFloat(calc.length) || 1;
+                        const width = parseFloat(calc.width) || 1;
+                        const area = length * width;
+                        return price * area * quantity;
+                    } else if (unit === 'sqm') {
+                        const length = parseFloat(calc.length) || 1;
+                        const width = parseFloat(calc.width) || 1;
+                        const area = length * width;
+                        return price * area * quantity;
+                    }
+                    break;
+                    
+                case 'weight':
+                    const weight = parseFloat(calc.weight) || 1;
+                    return price * weight * quantity;
+                    
+                case 'piece':
+                default:
+                    return price * quantity;
+            }
+        }
+        
+        // Default calculation
+        return price * quantity;
+    }
+    
+    async updateQuantity(itemIndex, newQuantity) {
+        try {
+            if (itemIndex >= 0 && itemIndex < this.cartItems.length) {
                 if (newQuantity <= 0) {
                     // Remove item
                     this.cartItems.splice(itemIndex, 1);
@@ -1129,22 +1422,16 @@ class EnhancedCartSystem {
                     item.quantity = newQuantity;
                     item.updatedAt = new Date().toISOString();
                     
-                    // Recalculate price if there's calculation data
-                    if (item.calculationData) {
-                        item.calculationData.quantity = newQuantity;
-                        item.calculatedPrice = this.calculatePrice(item, item.calculationData);
-                        item.totalPrice = item.calculatedPrice;
-                        item.advancePayment = item.totalPrice * 0.3;
-                        item.remainingPayment = item.totalPrice * 0.7;
-                    } else {
-                        item.calculatedPrice = item.price * newQuantity;
-                        item.totalPrice = item.calculatedPrice;
-                        item.advancePayment = item.totalPrice * 0.3;
-                        item.remainingPayment = item.totalPrice * 0.7;
-                    }
+                    // Recalculate price
+                    item.calculatedPrice = this.calculateItemPrice(item);
+                    item.totalPrice = item.calculatedPrice;
+                    item.advancePayment = item.totalPrice * 0.3;
+                    item.remainingPayment = item.totalPrice * 0.7;
                 }
                 
-                await this.saveCart();
+                await this.saveCartToFirebase();
+                this.updateCartBadge();
+                
                 return true;
             }
             return false;
@@ -1154,46 +1441,29 @@ class EnhancedCartSystem {
         }
     }
     
-    async removeFromCart(itemId) {
+    async removeItem(itemIndex) {
         try {
-            this.cartItems = this.cartItems.filter(item => 
-                !(item.uniqueId === itemId || item.id === itemId)
-            );
-            
-            await this.saveCart();
-            return true;
+            if (itemIndex >= 0 && itemIndex < this.cartItems.length) {
+                this.cartItems.splice(itemIndex, 1);
+                await this.saveCartToFirebase();
+                this.updateCartBadge();
+                return true;
+            }
+            return false;
         } catch (error) {
-            console.error('Error removing from cart:', error);
+            console.error('Error removing item:', error);
             return false;
         }
     }
     
-    async processBuyNow(itemId) {
+    async clearCart() {
         try {
-            const item = this.cartItems.find(item => 
-                item.uniqueId === itemId || item.id === itemId
-            );
-            
-            if (!item) {
-                showError('Item not found in cart');
-                return false;
-            }
-            
-            // Set as buy now item
-            const buyNowKey = this.buyNowKey + this.userId;
-            const buyNowItem = {
-                ...item,
-                isBuyNow: true,
-                buyNowTimestamp: Date.now()
-            };
-            
-            localStorage.setItem(buyNowKey, JSON.stringify([buyNowItem]));
-            sessionStorage.setItem('irya_current_buynow', JSON.stringify(buyNowItem));
-            localStorage.setItem('irya_is_buynow_flow', 'true');
-            
+            this.cartItems = [];
+            await this.saveCartToFirebase();
+            this.updateCartBadge();
             return true;
         } catch (error) {
-            console.error('Error processing buy now:', error);
+            console.error('Error clearing cart:', error);
             return false;
         }
     }
@@ -1203,11 +1473,15 @@ class EnhancedCartSystem {
     }
     
     getCartItems() {
-        return this.cartItems;
+        return [...this.cartItems].sort((a, b) => 
+            new Date(b.updatedAt || b.addedAt) - new Date(a.updatedAt || a.addedAt)
+        );
     }
     
     getSubtotal() {
-        return this.cartItems.reduce((total, item) => total + (item.calculatedPrice || item.totalPrice || 0), 0);
+        return this.cartItems.reduce((total, item) => {
+            return total + (item.calculatedPrice || (item.price * item.quantity) || 0);
+        }, 0);
     }
     
     getTax() {
@@ -1222,10 +1496,6 @@ class EnhancedCartSystem {
         return this.getTotal() * 0.3;
     }
     
-    getTotalAmount() {
-        return this.getTotal();
-    }
-    
     updateCartBadge() {
         const count = this.getCartCount();
         const cartBadge = document.getElementById('cartBadge');
@@ -1233,20 +1503,6 @@ class EnhancedCartSystem {
             cartBadge.textContent = count;
             cartBadge.style.display = count > 0 ? 'flex' : 'none';
         }
-    }
-    
-    getDefaultImage(category) {
-        const categoryLower = (category || '').toLowerCase();
-        
-        if (categoryLower.includes('sand')) {
-            return 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=800';
-        } else if (categoryLower.includes('kota')) {
-            return 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800';
-        } else if (categoryLower.includes('granite')) {
-            return 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800';
-        }
-        
-        return 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=800';
     }
 }
 
@@ -1287,7 +1543,25 @@ function showError(message) {
 
 function formatPrice(price) {
     if (!price && price !== 0) return '£0.00';
-    return `£${parseFloat(price).toFixed(2)}`;
+    const numPrice = parseFloat(price);
+    if (isNaN(numPrice)) return '£0.00';
+    return '£' + numPrice.toFixed(2);
+}
+
+function getDefaultImage(category) {
+    const categoryLower = (category || '').toLowerCase();
+    
+    if (categoryLower.includes('sand')) {
+        return 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=400&h=300';
+    } else if (categoryLower.includes('kota')) {
+        return 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=400&h=300';
+    } else if (categoryLower.includes('granite')) {
+        return 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=400&h=300';
+    } else if (categoryLower.includes('marble')) {
+        return 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=400&h=300';
+    }
+    
+    return 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=400&h=300';
 }
 
 // ============================================
@@ -1298,10 +1572,20 @@ async function renderCartItems() {
     const container = document.getElementById('cartItemsContainer');
     const emptyCartMessage = document.getElementById('emptyCartMessage');
     const checkoutBtn = document.getElementById('checkoutBtn');
+    const syncStatus = document.getElementById('syncStatus');
     
     if (!cartSystem || !container) return;
     
     const cartItems = cartSystem.getCartItems();
+    
+    // Update sync status
+    if (syncStatus) {
+        if (authSystem.isLoggedIn()) {
+            syncStatus.innerHTML = '<i class="fas fa-cloud"></i><span>Cart synced to cloud</span>';
+        } else {
+            syncStatus.innerHTML = '<i class="fas fa-user"></i><span>Guest cart (Sign in to sync)</span>';
+        }
+    }
     
     if (cartItems.length === 0) {
         container.innerHTML = '';
@@ -1314,30 +1598,34 @@ async function renderCartItems() {
     if (emptyCartMessage) emptyCartMessage.style.display = 'none';
     if (checkoutBtn) checkoutBtn.disabled = false;
     
-    // Sort by most recently added/updated
-    const sortedItems = [...cartItems].sort((a, b) => 
-        new Date(b.updatedAt || b.addedAt) - new Date(a.updatedAt || a.addedAt)
-    );
-    
-    const itemsHTML = sortedItems.map(item => {
+    const itemsHTML = cartItems.map((item, index) => {
         const itemPrice = item.calculatedPrice || (item.price * item.quantity);
-        const itemTotal = itemPrice * item.quantity;
-        const advancePayment = itemTotal * 0.3;
+        const advancePayment = itemPrice * 0.3;
         
+        // Build specifications HTML
         let specsHTML = '';
         if (item.calculationData) {
             const calc = item.calculationData;
-            if (calc.unit === 'sqft' || calc.unit === 'sqm') {
+            if (calc.mode === 'area') {
+                if (calc.unit === 'sqft') {
+                    specsHTML = `
+                        <div class="cart-item-specs">
+                            <i class="fas fa-ruler-combined"></i>
+                            ${calc.length || 0} ft × ${calc.width || 0} ft (${(calc.length || 1) * (calc.width || 1)} sqft)
+                        </div>
+                    `;
+                } else if (calc.unit === 'sqm') {
+                    specsHTML = `
+                        <div class="cart-item-specs">
+                            <i class="fas fa-ruler-combined"></i>
+                            ${calc.length || 0} m × ${calc.width || 0} m (${(calc.length || 1) * (calc.width || 1)} sqm)
+                        </div>
+                    `;
+                }
+            } else if (calc.mode === 'weight') {
                 specsHTML = `
                     <div class="cart-item-specs">
-                        <i class="fas fa-ruler-combined"></i> 
-                        ${calc.length || 0} × ${calc.width || 0} ${calc.unit}
-                    </div>
-                `;
-            } else if (calc.unit === 'weight') {
-                specsHTML = `
-                    <div class="cart-item-specs">
-                        <i class="fas fa-weight"></i> 
+                        <i class="fas fa-weight"></i>
                         ${calc.weight || 0} kg
                     </div>
                 `;
@@ -1345,49 +1633,49 @@ async function renderCartItems() {
         }
         
         return `
-        <div class="cart-item" data-id="${item.uniqueId || item.id}">
-            <div class="cart-item-image">
-                <img src="${item.image}" 
-                     alt="${item.name}"
-                     onerror="this.src='${cartSystem.getDefaultImage(item.category)}'">
-            </div>
-            
-            <div class="cart-item-details">
-                <div class="cart-item-name">${item.stone_name || item.name}</div>
-                <div class="cart-item-category">${item.category || 'Natural Stone'}</div>
-                ${specsHTML}
-                <div class="cart-item-price">
-                    ${formatPrice(item.price)} ${item.priceUnit ? 'per ' + item.priceUnit : ''}
+        <div class="cart-item" data-index="${index}">
+            <div class="cart-item-content">
+                <div class="cart-item-image">
+                    <img src="${item.image || getDefaultImage(item.category)}" 
+                         alt="${item.stone_name || item.name}"
+                         onerror="this.src='${getDefaultImage(item.category)}'">
                 </div>
                 
-                <div class="cart-item-actions">
-                    <div class="quantity-controls">
-                        <button class="quantity-btn" onclick="updateItemQuantity('${item.uniqueId || item.id}', ${item.quantity - 1})">
-                            <i class="fas fa-minus"></i>
-                        </button>
-                        <span class="quantity-value">${item.quantity}</span>
-                        <button class="quantity-btn" onclick="updateItemQuantity('${item.uniqueId || item.id}', ${item.quantity + 1})">
-                            <i class="fas fa-plus"></i>
-                        </button>
+                <div class="cart-item-details">
+                    <div class="cart-item-name">${item.stone_name || item.name}</div>
+                    <div class="cart-item-category">${item.category || 'Natural Stone'}</div>
+                    ${specsHTML}
+                    <div class="cart-item-price">
+                        ${formatPrice(item.price)} ${item.priceUnit ? 'per ' + item.priceUnit : ''}
                     </div>
                     
-                    <button class="buy-now-btn" onclick="processBuyNow('${item.uniqueId || item.id}')">
-                        <i class="fas fa-bolt"></i>
-                        Buy Now
-                    </button>
-                    
-                    <button class="remove-btn" onclick="removeItemFromCart('${item.uniqueId || item.id}')">
-                        <i class="fas fa-trash"></i>
-                        Remove
-                    </button>
+                    <div class="cart-item-actions">
+                        <div class="quantity-controls">
+                            <button class="quantity-btn" onclick="updateQuantity(${index}, ${item.quantity - 1})">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <span class="quantity-value">${item.quantity}</span>
+                            <button class="quantity-btn" onclick="updateQuantity(${index}, ${item.quantity + 1})">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        
+                        <button class="buy-now-btn" onclick="buyNowItem(${index})">
+                            <i class="fas fa-bolt"></i>
+                            Buy Now
+                        </button>
+                        
+                        <button class="remove-btn" onclick="removeItem(${index})">
+                            <i class="fas fa-trash"></i>
+                            Remove
+                        </button>
+                    </div>
                 </div>
             </div>
             
             <div class="cart-item-total">
-                ${formatPrice(itemTotal)}
-                <div style="font-size: 12px; color: var(--text-light); margin-top: 5px;">
-                    Advance: ${formatPrice(advancePayment)}
-                </div>
+                Total: ${formatPrice(itemPrice)}
+                <div class="advance">Advance: ${formatPrice(advancePayment)} (30%)</div>
             </div>
         </div>
         `;
@@ -1395,7 +1683,6 @@ async function renderCartItems() {
     
     container.innerHTML = itemsHTML;
     updateOrderSummary();
-    updateSyncStatus();
 }
 
 function updateOrderSummary() {
@@ -1409,46 +1696,22 @@ function updateOrderSummary() {
     const subtotalEl = document.getElementById('subtotalAmount');
     const taxEl = document.getElementById('taxAmount');
     const totalEl = document.getElementById('totalAmount');
-    const advanceAmountEl = document.getElementById('advanceAmount');
-    const advanceRow = document.getElementById('advancePaymentRow');
     
     if (subtotalEl) subtotalEl.textContent = formatPrice(subtotal);
     if (taxEl) taxEl.textContent = formatPrice(tax);
     if (totalEl) totalEl.textContent = formatPrice(total);
-    
-    if (advanceAmountEl) advanceAmountEl.textContent = formatPrice(advancePayment);
-    if (advanceRow) advanceRow.style.display = 'flex';
 }
 
-function updateSyncStatus() {
-    const syncStatus = document.getElementById('syncStatus');
-    if (!syncStatus) return;
-    
-    if (authSystem && authSystem.isLoggedIn()) {
-        syncStatus.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 8px; color: var(--primary-gold); font-size: 12px;">
-                <i class="fas fa-cloud"></i>
-                <span>Cart synced across devices</span>
-            </div>
-        `;
-    } else {
-        syncStatus.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 8px; color: var(--text-light); font-size: 12px;">
-                <i class="fas fa-info-circle"></i>
-                <span>Sign in to sync cart across devices</span>
-            </div>
-        `;
-    }
-}
-
-async function updateItemQuantity(itemId, newQuantity) {
+async function updateQuantity(index, newQuantity) {
     if (!cartSystem) return;
     
     showLoading(true);
     try {
-        await cartSystem.updateQuantity(itemId, newQuantity);
-        renderCartItems();
-        showNotification('Cart updated');
+        const success = await cartSystem.updateQuantity(index, newQuantity);
+        if (success) {
+            await renderCartItems();
+            showNotification('Cart updated');
+        }
     } catch (error) {
         console.error('Error updating quantity:', error);
         showError('Failed to update quantity');
@@ -1457,14 +1720,16 @@ async function updateItemQuantity(itemId, newQuantity) {
     }
 }
 
-async function removeItemFromCart(itemId) {
+async function removeItem(index) {
     if (!cartSystem) return;
     
     showLoading(true);
     try {
-        await cartSystem.removeFromCart(itemId);
-        renderCartItems();
-        showNotification('Item removed from cart');
+        const success = await cartSystem.removeItem(index);
+        if (success) {
+            await renderCartItems();
+            showNotification('Item removed from cart');
+        }
     } catch (error) {
         console.error('Error removing item:', error);
         showError('Failed to remove item');
@@ -1473,13 +1738,20 @@ async function removeItemFromCart(itemId) {
     }
 }
 
-async function processBuyNow(itemId) {
+async function buyNowItem(index) {
     if (!cartSystem) return;
     
     showLoading(true);
     try {
-        const success = await cartSystem.processBuyNow(itemId);
-        if (success) {
+        const cartItems = cartSystem.getCartItems();
+        if (index >= 0 && index < cartItems.length) {
+            const item = cartItems[index];
+            
+            // Store in session for checkout
+            sessionStorage.setItem('irya_buynow_item', JSON.stringify(item));
+            sessionStorage.setItem('irya_is_buynow', 'true');
+            
+            // Navigate to checkout
             window.location.href = 'checkout.html?buynow=true';
         }
     } catch (error) {
@@ -1519,7 +1791,7 @@ async function initializeFirebase() {
 }
 
 // ============================================
-// CART PAGE INITIALIZATION
+// PAGE INITIALIZATION
 // ============================================
 
 document.addEventListener('DOMContentLoaded', async function() {
@@ -1532,32 +1804,22 @@ document.addEventListener('DOMContentLoaded', async function() {
         await initializeFirebase();
         
         // Initialize Authentication System
-        authSystem = new EnhancedAuthSystem();
+        authSystem = new AuthSystem();
         await authSystem.init();
         
         // Initialize Cart System
-        cartSystem = new EnhancedCartSystem(authSystem);
+        cartSystem = new FirebaseCartSystem(authSystem);
         await cartSystem.init();
         
         // Render cart items
-        renderCartItems();
-        
-        // Listen for cart updates from other tabs
-        window.addEventListener('storage', function(e) {
-            if (e.key && e.key.includes('irya_local_cart_')) {
-                console.log('Cart updated from another tab');
-                renderCartItems();
-            }
-        });
-        
-        // Listen for cart update events
-        window.addEventListener('cartUpdated', function() {
-            console.log('Cart updated event received');
-            renderCartItems();
-        });
+        await renderCartItems();
         
         // Setup event listeners
-        setupCartPageListeners();
+        setupEventListeners();
+        
+        // Setup scroll handling
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        handleScroll();
         
         console.log('Cart page initialized successfully');
         
@@ -1569,24 +1831,51 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 });
 
-function setupCartPageListeners() {
+function setupEventListeners() {
     // Checkout button
     const checkoutBtn = document.getElementById('checkoutBtn');
     if (checkoutBtn) {
         checkoutBtn.addEventListener('click', function() {
             if (cartSystem && cartSystem.getCartCount() > 0) {
-                // Clear any existing buy now data
-                localStorage.removeItem('irya_is_buynow_flow');
+                // Clear any buy now session data
+                sessionStorage.removeItem('irya_buynow_item');
+                sessionStorage.removeItem('irya_is_buynow');
+                
+                // Navigate to checkout
                 window.location.href = 'checkout.html';
             }
         });
     }
+    
+    // Listen for cart updates (if page is kept open)
+    window.addEventListener('cartUpdated', async function() {
+        console.log('Cart update event received');
+        if (cartSystem) {
+            await cartSystem.loadCartFromFirebase();
+            await renderCartItems();
+        }
+    });
+    
+    // Listen for storage events (other tabs)
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'irya_stone_user') {
+            // User auth changed in another tab
+            console.log('Auth changed in another tab, reloading cart');
+            window.location.reload();
+        }
+    });
+}
+
+// Helper function for search focus (for bottom nav)
+function focusSearch() {
+    // This would focus search on home page
+    window.location.href = 'index.html#search';
 }
 
 // Make functions available globally
-window.updateItemQuantity = updateItemQuantity;
-window.removeItemFromCart = removeItemFromCart;
-window.processBuyNow = processBuyNow;
+window.updateQuantity = updateQuantity;
+window.removeItem = removeItem;
+window.buyNowItem = buyNowItem;
 </script>
 </body>
 </html>
