@@ -2243,6 +2243,7 @@ function initializeFirebase() {
     }
 }
 
+
 // ============================================
 // IMPROVED SCROLL HANDLING
 // ============================================
@@ -2251,7 +2252,7 @@ function handleScroll() {
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     const currentTime = Date.now();
     
-    // Calculate scroll speed
+    // Calculate scroll speed (pixels per second)
     const scrollDistance = Math.abs(scrollTop - lastScrollPosition);
     const timeDiff = currentTime - lastScrollTime;
     const scrollSpeed = timeDiff > 0 ? scrollDistance / (timeDiff / 1000) : 0;
@@ -2264,42 +2265,56 @@ function handleScroll() {
     
     if (!header || !bottomNav) return;
     
-    // Always show when near top
-    if (scrollTop < 50) {
-        header.classList.remove('hidden');
-        bottomNav.classList.remove('hidden');
-        header.classList.add('show');
-        bottomNav.classList.add('show');
+    // Check if near top or bottom
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+    const scrollBottom = documentHeight - (scrollTop + windowHeight);
+    
+    // Always show when near top or bottom
+    if (scrollTop < SCROLL_CONFIG.topThreshold || scrollBottom < SCROLL_CONFIG.bottomThreshold) {
+        if (!isHeaderVisible) {
+            showHeaderFooter();
+        }
+        lastScrollPosition = scrollTop;
+        lastScrollTime = currentTime;
         return;
     }
     
-    // Add scrolled class when not at top
-    if (scrollTop > 100) {
-        header.classList.add('scrolled');
-        bottomNav.classList.add('scrolled');
-    } else {
-        header.classList.remove('scrolled');
-        bottomNav.classList.remove('scrolled');
+    // Only process if scrolled enough distance
+    if (scrollDistance < SCROLL_CONFIG.minScrollDistance) {
+        lastScrollPosition = scrollTop;
+        lastScrollTime = currentTime;
+        return;
     }
     
-    // Handle scrolling DOWN (hide on both slow and fast)
-    if (scrollDirection === 'down' && scrollDistance > scrollThreshold) {
-        header.classList.add('hidden');
-        bottomNav.classList.add('hidden');
-        header.classList.remove('show');
-        bottomNav.classList.remove('show');
-    }
-    
-    // Handle scrolling UP (only show on fast scroll)
-    else if (scrollDirection === 'up' && scrollDistance > scrollThreshold) {
-        // Only show if scrolling fast (user wants to go up quickly)
-        if (scrollSpeed > fastScrollThreshold) {
-            header.classList.remove('hidden');
-            bottomNav.classList.remove('hidden');
-            header.classList.add('show');
-            bottomNav.classList.add('show');
+    // Handle scrolling DOWN
+    if (scrollDirection === 'down') {
+        // Hide on down scroll (both slow and fast)
+        if (isHeaderVisible) {
+            hideHeaderFooter();
         }
-        // Don't show on slow upward scroll
+    }
+    // Handle scrolling UP
+    else if (scrollDirection === 'up') {
+        // Only show on FAST upward scroll
+        if (scrollSpeed > SCROLL_CONFIG.fastScrollMinSpeed) {
+            // Fast scroll - show immediately
+            if (!isHeaderVisible) {
+                showHeaderFooter();
+            }
+        }
+        // For medium speed scroll, check distance
+        else if (scrollSpeed > SCROLL_CONFIG.slowScrollMaxSpeed && 
+                 scrollSpeed <= SCROLL_CONFIG.fastScrollMinSpeed) {
+            // Medium speed - show if scrolled enough distance
+            if (scrollDistance > 30 && !isHeaderVisible) {
+                showHeaderFooter();
+            }
+        }
+        // Slow scroll - don't show
+        else {
+            // Keep hidden on slow scroll
+        }
     }
     
     // Update scroll position for next calculation
@@ -2307,6 +2322,44 @@ function handleScroll() {
     lastScrollTime = currentTime;
     
     // Update scroll to top button
+    updateScrollTopButton(scrollTop);
+}
+
+function showHeaderFooter() {
+    const header = document.getElementById('mainHeader');
+    const bottomNav = document.getElementById('bottomNav');
+    
+    if (!header || !bottomNav) return;
+    
+    clearTimeout(scrollTimeout);
+    
+    scrollTimeout = setTimeout(() => {
+        header.classList.remove('hidden');
+        bottomNav.classList.remove('hidden');
+        header.classList.add('show');
+        bottomNav.classList.add('show');
+        isHeaderVisible = true;
+    }, SCROLL_CONFIG.showDelay);
+}
+
+function hideHeaderFooter() {
+    const header = document.getElementById('mainHeader');
+    const bottomNav = document.getElementById('bottomNav');
+    
+    if (!header || !bottomNav) return;
+    
+    clearTimeout(scrollTimeout);
+    
+    scrollTimeout = setTimeout(() => {
+        header.classList.add('hidden');
+        bottomNav.classList.add('hidden');
+        header.classList.remove('show');
+        bottomNav.classList.remove('show');
+        isHeaderVisible = false;
+    }, SCROLL_CONFIG.hideDelay);
+}
+
+function updateScrollTopButton(scrollTop) {
     const scrollTopBtn = document.getElementById('scrollTopBtn');
     if (scrollTopBtn) {
         if (scrollTop > 300) {
@@ -2316,7 +2369,6 @@ function handleScroll() {
         }
     }
 }
-
 // ============================================
 // LOAD CATEGORIES FROM FIREBASE
 // ============================================
