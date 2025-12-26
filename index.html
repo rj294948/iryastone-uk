@@ -1882,7 +1882,34 @@ function handleScroll() {
 }
 
 // ============================================
-// AUTHENTICATION SYSTEM - FIXED
+// CLEAN OLD GUEST CARTS
+// ============================================
+
+function clearOldGuestCarts() {
+    try {
+        // Get all localStorage keys
+        const allKeys = Object.keys(localStorage);
+        
+        // Find old guest cart keys (with timestamp based IDs)
+        const oldGuestCartKeys = allKeys.filter(key => 
+            (key.startsWith('irya_cart_guest_') && key !== 'irya_cart_guest_user') ||
+            (key.startsWith('irya_wishlist_guest_') && key !== 'irya_wishlist_guest_user')
+        );
+        
+        // Delete old guest keys
+        oldGuestCartKeys.forEach(key => {
+            localStorage.removeItem(key);
+        });
+        
+        console.log(`Cleared ${oldGuestCartKeys.length} old guest carts`);
+        
+    } catch (error) {
+        console.error('Error clearing old guest carts:', error);
+    }
+}
+
+// ============================================
+// FIXED AUTHENTICATION SYSTEM
 // ============================================
 
 class AuthSystem {
@@ -1959,9 +1986,10 @@ class AuthSystem {
             return this.currentUser.uid;
         }
         
+        // FIXED: Stable guest ID - don't generate new ID every time
         let guestId = localStorage.getItem('irya_guest_id');
         if (!guestId) {
-            guestId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            guestId = 'guest_user'; // Simple stable ID
             localStorage.setItem('irya_guest_id', guestId);
         }
         return guestId;
@@ -2081,7 +2109,7 @@ class AuthSystem {
 }
 
 // ============================================
-// FIXED CART SYSTEM
+// FIXED CART SYSTEM - GUEST ID FIXED
 // ============================================
 
 class CartSystem {
@@ -2097,7 +2125,19 @@ class CartSystem {
     }
     
     getUserId() {
-        return authSystem ? authSystem.getUserId() : 'guest';
+        if (!authSystem) return 'guest_user';
+        
+        if (authSystem.isLoggedIn()) {
+            return authSystem.getUserId();
+        }
+        
+        // FIXED: Stable guest ID
+        let guestId = localStorage.getItem('irya_guest_id');
+        if (!guestId) {
+            guestId = 'guest_user';
+            localStorage.setItem('irya_guest_id', guestId);
+        }
+        return guestId;
     }
     
     async loadCart() {
@@ -2105,18 +2145,25 @@ class CartSystem {
             const userId = this.getUserId();
             const cartKey = `${this.localCartKey}_${userId}`;
             
-            // Load from localStorage
+            console.log(`Loading cart for user: ${userId}`);
+            
+            // Load from localStorage first
             const cartData = localStorage.getItem(cartKey);
             
             if (cartData) {
                 this.cartItems = JSON.parse(cartData) || [];
+                console.log(`Loaded ${this.cartItems.length} items from localStorage`);
             } else {
                 this.cartItems = [];
+                console.log('No cart data found in localStorage');
             }
             
-            // If logged in, sync with Firebase
+            // FIXED: Only sync with Firebase for logged-in users
             if (authSystem && authSystem.isLoggedIn() && firebaseDB) {
+                console.log('User is logged in, syncing with Firebase');
                 await this.syncWithFirebase(userId);
+            } else {
+                console.log('Guest user, skipping Firebase sync');
             }
             
             // Clean any duplicates
@@ -2132,17 +2179,28 @@ class CartSystem {
     
     async syncWithFirebase(userId) {
         try {
-            const cartDoc = await firebaseDB.collection('userCarts').doc(userId).get();
-            
-            if (cartDoc.exists) {
-                const firebaseData = cartDoc.data();
-                const firebaseItems = firebaseData.items || [];
+            // FIXED: Only for logged-in users (not guests)
+            if (!userId.startsWith('guest') && firebaseDB) {
+                console.log(`Syncing cart with Firebase for user: ${userId}`);
+                const cartDoc = await firebaseDB.collection('userCarts').doc(userId).get();
                 
-                // Merge with local cart
-                this.mergeCarts(firebaseItems);
-            } else if (this.cartItems.length > 0) {
-                // Save local cart to Firebase
-                await this.saveToFirebase(userId);
+                if (cartDoc.exists) {
+                    const firebaseData = cartDoc.data();
+                    const firebaseItems = firebaseData.items || [];
+                    
+                    console.log(`Found ${firebaseItems.length} items in Firebase`);
+                    
+                    // Merge with local cart
+                    if (firebaseItems.length > 0) {
+                        this.mergeCarts(firebaseItems);
+                    }
+                } else if (this.cartItems.length > 0) {
+                    // Save local cart to Firebase
+                    console.log('No Firebase cart found, saving local cart to Firebase');
+                    await this.saveToFirebase(userId);
+                }
+            } else {
+                console.log('Guest user, skipping Firebase sync');
             }
         } catch (error) {
             console.error('Error syncing cart with Firebase:', error);
@@ -2150,18 +2208,23 @@ class CartSystem {
     }
     
     mergeCarts(firebaseItems) {
+        console.log(`Merging ${firebaseItems.length} Firebase items with ${this.cartItems.length} local items`);
+        
+        // Start with Firebase items
         const mergedItems = [...firebaseItems];
         const existingIds = new Set(firebaseItems.map(item => item.id));
         
         // Add local items that don't exist in Firebase
         this.cartItems.forEach(item => {
             if (!existingIds.has(item.id)) {
+                console.log(`Adding local item to merged cart: ${item.id}`);
                 mergedItems.push(item);
                 existingIds.add(item.id);
             }
         });
         
         this.cartItems = mergedItems;
+        console.log(`After merge: ${this.cartItems.length} items in cart`);
         this.saveToLocalStorage();
     }
     
@@ -2176,22 +2239,29 @@ class CartSystem {
             }
         }
         
-        this.cartItems = uniqueItems;
-        this.saveToLocalStorage();
+        if (uniqueItems.length !== this.cartItems.length) {
+            console.log(`Removed ${this.cartItems.length - uniqueItems.length} duplicate items`);
+            this.cartItems = uniqueItems;
+        }
     }
     
     async saveCart() {
         const userId = this.getUserId();
         
+        console.log(`Saving cart for user: ${userId}, items: ${this.cartItems.length}`);
+        
         // Remove duplicates before saving
         this.removeDuplicates();
         
-        // Save to localStorage
+        // Always save to localStorage
         this.saveToLocalStorage();
         
-        // Save to Firebase if logged in
-        if (authSystem && authSystem.isLoggedIn() && firebaseDB) {
+        // FIXED: Only save to Firebase for logged-in users
+        if (authSystem && authSystem.isLoggedIn() && firebaseDB && !userId.startsWith('guest')) {
+            console.log('User is logged in, saving to Firebase');
             await this.saveToFirebase(userId);
+        } else {
+            console.log('Guest user, saving only to localStorage');
         }
         
         this.updateCartBadge();
@@ -2203,10 +2273,19 @@ class CartSystem {
         const cartKey = `${this.localCartKey}_${userId}`;
         
         localStorage.setItem(cartKey, JSON.stringify(this.cartItems));
+        console.log(`Saved ${this.cartItems.length} items to localStorage for key: ${cartKey}`);
     }
     
     async saveToFirebase(userId) {
         try {
+            // FIXED: Validate user ID (not guest)
+            if (!userId || userId.startsWith('guest')) {
+                console.log('Invalid user ID for Firebase save:', userId);
+                return;
+            }
+            
+            console.log(`Saving ${this.cartItems.length} items to Firebase for user: ${userId}`);
+            
             await firebaseDB.collection('userCarts').doc(userId).set({
                 userId: userId,
                 items: this.cartItems,
@@ -2214,6 +2293,8 @@ class CartSystem {
                 itemCount: this.cartItems.length,
                 totalAmount: this.cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
             }, { merge: true });
+            
+            console.log('Cart saved to Firebase successfully');
         } catch (error) {
             console.error('Error saving cart to Firebase:', error);
         }
@@ -2221,6 +2302,8 @@ class CartSystem {
     
     async addToCart(product) {
         try {
+            console.log(`Adding product to cart: ${product.id} - ${product.stone_name}`);
+            
             // Check if product already exists in cart
             const existingIndex = this.cartItems.findIndex(item => item.id === product.id);
             
@@ -2228,16 +2311,16 @@ class CartSystem {
                 // Update quantity if exists
                 this.cartItems[existingIndex].quantity += 1;
                 this.cartItems[existingIndex].updatedAt = new Date().toISOString();
+                console.log(`Updated quantity for existing product: ${product.id}`);
             } else {
-                // Add new item with minimal data
+                // Add new item
                 const newItem = {
                     id: product.id,
                     name: product.stone_name || 'Stone Product',
                     stoneName: product.stone_name,
                     price: parseFloat(product.price) || 0,
                     priceUnit: product.price_unit || 'piece',
-                    image: (product.images && product.images.length > 0) ? product.images[0] : 
-                           (product.image || getDefaultImage(product.category)),
+                    image: getProductImage(product),
                     category: product.category || 'Natural Stone',
                     description: product.description || '',
                     quantity: 1,
@@ -2246,6 +2329,7 @@ class CartSystem {
                 };
                 
                 this.cartItems.push(newItem);
+                console.log(`Added new product to cart: ${product.id}`);
             }
             
             await this.saveCart();
@@ -2287,11 +2371,13 @@ class CartSystem {
             bottomCartBadge.textContent = count > 99 ? '99+' : count;
             bottomCartBadge.style.display = count > 0 ? 'flex' : 'none';
         }
+        
+        console.log(`Cart badge updated: ${count} items`);
     }
 }
 
 // ============================================
-// FIXED WISHLIST SYSTEM
+// FIXED WISHLIST SYSTEM - GUEST ID FIXED
 // ============================================
 
 class WishlistSystem {
@@ -2307,7 +2393,19 @@ class WishlistSystem {
     }
     
     getUserId() {
-        return authSystem ? authSystem.getUserId() : 'guest';
+        if (!authSystem) return 'guest_user';
+        
+        if (authSystem.isLoggedIn()) {
+            return authSystem.getUserId();
+        }
+        
+        // FIXED: Stable guest ID - same as cart system
+        let guestId = localStorage.getItem('irya_guest_id');
+        if (!guestId) {
+            guestId = 'guest_user';
+            localStorage.setItem('irya_guest_id', guestId);
+        }
+        return guestId;
     }
     
     async loadWishlist() {
@@ -2315,18 +2413,25 @@ class WishlistSystem {
             const userId = this.getUserId();
             const wishlistKey = `${this.localWishlistKey}_${userId}`;
             
+            console.log(`Loading wishlist for user: ${userId}`);
+            
             // Load from localStorage
             const wishlistData = localStorage.getItem(wishlistKey);
             
             if (wishlistData) {
                 this.wishlistItems = JSON.parse(wishlistData) || [];
+                console.log(`Loaded ${this.wishlistItems.length} items from localStorage`);
             } else {
                 this.wishlistItems = [];
+                console.log('No wishlist data found in localStorage');
             }
             
-            // If logged in, sync with Firebase
+            // FIXED: Only sync with Firebase for logged-in users
             if (authSystem && authSystem.isLoggedIn() && firebaseDB) {
+                console.log('User is logged in, syncing with Firebase');
                 await this.syncWithFirebase(userId);
+            } else {
+                console.log('Guest user, skipping Firebase sync');
             }
             
             // Clean any duplicates
@@ -2342,17 +2447,28 @@ class WishlistSystem {
     
     async syncWithFirebase(userId) {
         try {
-            const wishlistDoc = await firebaseDB.collection('userWishlists').doc(userId).get();
-            
-            if (wishlistDoc.exists) {
-                const firebaseData = wishlistDoc.data();
-                const firebaseItems = firebaseData.items || [];
+            // FIXED: Only for logged-in users
+            if (!userId.startsWith('guest') && firebaseDB) {
+                console.log(`Syncing wishlist with Firebase for user: ${userId}`);
+                const wishlistDoc = await firebaseDB.collection('userWishlists').doc(userId).get();
                 
-                // Merge with local wishlist
-                this.mergeWishlists(firebaseItems);
-            } else if (this.wishlistItems.length > 0) {
-                // Save local wishlist to Firebase
-                await this.saveToFirebase(userId);
+                if (wishlistDoc.exists) {
+                    const firebaseData = wishlistDoc.data();
+                    const firebaseItems = firebaseData.items || [];
+                    
+                    console.log(`Found ${firebaseItems.length} items in Firebase`);
+                    
+                    // Merge with local wishlist
+                    if (firebaseItems.length > 0) {
+                        this.mergeWishlists(firebaseItems);
+                    }
+                } else if (this.wishlistItems.length > 0) {
+                    // Save local wishlist to Firebase
+                    console.log('No Firebase wishlist found, saving local wishlist to Firebase');
+                    await this.saveToFirebase(userId);
+                }
+            } else {
+                console.log('Guest user, skipping Firebase sync');
             }
         } catch (error) {
             console.error('Error syncing wishlist with Firebase:', error);
@@ -2360,18 +2476,22 @@ class WishlistSystem {
     }
     
     mergeWishlists(firebaseItems) {
+        console.log(`Merging ${firebaseItems.length} Firebase items with ${this.wishlistItems.length} local items`);
+        
         const mergedItems = [...firebaseItems];
         const existingIds = new Set(firebaseItems.map(item => item.id));
         
         // Add local items that don't exist in Firebase
         this.wishlistItems.forEach(item => {
             if (!existingIds.has(item.id)) {
+                console.log(`Adding local item to merged wishlist: ${item.id}`);
                 mergedItems.push(item);
                 existingIds.add(item.id);
             }
         });
         
         this.wishlistItems = mergedItems;
+        console.log(`After merge: ${this.wishlistItems.length} items in wishlist`);
         this.saveToLocalStorage();
     }
     
@@ -2386,22 +2506,29 @@ class WishlistSystem {
             }
         }
         
-        this.wishlistItems = uniqueItems;
-        this.saveToLocalStorage();
+        if (uniqueItems.length !== this.wishlistItems.length) {
+            console.log(`Removed ${this.wishlistItems.length - uniqueItems.length} duplicate items`);
+            this.wishlistItems = uniqueItems;
+        }
     }
     
     async saveWishlist() {
         const userId = this.getUserId();
         
+        console.log(`Saving wishlist for user: ${userId}, items: ${this.wishlistItems.length}`);
+        
         // Remove duplicates before saving
         this.removeDuplicates();
         
-        // Save to localStorage
+        // Always save to localStorage
         this.saveToLocalStorage();
         
-        // Save to Firebase if logged in
-        if (authSystem && authSystem.isLoggedIn() && firebaseDB) {
+        // FIXED: Only save to Firebase for logged-in users
+        if (authSystem && authSystem.isLoggedIn() && firebaseDB && !userId.startsWith('guest')) {
+            console.log('User is logged in, saving to Firebase');
             await this.saveToFirebase(userId);
+        } else {
+            console.log('Guest user, saving only to localStorage');
         }
         
         this.updateWishlistUI();
@@ -2413,16 +2540,27 @@ class WishlistSystem {
         const wishlistKey = `${this.localWishlistKey}_${userId}`;
         
         localStorage.setItem(wishlistKey, JSON.stringify(this.wishlistItems));
+        console.log(`Saved ${this.wishlistItems.length} items to localStorage for key: ${wishlistKey}`);
     }
     
     async saveToFirebase(userId) {
         try {
+            // FIXED: Validate user ID (not guest)
+            if (!userId || userId.startsWith('guest')) {
+                console.log('Invalid user ID for Firebase save:', userId);
+                return;
+            }
+            
+            console.log(`Saving ${this.wishlistItems.length} items to Firebase for user: ${userId}`);
+            
             await firebaseDB.collection('userWishlists').doc(userId).set({
                 userId: userId,
                 items: this.wishlistItems,
                 updatedAt: new Date().toISOString(),
                 itemCount: this.wishlistItems.length
             }, { merge: true });
+            
+            console.log('Wishlist saved to Firebase successfully');
         } catch (error) {
             console.error('Error saving wishlist to Firebase:', error);
         }
@@ -2430,6 +2568,8 @@ class WishlistSystem {
     
     async addToWishlist(product) {
         try {
+            console.log(`Adding product to wishlist: ${product.id} - ${product.stone_name}`);
+            
             // Check if product already exists in wishlist
             const existingItem = this.wishlistItems.find(item => item.id === product.id);
             
@@ -2441,16 +2581,17 @@ class WishlistSystem {
                     category: product.category,
                     price: parseFloat(product.price) || 0,
                     price_unit: product.price_unit,
-                    image: (product.images && product.images.length > 0) ? product.images[0] : 
-                           (product.image || getDefaultImage(product.category)),
+                    image: getProductImage(product),
                     addedAt: new Date().toISOString()
                 });
                 
                 await this.saveWishlist();
                 showNotification(`${product.stone_name} added to wishlist!`);
                 return true;
+            } else {
+                console.log(`Product already in wishlist: ${product.id}`);
+                return false;
             }
-            return false;
         } catch (error) {
             console.error('Error adding to wishlist:', error);
             showError('Failed to add to wishlist. Please try again.');
@@ -2507,6 +2648,8 @@ class WishlistSystem {
             wishlistBadge.textContent = count > 99 ? '99+' : count;
             wishlistBadge.style.display = count > 0 ? 'flex' : 'none';
         }
+        
+        console.log(`Wishlist UI updated: ${count} items`);
     }
 }
 
@@ -2540,7 +2683,7 @@ function initializeFirebase() {
 }
 
 // ============================================
-// PRODUCT LOADING FROM FIREBASE - FIXED
+// PRODUCT LOADING FROM FIREBASE
 // ============================================
 
 async function loadProductsFromFirebase() {
@@ -3416,6 +3559,9 @@ function updateWishlistIcon(productId, isInWishlist) {
 
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('IRYA STONE Home Page initialized');
+    
+    // Clear old guest carts first
+    clearOldGuestCarts();
     
     // Initialize Firebase
     initializeFirebase();
