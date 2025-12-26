@@ -1770,12 +1770,21 @@ let availableColors = [];
 // IMPROVED SCROLL VARIABLES
 // ============================================
 let lastScrollTop = 0;
-let scrollTimeout;
-let isScrolling = false;
 let lastScrollTime = 0;
-let scrollThreshold = 10; // Minimum pixels to trigger hide/show
-let fastScrollThreshold = 100; // Pixels per second for fast scroll
 let lastScrollPosition = 0;
+let scrollTimeout;
+let isHeaderVisible = true;
+
+// CONFIGURATION - यहाँ adjust करें
+const SCROLL_CONFIG = {
+    minScrollDistance: 5, // Minimum pixels to consider it a scroll
+    slowScrollMaxSpeed: 80, // Pixels per second - इससे कम speed = slow scroll
+    fastScrollMinSpeed: 150, // Pixels per second - इससे ज्यादा speed = fast scroll
+    hideDelay: 100, // Hide करने में delay (ms)
+    showDelay: 50, // Show करने में delay (ms)
+    topThreshold: 50, // Top से कितने pixels पर always show करें
+    bottomThreshold: 100 // Bottom से कितने pixels पर always show करें
+};
 
 // ============================================
 // AUTHENTICATION SYSTEM - FIXED
