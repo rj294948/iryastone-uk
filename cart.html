@@ -1196,15 +1196,15 @@ let authSystem = null;
 let cartSystem = null;
 
 // ============================================
-// ENHANCED SCROLL HANDLING - FIXED BEHAVIOR
+// ENHANCED SCROLL HANDLING
 // ============================================
 
 let lastScrollTop = 0;
 let lastScrollTime = 0;
 let scrollVelocity = 0;
 let isHeaderVisible = true;
-const HIDE_THRESHOLD = 100; // Hide after 100px scroll down
-const SHOW_VELOCITY = 0.5;  // Fast scroll up threshold (px/ms)
+const HIDE_THRESHOLD = 100;
+const SHOW_VELOCITY = 0.5;
 
 function handleScroll() {
     const header = document.getElementById('mainHeader');
@@ -1214,7 +1214,6 @@ function handleScroll() {
     
     if (!header || !bottomNav) return;
     
-    // Calculate scroll velocity
     if (lastScrollTime > 0) {
         const timeDiff = currentTime - lastScrollTime;
         if (timeDiff > 0) {
@@ -1222,7 +1221,6 @@ function handleScroll() {
         }
     }
     
-    // Always show when at top
     if (currentScrollTop < 10) {
         if (!isHeaderVisible) {
             header.classList.remove('hidden');
@@ -1237,14 +1235,12 @@ function handleScroll() {
     const scrollingDown = currentScrollTop > lastScrollTop;
     
     if (scrollingDown) {
-        // Scrolling DOWN - hide if past threshold
         if (currentScrollTop > HIDE_THRESHOLD && isHeaderVisible) {
             header.classList.add('hidden');
             bottomNav.classList.add('hidden');
             isHeaderVisible = false;
         }
     } else {
-        // Scrolling UP - show only if scrolling fast
         if (!isHeaderVisible && scrollVelocity < -SHOW_VELOCITY) {
             header.classList.remove('hidden');
             bottomNav.classList.remove('hidden');
@@ -1257,17 +1253,18 @@ function handleScroll() {
 }
 
 // ============================================
-// AUTH SYSTEM - SIMPLIFIED
+// AUTH SYSTEM - UPDATED FOR FIREBASE SYNC
 // ============================================
 
 class AuthSystem {
     constructor() {
         this.authKey = 'irya_stone_user';
         this.currentUser = null;
+        this.isFirebaseReady = false;
     }
     
     async init() {
-        // Get user from localStorage
+        // Get user from localStorage first
         const userData = localStorage.getItem(this.authKey);
         if (userData) {
             try {
@@ -1277,19 +1274,55 @@ class AuthSystem {
             }
         }
         
+        // Initialize Firebase Auth listener
+        if (firebaseAuth) {
+            this.isFirebaseReady = true;
+            
+            firebaseAuth.onAuthStateChanged((user) => {
+                if (user) {
+                    // User is signed in with Firebase
+                    this.currentUser = {
+                        uid: user.uid,
+                        displayName: user.displayName || 'User',
+                        email: user.email,
+                        photoURL: user.photoURL,
+                        isFirebaseUser: true,
+                        providerId: user.providerId
+                    };
+                    
+                    console.log('✅ Firebase user authenticated:', this.currentUser.email);
+                    
+                    // Save to localStorage
+                    localStorage.setItem(this.authKey, JSON.stringify(this.currentUser));
+                    
+                } else if (this.currentUser && this.currentUser.isFirebaseUser) {
+                    // User was logged in with Firebase but signed out
+                    console.log('👤 Firebase user signed out');
+                    this.currentUser = null;
+                    localStorage.removeItem(this.authKey);
+                    this.currentUser = this.createGuestUser();
+                    localStorage.setItem(this.authKey, JSON.stringify(this.currentUser));
+                }
+                
+                // Update UI if needed
+                this.updateAuthUI();
+            });
+        }
+        
         // If no user found, create guest user
         if (!this.currentUser) {
             this.currentUser = this.createGuestUser();
             localStorage.setItem(this.authKey, JSON.stringify(this.currentUser));
         }
         
+        console.log('Auth initialized:', this.currentUser);
         return this;
     }
     
     createGuestUser() {
         let guestId = localStorage.getItem('irya_guest_id');
         if (!guestId) {
-            guestId = 'guest_' + Date.now();
+            guestId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('irya_guest_id', guestId);
         }
         
@@ -1317,10 +1350,18 @@ class AuthSystem {
     isLoggedIn() {
         return this.currentUser && this.currentUser.isFirebaseUser === true;
     }
+    
+    isFirebaseAvailable() {
+        return this.isFirebaseReady && firebaseDB;
+    }
+    
+    updateAuthUI() {
+        // Your auth UI update logic here
+    }
 }
 
 // ============================================
-// SIMPLIFIED CART SYSTEM - MULTIPLE PRODUCTS FIX
+// CART SYSTEM - COMPLETE FIREBASE FIRESTORE SYNC
 // ============================================
 
 class CartSystem {
@@ -1329,11 +1370,21 @@ class CartSystem {
         this.localCartKey = 'irya_cart';
         this.cartItems = [];
         this.userId = null;
+        this.isSyncing = false;
     }
     
     async init() {
         this.userId = this.authSystem.getUserId();
-        await this.loadCart();
+        console.log('🛒 Initializing cart for user:', this.userId);
+        
+        // Load cart from localStorage first
+        await this.loadCartFromLocalStorage();
+        
+        // If user is logged in with Firebase, sync with Firestore
+        if (this.authSystem.isFirebaseAvailable() && this.authSystem.isLoggedIn()) {
+            await this.syncWithFirebase();
+        }
+        
         this.updateCartBadge();
         return this;
     }
@@ -1342,72 +1393,181 @@ class CartSystem {
         return `${this.localCartKey}_${this.userId}`;
     }
     
-    async loadCart() {
+    async loadCartFromLocalStorage() {
         try {
             const cartKey = this.getCartKey();
-            console.log(`🛒 Loading cart for user: ${this.userId}, key: ${cartKey}`);
-            
             const cartData = localStorage.getItem(cartKey);
             
             if (cartData) {
-                try {
-                    this.cartItems = JSON.parse(cartData);
-                    console.log(`✅ Loaded ${this.cartItems.length} items from localStorage`);
-                    
-                    // Validate items
-                    this.cartItems = this.cartItems.filter(item => 
-                        item && 
-                        item.id && 
-                        item.name && 
-                        typeof item.price === 'number'
-                    );
-                    
-                } catch (e) {
-                    console.error('❌ Error parsing cart data:', e);
-                    this.cartItems = [];
-                }
+                this.cartItems = JSON.parse(cartData);
+                console.log(`📦 Loaded ${this.cartItems.length} items from localStorage`);
+                
+                // Validate items
+                this.cartItems = this.cartItems.filter(item => 
+                    item && 
+                    item.id && 
+                    item.name && 
+                    typeof item.price === 'number'
+                );
+                
             } else {
-                console.log('ℹ️ No existing cart data found, starting fresh');
+                console.log('📭 No cart data in localStorage');
                 this.cartItems = [];
             }
             
-            return this.cartItems;
-            
         } catch (error) {
-            console.error('❌ Error loading cart:', error);
+            console.error('❌ Error loading cart from localStorage:', error);
             this.cartItems = [];
-            return [];
         }
     }
     
-    async saveCart() {
+    async syncWithFirebase() {
+        if (this.isSyncing) return;
+        
+        try {
+            this.isSyncing = true;
+            console.log('🔄 Syncing cart with Firebase...');
+            
+            const userId = this.authSystem.getUserId();
+            
+            // Check if user document exists in Firestore
+            const userCartRef = firebaseDB.collection('userCarts').doc(userId);
+            const cartDoc = await userCartRef.get();
+            
+            if (cartDoc.exists) {
+                // Firebase has cart data - merge with local
+                const firebaseData = cartDoc.data();
+                const firebaseItems = firebaseData.items || [];
+                
+                console.log(`📦 Found ${firebaseItems.length} items in Firebase`);
+                
+                // Merge carts: Firebase + Local
+                await this.mergeCarts(firebaseItems);
+                
+                // Save merged cart back to Firebase
+                await this.saveToFirebase();
+                
+            } else {
+                // No cart in Firebase - create new one with local data
+                console.log('📝 No cart in Firebase, creating new...');
+                if (this.cartItems.length > 0) {
+                    await this.saveToFirebase();
+                }
+            }
+            
+            console.log('✅ Firebase sync completed');
+            
+        } catch (error) {
+            console.error('❌ Error syncing with Firebase:', error);
+        } finally {
+            this.isSyncing = false;
+        }
+    }
+    
+    async mergeCarts(firebaseItems) {
+        console.log('🔄 Merging carts...');
+        
+        // Create a map for quick lookup
+        const mergedMap = new Map();
+        
+        // Add all Firebase items first
+        firebaseItems.forEach(item => {
+            if (item && item.id) {
+                mergedMap.set(item.id, item);
+            }
+        });
+        
+        // Add or update with Local items
+        this.cartItems.forEach(localItem => {
+            if (localItem && localItem.id) {
+                if (mergedMap.has(localItem.id)) {
+                    // Update existing item - use latest quantity
+                    const existing = mergedMap.get(localItem.id);
+                    existing.quantity = localItem.quantity || existing.quantity;
+                    existing.updatedAt = new Date().toISOString();
+                } else {
+                    // Add new item
+                    mergedMap.set(localItem.id, localItem);
+                }
+            }
+        });
+        
+        // Convert back to array
+        this.cartItems = Array.from(mergedMap.values());
+        console.log(`✅ Merged cart: ${this.cartItems.length} items`);
+    }
+    
+    async saveToLocalStorage() {
         try {
             const cartKey = this.getCartKey();
-            
-            // Remove any invalid items before saving
-            this.cartItems = this.cartItems.filter(item => 
-                item && 
-                item.id && 
-                item.name && 
-                typeof item.price === 'number'
-            );
-            
-            console.log(`💾 Saving ${this.cartItems.length} items to localStorage`);
-            localStorage.setItem(cartKey, JSON.stringify(this.cartItems));
-            
-            this.updateCartBadge();
-            
+            const cartData = JSON.stringify(this.cartItems);
+            localStorage.setItem(cartKey, cartData);
+            console.log(`💾 Saved ${this.cartItems.length} items to localStorage`);
             return true;
             
         } catch (error) {
-            console.error('❌ Error saving cart:', error);
+            console.error('❌ Error saving to localStorage:', error);
             return false;
         }
     }
     
+    async saveToFirebase() {
+        if (!this.authSystem.isFirebaseAvailable() || !this.authSystem.isLoggedIn()) {
+            console.log('⚠️ Firebase not available or user not logged in, skipping Firebase save');
+            return false;
+        }
+        
+        try {
+            const userId = this.authSystem.getUserId();
+            const userEmail = this.authSystem.getUserEmail();
+            const userName = this.authSystem.getUserName();
+            
+            console.log(`📤 Saving cart to Firebase for user: ${userEmail || userId}`);
+            
+            const cartData = {
+                userId: userId,
+                userEmail: userEmail,
+                userName: userName,
+                items: this.cartItems,
+                itemCount: this.cartItems.length,
+                subtotal: this.getSubtotal(),
+                tax: this.getTax(),
+                total: this.getTotal(),
+                advancePayment: this.getAdvancePayment(),
+                lastUpdated: new Date().toISOString(),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            
+            // Save to Firestore
+            await firebaseDB.collection('userCarts').doc(userId).set(cartData, { merge: true });
+            
+            console.log('✅ Cart saved to Firebase successfully');
+            return true;
+            
+        } catch (error) {
+            console.error('❌ Error saving to Firebase:', error);
+            return false;
+        }
+    }
+    
+    async saveCart() {
+        // Always save to localStorage first
+        await this.saveToLocalStorage();
+        
+        // If user is logged in with Firebase, save to Firestore too
+        if (this.authSystem.isFirebaseAvailable() && this.authSystem.isLoggedIn()) {
+            await this.saveToFirebase();
+        }
+        
+        // Update cart badge
+        this.updateCartBadge();
+        
+        return true;
+    }
+    
     async addToCart(product, quantity = 1) {
         try {
-            console.log(`📦 Adding to cart: ${product.id} - ${product.name || product.stone_name}`);
+            console.log(`📦 Adding to cart: ${product.id} - ${product.stone_name || product.name}`);
             
             const cartItem = {
                 id: product.id,
@@ -1418,9 +1578,17 @@ class CartSystem {
                 priceUnit: product.price_unit || 'piece',
                 image: this.getProductImage(product),
                 category: product.category || 'Natural Stone',
+                description: product.description || '',
                 quantity: quantity,
                 addedAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
+                updatedAt: new Date().toISOString(),
+                productData: {
+                    category: product.category,
+                    color: product.color,
+                    finish: product.finish,
+                    size: product.size,
+                    usage: product.usage
+                }
             };
             
             // Check if same product already exists
@@ -1439,12 +1607,15 @@ class CartSystem {
                 console.log(`✅ Added new product: ${product.id}`);
             }
             
+            // Save to both localStorage and Firebase
             await this.saveCart();
             
+            showNotification(`${product.stone_name || product.name} added to cart!`);
             return true;
             
         } catch (error) {
             console.error('❌ Error adding to cart:', error);
+            showError('Failed to add to cart. Please try again.');
             return false;
         }
     }
@@ -1482,9 +1653,11 @@ class CartSystem {
             if (itemIndex >= 0) {
                 if (newQuantity <= 0) {
                     this.cartItems.splice(itemIndex, 1);
+                    console.log(`🗑️ Removed item: ${itemId}`);
                 } else {
                     this.cartItems[itemIndex].quantity = newQuantity;
                     this.cartItems[itemIndex].updatedAt = new Date().toISOString();
+                    console.log(`🔄 Updated quantity to ${newQuantity} for item: ${itemId}`);
                 }
                 
                 await this.saveCart();
@@ -1499,12 +1672,17 @@ class CartSystem {
     
     async removeFromCart(itemId) {
         try {
+            const initialCount = this.cartItems.length;
             this.cartItems = this.cartItems.filter(item => 
                 !(item.uniqueId === itemId || item.id === itemId)
             );
             
-            await this.saveCart();
-            return true;
+            if (this.cartItems.length < initialCount) {
+                console.log(`🗑️ Removed item from cart: ${itemId}`);
+                await this.saveCart();
+                return true;
+            }
+            return false;
         } catch (error) {
             console.error('❌ Error removing from cart:', error);
             return false;
@@ -1556,11 +1734,23 @@ class CartSystem {
         }
     }
     
-    // Clear cart completely
     async clearCart() {
         this.cartItems = [];
         await this.saveCart();
         console.log('🧹 Cart cleared completely');
+        showNotification('Cart cleared!');
+    }
+    
+    // DEBUG: View cart data
+    debugCart() {
+        console.log('=== CART DEBUG INFO ===');
+        console.log('User ID:', this.userId);
+        console.log('Cart Key:', this.getCartKey());
+        console.log('Items Count:', this.cartItems.length);
+        console.log('Cart Items:', this.cartItems);
+        console.log('Firebase Available:', this.authSystem.isFirebaseAvailable());
+        console.log('User Logged In:', this.authSystem.isLoggedIn());
+        console.log('========================');
     }
 }
 
@@ -1762,7 +1952,7 @@ async function proceedToCheckout() {
     showLoading(true);
     
     try {
-        // Prepare data for checkout.html
+        // Prepare data for checkout
         const checkoutData = {
             userId: cartSystem.authSystem.getUserId(),
             userName: cartSystem.authSystem.getUserName(),
@@ -1772,16 +1962,17 @@ async function proceedToCheckout() {
             tax: cartSystem.getTax(),
             total: cartSystem.getTotal(),
             advancePayment: cartSystem.getAdvancePayment(),
-            cartSessionId: 'cart_' + Date.now()
+            cartSessionId: 'cart_' + Date.now(),
+            createdAt: new Date().toISOString()
         };
         
-        // Save to sessionStorage for checkout.html
+        // Save to sessionStorage
         sessionStorage.setItem('irya_checkout_data', JSON.stringify(checkoutData));
         sessionStorage.setItem('irya_cart_items', JSON.stringify(cartItems));
         sessionStorage.setItem('irya_cart_total', cartSystem.getTotal().toString());
         sessionStorage.setItem('irya_cart_user_id', cartSystem.authSystem.getUserId());
         
-        // Save user info for autofill
+        // Save user info
         localStorage.setItem('irya_user_name', cartSystem.authSystem.getUserName());
         localStorage.setItem('irya_user_email', cartSystem.authSystem.getUserEmail());
         
@@ -1797,7 +1988,7 @@ async function proceedToCheckout() {
 }
 
 // ============================================
-// FIREBASE INITIALIZATION
+// FIREBASE INITIALIZATION - IMPROVED
 // ============================================
 
 async function initializeFirebase() {
@@ -1807,25 +1998,39 @@ async function initializeFirebase() {
             return false;
         }
         
+        // Check if Firebase is already initialized
         if (!firebase.apps.length) {
             firebaseApp = firebase.initializeApp(firebaseConfig);
+            console.log('✅ Firebase app initialized');
         } else {
             firebaseApp = firebase.app();
+            console.log('✅ Using existing Firebase app');
         }
         
+        // Initialize services
         firebaseDB = firebase.firestore();
         firebaseAuth = firebase.auth();
         
-        console.log('✅ Firebase initialized successfully');
+        // Enable Firestore persistence (optional)
+        try {
+            await firebaseDB.enablePersistence();
+            console.log('✅ Firestore persistence enabled');
+        } catch (err) {
+            console.log('ℹ️ Firestore persistence not enabled:', err);
+        }
+        
+        console.log('✅ Firebase services initialized successfully');
         return true;
+        
     } catch (error) {
-        console.error('Firebase initialization error:', error);
+        console.error('❌ Firebase initialization error:', error);
+        showError('Firebase initialization failed. Some features may not work.');
         return false;
     }
 }
 
 // ============================================
-// CART PAGE INITIALIZATION - FIXED
+// CART PAGE INITIALIZATION - UPDATED
 // ============================================
 
 document.addEventListener('DOMContentLoaded', async function() {
@@ -1834,8 +2039,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     showLoading(true);
     
     try {
-        // Initialize Firebase
-        await initializeFirebase();
+        // Initialize Firebase first
+        const firebaseInitialized = await initializeFirebase();
+        
+        if (!firebaseInitialized) {
+            console.log('⚠️ Firebase not initialized, using localStorage only');
+        }
         
         // Initialize auth system
         authSystem = new AuthSystem();
@@ -1851,18 +2060,17 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Setup scroll listener
         window.addEventListener('scroll', handleScroll, { passive: true });
         
-        // Listen for cart updates from home page
+        // Listen for cart updates from other tabs
         window.addEventListener('storage', function(e) {
             if (e.key && e.key.includes('irya_cart_')) {
                 console.log('📢 Cart updated from another tab');
-                // Reload cart data
-                cartSystem.loadCart().then(() => {
+                cartSystem.loadCartFromLocalStorage().then(() => {
                     renderCartItems();
                 });
             }
         });
         
-        // Setup checkout button listener
+        // Setup listeners
         setupCartPageListeners();
         
         console.log('✅ Cart page initialized successfully');
@@ -1883,24 +2091,99 @@ function setupCartPageListeners() {
 }
 
 // ============================================
-// DEBUG FUNCTIONS
+// DEBUG AND UTILITY FUNCTIONS
 // ============================================
 
-function debugCart() {
-    console.log('=== CART DEBUG INFO ===');
-    console.log('User ID:', authSystem?.getUserId());
-    console.log('Cart Items:', cartSystem?.getCartItems());
-    console.log('Cart Count:', cartSystem?.getCartCount());
-    console.log('LocalStorage Key:', cartSystem?.getCartKey());
-    console.log('LocalStorage Data:', localStorage.getItem(cartSystem?.getCartKey()));
-    console.log('========================');
+// Test Firebase connection
+async function testFirebaseConnection() {
+    try {
+        console.log('🔍 Testing Firebase connection...');
+        
+        if (!firebaseDB) {
+            console.log('❌ Firebase DB not initialized');
+            return false;
+        }
+        
+        // Try to write a test document
+        const testRef = firebaseDB.collection('test').doc('connection_test');
+        await testRef.set({
+            test: true,
+            timestamp: new Date().toISOString()
+        });
+        
+        console.log('✅ Firebase connection test: WRITE successful');
+        
+        // Try to read it back
+        const doc = await testRef.get();
+        if (doc.exists) {
+            console.log('✅ Firebase connection test: READ successful');
+        }
+        
+        // Clean up
+        await testRef.delete();
+        console.log('✅ Firebase connection test: CLEANUP successful');
+        
+        return true;
+        
+    } catch (error) {
+        console.error('❌ Firebase connection test failed:', error);
+        return false;
+    }
+}
+
+// Check cart data in Firebase
+async function checkFirebaseCart() {
+    try {
+        if (!firebaseDB || !authSystem.isLoggedIn()) {
+            console.log('❌ Firebase not available or user not logged in');
+            return;
+        }
+        
+        const userId = authSystem.getUserId();
+        const cartRef = firebaseDB.collection('userCarts').doc(userId);
+        const cartDoc = await cartRef.get();
+        
+        if (cartDoc.exists) {
+            console.log('📊 Firebase Cart Data:', cartDoc.data());
+            return cartDoc.data();
+        } else {
+            console.log('📭 No cart found in Firebase');
+            return null;
+        }
+        
+    } catch (error) {
+        console.error('❌ Error checking Firebase cart:', error);
+    }
+}
+
+// Force sync cart to Firebase
+async function forceSyncToFirebase() {
+    if (!cartSystem) {
+        console.log('❌ Cart system not initialized');
+        return;
+    }
+    
+    showLoading(true);
+    try {
+        console.log('🔄 Forcing sync to Firebase...');
+        await cartSystem.saveToFirebase();
+        showNotification('Cart synced to Firebase!');
+    } catch (error) {
+        console.error('❌ Error syncing to Firebase:', error);
+        showError('Sync failed: ' + error.message);
+    } finally {
+        showLoading(false);
+    }
 }
 
 // Make functions available globally
 window.updateItemQuantity = updateItemQuantity;
 window.removeItemFromCart = removeItemFromCart;
 window.proceedToCheckout = proceedToCheckout;
-window.debugCart = debugCart;
+window.debugCart = () => cartSystem?.debugCart();
+window.testFirebaseConnection = testFirebaseConnection;
+window.checkFirebaseCart = checkFirebaseCart;
+window.forceSyncToFirebase = forceSyncToFirebase;
 </script>
 </body>
 </html>
