@@ -396,154 +396,78 @@ header.show {
 }
 
 /* ============================================
-   BREADCRUMB - Home Page Theme
+   FILTER HEADER - Category (Usage) Display (Home Page Style)
 ============================================ */
 
-.breadcrumb {
-    padding: 90px 15px 20px;
-    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.6));
-    border-bottom: none;
-    margin-top: 60px;
-}
-
-.breadcrumb-content {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.breadcrumb-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 13px;
-}
-
-.breadcrumb-item a {
-    color: rgba(255, 255, 255, 0.9);
-    text-decoration: none;
-    transition: var(--transition);
-}
-
-.breadcrumb-item a:hover {
-    color: var(--primary-gold);
-}
-
-.breadcrumb-item.active {
-    color: var(--primary-gold);
-    font-weight: 500;
-}
-
-.breadcrumb-divider {
-    color: rgba(255, 255, 255, 0.6);
-}
-
-/* ============================================
-   HEADER INFO - Category (Usage) Flex Display
-============================================ */
-
-.header-info {
-    padding: 15px 15px 0;
+.filter-header {
+    padding: 80px 15px 15px;
     background: var(--white);
+    margin-top: 60px;
+    border-bottom: 1px solid #f0f0f0;
 }
 
-.info-flex {
+.filter-header-content {
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 10px;
-    padding: 12px 15px;
-    background: var(--bg-light);
-    border-radius: var(--border-radius);
-    border: 1px solid #f0f0f0;
 }
 
-.category-display {
-    font-size: 14px;
-    font-weight: 500;
+.filter-title {
+    font-size: 16px;
+    font-weight: 600;
     color: var(--stone-dark);
+    font-family: 'Roboto Slab', serif;
+}
+
+.filter-toggle-btn {
+    background: var(--primary-gold);
+    color: white;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 14px;
 }
 
-.category-display i {
-    color: var(--primary-gold);
+.filter-toggle-btn:hover {
+    background: var(--gold-dark);
+    transform: scale(1.05);
 }
 
-.category-display .category-text {
-    color: var(--stone-dark);
-}
-
-.category-display .usage-text {
-    color: var(--primary-gold);
-    margin-left: 5px;
+.filter-toggle-btn.active {
+    background: var(--gold-dark);
 }
 
 /* ============================================
-   FILTERS SECTION - Home Page Style
+   FILTERS SECTION - Hide/Show with Icon
 ============================================ */
 
-.filter-section {
+.filters-section {
     background: var(--white);
-    padding-top: 0;
-    margin-top: 0;
-}
-
-.filter-section .section-title-wrapper {
-    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.6));
-    padding: 20px 15px !important;
-    margin: 0 !important;
-    height: 90px;
-    min-height: 90px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    position: relative;
+    padding: 0;
+    margin: 0;
+    max-height: 0;
     overflow: hidden;
+    transition: max-height 0.4s ease;
 }
 
-.filter-section .section-title-wrapper h2 {
-    font-size: 18px !important;
-    font-weight: 600 !important;
-    margin-bottom: 5px !important;
-    color: var(--white);
-    font-family: 'Roboto Slab', serif;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.filter-section .section-title-wrapper h2 i {
-    color: var(--primary-gold);
-    font-size: 16px;
-}
-
-.filter-section .section-title-wrapper .subtitle {
-    font-size: 12px !important;
-    color: rgba(255, 255, 255, 0.9);
-    max-width: 700px;
-    margin: 0 auto;
-    line-height: 1.4;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-    font-weight: 400;
-    opacity: 0.9;
+.filters-section.expanded {
+    max-height: 500px;
+    padding-bottom: 15px;
 }
 
 .filter-controls {
     display: flex;
     overflow-x: auto;
     gap: 8px;
-    padding: 15px 12px;
+    padding: 15px 12px 0;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
     background: var(--bg-light);
@@ -586,9 +510,8 @@ header.show {
 
 /* Selected Filter Tags */
 .selected-filters {
-    padding: 10px 15px;
-    background: var(--white);
-    border-bottom: 1px solid #f0f0f0;
+    padding: 10px 15px 0;
+    background: var(--bg-light);
     display: none;
 }
 
@@ -634,6 +557,8 @@ header.show {
     cursor: pointer;
     transition: var(--transition);
     margin-left: auto;
+    margin-top: 10px;
+    display: block;
 }
 
 .clear-all-btn:hover {
@@ -647,7 +572,7 @@ header.show {
 
 .products-section {
     padding: 20px 12px;
-    background: var(--white);
+    background: var(--bg-light);
 }
 
 .section-header {
@@ -692,38 +617,54 @@ header.show {
 }
 
 /* ============================================
-   PRODUCT CARD - Updated with Description & Bigger Images
+   PRODUCT CARD - Home Page Style with Black Shadow
 ============================================ */
 
 .product-card {
     background: var(--white);
     border-radius: 10px;
-    box-shadow: var(--shadow-sm);
-    transition: var(--transition);
-    border: 1px solid #f0f0f0;
-    position: relative;
     overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: var(--transition);
+    border: none;
+    position: relative;
     cursor: pointer;
     text-decoration: none;
     color: inherit;
     display: block;
-    height: 320px; /* Increased height */
+    height: 300px;
 }
 
 .product-card:hover {
-    border-color: var(--primary-gold);
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
     transform: translateY(-3px);
 }
 
-/* Product Image Container - Bigger Images */
+/* Product Image Container - Bigger Images with Black Shadow Effect */
 .product-image-container {
     width: 100%;
-    height: 180px; /* Increased height */
+    height: 170px;
     overflow: hidden;
     position: relative;
     background: #f5f5f5;
     border-radius: 10px 10px 0 0;
+}
+
+/* Black shadow overlay effect */
+.product-image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.7) 100%);
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.product-card:hover .product-image-overlay {
+    opacity: 1;
 }
 
 /* Multiple images slideshow */
@@ -736,7 +677,7 @@ header.show {
 .product-image {
     width: 100%;
     height: 100%;
-    object-fit: contain; /* Clear images */
+    object-fit: contain;
     padding: 12px;
     position: absolute;
     top: 0;
@@ -791,16 +732,24 @@ header.show {
     transform: scale(1.1);
 }
 
-/* Product Info with Description */
+/* Product Info with Black Background (Home Page Style) */
 .product-info {
     padding: 12px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    color: white;
+    border-radius: 0 0 10px 10px;
+    z-index: 1;
 }
 
 .product-name {
     font-size: 14px;
     font-weight: 600;
     margin-bottom: 6px;
-    color: var(--stone-dark);
+    color: var(--white);
     font-family: 'Roboto Slab', serif;
     line-height: 1.3;
     display: -webkit-box;
@@ -811,7 +760,7 @@ header.show {
 
 .product-description {
     font-size: 12px;
-    color: var(--text-light);
+    color: rgba(255, 255, 255, 0.9);
     margin-bottom: 10px;
     line-height: 1.4;
     display: -webkit-box;
@@ -830,19 +779,19 @@ header.show {
 .product-price {
     font-size: 15px;
     font-weight: 700;
-    color: var(--primary-gold);
+    color: var(--gold-light);
     font-family: 'Roboto Slab', serif;
 }
 
 .price-unit {
     font-size: 11px;
-    color: var(--text-light);
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .product-category {
     font-size: 11px;
-    color: var(--primary-gold);
-    background: rgba(201, 162, 39, 0.1);
+    color: var(--gold-light);
+    background: rgba(201, 162, 39, 0.2);
     padding: 2px 8px;
     border-radius: 10px;
     display: inline-block;
@@ -1093,31 +1042,17 @@ header.show {
         padding: 9px 40px 9px 15px;
     }
     
-    .breadcrumb {
-        padding: 100px 20px 25px;
+    .filter-header {
+        padding: 90px 20px 20px;
         margin-top: 65px;
     }
     
-    .breadcrumb-item {
-        font-size: 14px;
-    }
-    
-    .filter-section .section-title-wrapper {
-        height: 100px;
-        min-height: 100px;
-        padding: 25px 20px !important;
-    }
-    
-    .filter-section .section-title-wrapper h2 {
-        font-size: 20px !important;
-    }
-    
-    .filter-section .section-title-wrapper .subtitle {
-        font-size: 13px !important;
+    .filter-title {
+        font-size: 18px;
     }
     
     .filter-controls {
-        padding: 20px;
+        padding: 20px 20px 0;
     }
     
     .filter-select {
@@ -1139,11 +1074,11 @@ header.show {
     }
     
     .product-card {
-        height: 350px;
+        height: 320px;
     }
     
     .product-image-container {
-        height: 200px;
+        height: 180px;
     }
     
     .product-name {
@@ -1216,17 +1151,17 @@ header.show {
         font-size: 13px;
     }
     
-    .breadcrumb {
-        padding: 80px 12px 15px;
+    .filter-header {
+        padding: 70px 12px 12px;
         margin-top: 55px;
     }
     
-    .breadcrumb-item {
-        font-size: 12px;
+    .filter-title {
+        font-size: 15px;
     }
     
     .filter-controls {
-        padding: 12px 8px;
+        padding: 12px 8px 0;
     }
     
     .filter-select {
@@ -1241,11 +1176,11 @@ header.show {
     }
     
     .product-card {
-        height: 300px;
+        height: 280px;
     }
     
     .product-image-container {
-        height: 160px;
+        height: 150px;
     }
     
     .product-name {
@@ -1324,39 +1259,21 @@ header.show {
     </div>
 </header>
 
-<!-- Breadcrumb -->
-<section class="breadcrumb">
-    <div class="breadcrumb-content">
-        <div class="breadcrumb-item">
-            <a href="index.html"><i class="fas fa-home"></i> Home</a>
+<!-- Filter Header - Category (Usage) Display -->
+<section class="filter-header" id="filterHeader">
+    <div class="filter-header-content">
+        <div class="filter-title" id="filterTitle">
+            <span id="categoryText">All Natural Stone Products</span>
+            <span id="usageText"></span>
         </div>
-        <div class="breadcrumb-divider">
-            <i class="fas fa-chevron-right"></i>
-        </div>
-        <div class="breadcrumb-item active">
-            All Products
-        </div>
+        <button class="filter-toggle-btn" id="filterToggleBtn" title="Show Filters">
+            <i class="fas fa-filter"></i>
+        </button>
     </div>
 </section>
 
-<!-- Header Info - Category (Usage) Flex Display -->
-<section class="header-info" id="headerInfo">
-    <div class="info-flex">
-        <div class="category-display" id="categoryDisplay">
-            <i class="fas fa-gem"></i>
-            <span class="category-text" id="categoryText">All Products</span>
-            <span class="usage-text" id="usageText"></span>
-        </div>
-    </div>
-</section>
-
-<!-- Filter Section -->
-<section class="filter-section" id="filterSection">
-    <div class="section-title-wrapper">
-        <h2><i class="fas fa-filter"></i> Filter Products</h2>
-        <p class="subtitle">Find the perfect stone for your project</p>
-    </div>
-    
+<!-- Filters Section - Hide/Show -->
+<section class="filters-section" id="filtersSection">
     <div class="filter-controls">
         <select id="categoryFilter" class="filter-select">
             <option value="all">All Categories</option>
@@ -1396,7 +1313,7 @@ header.show {
             <!-- Filter tags will be added here -->
         </div>
         <button class="clear-all-btn" id="clearAllFiltersBtn">
-            <i class="fas fa-times"></i> Clear All
+            <i class="fas fa-times"></i> Clear All Filters
         </button>
     </div>
 </section>
@@ -1406,7 +1323,7 @@ header.show {
     <div class="section-header">
         <h2>
             <i class="fas fa-gem"></i> 
-            <span id="productsTitle">Natural Stone Products</span>
+            <span id="productsTitle">Premium Natural Stones</span>
         </h2>
         <div class="product-count" id="productsCount">
             0 products found
@@ -2000,6 +1917,27 @@ function formatPrice(price, unit = 'piece') {
 }
 
 // ============================================
+// FILTER TOGGLE FUNCTION
+// ============================================
+
+function toggleFilters() {
+    const filtersSection = document.getElementById('filtersSection');
+    const filterToggleBtn = document.getElementById('filterToggleBtn');
+    
+    filtersSection.classList.toggle('expanded');
+    
+    if (filtersSection.classList.contains('expanded')) {
+        filterToggleBtn.innerHTML = '<i class="fas fa-times"></i>';
+        filterToggleBtn.title = 'Hide Filters';
+        filterToggleBtn.classList.add('active');
+    } else {
+        filterToggleBtn.innerHTML = '<i class="fas fa-filter"></i>';
+        filterToggleBtn.title = 'Show Filters';
+        filterToggleBtn.classList.remove('active');
+    }
+}
+
+// ============================================
 // LOAD SMART FILTERS
 // ============================================
 
@@ -2294,15 +2232,15 @@ function updateCategoryDisplay() {
     const productsTitle = document.getElementById('productsTitle');
     
     // Reset
-    categoryText.textContent = 'All Products';
+    categoryText.textContent = 'All Natural Stone Products';
     usageText.textContent = '';
-    productsTitle.textContent = 'Natural Stone Products';
+    productsTitle.textContent = 'Premium Natural Stones';
     
     // Update based on filters
     if (currentCategory !== 'all' && currentUsageFilter !== 'all') {
         // Both category and usage filters are selected
         categoryText.textContent = currentCategory;
-        usageText.textContent = `(${currentUsageFilter})`;
+        usageText.textContent = ` (${currentUsageFilter})`;
         productsTitle.textContent = `${currentCategory} (${currentUsageFilter})`;
     } else if (currentCategory !== 'all') {
         // Only category filter is selected
@@ -2312,14 +2250,6 @@ function updateCategoryDisplay() {
         // Only usage filter is selected
         categoryText.textContent = currentUsageFilter;
         productsTitle.textContent = `Products for ${currentUsageFilter}`;
-    }
-    
-    // Show/hide header info based on filters
-    const headerInfo = document.getElementById('headerInfo');
-    if (currentCategory !== 'all' || currentUsageFilter !== 'all') {
-        headerInfo.style.display = 'block';
-    } else {
-        headerInfo.style.display = 'none';
     }
 }
 
@@ -2456,15 +2386,15 @@ function displayProducts(products) {
                  loading="lazy">
         `).join('');
         
-        // Get first usage for display
-        const firstUsage = product.usage ? product.usage.split(',')[0].trim() : 'General Use';
-        
         return `
             <a href="product-details.html?id=${encodeURIComponent(product.id)}" class="product-card" data-id="${product.id}">
                 <div class="product-image-container">
                     <div class="image-slideshow" id="slideshow-${product.id}">
                         ${imagesHTML}
                     </div>
+                    
+                    <!-- Black shadow overlay -->
+                    <div class="product-image-overlay"></div>
                     
                     <!-- Add to Cart Button -->
                     <div class="product-actions">
@@ -2486,8 +2416,6 @@ function displayProducts(products) {
                         <div class="product-price">${formattedPrice}</div>
                         ${product.price_unit ? `<div class="price-unit">per ${product.price_unit}</div>` : ''}
                     </div>
-                    
-                    ${product.category ? `<div class="product-category">${product.category}</div>` : ''}
                 </div>
             </a>
         `;
@@ -2776,6 +2704,12 @@ function handleScroll() {
 // ============================================
 
 function setupEventListeners() {
+    // Filter toggle button
+    const filterToggleBtn = document.getElementById('filterToggleBtn');
+    if (filterToggleBtn) {
+        filterToggleBtn.addEventListener('click', toggleFilters);
+    }
+    
     // Filter event listeners
     const filterIds = ['categoryFilter', 'priceFilter', 'usageFilter', 'colorFilter', 'sortFilter'];
     
@@ -2897,6 +2831,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     window.quickAddToCart = quickAddToCart;
     window.clearAllFilters = clearAllFilters;
     window.removeFilter = removeFilter;
+    window.toggleFilters = toggleFilters;
 });
 </script>
 </body>
