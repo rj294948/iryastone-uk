@@ -492,7 +492,7 @@
         .order-item-image img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
         }
         
         .order-item-details {
@@ -507,16 +507,23 @@
             line-height: 1.3;
         }
         
-        .order-item-quantity {
+        .order-item-meta {
             font-size: 11px;
             color: var(--text-light);
             margin-bottom: 5px;
+            line-height: 1.3;
         }
         
         .order-item-price {
             font-size: 13px;
             font-weight: 600;
             color: var(--primary-gold);
+        }
+        
+        .order-item-total {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--stone-dark);
         }
         
         .summary-row {
@@ -566,6 +573,48 @@
             font-size: 18px;
             font-weight: 700;
             color: var(--primary-gold);
+        }
+        
+        /* ============================================
+           BUY NOW SECTION
+           ============================================ */
+        .buynow-section {
+            background: linear-gradient(135deg, rgba(201, 162, 39, 0.1), rgba(240, 215, 124, 0.05));
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary-gold);
+        }
+        
+        .buynow-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .buynow-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--primary-gold);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        
+        .buynow-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--stone-dark);
+        }
+        
+        .buynow-message {
+            font-size: 12px;
+            color: var(--text-light);
+            line-height: 1.4;
         }
         
         /* ============================================
@@ -997,7 +1046,7 @@
 
 <!-- Header -->
 <header id="mainHeader">
-    <a href="cart.html" class="back-btn">
+    <a href="cart.html" class="back-btn" id="backButton">
         <i class="fas fa-arrow-left"></i>
         <span>Back</span>
     </a>
@@ -1024,6 +1073,19 @@
     <div class="page-header">
         <h1><i class="fas fa-shopping-bag"></i> Secure Checkout</h1>
         <p>Complete your purchase with our secure checkout process</p>
+    </div>
+    
+    <!-- Buy Now Section (Only shown for Buy Now flow) -->
+    <div class="buynow-section" id="buyNowSection" style="display: none;">
+        <div class="buynow-header">
+            <div class="buynow-icon">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <div>
+                <div class="buynow-title">Buy Now Checkout</div>
+                <div class="buynow-message">You're purchasing a single item directly from product page</div>
+            </div>
+        </div>
     </div>
     
     <div class="checkout-container">
@@ -1110,7 +1172,7 @@
                 </div>
                 
                 <div style="margin-top: 30px; display: flex; gap: 10px;">
-                    <a href="cart.html" class="btn btn-secondary" style="flex: 1;">
+                    <a href="cart.html" class="btn btn-secondary" style="flex: 1;" id="backToCartButton">
                         <i class="fas fa-arrow-left"></i> Back to Cart
                     </a>
                     <button class="btn btn-primary" style="flex: 2;" onclick="goToStep(2)">
@@ -1394,7 +1456,9 @@ let orderData = {
     shipping: 0,
     tax: 0,
     total: 0,
-    advancePayment: 0
+    advancePayment: 0,
+    isBuyNow: false,
+    buyNowProduct: null
 };
 
 // ============================================
@@ -1404,8 +1468,23 @@ document.addEventListener('DOMContentLoaded', async function() {
     console.log('Checkout page initializing...');
     
     try {
-        // Load cart data
-        await loadCartData();
+        // Check if this is a Buy Now flow
+        const urlParams = new URLSearchParams(window.location.search);
+        const isBuyNow = urlParams.get('buynow') === 'true';
+        const userId = urlParams.get('user');
+        
+        if (userId) {
+            sessionStorage.setItem('irya_checkout_user_id', userId);
+        }
+        
+        if (isBuyNow) {
+            // This is a Buy Now flow
+            orderData.isBuyNow = true;
+            await loadBuyNowData();
+        } else {
+            // This is regular cart checkout
+            await loadCartData();
+        }
         
         // Load saved addresses
         await loadSavedAddresses();
@@ -1461,10 +1540,93 @@ function setupScrollHandling() {
 }
 
 // ============================================
+// BUY NOW DATA FUNCTIONS
+// ============================================
+async function loadBuyNowData() {
+    try {
+        console.log('Loading Buy Now data...');
+        
+        // Show Buy Now section
+        document.getElementById('buyNowSection').style.display = 'block';
+        
+        // Update back button to go to product page
+        const backButton = document.getElementById('backButton');
+        const backToCartButton = document.getElementById('backToCartButton');
+        
+        if (backButton) {
+            backButton.href = 'javascript:history.back()';
+        }
+        
+        if (backToCartButton) {
+            backToCartButton.href = 'javascript:history.back()';
+            backToCartButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Product';
+        }
+        
+        // Get user ID from session storage
+        const userId = sessionStorage.getItem('irya_checkout_user_id') || 
+                      localStorage.getItem('irya_guest_id') || 
+                      'guest_unknown';
+        
+        // Load Buy Now product from localStorage
+        const buyNowKey = 'irya_buynow_cart_' + userId;
+        const buyNowData = localStorage.getItem(buyNowKey);
+        
+        if (!buyNowData) {
+            throw new Error('No Buy Now item found');
+        }
+        
+        const buyNowItems = JSON.parse(buyNowData);
+        
+        if (!buyNowItems || buyNowItems.length === 0) {
+            throw new Error('No Buy Now item found');
+        }
+        
+        // Get the Buy Now product
+        const buyNowItem = buyNowItems[0];
+        orderData.buyNowProduct = buyNowItem;
+        
+        // Process Buy Now item
+        orderData.items = [{
+            id: buyNowItem.id,
+            uniqueId: buyNowItem.uniqueId || buyNowItem.id,
+            name: buyNowItem.stone_name || buyNowItem.name || 'Stone Product',
+            price: parseFloat(buyNowItem.price) || 0,
+            quantity: buyNowItem.quantity || 1,
+            image: buyNowItem.image || getDefaultImage(buyNowItem.category),
+            category: buyNowItem.category || '',
+            calculationData: buyNowItem.calculationData || null,
+            customRequirements: buyNowItem.customRequirements || '',
+            isBuyNow: true
+        }];
+        
+        // Calculate totals
+        calculateOrderTotals();
+        
+        // Update cart badge
+        updateCartBadge();
+        
+        // Render order items
+        renderOrderItems();
+        
+        console.log('Buy Now data loaded successfully:', orderData.items[0]);
+        
+    } catch (error) {
+        console.error('Error loading Buy Now data:', error);
+        showError('Buy Now item not found. Please try again.');
+        // Redirect back after 3 seconds
+        setTimeout(() => {
+            window.history.back();
+        }, 3000);
+    }
+}
+
+// ============================================
 // CART DATA FUNCTIONS
 // ============================================
 async function loadCartData() {
     try {
+        console.log('Loading cart data...');
+        
         // Get user data
         const userData = localStorage.getItem('irya_stone_user');
         const currentUser = userData ? JSON.parse(userData) : null;
@@ -1492,7 +1654,10 @@ async function loadCartData() {
             price: parseFloat(item.price) || 0,
             quantity: item.quantity || 1,
             image: item.image || getDefaultImage(item.category),
-            category: item.category || ''
+            category: item.category || '',
+            calculationData: item.calculationData || null,
+            customRequirements: item.customRequirements || '',
+            isBuyNow: false
         }));
         
         // Calculate totals
@@ -1504,16 +1669,36 @@ async function loadCartData() {
         // Render order items
         renderOrderItems();
         
+        console.log('Cart data loaded successfully. Items:', orderData.items.length);
+        
     } catch (error) {
         console.error('Error loading cart:', error);
         showError('Your cart is empty. Please add items first.');
+        // Redirect to cart page after 3 seconds
+        setTimeout(() => {
+            window.location.href = 'cart.html';
+        }, 3000);
     }
 }
 
 function calculateOrderTotals() {
     // Calculate subtotal
     orderData.subtotal = orderData.items.reduce((total, item) => {
-        return total + (item.price * item.quantity);
+        let itemTotal = item.price * item.quantity;
+        
+        // If there's calculation data (area/weight based), calculate accordingly
+        if (item.calculationData) {
+            const calc = item.calculationData;
+            if (calc.mode === 'area') {
+                const area = (calc.length || 1) * (calc.width || 1);
+                itemTotal = item.price * area * item.quantity;
+            } else if (calc.mode === 'weight') {
+                const weight = calc.weight || 1;
+                itemTotal = item.price * weight * item.quantity;
+            }
+        }
+        
+        return total + itemTotal;
     }, 0);
     
     // Calculate shipping (free over £500, otherwise £25)
@@ -1576,14 +1761,37 @@ function renderOrderItems() {
     const container = document.getElementById('orderItems');
     
     if (orderData.items.length === 0) {
-        container.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 20px;">No items in cart</p>';
+        container.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 20px;">No items in order</p>';
         return;
     }
     
     let itemsHTML = '';
     
     orderData.items.forEach(item => {
-        const itemTotal = item.price * item.quantity;
+        let itemTotal = item.price * item.quantity;
+        let metaInfo = '';
+        
+        // If there's calculation data, calculate accordingly
+        if (item.calculationData) {
+            const calc = item.calculationData;
+            if (calc.mode === 'area') {
+                const area = (calc.length || 1) * (calc.width || 1);
+                itemTotal = item.price * area * item.quantity;
+                metaInfo = `${area.toFixed(2)} sq ft × ${item.quantity}`;
+            } else if (calc.mode === 'weight') {
+                const weight = calc.weight || 1;
+                itemTotal = item.price * weight * item.quantity;
+                metaInfo = `${weight.toFixed(2)} kg × ${item.quantity}`;
+            }
+        }
+        
+        if (!metaInfo) {
+            metaInfo = `Quantity: ${item.quantity}`;
+        }
+        
+        if (item.customRequirements) {
+            metaInfo += ` · Custom order`;
+        }
         
         itemsHTML += `
             <div class="order-item">
@@ -1593,8 +1801,9 @@ function renderOrderItems() {
                 </div>
                 <div class="order-item-details">
                     <div class="order-item-name">${item.name}</div>
-                    <div class="order-item-quantity">Quantity: ${item.quantity}</div>
+                    <div class="order-item-meta">${metaInfo}</div>
                     <div class="order-item-price">${formatPrice(itemTotal)}</div>
+                    ${item.isBuyNow ? `<div class="order-item-total" style="color: var(--primary-gold); font-size: 11px; margin-top: 2px;"><i class="fas fa-bolt"></i> Buy Now</div>` : ''}
                 </div>
             </div>
         `;
@@ -1636,6 +1845,21 @@ function updateReviewContent() {
     
     reviewContent.innerHTML = `
         <div style="display: grid; gap: 15px;">
+            <!-- Order Type -->
+            ${orderData.isBuyNow ? `
+                <div style="padding: 15px; background: linear-gradient(135deg, rgba(201, 162, 39, 0.1), rgba(240, 215, 124, 0.05)); border-radius: 8px; border-left: 4px solid var(--primary-gold);">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 24px; height: 24px; background: var(--primary-gold); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px;">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 13px; font-weight: 600; color: var(--stone-dark);">Buy Now Order</div>
+                            <div style="font-size: 11px; color: var(--text-light);">Direct purchase from product page</div>
+                        </div>
+                    </div>
+                </div>
+            ` : ''}
+            
             <!-- Shipping Details -->
             <div style="padding: 15px; background: var(--bg-light); border-radius: 8px;">
                 <h4 style="margin-bottom: 10px; font-size: 14px; color: var(--stone-dark);">Shipping Details</h4>
@@ -1877,10 +2101,16 @@ async function placeOrder() {
                 const orderId = 'order_' + Date.now();
                 const orderNumber = 'IRYA-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
                 
+                // Get user ID
+                const userData = localStorage.getItem('irya_stone_user');
+                const currentUser = userData ? JSON.parse(userData) : null;
+                const userId = currentUser ? currentUser.uid : localStorage.getItem('irya_guest_id') || 'guest_unknown';
+                
                 // Prepare order object
                 const orderObj = {
                     orderId: orderId,
                     orderNumber: orderNumber,
+                    userId: userId,
                     items: orderData.items,
                     subtotal: orderData.subtotal,
                     shipping: orderData.shipping,
@@ -1905,6 +2135,7 @@ async function placeOrder() {
                     paymentStatus: selectedPaymentMethod === 'bank' ? 'pending' : 'paid',
                     orderStatus: selectedPaymentMethod === 'bank' ? 'payment_pending' : 'confirmed',
                     notes: document.getElementById('orderNotes').value,
+                    isBuyNow: orderData.isBuyNow,
                     createdAt: new Date().toISOString(),
                     paymentReference: selectedPaymentMethod === 'bank' ? document.getElementById('bankReference').textContent : null
                 };
@@ -1912,8 +2143,8 @@ async function placeOrder() {
                 // Save order to localStorage
                 await saveOrder(orderObj);
                 
-                // Clear cart
-                clearCart();
+                // Clear appropriate cart/buy now data
+                clearOrderData();
                 
                 // Hide processing modal
                 processingModal.style.display = 'none';
@@ -1942,12 +2173,36 @@ async function placeOrder() {
     }
 }
 
+function clearOrderData() {
+    // Get user ID
+    const userData = localStorage.getItem('irya_stone_user');
+    const currentUser = userData ? JSON.parse(userData) : null;
+    const userId = currentUser ? currentUser.uid : localStorage.getItem('irya_guest_id') || 'guest_unknown';
+    
+    if (orderData.isBuyNow) {
+        // Clear Buy Now data
+        const buyNowKey = 'irya_buynow_cart_' + userId;
+        localStorage.removeItem(buyNowKey);
+        sessionStorage.removeItem('irya_current_buynow');
+        sessionStorage.removeItem('irya_is_buynow_flow');
+        sessionStorage.removeItem('irya_buynow_product_id');
+        sessionStorage.removeItem('irya_buynow_quantity');
+        sessionStorage.removeItem('irya_buynow_calc_data');
+        sessionStorage.removeItem('irya_buynow_custom_req');
+    } else {
+        // Clear regular cart data
+        const cartKey = 'irya_cart_' + userId;
+        localStorage.removeItem(cartKey);
+    }
+    
+    // Update cart badge
+    updateCartBadge();
+}
+
 async function saveOrder(orderData) {
     try {
-        // Get user data
-        const userData = localStorage.getItem('irya_stone_user');
-        const currentUser = userData ? JSON.parse(userData) : null;
-        const userId = currentUser ? currentUser.uid : localStorage.getItem('irya_guest_id') || 'guest_unknown';
+        // Get user ID
+        const userId = orderData.userId;
         
         // Save to user's orders
         const ordersKey = 'irya_user_orders_' + userId;
@@ -1972,20 +2227,6 @@ async function saveOrder(orderData) {
     }
 }
 
-function clearCart() {
-    // Get user data
-    const userData = localStorage.getItem('irya_stone_user');
-    const currentUser = userData ? JSON.parse(userData) : null;
-    const userId = currentUser ? currentUser.uid : localStorage.getItem('irya_guest_id') || 'guest_unknown';
-    
-    // Clear cart
-    const cartKey = 'irya_cart_' + userId;
-    localStorage.removeItem(cartKey);
-    
-    // Update cart badge
-    updateCartBadge();
-}
-
 // ============================================
 // MODAL FUNCTIONS
 // ============================================
@@ -2002,6 +2243,7 @@ function showSuccessModal(orderData) {
         <p><strong>Advance Paid:</strong> ${formatPrice(orderData.advancePayment)}</p>
         <p><strong>Remaining:</strong> ${formatPrice(orderData.remainingPayment)}</p>
         <p><strong>Payment Method:</strong> ${selectedPaymentMethod === 'stripe' ? 'Credit/Debit Card' : 'PayPal'}</p>
+        <p><strong>Order Type:</strong> ${orderData.isBuyNow ? 'Buy Now' : 'Cart Checkout'}</p>
         <p style="color: var(--success-green); margin-top: 8px;">
             <i class="fas fa-check-circle"></i> Advance payment confirmed
         </p>
@@ -2016,6 +2258,7 @@ function showBankModal(orderData) {
     
     bankDetails.innerHTML = `
         <p><strong>Order Number:</strong> ${orderData.orderNumber}</p>
+        <p><strong>Order Type:</strong> ${orderData.isBuyNow ? 'Buy Now' : 'Cart Checkout'}</p>
         <p><strong>Advance Amount:</strong> ${formatPrice(orderData.advancePayment)}</p>
         <p><strong>Bank:</strong> HSBC UK</p>
         <p><strong>Account:</strong> IRYA STONE LTD</p>
@@ -2032,12 +2275,13 @@ function showBankModal(orderData) {
 
 function copyBankDetails() {
     const detailsText = `IRYA STONE Bank Transfer Details:
-Amount: ${document.querySelector('#bankModalDetails p:nth-child(2)').textContent.replace('Advance Amount: ', '')}
+Order Number: ${document.querySelector('#bankModalDetails p:nth-child(1)').textContent.replace('Order Number: ', '')}
+Advance Amount: ${document.querySelector('#bankModalDetails p:nth-child(3)').textContent.replace('Advance Amount: ', '')}
 Bank: HSBC UK
 Account: IRYA STONE LTD
 Account No: 12345678
 Sort Code: 40-04-15
-Reference: ${document.querySelector('#bankModalDetails p:nth-child(6)').textContent.replace('Reference: ', '')}`;
+Reference: ${document.querySelector('#bankModalDetails p:nth-child(7)').textContent.replace('Reference: ', '')}`;
     
     navigator.clipboard.writeText(detailsText).then(() => {
         showNotification('Bank details copied to clipboard!');
@@ -2060,6 +2304,7 @@ function closeBankModal() {
         <p><strong>Advance Amount:</strong> ${formatPrice(orderData.advancePayment || 0)}</p>
         <p><strong>Payment Method:</strong> Bank Transfer</p>
         <p><strong>Payment Reference:</strong> ${orderData.paymentReference || 'N/A'}</p>
+        <p><strong>Order Type:</strong> ${orderData.isBuyNow ? 'Buy Now' : 'Cart Checkout'}</p>
         <p style="color: var(--warning-orange); margin-top: 8px;">
             <i class="fas fa-clock"></i> Complete bank transfer to confirm order
         </p>
@@ -2136,6 +2381,7 @@ function showError(message) {
 
 async function loadSavedAddresses() {
     try {
+        // Get user ID
         const userData = localStorage.getItem('irya_stone_user');
         const currentUser = userData ? JSON.parse(userData) : null;
         const userId = currentUser ? currentUser.uid : localStorage.getItem('irya_guest_id') || 'guest_unknown';
