@@ -112,7 +112,10 @@ header.show {
     font-family: 'Roboto Slab', serif;
 }
 
-/* Search Box */
+/* ============================================
+   UPDATED SEARCH BAR - Home Page Style
+============================================ */
+
 .search-box {
     flex: 1;
     margin: 0 10px;
@@ -1379,7 +1382,7 @@ header.show {
         <span>IRYA STONE</span>
     </div>
 
-    <!-- Search -->
+    <!-- Search - UPDATED: Home page style -->
     <div class="search-box">
         <input type="text" placeholder="Search for sandstone, kota stone..." id="searchInput">
         <i class="fas fa-search" id="searchIcon"></i>
@@ -2845,7 +2848,7 @@ function loadDefaultProducts() {
 }
 
 // ============================================
-// SEARCH FUNCTIONALITY
+// UPDATED SEARCH FUNCTIONALITY - Home Page Style
 // ============================================
 
 function searchProducts(query) {
@@ -2859,7 +2862,7 @@ function searchProducts(query) {
         product.stone_name.toLowerCase().includes(query.toLowerCase()) ||
         (product.category && product.category.toLowerCase().includes(query.toLowerCase())) ||
         (product.description && product.description.toLowerCase().includes(query.toLowerCase())) ||
-        (product.color && color.toLowerCase().includes(query.toLowerCase()))
+        (product.color && product.color.toLowerCase().includes(query.toLowerCase()))
     ).slice(0, 8);
     
     if (filtered.length > 0) {
@@ -2993,7 +2996,7 @@ function handleScroll() {
 }
 
 // ============================================
-// EVENT LISTENERS SETUP
+// EVENT LISTENERS SETUP - UPDATED SEARCH
 // ============================================
 
 function setupEventListeners() {
@@ -3039,12 +3042,16 @@ function setupEventListeners() {
         }
     });
     
-    // Search functionality
+    // ============================================
+    // UPDATED SEARCH FUNCTIONALITY - Home Page Style
+    // ============================================
+    
     const searchInput = document.getElementById('searchInput');
     const searchIcon = document.getElementById('searchIcon');
     const searchResults = document.getElementById('searchResults');
     
     if (searchInput && searchIcon) {
+        // Search icon click
         searchIcon.addEventListener('click', () => {
             if (searchInput.value.trim()) {
                 searchProducts(searchInput.value);
@@ -3053,12 +3060,14 @@ function setupEventListeners() {
             }
         });
         
+        // Enter key press
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && searchInput.value.trim()) {
                 searchProducts(searchInput.value);
             }
         });
         
+        // Real-time search with debounce
         let searchTimeout;
         searchInput.addEventListener('input', function() {
             clearTimeout(searchTimeout);
@@ -3072,6 +3081,15 @@ function setupEventListeners() {
                 hideSearchResults();
             }
         });
+        
+        // Focus on search input when clicking search in bottom nav
+        const searchNavBtn = document.querySelector('.nav-btn[onclick*="searchInput"]');
+        if (searchNavBtn) {
+            searchNavBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                searchInput.focus();
+            });
+        }
     }
     
     // Close search results when clicking outside
