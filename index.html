@@ -1683,42 +1683,6 @@ let availableUses = [];
 let availableColors = [];
 
 // ============================================
-// CRITICAL FIX: AUTO-ADD PROTECTION
-// ============================================
-
-// Clear ALL old guest data COMPLETELY
-function nuclearClearGuestData() {
-    console.log('🚨 NUCLEAR CLEAR: Removing ALL guest data');
-    
-    try {
-        // Get all keys
-        const allKeys = Object.keys(localStorage);
-        
-        // Remove ALL guest related data
-        allKeys.forEach(key => {
-            if (key.includes('guest') || 
-                key.includes('cart') || 
-                key === 'irya_stone_user') {
-                localStorage.removeItem(key);
-                console.log(`Removed: ${key}`);
-            }
-        });
-        
-        // Set fresh clean IDs
-        localStorage.setItem('irya_guest_id', 'guest_user');
-        localStorage.setItem('irya_cart_guest_id', 'cart_guest_user');
-        
-        console.log('✅ Guest data completely cleared');
-        
-        // Clear session storage too
-        sessionStorage.clear();
-        
-    } catch (error) {
-        console.error('Nuclear clear error:', error);
-    }
-}
-
-// ============================================
 // FIXED AUTH SYSTEM
 // ============================================
 
@@ -1732,9 +1696,6 @@ class AuthSystem {
     }
     
     async init() {
-        // FIRST: Nuclear clear
-        nuclearClearGuestData();
-        
         this.checkLocalStorage();
         await this.checkFirebaseAuth();
         this.updateAuthUI();
@@ -1801,7 +1762,7 @@ class AuthSystem {
         
         let guestId = localStorage.getItem(this.guestIdKey);
         if (!guestId) {
-            guestId = 'guest_user';
+            guestId = 'guest_' + Date.now();
             localStorage.setItem(this.guestIdKey, guestId);
         }
         return guestId;
@@ -1814,21 +1775,10 @@ class AuthSystem {
         
         let guestId = localStorage.getItem(this.cartGuestIdKey);
         if (!guestId) {
-            guestId = 'cart_guest_user_' + Date.now();
+            guestId = 'cart_guest_' + Date.now();
             localStorage.setItem(this.cartGuestIdKey, guestId);
         }
         return guestId;
-    }
-    
-    // Reset cart user ID (fix auto-add)
-    resetCartUserId() {
-        if (!this.isLoggedIn()) {
-            const newId = 'cart_guest_user_' + Date.now();
-            localStorage.setItem(this.cartGuestIdKey, newId);
-            console.log('🔄 Cart user ID reset to:', newId);
-            return newId;
-        }
-        return this.currentUser.uid;
     }
     
     getUserName() {
@@ -1847,9 +1797,6 @@ class AuthSystem {
             
             this.currentUser = null;
             localStorage.removeItem(this.authKey);
-            
-            // Reset cart ID on logout
-            this.resetCartUserId();
             
             this.updateAuthUI();
             showNotification('Logged out successfully!');
@@ -1945,7 +1892,7 @@ class AuthSystem {
 }
 
 // ============================================
-// ULTRA FIXED CART SYSTEM - NO AUTO-ADD
+// FIXED CART SYSTEM - MULTIPLE PRODUCTS
 // ============================================
 
 class CartSystem {
@@ -1953,30 +1900,15 @@ class CartSystem {
         this.localCartKey = 'irya_cart';
         this.cartItems = [];
         this.initialized = false;
-        this.preventAutoLoad = false;
     }
     
     async init() {
         if (this.initialized) return this;
         
-        console.log('🛑 Cart system initializing (auto-add protection ON)');
-        
-        // Set flag to prevent auto-add during init
-        this.preventAutoLoad = true;
-        
-        // Generate NEW cart ID for guest (prevent auto-load)
-        if (authSystem && !authSystem.isLoggedIn()) {
-            authSystem.resetCartUserId();
-        }
+        console.log('🛒 Cart system initializing...');
         
         await this.loadCart();
         this.updateCartBadge();
-        
-        // After 1 second, allow normal operations
-        setTimeout(() => {
-            this.preventAutoLoad = false;
-            console.log('✅ Cart system ready, auto-add protection OFF');
-        }, 1000);
         
         this.initialized = true;
         return this;
@@ -1984,7 +1916,7 @@ class CartSystem {
     
     getUserId() {
         if (!authSystem) {
-            return 'fresh_cart_' + Date.now();
+            return 'guest_' + Date.now();
         }
         
         return authSystem.getCartUserId();
@@ -1992,26 +1924,10 @@ class CartSystem {
     
     async loadCart() {
         try {
-            if (this.preventAutoLoad) {
-                console.log('🛑 Auto-load prevented during initialization');
-                this.cartItems = [];
-                return [];
-            }
-            
             const userId = this.getUserId();
             const cartKey = `${this.localCartKey}_${userId}`;
             
             console.log(`Loading cart for user: ${userId}`);
-            
-            // Check if this is a fresh session
-            const isFreshSession = sessionStorage.getItem('fresh_session') === null;
-            if (isFreshSession) {
-                console.log('🆕 Fresh session detected, starting with empty cart');
-                sessionStorage.setItem('fresh_session', 'true');
-                this.cartItems = [];
-                localStorage.removeItem(cartKey);
-                return [];
-            }
             
             // Load from localStorage
             const cartData = localStorage.getItem(cartKey);
@@ -2019,6 +1935,8 @@ class CartSystem {
             if (cartData) {
                 try {
                     const parsedData = JSON.parse(cartData);
+                    
+                    // Handle both array and object format
                     if (Array.isArray(parsedData)) {
                         this.cartItems = parsedData;
                     } else if (parsedData && Array.isArray(parsedData.items)) {
@@ -2029,8 +1947,8 @@ class CartSystem {
                     
                     console.log(`Loaded ${this.cartItems.length} items from localStorage`);
                     
-                    // SECURITY: Remove any items that look auto-added
-                    this.removeSuspiciousItems();
+                    // Validate items
+                    this.validateCartItems();
                     
                 } catch (e) {
                     console.error('Error parsing cart data:', e);
@@ -2041,13 +1959,10 @@ class CartSystem {
                 console.log('No existing cart data found');
             }
             
-            // CRITICAL: Only sync with Firebase for logged-in users
-            if (authSystem && authSystem.isLoggedIn() && firebaseDB && 
-                !userId.includes('guest') && !userId.includes('fresh_cart')) {
+            // Sync with Firebase for logged-in users
+            if (authSystem && authSystem.isLoggedIn() && firebaseDB) {
                 console.log('User is logged in, syncing with Firebase');
                 await this.syncWithFirebase(userId);
-            } else {
-                console.log('Guest user, skipping Firebase sync');
             }
             
             return this.cartItems;
@@ -2059,31 +1974,29 @@ class CartSystem {
         }
     }
     
-    // Remove items that look auto-added
-    removeSuspiciousItems() {
+    // Validate cart items
+    validateCartItems() {
         const originalCount = this.cartItems.length;
         
-        // Remove items with zero price or suspicious data
+        // Remove invalid items
         this.cartItems = this.cartItems.filter(item => {
-            // Keep items with valid data
             return item && 
                    item.id && 
                    item.name &&
                    typeof item.price === 'number' &&
-                   item.price > 0 &&
-                   !item.autoAdded; // Remove if marked as auto-added
+                   item.price >= 0 &&
+                   (item.quantity || 1) > 0;
         });
         
         const removedCount = originalCount - this.cartItems.length;
         if (removedCount > 0) {
-            console.log(`🚫 Removed ${removedCount} suspicious/auto-added items`);
+            console.log(`Removed ${removedCount} invalid items`);
         }
     }
     
     async syncWithFirebase(userId) {
         try {
-            // Only for logged-in users
-            if (userId.includes('guest') || userId.includes('fresh_cart') || !firebaseDB) {
+            if (!userId || userId.includes('guest') || !firebaseDB) {
                 return;
             }
             
@@ -2095,15 +2008,7 @@ class CartSystem {
                 
                 console.log(`Found ${firebaseItems.length} items in Firebase`);
                 
-                // Check if Firebase cart is suspiciously large
-                if (firebaseItems.length > 20) {
-                    console.log('⚠️ Firebase cart has many items, may be corrupted');
-                    // Start fresh with local cart
-                    await this.saveToFirebase(userId);
-                    return;
-                }
-                
-                // Merge with local
+                // Merge with local cart
                 await this.mergeCarts(firebaseItems);
             }
             
@@ -2115,11 +2020,11 @@ class CartSystem {
     async mergeCarts(firebaseItems) {
         if (firebaseItems.length === 0) return;
         
-        const mergedItems = [...firebaseItems];
-        const existingIds = new Set(firebaseItems.map(item => item.id));
+        const mergedItems = [...this.cartItems];
+        const existingIds = new Set(this.cartItems.map(item => item.id));
         
-        // Add only valid local items
-        this.cartItems.forEach(item => {
+        // Add firebase items that don't exist locally
+        firebaseItems.forEach(item => {
             if (item && item.id && !existingIds.has(item.id)) {
                 mergedItems.push(item);
                 existingIds.add(item.id);
@@ -2132,19 +2037,18 @@ class CartSystem {
     
     async saveCart() {
         const userId = this.getUserId();
+        const cartKey = `${this.localCartKey}_${userId}`;
         
         console.log(`Saving cart for user: ${userId}, items: ${this.cartItems.length}`);
         
-        // Remove duplicates and invalid items
+        // Remove duplicates
         this.removeDuplicates();
-        this.removeSuspiciousItems();
         
         // Save to localStorage
-        this.saveToLocalStorage();
+        localStorage.setItem(cartKey, JSON.stringify(this.cartItems));
         
-        // Only save to Firebase for logged-in users
-        if (authSystem && authSystem.isLoggedIn() && firebaseDB && 
-            !userId.includes('guest') && !userId.includes('fresh_cart')) {
+        // Save to Firebase for logged-in users
+        if (authSystem && authSystem.isLoggedIn() && firebaseDB) {
             await this.saveToFirebase(userId);
         }
         
@@ -2152,16 +2056,9 @@ class CartSystem {
         return this.cartItems;
     }
     
-    saveToLocalStorage() {
-        const userId = this.getUserId();
-        const cartKey = `${this.localCartKey}_${userId}`;
-        
-        localStorage.setItem(cartKey, JSON.stringify(this.cartItems));
-    }
-    
     async saveToFirebase(userId) {
         try {
-            if (!userId || userId.includes('guest') || userId.includes('fresh_cart')) {
+            if (!userId || userId.includes('guest')) {
                 return;
             }
             
@@ -2170,7 +2067,7 @@ class CartSystem {
                 items: this.cartItems,
                 updatedAt: new Date().toISOString(),
                 itemCount: this.cartItems.length,
-                totalAmount: this.cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+                totalAmount: this.cartItems.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0)
             }, { merge: true });
             
         } catch (error) {
@@ -2199,22 +2096,16 @@ class CartSystem {
         try {
             console.log(`📦 Adding product to cart: ${product.id} - ${product.stone_name}`);
             
-            // Check if this is a manual add (not auto-add)
-            if (this.preventAutoLoad) {
-                console.log('🛑 Auto-add prevented during initialization');
-                return false;
-            }
-            
-            // Check if product already exists
+            // Check if product already exists in cart
             const existingIndex = this.cartItems.findIndex(item => item.id === product.id);
             
             if (existingIndex !== -1) {
-                // Update quantity
-                this.cartItems[existingIndex].quantity += 1;
+                // Update quantity if product already exists
+                this.cartItems[existingIndex].quantity = (this.cartItems[existingIndex].quantity || 1) + 1;
                 this.cartItems[existingIndex].updatedAt = new Date().toISOString();
-                console.log(`Updated quantity for: ${product.id}`);
+                console.log(`Updated quantity for: ${product.id}, new quantity: ${this.cartItems[existingIndex].quantity}`);
             } else {
-                // Add new item
+                // Add new item to cart
                 const newItem = {
                     id: product.id,
                     name: product.stone_name || 'Stone Product',
@@ -2226,17 +2117,18 @@ class CartSystem {
                     description: product.description || '',
                     quantity: 1,
                     addedAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                    manuallyAdded: true // Mark as manually added
+                    updatedAt: new Date().toISOString()
                 };
                 
                 this.cartItems.push(newItem);
-                console.log(`Added new product: ${product.id}`);
+                console.log(`Added new product to cart: ${product.id}`);
             }
             
             await this.saveCart();
             
-            showNotification(`${product.stone_name} added to cart!`);
+            // Show notification with updated cart count
+            const cartCount = this.getCartCount();
+            showNotification(`${product.stone_name} added to cart! (${cartCount} items)`);
             return true;
             
         } catch (error) {
@@ -2248,6 +2140,14 @@ class CartSystem {
     
     getCartCount() {
         return this.cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
+    }
+    
+    getCartTotal() {
+        return this.cartItems.reduce((total, item) => {
+            const price = parseFloat(item.price) || 0;
+            const quantity = item.quantity || 1;
+            return total + (price * quantity);
+        }, 0);
     }
     
     updateCartBadge() {
@@ -2266,12 +2166,48 @@ class CartSystem {
         }
     }
     
+    // Remove item from cart
+    async removeFromCart(productId) {
+        const initialCount = this.cartItems.length;
+        this.cartItems = this.cartItems.filter(item => item.id !== productId);
+        
+        if (this.cartItems.length < initialCount) {
+            await this.saveCart();
+            console.log(`Removed product: ${productId} from cart`);
+            return true;
+        }
+        return false;
+    }
+    
+    // Update quantity
+    async updateQuantity(productId, newQuantity) {
+        const itemIndex = this.cartItems.findIndex(item => item.id === productId);
+        
+        if (itemIndex !== -1) {
+            if (newQuantity <= 0) {
+                // Remove if quantity is 0 or less
+                return await this.removeFromCart(productId);
+            }
+            
+            this.cartItems[itemIndex].quantity = newQuantity;
+            this.cartItems[itemIndex].updatedAt = new Date().toISOString();
+            await this.saveCart();
+            return true;
+        }
+        return false;
+    }
+    
     // Clear cart completely
     async clearCart() {
         this.cartItems = [];
         await this.saveCart();
         console.log('🧹 Cart cleared completely');
         showNotification('Cart cleared!');
+    }
+    
+    // Get cart items
+    getCartItems() {
+        return [...this.cartItems];
     }
 }
 
@@ -2487,7 +2423,6 @@ function displayCategories(categories) {
     }
     
     const categoriesHTML = categories.map(category => `
-        <!-- Changed from products.html?category to product-details.html?category -->
         <a href="product-details.html?category=${encodeURIComponent(category.name)}" class="category-card">
             <div class="category-image-container">
                 <img src="${category.image}" alt="${category.name}" 
@@ -2556,11 +2491,9 @@ async function loadStoneUses() {
             
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
-                // Check multiple possible fields for usage
                 const usage = data.usage || data.uses || data.application || 'General Use';
                 
                 if (usage && usage.trim() !== '') {
-                    // Handle multiple uses separated by comma
                     const usesArray = usage.split(',').map(u => u.trim()).filter(u => u !== '');
                     
                     usesArray.forEach(singleUse => {
@@ -2587,10 +2520,8 @@ async function loadStoneUses() {
                 }
             });
             
-            // Store uses for filter
             availableUses = Array.from(usesMap.keys());
             
-            // Sort by count
             const uses = Array.from(usesMap.values())
                 .sort((a, b) => b.count - a.count);
             
@@ -2624,7 +2555,6 @@ function displayUses(uses) {
     }
     
     const usesHTML = uses.map(use => `
-        <!-- Changed from products.html?usage to product-details.html?usage -->
         <a href="product-details.html?usage=${encodeURIComponent(use.name)}" class="use-card">
             <div class="use-image-container">
                 <img src="${use.image}" alt="${use.name}" class="use-image"
@@ -2694,25 +2624,21 @@ async function loadSmartFilters() {
         querySnapshot.forEach((doc) => {
             const data = doc.data();
             
-            // Collect categories
             if (data.category && data.category.trim() !== '') {
                 categoriesSet.add(data.category);
             }
             
-            // Collect uses from multiple possible fields
             const usage = data.usage || data.uses || data.application;
             if (usage && usage.trim() !== '') {
                 const usesArray = usage.split(',').map(u => u.trim()).filter(u => u !== '');
                 usesArray.forEach(u => usesSet.add(u));
             }
             
-            // Collect colors
             if (data.color && data.color.trim() !== '') {
                 colorsSet.add(data.color);
             }
         });
         
-        // Update global arrays
         availableCategories = Array.from(categoriesSet).sort();
         availableUses = Array.from(usesSet).sort();
         availableColors = Array.from(colorsSet).sort();
@@ -2723,7 +2649,6 @@ async function loadSmartFilters() {
             colors: availableColors.length
         });
         
-        // Populate filter dropdowns
         populateFilterOptions();
         
     } catch (error) {
@@ -2736,12 +2661,10 @@ function populateFilterOptions() {
     // Category filter
     const categoryFilter = document.getElementById('categoryFilter');
     if (categoryFilter) {
-        // Clear existing options (keep "All Categories")
         while (categoryFilter.options.length > 1) {
             categoryFilter.remove(1);
         }
         
-        // Add categories
         availableCategories.forEach(category => {
             const option = document.createElement('option');
             option.value = category;
@@ -2753,12 +2676,10 @@ function populateFilterOptions() {
     // Usage filter
     const usageFilter = document.getElementById('usageFilter');
     if (usageFilter) {
-        // Clear existing options (keep "All Uses")
         while (usageFilter.options.length > 1) {
             usageFilter.remove(1);
         }
         
-        // Add uses
         availableUses.forEach(use => {
             const option = document.createElement('option');
             option.value = use;
@@ -2770,12 +2691,10 @@ function populateFilterOptions() {
     // Color filter
     const colorFilter = document.getElementById('colorFilter');
     if (colorFilter) {
-        // Clear existing options (keep "All Colors")
         while (colorFilter.options.length > 1) {
             colorFilter.remove(1);
         }
         
-        // Add colors
         availableColors.forEach(color => {
             const option = document.createElement('option');
             option.value = color;
@@ -2817,7 +2736,6 @@ async function loadProductsFromFirebase() {
             }
         }
         
-        // Reset products array
         allProducts = [];
         
         try {
@@ -2833,14 +2751,12 @@ async function loadProductsFromFirebase() {
             
             console.log(`Found ${querySnapshot.size} products`);
             
-            // Use Map to ensure uniqueness by product ID
             const productMap = new Map();
             
             querySnapshot.forEach((doc) => {
                 const productId = doc.id;
                 const data = doc.data();
                 
-                // Skip if we already have this product
                 if (productMap.has(productId)) {
                     return;
                 }
@@ -2868,13 +2784,11 @@ async function loadProductsFromFirebase() {
                     is_active: data.is_active !== undefined ? data.is_active : true
                 };
                 
-                // Only add active products
                 if (product.is_active) {
                     productMap.set(productId, product);
                 }
             });
             
-            // Convert Map to array
             allProducts = Array.from(productMap.values());
             
             console.log(`Loaded ${allProducts.length} unique products from Firebase`);
@@ -2882,7 +2796,6 @@ async function loadProductsFromFirebase() {
             if (allProducts.length === 0) {
                 showNoProducts();
             } else {
-                // Apply all filters client-side
                 applyAllFiltersClientSide();
             }
             
@@ -2911,28 +2824,24 @@ function applyAllFiltersClientSide() {
     
     console.log('Applying filters to', allProducts.length, 'products');
     
-    // Apply category filter
     if (currentCategory !== 'all') {
         filteredProducts = filteredProducts.filter(product => 
             product.category && product.category === currentCategory
         );
     }
     
-    // Apply usage filter
     if (currentUsageFilter !== 'all') {
         filteredProducts = filteredProducts.filter(product => 
             product.usage && product.usage.includes(currentUsageFilter)
         );
     }
     
-    // Apply color filter
     if (currentColorFilter !== 'all') {
         filteredProducts = filteredProducts.filter(product => 
             product.color && product.color === currentColorFilter
         );
     }
     
-    // Apply price filter
     if (currentPriceFilter !== 'all') {
         filteredProducts = filteredProducts.filter(product => {
             const price = product.price || 0;
@@ -2954,7 +2863,6 @@ function applyAllFiltersClientSide() {
         });
     }
     
-    // Apply sorting
     if (currentSort === 'price_low') {
         filteredProducts.sort((a, b) => (a.price || 0) - (b.price || 0));
     } else if (currentSort === 'price_high') {
@@ -2981,11 +2889,9 @@ function displayProducts(products) {
     const productsHTML = products.map(product => {
         const formattedPrice = formatPrice(product.price, product.price_unit);
         
-        // Get product image
         let productImage = getProductImage(product);
         
         return `
-            <!-- Changed from product.html?id to product-details.html?id -->
             <a href="product-details.html?id=${encodeURIComponent(product.id)}" class="image-card">
                 <div class="card-image-container">
                     <img src="${productImage}" 
@@ -2994,7 +2900,6 @@ function displayProducts(products) {
                          onerror="this.src='${getDefaultImage(product.category)}'"
                          loading="lazy">
                     
-                    <!-- Add to Cart Button -->
                     <button class="add-cart-icon" 
                             onclick="event.preventDefault(); event.stopPropagation(); addToCartDirect('${product.id}', event)">
                         <i class="fas fa-cart-plus"></i>
@@ -3060,32 +2965,26 @@ function showDefaultProducts() {
 // ============================================
 
 document.addEventListener('DOMContentLoaded', async function() {
-    console.log('🚀 IRYA STONE Initializing (Auto-add protection ON)');
-    
-    // IMPORTANT: Mark as fresh session
-    if (!sessionStorage.getItem('app_initialized')) {
-        sessionStorage.setItem('app_initialized', 'true');
-        sessionStorage.setItem('fresh_session', 'true');
-    }
+    console.log('🚀 IRYA STONE Initializing...');
     
     // Initialize Firebase
     initializeFirebase();
     
-    // Initialize auth system FIRST
+    // Initialize auth system
     authSystem = new AuthSystem();
     await authSystem.init();
     
-    // Initialize cart system with protection
+    // Initialize cart system
     cartSystem = new CartSystem();
     await cartSystem.init();
     
     console.log('✅ All systems initialized successfully');
     
-    // Load categories and uses FIRST
+    // Load categories and uses
     await loadCategories();
     await loadStoneUses();
     
-    // Load smart filters for dropdowns
+    // Load smart filters
     await loadSmartFilters();
     
     // Load products
@@ -3098,15 +2997,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     window.authSystem = authSystem;
     window.cartSystem = cartSystem;
     window.addToCartDirect = addToCartDirect;
-    
-    // Add emergency clear function
-    window.clearAllCartData = function() {
-        if (confirm('Are you sure you want to clear ALL cart data? This cannot be undone.')) {
-            nuclearClearGuestData();
-            if (cartSystem) cartSystem.clearCart();
-            location.reload();
-        }
-    };
 });
 
 // ============================================
@@ -3146,7 +3036,6 @@ function searchProducts(query) {
             let image = getProductImage(product);
             
             return `
-                <!-- Changed from product.html?id to product-details.html?id -->
                 <a href="product-details.html?id=${encodeURIComponent(product.id)}" class="search-result-item">
                     <div class="search-result-image">
                         <img src="${image}" alt="${product.stone_name}"
@@ -3296,14 +3185,11 @@ function handleScroll() {
     
     if (!header || !bottomNav) return;
     
-    // Clear any existing timeout
     if (debounceTimeout) {
         clearTimeout(debounceTimeout);
     }
     
-    // Debounce the scroll event
     debounceTimeout = setTimeout(() => {
-        // Always show when near top
         if (scrollTop < 50) {
             header.classList.remove('hidden');
             bottomNav.classList.remove('hidden');
@@ -3313,9 +3199,7 @@ function handleScroll() {
             return;
         }
         
-        // Determine scroll direction
         if (scrollTop > lastScrollTop) {
-            // Scrolling DOWN - hide
             if (scrollTop > scrollThreshold && isHeaderVisible) {
                 header.classList.add('hidden');
                 bottomNav.classList.add('hidden');
@@ -3324,7 +3208,6 @@ function handleScroll() {
                 isHeaderVisible = false;
             }
         } else {
-            // Scrolling UP - show smoothly
             if (!isHeaderVisible) {
                 header.classList.remove('hidden');
                 bottomNav.classList.remove('hidden');
@@ -3334,7 +3217,6 @@ function handleScroll() {
             }
         }
         
-        // Add scrolled class when not at top
         if (scrollTop > 100) {
             header.classList.add('scrolled');
             bottomNav.classList.add('scrolled');
@@ -3345,7 +3227,6 @@ function handleScroll() {
         
         lastScrollTop = scrollTop;
         
-        // Update scroll to top button
         const scrollTopBtn = document.getElementById('scrollTopBtn');
         if (scrollTopBtn) {
             if (scrollTop > 300) {
