@@ -18,7 +18,7 @@
 
 <style>
 /* ============================================
-   UPDATED CSS - Home Page Theme & Layout
+   UPDATED CSS - Products Page Theme & Layout
 ============================================ */
 
 :root {
@@ -55,7 +55,7 @@ body {
 }
 
 /* ============================================
-   HEADER - Home Page Style
+   HEADER - Products Page Style
 ============================================ */
 
 header {
@@ -112,7 +112,7 @@ header.show {
     font-family: 'Roboto Slab', serif;
 }
 
-/* Search Box - Home Page Style */
+/* Search Box */
 .search-box {
     flex: 1;
     margin: 0 10px;
@@ -237,7 +237,7 @@ header.show {
     font-size: 13px;
 }
 
-/* User Profile - Home Page Style */
+/* User Profile */
 .user-profile {
     position: relative;
     display: flex;
@@ -349,7 +349,7 @@ header.show {
     color: white !important;
 }
 
-/* Buttons - Home Page Style */
+/* Buttons */
 .signin-btn {
     background: linear-gradient(135deg, var(--primary-gold), var(--gold-dark));
     color: var(--white);
@@ -396,33 +396,116 @@ header.show {
 }
 
 /* ============================================
-   FILTER HEADER - Category (Usage) Display (Home Page Style)
+   PAGE TITLE SECTION - Updated with Gold Gradient
 ============================================ */
 
-.filter-header {
-    padding: 80px 15px 15px;
-    background: var(--white);
+.page-title-section {
+    padding: 80px 15px 20px;
+    background: linear-gradient(135deg, var(--stone-dark) 0%, #2a2a2a 100%);
     margin-top: 60px;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 3px solid var(--primary-gold);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
 }
 
-.filter-header-content {
+.page-title-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(201,162,39,0.1)"/></svg>');
+    background-size: cover;
+    opacity: 0.5;
+}
+
+.page-title-content {
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.page-main-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--white);
+    font-family: 'Roboto Slab', serif;
+    margin-bottom: 8px;
+    line-height: 1.3;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.page-subtitle {
+    font-size: 14px;
+    color: var(--gold-light);
+    line-height: 1.5;
+    font-weight: 500;
+}
+
+/* ============================================
+   FILTER HEADER - FIXED POSITION (No Scroll)
+============================================ */
+
+.filter-header-section {
+    padding: 15px 15px;
+    background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative; /* Changed from sticky to relative */
+    z-index: 99;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.filter-header-flex {
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 15px;
+}
+
+.filter-title-container {
+    flex: 1;
+    min-width: 200px;
 }
 
 .filter-title {
     font-size: 16px;
-    font-weight: 600;
-    color: var(--stone-dark);
+    font-weight: 700;
+    color: var(--white);
     font-family: 'Roboto Slab', serif;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, var(--primary-gold), var(--gold-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.filter-title i {
+    color: var(--primary-gold);
+    font-size: 16px;
+    -webkit-text-fill-color: var(--primary-gold);
+}
+
+.filter-count {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 3px;
+    font-weight: 500;
+}
+
+.filter-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .filter-toggle-btn {
-    background: var(--primary-gold);
+    background: linear-gradient(135deg, var(--primary-gold), var(--gold-dark));
     color: white;
     border: none;
     width: 36px;
@@ -434,32 +517,57 @@ header.show {
     cursor: pointer;
     transition: var(--transition);
     font-size: 14px;
+    box-shadow: 0 3px 8px rgba(201, 162, 39, 0.3);
 }
 
 .filter-toggle-btn:hover {
-    background: var(--gold-dark);
+    background: linear-gradient(135deg, var(--gold-dark), var(--primary-gold));
     transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(201, 162, 39, 0.4);
 }
 
 .filter-toggle-btn.active {
-    background: var(--gold-dark);
+    background: linear-gradient(135deg, var(--gold-dark), var(--primary-gold));
+    transform: rotate(180deg);
+}
+
+.clear-filters-btn {
+    background: transparent;
+    color: var(--gold-light);
+    border: 1px solid var(--primary-gold);
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 500;
+}
+
+.clear-filters-btn:hover {
+    background: var(--primary-gold);
+    color: var(--stone-dark);
+    box-shadow: 0 3px 8px rgba(201, 162, 39, 0.3);
 }
 
 /* ============================================
-   FILTERS SECTION - Hide/Show with Icon
+   FILTERS SECTION - FIXED POSITION (No Scroll)
 ============================================ */
 
 .filters-section {
-    background: var(--white);
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     padding: 0;
     margin: 0;
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.4s ease;
+    border-bottom: 1px solid #dee2e6;
 }
 
 .filters-section.expanded {
-    max-height: 500px;
+    max-height: 300px;
     padding-bottom: 15px;
 }
 
@@ -467,10 +575,10 @@ header.show {
     display: flex;
     overflow-x: auto;
     gap: 8px;
-    padding: 15px 12px 0;
+    padding: 15px 15px 0;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
-    background: var(--bg-light);
+    background: transparent;
 }
 
 .filter-controls::-webkit-scrollbar {
@@ -478,12 +586,12 @@ header.show {
 }
 
 .filter-select {
-    padding: 8px 12px;
-    border-radius: 15px;
-    border: 1px solid #e0e0e0;
+    padding: 10px 15px;
+    border-radius: 20px;
+    border: 2px solid transparent;
     background: var(--white);
     color: var(--text-dark);
-    font-size: 12px;
+    font-size: 13px;
     cursor: pointer;
     min-width: 130px;
     flex-shrink: 0;
@@ -491,27 +599,31 @@ header.show {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c9a227' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
     background-repeat: no-repeat;
-    background-position: right 8px center;
+    background-position: right 12px center;
     background-size: 12px;
-    padding-right: 30px;
+    padding-right: 35px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    font-weight: 500;
 }
 
 .filter-select:focus {
     outline: none;
     border-color: var(--primary-gold);
-    box-shadow: 0 0 0 2px rgba(201, 162, 39, 0.1);
+    box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.15);
 }
 
 .filter-select:hover {
     border-color: var(--primary-gold);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
 /* Selected Filter Tags */
 .selected-filters {
-    padding: 10px 15px 0;
-    background: var(--bg-light);
+    padding: 12px 15px 0;
+    background: transparent;
     display: none;
 }
 
@@ -526,79 +638,74 @@ header.show {
 }
 
 .filter-tag {
-    background: var(--primary-gold);
+    background: linear-gradient(135deg, var(--primary-gold), var(--gold-dark));
     color: white;
     padding: 5px 10px;
-    border-radius: 15px;
+    border-radius: 12px;
     font-size: 11px;
-    font-weight: 500;
+    font-weight: 600;
     display: flex;
     align-items: center;
     gap: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
 }
 
 .filter-tag .remove-tag {
     cursor: pointer;
     font-size: 10px;
-    opacity: 0.8;
+    opacity: 0.9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
 }
 
 .filter-tag .remove-tag:hover {
     opacity: 1;
-}
-
-.clear-all-btn {
-    background: transparent;
-    color: var(--primary-gold);
-    border: 1px solid var(--primary-gold);
-    padding: 5px 12px;
-    border-radius: 15px;
-    font-size: 11px;
-    cursor: pointer;
-    transition: var(--transition);
-    margin-left: auto;
-    margin-top: 10px;
-    display: block;
-}
-
-.clear-all-btn:hover {
-    background: var(--primary-gold);
-    color: white;
+    background: rgba(255,255,255,0.3);
 }
 
 /* ============================================
-   PRODUCTS SECTION - Home Page Grid Layout
+   PRODUCTS SECTION - Main Content Area
 ============================================ */
 
 .products-section {
-    padding: 20px 12px;
+    padding: 20px 15px;
     background: var(--bg-light);
+    min-height: 60vh;
 }
 
 .section-header {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
     margin-bottom: 20px;
+    padding-top: 10px;
 }
 
 .section-header h2 {
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--stone-dark);
     display: flex;
     align-items: center;
     gap: 8px;
+    font-family: 'Roboto Slab', serif;
 }
 
 .section-header h2 i {
     color: var(--primary-gold);
-    font-size: 15px;
+    font-size: 14px;
 }
 
 .section-header .product-count {
     font-size: 12px;
     color: var(--text-light);
+    font-weight: 500;
 }
 
 /* Products Grid - Mobile 2 columns, Desktop 3 columns */
@@ -612,42 +719,50 @@ header.show {
 @media (min-width: 768px) {
     .products-grid {
         grid-template-columns: repeat(3, 1fr);
-        gap: 15px;
+        gap: 18px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .products-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
     }
 }
 
 /* ============================================
-   PRODUCT CARD - Home Page Style with Black Shadow
+   PRODUCT CARD - Enhanced Design
 ============================================ */
 
 .product-card {
     background: var(--white);
-    border-radius: 10px;
+    border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
     transition: var(--transition);
-    border: none;
+    border: 1px solid #f0f0f0;
     position: relative;
     cursor: pointer;
     text-decoration: none;
     color: inherit;
     display: block;
-    height: 300px;
+    height: 320px;
 }
 
 .product-card:hover {
     box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-    transform: translateY(-3px);
+    transform: translateY(-5px);
+    border-color: var(--primary-gold);
 }
 
-/* Product Image Container - Bigger Images with Black Shadow Effect */
+/* Product Image Container */
 .product-image-container {
     width: 100%;
-    height: 170px;
+    height: 180px;
     overflow: hidden;
     position: relative;
-    background: #f5f5f5;
-    border-radius: 10px 10px 0 0;
+    background: linear-gradient(135deg, #f5f5f5 0%, #e9ecef 100%);
+    border-radius: 12px 12px 0 0;
 }
 
 /* Black shadow overlay effect */
@@ -657,14 +772,8 @@ header.show {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.7) 100%);
+    background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.8) 100%);
     z-index: 1;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.product-card:hover .product-image-overlay {
-    opacity: 1;
 }
 
 /* Multiple images slideshow */
@@ -678,13 +787,13 @@ header.show {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    padding: 12px;
+    padding: 15px;
     position: absolute;
     top: 0;
     left: 0;
     opacity: 0;
-    transition: opacity 1s ease-in-out;
-    background: #f8f9fa;
+    transition: opacity 0.8s ease-in-out;
+    background: transparent;
 }
 
 .product-image.active {
@@ -694,8 +803,8 @@ header.show {
 /* Product Actions */
 .product-actions {
     position: absolute;
-    top: 8px;
-    right: 8px;
+    top: 10px;
+    right: 10px;
     display: flex;
     flex-direction: column;
     gap: 5px;
@@ -715,7 +824,7 @@ header.show {
     height: 32px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.95);
-    border: none;
+    border: 1px solid #f0f0f0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -723,31 +832,32 @@ header.show {
     font-size: 13px;
     cursor: pointer;
     transition: var(--transition);
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .action-icon:hover {
     background: var(--primary-gold);
     color: white;
     transform: scale(1.1);
+    border-color: var(--primary-gold);
 }
 
-/* Product Info with Black Background (Home Page Style) */
+/* Product Info */
 .product-info {
-    padding: 12px;
+    padding: 15px;
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    background: linear-gradient(to top, rgba(0,0,0,0.95), transparent);
     color: white;
-    border-radius: 0 0 10px 10px;
+    border-radius: 0 0 12px 12px;
     z-index: 1;
 }
 
 .product-name {
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 6px;
     color: var(--white);
     font-family: 'Roboto Slab', serif;
@@ -759,15 +869,15 @@ header.show {
 }
 
 .product-description {
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.9);
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.85);
     margin-bottom: 10px;
     line-height: 1.4;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    height: 34px;
+    height: 30px;
 }
 
 .product-price-section {
@@ -778,7 +888,7 @@ header.show {
 
 .product-price {
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 800;
     color: var(--gold-light);
     font-family: 'Roboto Slab', serif;
 }
@@ -786,16 +896,7 @@ header.show {
 .price-unit {
     font-size: 11px;
     color: rgba(255, 255, 255, 0.8);
-}
-
-.product-category {
-    font-size: 11px;
-    color: var(--gold-light);
-    background: rgba(201, 162, 39, 0.2);
-    padding: 2px 8px;
-    border-radius: 10px;
-    display: inline-block;
-    margin-top: 5px;
+    font-weight: 500;
 }
 
 /* ============================================
@@ -805,28 +906,35 @@ header.show {
 .no-products {
     grid-column: 1 / -1;
     text-align: center;
-    padding: 50px 20px;
+    padding: 60px 20px;
     color: var(--text-light);
+    background: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    margin-top: 20px;
 }
 
 .no-products i {
-    font-size: 40px;
+    font-size: 42px;
     margin-bottom: 15px;
-    opacity: 0.5;
     color: var(--primary-gold);
+    opacity: 0.7;
 }
 
 .no-products h3 {
-    font-size: 16px;
+    font-size: 18px;
     margin-bottom: 10px;
     color: var(--stone-dark);
+    font-family: 'Roboto Slab', serif;
+    font-weight: 700;
 }
 
 .no-products p {
-    font-size: 13px;
+    font-size: 14px;
     max-width: 300px;
     margin: 0 auto 20px;
     line-height: 1.5;
+    color: var(--text-light);
 }
 
 /* ============================================
@@ -856,10 +964,10 @@ header.show {
     position: fixed;
     top: 15px;
     right: 15px;
-    background: var(--primary-gold);
+    background: linear-gradient(135deg, var(--primary-gold), var(--gold-dark));
     color: white;
-    padding: 10px 15px;
-    border-radius: 6px;
+    padding: 12px 16px;
+    border-radius: 8px;
     box-shadow: var(--shadow-md);
     z-index: 9999;
     transform: translateX(100%);
@@ -867,6 +975,8 @@ header.show {
     max-width: 250px;
     display: none;
     font-size: 13px;
+    font-weight: 500;
+    border-left: 4px solid var(--gold-light);
 }
 
 .notification.show {
@@ -881,18 +991,19 @@ header.show {
     transform: translateX(-50%);
     background: #ff4757;
     color: white;
-    padding: 10px 15px;
-    border-radius: 6px;
+    padding: 12px 16px;
+    border-radius: 8px;
     box-shadow: var(--shadow-md);
     z-index: 9999;
     display: none;
     max-width: 250px;
     text-align: center;
     font-size: 13px;
+    font-weight: 500;
 }
 
 /* ============================================
-   BOTTOM NAVIGATION - Home Page Style
+   BOTTOM NAVIGATION
 ============================================ */
 
 .bottom-nav {
@@ -954,6 +1065,7 @@ header.show {
 .nav-btn.active {
     color: var(--primary-gold);
     background: rgba(255, 255, 255, 0.05);
+    font-weight: 600;
 }
 
 .nav-btn i {
@@ -986,7 +1098,7 @@ header.show {
     right: 15px;
     width: 40px;
     height: 40px;
-    background: var(--primary-gold);
+    background: linear-gradient(135deg, var(--primary-gold), var(--gold-dark));
     color: white;
     border-radius: 50%;
     display: flex;
@@ -997,8 +1109,9 @@ header.show {
     z-index: 998;
     opacity: 0;
     transform: translateY(15px);
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 4px 10px rgba(201, 162, 39, 0.3);
     font-size: 16px;
+    border: 2px solid rgba(255,255,255,0.2);
 }
 
 .scroll-top.visible {
@@ -1007,8 +1120,9 @@ header.show {
 }
 
 .scroll-top:hover {
-    background: var(--gold-dark);
-    transform: translateY(-3px);
+    background: linear-gradient(135deg, var(--gold-dark), var(--primary-gold));
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 6px 15px rgba(201, 162, 39, 0.4);
 }
 
 /* ============================================
@@ -1042,9 +1156,21 @@ header.show {
         padding: 9px 40px 9px 15px;
     }
     
-    .filter-header {
-        padding: 90px 20px 20px;
+    .page-title-section {
+        padding: 90px 20px 25px;
         margin-top: 65px;
+    }
+    
+    .page-main-title {
+        font-size: 26px;
+    }
+    
+    .page-subtitle {
+        font-size: 15px;
+    }
+    
+    .filter-header-section {
+        padding: 15px 20px;
     }
     
     .filter-title {
@@ -1056,13 +1182,14 @@ header.show {
     }
     
     .filter-select {
-        padding: 9px 15px;
-        font-size: 13px;
-        min-width: 150px;
+        padding: 11px 18px;
+        font-size: 14px;
+        min-width: 160px;
+        border-radius: 25px;
     }
     
     .products-section {
-        padding: 30px 20px;
+        padding: 25px 20px;
     }
     
     .section-header h2 {
@@ -1070,15 +1197,15 @@ header.show {
     }
     
     .products-grid {
-        gap: 15px;
+        gap: 18px;
     }
     
     .product-card {
-        height: 320px;
+        height: 350px;
     }
     
     .product-image-container {
-        height: 180px;
+        height: 200px;
     }
     
     .product-name {
@@ -1101,12 +1228,6 @@ header.show {
     
     .nav-btn i {
         font-size: 18px;
-    }
-}
-
-@media (min-width: 1024px) {
-    .products-grid {
-        grid-template-columns: repeat(3, 1fr);
     }
 }
 
@@ -1151,9 +1272,21 @@ header.show {
         font-size: 13px;
     }
     
-    .filter-header {
-        padding: 70px 12px 12px;
+    .page-title-section {
+        padding: 70px 12px 15px;
         margin-top: 55px;
+    }
+    
+    .page-main-title {
+        font-size: 20px;
+    }
+    
+    .page-subtitle {
+        font-size: 13px;
+    }
+    
+    .filter-header-section {
+        padding: 12px 12px;
     }
     
     .filter-title {
@@ -1161,26 +1294,27 @@ header.show {
     }
     
     .filter-controls {
-        padding: 12px 8px 0;
+        padding: 12px 12px 0;
+        gap: 6px;
     }
     
     .filter-select {
-        min-width: 110px;
-        font-size: 11px;
-        padding: 7px 10px;
-        padding-right: 25px;
+        min-width: 115px;
+        font-size: 12px;
+        padding: 8px 12px;
+        padding-right: 30px;
     }
     
     .products-grid {
-        gap: 8px;
+        gap: 10px;
     }
     
     .product-card {
-        height: 280px;
+        height: 300px;
     }
     
     .product-image-container {
-        height: 150px;
+        height: 160px;
     }
     
     .product-name {
@@ -1204,6 +1338,19 @@ header.show {
     
     .nav-btn i {
         font-size: 14px;
+    }
+}
+
+@media (max-width: 360px) {
+    .products-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .product-card {
+        height: 320px;
+        max-width: 280px;
+        margin: 0 auto;
     }
 }
 </style>
@@ -1259,16 +1406,35 @@ header.show {
     </div>
 </header>
 
-<!-- Filter Header - Category (Usage) Display -->
-<section class="filter-header" id="filterHeader">
-    <div class="filter-header-content">
-        <div class="filter-title" id="filterTitle">
-            <span id="categoryText">All Natural Stone Products</span>
-            <span id="usageText"></span>
+<!-- Page Title Section -->
+<section class="page-title-section" id="pageTitleSection">
+    <div class="page-title-content">
+        <h1 class="page-main-title" id="pageMainTitle">Natural Stone Products</h1>
+        <p class="page-subtitle">Premium Sandstone & Kota Stone for Your Home & Commercial Projects</p>
+    </div>
+</section>
+
+<!-- Filter Header Section - FIXED: Won't scroll with page -->
+<section class="filter-header-section" id="filterHeaderSection">
+    <div class="filter-header-flex">
+        <div class="filter-title-container">
+            <div class="filter-title" id="filterTitle">
+                <i class="fas fa-filter"></i>
+                <span id="filterNameText">All Products</span>
+            </div>
+            <div class="filter-count" id="filterCount">
+                0 products found
+            </div>
         </div>
-        <button class="filter-toggle-btn" id="filterToggleBtn" title="Show Filters">
-            <i class="fas fa-filter"></i>
-        </button>
+        
+        <div class="filter-actions">
+            <button class="clear-filters-btn" id="clearAllFiltersBtn" style="display: none;">
+                <i class="fas fa-times"></i> Clear All
+            </button>
+            <button class="filter-toggle-btn" id="filterToggleBtn" title="Show Filters">
+                <i class="fas fa-filter"></i>
+            </button>
+        </div>
     </div>
 </section>
 
@@ -1312,9 +1478,6 @@ header.show {
         <div class="filter-tags" id="filterTags">
             <!-- Filter tags will be added here -->
         </div>
-        <button class="clear-all-btn" id="clearAllFiltersBtn">
-            <i class="fas fa-times"></i> Clear All Filters
-        </button>
     </div>
 </section>
 
@@ -1326,7 +1489,7 @@ header.show {
             <span id="productsTitle">Premium Natural Stones</span>
         </h2>
         <div class="product-count" id="productsCount">
-            0 products found
+            Browse our collection of premium natural stones
         </div>
     </div>
     
@@ -1334,6 +1497,9 @@ header.show {
         <i class="fas fa-search"></i>
         <h3>No Products Found</h3>
         <p>Try selecting different filters or check back later for new products</p>
+        <button class="clear-filters-btn" onclick="clearAllFilters()" style="margin-top: 15px;">
+            <i class="fas fa-times"></i> Clear All Filters
+        </button>
     </div>
     
     <div class="products-grid" id="productsGrid">
@@ -1400,7 +1566,7 @@ let availableUses = [];
 let availableColors = [];
 
 // ============================================
-// FIXED AUTH SYSTEM - From Home Page
+// FIXED AUTH SYSTEM
 // ============================================
 
 class AuthSystem {
@@ -1618,7 +1784,7 @@ class AuthSystem {
 }
 
 // ============================================
-// FIXED CART SYSTEM - Same as Home Page
+// FIXED CART SYSTEM
 // ============================================
 
 class CartSystem {
@@ -2049,7 +2215,7 @@ function populateDefaultFilters() {
 }
 
 // ============================================
-// PRODUCT LOADING WITH FILTERS
+// PRODUCT LOADING WITH FILTERS - FIXED
 // ============================================
 
 async function loadProductsFromFirebase() {
@@ -2110,7 +2276,7 @@ async function loadProductsFromFirebase() {
                 
                 allProducts = Array.from(productMap.values());
                 
-                console.log(`Loaded ${allProducts.length} products from Firebase`);
+                console.log(`✅ Loaded ${allProducts.length} products from Firebase`);
                 
                 if (allProducts.length === 0) {
                     showNoProducts();
@@ -2126,6 +2292,7 @@ async function loadProductsFromFirebase() {
                 }
                 
             } else {
+                console.log('⚠️ No products found in Firebase');
                 loadDefaultProducts();
             }
             
@@ -2159,6 +2326,8 @@ function checkUrlFilters() {
 }
 
 function applyAllFiltersClientSide() {
+    console.log(`🔄 Applying filters: Category=${currentCategory}, Usage=${currentUsageFilter}, Color=${currentColorFilter}, Price=${currentPriceFilter}, Sort=${currentSort}`);
+    
     if (allProducts.length === 0) {
         showNoProducts();
         return;
@@ -2171,6 +2340,7 @@ function applyAllFiltersClientSide() {
         filteredProducts = filteredProducts.filter(product => 
             product.category && product.category === currentCategory
         );
+        console.log(`📊 After category filter: ${filteredProducts.length} products`);
     }
     
     // Apply usage filter
@@ -2178,6 +2348,7 @@ function applyAllFiltersClientSide() {
         filteredProducts = filteredProducts.filter(product => 
             product.usage && product.usage.includes(currentUsageFilter)
         );
+        console.log(`📊 After usage filter: ${filteredProducts.length} products`);
     }
     
     // Apply color filter
@@ -2185,6 +2356,7 @@ function applyAllFiltersClientSide() {
         filteredProducts = filteredProducts.filter(product => 
             product.color && product.color === currentColorFilter
         );
+        console.log(`📊 After color filter: ${filteredProducts.length} products`);
     }
     
     // Apply price filter
@@ -2207,6 +2379,7 @@ function applyAllFiltersClientSide() {
                     return true;
             }
         });
+        console.log(`📊 After price filter: ${filteredProducts.length} products`);
     }
     
     // Apply sorting
@@ -2220,36 +2393,60 @@ function applyAllFiltersClientSide() {
         filteredProducts.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
     }
     
+    console.log(`✅ Displaying ${filteredProducts.length} products`);
+    
     displayProducts(filteredProducts);
     updateProductsCount(filteredProducts.length);
     updateSelectedFilters();
-    updateCategoryDisplay();
+    updateFilterDisplay();
 }
 
-function updateCategoryDisplay() {
-    const categoryText = document.getElementById('categoryText');
-    const usageText = document.getElementById('usageText');
+function updateFilterDisplay() {
+    const filterNameText = document.getElementById('filterNameText');
+    const filterCount = document.getElementById('filterCount');
+    const pageMainTitle = document.getElementById('pageMainTitle');
     const productsTitle = document.getElementById('productsTitle');
+    const clearAllBtn = document.getElementById('clearAllFiltersBtn');
     
-    // Reset
-    categoryText.textContent = 'All Natural Stone Products';
-    usageText.textContent = '';
-    productsTitle.textContent = 'Premium Natural Stones';
+    // Default values
+    let displayText = 'All Products';
+    let pageTitle = 'Natural Stone Products';
+    let productsDisplayTitle = 'Premium Natural Stones';
     
     // Update based on filters
     if (currentCategory !== 'all' && currentUsageFilter !== 'all') {
         // Both category and usage filters are selected
-        categoryText.textContent = currentCategory;
-        usageText.textContent = ` (${currentUsageFilter})`;
-        productsTitle.textContent = `${currentCategory} (${currentUsageFilter})`;
+        displayText = `${currentCategory} (${currentUsageFilter})`;
+        pageTitle = `${currentCategory} - ${currentUsageFilter}`;
+        productsDisplayTitle = `${currentCategory} (${currentUsageFilter})`;
     } else if (currentCategory !== 'all') {
         // Only category filter is selected
-        categoryText.textContent = currentCategory;
-        productsTitle.textContent = currentCategory;
+        displayText = currentCategory;
+        pageTitle = currentCategory;
+        productsDisplayTitle = currentCategory;
     } else if (currentUsageFilter !== 'all') {
         // Only usage filter is selected
-        categoryText.textContent = currentUsageFilter;
-        productsTitle.textContent = `Products for ${currentUsageFilter}`;
+        displayText = currentUsageFilter;
+        pageTitle = `Products for ${currentUsageFilter}`;
+        productsDisplayTitle = `Products for ${currentUsageFilter}`;
+    }
+    
+    // Update texts
+    filterNameText.textContent = displayText;
+    pageMainTitle.textContent = pageTitle;
+    productsTitle.textContent = productsDisplayTitle;
+    
+    // Show/hide clear all button based on active filters
+    const hasActiveFilters = currentCategory !== 'all' || 
+                            currentPriceFilter !== 'all' || 
+                            currentUsageFilter !== 'all' || 
+                            currentColorFilter !== 'all' || 
+                            currentSort !== 'newest';
+    
+    if (hasActiveFilters) {
+        clearAllBtn.style.display = 'flex';
+    } else {
+        clearAllBtn.style.display = 'none';
     }
 }
 
@@ -2260,28 +2457,28 @@ function updateSelectedFilters() {
     const activeFilters = [];
     
     if (currentCategory !== 'all') {
-        activeFilters.push({ type: 'category', value: currentCategory });
+        activeFilters.push({ type: 'Category', value: currentCategory });
     }
     
     if (currentUsageFilter !== 'all') {
-        activeFilters.push({ type: 'usage', value: currentUsageFilter });
+        activeFilters.push({ type: 'Usage', value: currentUsageFilter });
     }
     
     if (currentColorFilter !== 'all') {
-        activeFilters.push({ type: 'color', value: currentColorFilter });
+        activeFilters.push({ type: 'Color', value: currentColorFilter });
     }
     
     if (currentPriceFilter !== 'all') {
         const priceText = currentPriceFilter === '250+' ? 'Over £250' : 
                          `£${currentPriceFilter.replace('-', ' - £')}`;
-        activeFilters.push({ type: 'price', value: priceText });
+        activeFilters.push({ type: 'Price', value: priceText });
     }
     
     if (currentSort !== 'newest') {
         const sortText = currentSort === 'price_low' ? 'Price: Low to High' :
                         currentSort === 'price_high' ? 'Price: High to Low' :
                         currentSort === 'name' ? 'Name A-Z' : 'Most Popular';
-        activeFilters.push({ type: 'sort', value: sortText });
+        activeFilters.push({ type: 'Sort', value: sortText });
     }
     
     if (activeFilters.length > 0) {
@@ -2289,8 +2486,8 @@ function updateSelectedFilters() {
         
         filterTags.innerHTML = activeFilters.map(filter => `
             <div class="filter-tag">
-                ${filter.type}: ${filter.value}
-                <span class="remove-tag" onclick="removeFilter('${filter.type}')">
+                ${filter.value}
+                <span class="remove-tag" onclick="removeFilter('${filter.type.toLowerCase()}')">
                     <i class="fas fa-times"></i>
                 </span>
             </div>
@@ -2344,25 +2541,30 @@ function clearAllFilters() {
 }
 
 function updateProductsCount(count) {
-    const countElement = document.getElementById('productsCount');
+    const filterCount = document.getElementById('filterCount');
+    const productsCount = document.getElementById('productsCount');
     const noProductsMessage = document.getElementById('noProductsMessage');
     
     if (count === 0) {
         noProductsMessage.style.display = 'block';
-        countElement.textContent = '0 products found';
+        filterCount.textContent = '0 products found';
+        productsCount.textContent = 'No products match your filters';
     } else {
         noProductsMessage.style.display = 'none';
-        countElement.textContent = `${count} product${count !== 1 ? 's' : ''} found`;
+        filterCount.textContent = `${count} product${count !== 1 ? 's' : ''} found`;
+        productsCount.textContent = `Showing ${count} premium product${count !== 1 ? 's' : ''}`;
     }
 }
 
 // ============================================
-// DISPLAY PRODUCTS
+// DISPLAY PRODUCTS - FIXED: Shows all products correctly
 // ============================================
 
 function displayProducts(products) {
     const container = document.getElementById('productsGrid');
     if (!container) return;
+    
+    console.log(`🎨 Displaying ${products.length} products`);
     
     if (products.length === 0) {
         showNoProducts();
@@ -2511,6 +2713,10 @@ function showNoProducts() {
     }
 }
 
+// ============================================
+// DEFAULT PRODUCTS WITH MORE VARIETY
+// ============================================
+
 function loadDefaultProducts() {
     allProducts = [
         {
@@ -2525,7 +2731,8 @@ function loadDefaultProducts() {
             ],
             price_unit: 'sqft',
             color: 'Brown',
-            usage: 'Flooring, Wall Cladding'
+            usage: 'Flooring, Wall Cladding',
+            created_at: '2024-01-15'
         },
         {
             id: 'default2',
@@ -2539,9 +2746,96 @@ function loadDefaultProducts() {
             ],
             price_unit: 'sqft',
             color: 'Blue',
-            usage: 'Flooring, Garden Paving'
+            usage: 'Flooring, Garden Paving',
+            created_at: '2024-01-10'
+        },
+        {
+            id: 'default3',
+            stone_name: 'Classic Granite',
+            category: 'Granite',
+            description: 'Durable granite for countertops',
+            price: 85.00,
+            images: [
+                'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=400&h=300'
+            ],
+            price_unit: 'sqft',
+            color: 'Gray',
+            usage: 'Kitchen Countertops',
+            created_at: '2024-01-20'
+        },
+        {
+            id: 'default4',
+            stone_name: 'White Marble',
+            category: 'Marble',
+            description: 'Elegant white marble for interiors',
+            price: 120.00,
+            images: [
+                'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=400&h=300'
+            ],
+            price_unit: 'sqft',
+            color: 'White',
+            usage: 'Flooring, Wall Cladding',
+            created_at: '2024-01-05'
+        },
+        {
+            id: 'default5',
+            stone_name: 'Natural Limestone',
+            category: 'Limestone',
+            description: 'Natural limestone for exterior applications',
+            price: 65.00,
+            images: [
+                'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=400&h=300'
+            ],
+            price_unit: 'sqft',
+            color: 'Beige',
+            usage: 'Exterior Wall Cladding',
+            created_at: '2024-01-18'
+        },
+        {
+            id: 'default6',
+            stone_name: 'Slate Tiles',
+            category: 'Slate',
+            description: 'Durable slate tiles for roofing',
+            price: 55.00,
+            images: [
+                'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=400&h=300'
+            ],
+            price_unit: 'sqft',
+            color: 'Black',
+            usage: 'Roofing, Flooring',
+            created_at: '2024-01-12'
+        },
+        {
+            id: 'default7',
+            stone_name: 'Sandstone Cobbles',
+            category: 'Sand Stone',
+            description: 'Cobbles for garden pathways',
+            price: 28.00,
+            images: [
+                'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=400&h=300'
+            ],
+            price_unit: 'piece',
+            color: 'Red',
+            usage: 'Garden Paving',
+            created_at: '2024-01-08'
+        },
+        {
+            id: 'default8',
+            stone_name: 'Kota Stone Slabs',
+            category: 'Kota Stone',
+            description: 'Large slabs for commercial projects',
+            price: 95.00,
+            images: [
+                'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=400&h=300'
+            ],
+            price_unit: 'sqft',
+            color: 'Green',
+            usage: 'Commercial Flooring',
+            created_at: '2024-01-22'
         }
     ];
+    
+    console.log(`✅ Loaded ${allProducts.length} default products`);
     
     // Load smart filters
     populateDefaultFilters();
@@ -2565,7 +2859,7 @@ function searchProducts(query) {
         product.stone_name.toLowerCase().includes(query.toLowerCase()) ||
         (product.category && product.category.toLowerCase().includes(query.toLowerCase())) ||
         (product.description && product.description.toLowerCase().includes(query.toLowerCase())) ||
-        (product.color && product.color.toLowerCase().includes(query.toLowerCase()))
+        (product.color && color.toLowerCase().includes(query.toLowerCase()))
     ).slice(0, 8);
     
     if (filtered.length > 0) {
@@ -2630,11 +2924,10 @@ async function quickAddToCart(productId, event = null) {
 }
 
 // ============================================
-// SCROLL HANDLING
+// SCROLL HANDLING - FIXED: Filters won't scroll
 // ============================================
 
 let lastScrollTop = 0;
-let scrollTimeout;
 let isHeaderVisible = true;
 let scrollThreshold = 100;
 let debounceTimeout;
@@ -2710,6 +3003,12 @@ function setupEventListeners() {
         filterToggleBtn.addEventListener('click', toggleFilters);
     }
     
+    // Clear all filters button
+    const clearAllFiltersBtn = document.getElementById('clearAllFiltersBtn');
+    if (clearAllFiltersBtn) {
+        clearAllFiltersBtn.addEventListener('click', clearAllFilters);
+    }
+    
     // Filter event listeners
     const filterIds = ['categoryFilter', 'priceFilter', 'usageFilter', 'colorFilter', 'sortFilter'];
     
@@ -2739,12 +3038,6 @@ function setupEventListeners() {
             });
         }
     });
-    
-    // Clear all filters button
-    const clearAllFiltersBtn = document.getElementById('clearAllFiltersBtn');
-    if (clearAllFiltersBtn) {
-        clearAllFiltersBtn.addEventListener('click', clearAllFilters);
-    }
     
     // Search functionality
     const searchInput = document.getElementById('searchInput');
@@ -2800,7 +3093,7 @@ function setupEventListeners() {
         });
     }
     
-    // Improved scroll handling
+    // Improved scroll handling - ONLY for header and bottom nav
     window.addEventListener('scroll', handleScroll, { passive: true });
     
     // Initial scroll check
@@ -2812,7 +3105,7 @@ function setupEventListeners() {
 // ============================================
 
 document.addEventListener('DOMContentLoaded', async function() {
-    console.log('IRYA STONE Products Page Initializing');
+    console.log('🚀 IRYA STONE Products Page Initializing...');
     
     initializeFirebase();
     
@@ -2832,6 +3125,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     window.clearAllFilters = clearAllFilters;
     window.removeFilter = removeFilter;
     window.toggleFilters = toggleFilters;
+    
+    console.log('✅ Products Page Ready!');
 });
 </script>
 </body>
