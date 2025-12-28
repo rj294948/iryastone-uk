@@ -1527,7 +1527,7 @@ class AuthSystem {
 }
 
 // ============================================
-// CART SYSTEM
+// CART SYSTEM - UPDATED FOR BUY NOW FIX
 // ============================================
 
 class CartSystem {
@@ -1561,7 +1561,6 @@ class CartSystem {
     async loadCart() {
         try {
             const userId = this.getUserId();
-            console.log("Loading cart for user:", userId);
             
             // Load regular cart
             const cartKey = this.localCartKey + '_' + userId;
@@ -1640,20 +1639,21 @@ class CartSystem {
     async processBuyNow(product, quantity = 1, calculationData = null, customRequirements = '') {
         try {
             const userId = this.getUserId();
-            console.log("Processing Buy Now for user:", userId);
+            console.log("🛒 Processing Buy Now for user:", userId);
             
             const itemId = `BUYNOW_${product.id}_${Date.now()}`;
             
+            // Create Buy Now item - SIMPLE STRUCTURE
             const buyNowItem = {
                 id: product.id,
                 uniqueId: itemId,
-                name: product.stone_name,
-                stoneName: product.stone_name,
-                price: product.price,
+                stone_name: product.stone_name || product.name,
+                name: product.stone_name || product.name,
+                price: parseFloat(product.price) || 0,
                 priceUnit: product.price_unit || 'piece',
                 image: getProductImage(product),
-                category: product.category,
-                description: product.description,
+                category: product.category || 'Natural Stone',
+                description: product.description || '',
                 quantity: quantity,
                 addedAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
@@ -1664,17 +1664,37 @@ class CartSystem {
                 totalPrice: this.calculateTotalPrice(product, quantity, calculationData)
             };
             
-            const buyNowKey = this.buyNowCartKey + '_' + userId;
-            this.buyNowItems = [buyNowItem];
-            localStorage.setItem(buyNowKey, JSON.stringify(this.buyNowItems));
+            console.log("✅ Buy Now item created:", buyNowItem);
             
-            // Save user ID for checkout
+            // ✅ FIX: SAVE TO MULTIPLE LOCATIONS FOR REDUNDANCY
+            const buyNowKey = this.buyNowCartKey + '_' + userId;
+            
+            // 1. Save to localStorage with user-specific key
+            localStorage.setItem(buyNowKey, JSON.stringify([buyNowItem]));
+            console.log("✅ Saved to localStorage with user key");
+            
+            // 2. Save to sessionStorage (primary for checkout)
+            sessionStorage.setItem('irya_buynow_product', JSON.stringify(buyNowItem));
+            sessionStorage.setItem('irya_current_buynow', JSON.stringify(buyNowItem));
+            console.log("✅ Saved to sessionStorage");
+            
+            // 3. Save to universal buy now key (fallback)
+            localStorage.setItem('irya_current_buynow', JSON.stringify(buyNowItem));
+            console.log("✅ Saved to universal localStorage key");
+            
+            // 4. Save user info for checkout
             sessionStorage.setItem('irya_checkout_user_id', userId);
             sessionStorage.setItem('irya_is_buynow_flow', 'true');
+            sessionStorage.setItem('irya_buynow_product_id', product.id);
+            sessionStorage.setItem('irya_buynow_quantity', quantity.toString());
+            sessionStorage.setItem('irya_buynow_calc_data', JSON.stringify(calculationData));
+            sessionStorage.setItem('irya_buynow_custom_req', customRequirements);
+            
+            console.log("✅ All Buy Now data saved successfully");
             
             return true;
         } catch (error) {
-            console.error('Buy Now error:', error);
+            console.error('❌ Buy Now error:', error);
             showError('Failed to process Buy Now');
             return false;
         }
@@ -2420,16 +2440,21 @@ async function addSimilarToCart(productId, event) {
     }
 }
 
+// ✅ UPDATED BUY NOW FUNCTION - FIXED VERSION
 async function buyNow() {
-    if (!currentProduct || !cartSystem) return;
+    if (!currentProduct || !cartSystem || !authSystem) {
+        showError('System not initialized. Please refresh the page.');
+        return;
+    }
     
     const quantity = parseInt(document.getElementById('quantityInput')?.value) || currentProduct.min_order;
     const customRequirements = document.getElementById('customRequirements')?.value || '';
     
     try {
         showLoading(true);
+        console.log("🚀 Starting Buy Now process...");
         
-        // Process buy now
+        // Process Buy Now
         const success = await cartSystem.processBuyNow(
             currentProduct, 
             quantity, 
@@ -2438,13 +2463,24 @@ async function buyNow() {
         );
         
         if (success) {
-            // Redirect to checkout with user ID
+            // Get user ID
             const userId = authSystem.getUserId();
-            window.location.href = `checkout.html?user=${encodeURIComponent(userId)}&buynow=true`;
+            console.log("✅ Buy Now processed successfully for user:", userId);
+            
+            // Show success message
+            showNotification('Redirecting to checkout...');
+            
+            // Wait a moment for data to be saved
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Simple redirect with minimal parameters
+            window.location.href = `checkout.html?buynow=true&user=${encodeURIComponent(userId)}`;
+        } else {
+            showError('Failed to process Buy Now');
         }
         
     } catch (error) {
-        console.error('Buy Now error:', error);
+        console.error('❌ Buy Now error:', error);
         showError('Failed to process Buy Now');
     } finally {
         showLoading(false);
@@ -2592,11 +2628,21 @@ function showNotification(message) {
 }
 
 function showError(message) {
-    alert(message);
+    const errorDiv = document.getElementById('errorMessage');
+    if (errorDiv) {
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+        
+        setTimeout(() => {
+            errorDiv.style.display = 'none';
+        }, 5000);
+    } else {
+        alert(message);
+    }
 }
 
 // ============================================
-// SCROLL HANDLING - Same as Home Page
+// SCROLL HANDLING
 // ============================================
 
 let lastScrollTop = 0;
