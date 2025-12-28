@@ -562,6 +562,29 @@ header.hidden {
     line-height: 1.4;
 }
 
+/* Debug Button */
+.debug-btn {
+    width: 100%;
+    padding: 8px;
+    background: #f8f9fa;
+    color: #666;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.debug-btn:hover {
+    background: #e9ecef;
+    border-color: #c9a227;
+}
+
 /* ============================================
    BOTTOM NAVIGATION - ENHANCED SCROLL BEHAVIOR
    ============================================ */
@@ -825,6 +848,11 @@ header.hidden {
         font-size: 15px;
     }
     
+    .debug-btn {
+        padding: 10px;
+        font-size: 13px;
+    }
+    
     .bottom-nav {
         height: 70px;
         padding: 12px 0;
@@ -1022,6 +1050,11 @@ header.hidden {
         padding: 8px;
     }
     
+    .debug-btn {
+        padding: 6px;
+        font-size: 11px;
+    }
+    
     .bottom-nav {
         height: 60px;
         padding: 8px 0;
@@ -1130,6 +1163,11 @@ header.hidden {
             <button class="checkout-btn" id="checkoutBtn" disabled>
                 <i class="fas fa-lock"></i>
                 Proceed to Checkout
+            </button>
+            
+            <button class="debug-btn" id="debugBtn">
+                <i class="fas fa-bug"></i>
+                Debug Checkout
             </button>
             
             <div class="security-note">
@@ -1689,6 +1727,24 @@ class CartSystem {
         }
     }
     
+    async forceRefreshCart() {
+        console.log('🔄 Force refreshing cart...');
+        
+        // Clear current cart
+        this.cartItems = [];
+        
+        // Load from localStorage
+        await this.loadCartFromLocalStorage();
+        
+        // Force sync with Firebase if available
+        if (this.authSystem.isFirebaseAvailable() && this.authSystem.isLoggedIn()) {
+            await this.syncWithFirebase();
+        }
+        
+        console.log(`✅ Cart refreshed: ${this.cartItems.length} items`);
+        return this.cartItems;
+    }
+    
     getCartCount() {
         return this.cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
     }
@@ -1750,6 +1806,8 @@ class CartSystem {
         console.log('Cart Items:', this.cartItems);
         console.log('Firebase Available:', this.authSystem.isFirebaseAvailable());
         console.log('User Logged In:', this.authSystem.isLoggedIn());
+        console.log('Subtotal:', this.getSubtotal());
+        console.log('Total:', this.getTotal());
         console.log('========================');
     }
 }
@@ -1934,7 +1992,7 @@ async function removeItemFromCart(itemId) {
 }
 
 // ============================================
-// CHECKOUT FUNCTIONS
+// CHECKOUT FUNCTIONS - FIXED VERSION
 // ============================================
 
 async function proceedToCheckout() {
@@ -1952,39 +2010,203 @@ async function proceedToCheckout() {
     showLoading(true);
     
     try {
-        // Prepare data for checkout
-        const checkoutData = {
-            userId: cartSystem.authSystem.getUserId(),
-            userName: cartSystem.authSystem.getUserName(),
-            userEmail: cartSystem.authSystem.getUserEmail(),
-            items: cartItems,
-            subtotal: cartSystem.getSubtotal(),
-            tax: cartSystem.getTax(),
-            total: cartSystem.getTotal(),
-            advancePayment: cartSystem.getAdvancePayment(),
-            cartSessionId: 'cart_' + Date.now(),
-            createdAt: new Date().toISOString()
-        };
+        console.log('🛒 Starting checkout process...');
+        console.log(`📊 Cart items before checkout: ${cartItems.length}`);
         
-        // Save to sessionStorage
-        sessionStorage.setItem('irya_checkout_data', JSON.stringify(checkoutData));
-        sessionStorage.setItem('irya_cart_items', JSON.stringify(cartItems));
-        sessionStorage.setItem('irya_cart_total', cartSystem.getTotal().toString());
-        sessionStorage.setItem('irya_cart_user_id', cartSystem.authSystem.getUserId());
+        // ✅ IMPORTANT: Force refresh cart from Firebase before proceeding
+        if (authSystem.isFirebaseAvailable() && authSystem.isLoggedIn()) {
+            console.log('🔄 Refreshing cart from Firebase...');
+            await cartSystem.syncWithFirebase();
+            
+            // Get fresh cart items after sync
+            const freshItems = cartSystem.getCartItems();
+            console.log(`📊 Fresh cart items after sync: ${freshItems.length}`);
+            
+            if (freshItems.length === 0) {
+                showError('Your cart appears to be empty after sync. Please refresh the page.');
+                showLoading(false);
+                return;
+            }
+            
+            // Save to sessionStorage WITH timestamp
+            const checkoutData = {
+                userId: cartSystem.authSystem.getUserId(),
+                userName: cartSystem.authSystem.getUserName(),
+                userEmail: cartSystem.authSystem.getUserEmail(),
+                items: freshItems,
+                subtotal: cartSystem.getSubtotal(),
+                tax: cartSystem.getTax(),
+                total: cartSystem.getTotal(),
+                advancePayment: cartSystem.getAdvancePayment(),
+                cartSessionId: 'cart_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                syncTimestamp: new Date().toISOString(),
+                itemCount: freshItems.length,
+                createdAt: new Date().toISOString(),
+                // Debug info
+                _debug: {
+                    source: 'firebase_sync',
+                    firebaseAvailable: true,
+                    userLoggedIn: true,
+                    localStorageItems: localStorage.getItem(cartSystem.getCartKey()) ? 
+                        JSON.parse(localStorage.getItem(cartSystem.getCartKey())).length : 0
+                }
+            };
+            
+            // Multiple backup methods
+            console.log('💾 Saving checkout data...');
+            
+            // Method 1: sessionStorage (primary)
+            sessionStorage.setItem('irya_checkout_data', JSON.stringify(checkoutData));
+            
+            // Method 2: localStorage (backup)
+            localStorage.setItem('irya_checkout_backup', JSON.stringify(checkoutData));
+            
+            // Method 3: Temporary key (extra backup)
+            const tempKey = 'irya_checkout_temp_' + Date.now();
+            localStorage.setItem(tempKey, JSON.stringify(checkoutData));
+            
+            // Method 4: Direct cart items
+            sessionStorage.setItem('irya_cart_items', JSON.stringify(freshItems));
+            sessionStorage.setItem('irya_cart_total', cartSystem.getTotal().toString());
+            sessionStorage.setItem('irya_cart_user_id', cartSystem.authSystem.getUserId());
+            
+            console.log('✅ Checkout data saved successfully');
+            
+        } else {
+            // Local storage only
+            console.log('📱 Using localStorage only for checkout');
+            
+            const checkoutData = {
+                userId: cartSystem.authSystem.getUserId(),
+                userName: cartSystem.authSystem.getUserName(),
+                userEmail: cartSystem.authSystem.getUserEmail(),
+                items: cartItems,
+                subtotal: cartSystem.getSubtotal(),
+                tax: cartSystem.getTax(),
+                total: cartSystem.getTotal(),
+                advancePayment: cartSystem.getAdvancePayment(),
+                cartSessionId: 'cart_' + Date.now(),
+                syncTimestamp: new Date().toISOString(),
+                itemCount: cartItems.length,
+                createdAt: new Date().toISOString(),
+                _debug: {
+                    source: 'localStorage',
+                    firebaseAvailable: false,
+                    userLoggedIn: false
+                }
+            };
+            
+            sessionStorage.setItem('irya_checkout_data', JSON.stringify(checkoutData));
+            sessionStorage.setItem('irya_cart_items', JSON.stringify(cartItems));
+            sessionStorage.setItem('irya_cart_total', cartSystem.getTotal().toString());
+            sessionStorage.setItem('irya_cart_user_id', cartSystem.authSystem.getUserId());
+        }
         
         // Save user info
         localStorage.setItem('irya_user_name', cartSystem.authSystem.getUserName());
         localStorage.setItem('irya_user_email', cartSystem.authSystem.getUserEmail());
         
+        // Add delay to ensure data is saved
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Verify data was saved
+        const savedData = sessionStorage.getItem('irya_checkout_data');
+        if (!savedData) {
+            throw new Error('Checkout data not saved to sessionStorage');
+        }
+        
+        const parsedData = JSON.parse(savedData);
+        console.log(`✅ Verified: ${parsedData.items.length} items saved for checkout`);
+        
         // Navigate to checkout
+        console.log('🔗 Navigating to checkout page...');
         window.location.href = 'checkout.html';
         
     } catch (error) {
-        console.error('Error proceeding to checkout:', error);
-        showError('Failed to proceed to checkout. Please try again.');
+        console.error('❌ Error proceeding to checkout:', error);
+        showError('Failed to proceed to checkout. Please try again. Error: ' + error.message);
+        
+        // Fallback: Try direct navigation with query parameters
+        try {
+            const cartItems = cartSystem.getCartItems();
+            if (cartItems.length > 0) {
+                const encodedCart = encodeURIComponent(JSON.stringify(cartItems));
+                window.location.href = `checkout.html?cart=${encodedCart}&fallback=true`;
+            }
+        } catch (fallbackError) {
+            console.error('❌ Fallback also failed:', fallbackError);
+        }
+        
     } finally {
         showLoading(false);
     }
+}
+
+// ============================================
+// DEBUG FUNCTIONS
+// ============================================
+
+async function debugCheckout() {
+    console.log('=== CHECKOUT DEBUG ===');
+    
+    if (!cartSystem) {
+        console.log('❌ Cart system not initialized');
+        return;
+    }
+    
+    // Current cart info
+    const cartItems = cartSystem.getCartItems();
+    console.log('Current Cart Items:', cartItems);
+    console.log('Cart Count:', cartSystem.getCartCount());
+    console.log('Cart Subtotal:', cartSystem.getSubtotal());
+    console.log('Cart Total:', cartSystem.getTotal());
+    
+    // Test sessionStorage
+    const testData = {
+        test: true,
+        items: cartItems,
+        timestamp: new Date().toISOString(),
+        count: cartItems.length
+    };
+    
+    sessionStorage.setItem('irya_debug_test', JSON.stringify(testData));
+    
+    const retrieved = sessionStorage.getItem('irya_debug_test');
+    console.log('SessionStorage test:', retrieved ? 'PASS' : 'FAIL');
+    
+    if (retrieved) {
+        console.log('Retrieved data:', JSON.parse(retrieved));
+    }
+    
+    // Check existing checkout data
+    const existingCheckoutData = sessionStorage.getItem('irya_checkout_data');
+    console.log('Existing checkout data in sessionStorage:', existingCheckoutData ? 'EXISTS' : 'NOT FOUND');
+    
+    // Check localStorage backup
+    const backupData = localStorage.getItem('irya_checkout_backup');
+    console.log('Backup data in localStorage:', backupData ? 'EXISTS' : 'NOT FOUND');
+    
+    // Clear test data
+    sessionStorage.removeItem('irya_debug_test');
+    
+    // Test Firebase connection
+    if (firebaseDB) {
+        console.log('🔍 Testing Firebase connection...');
+        try {
+            const testRef = firebaseDB.collection('test_debug').doc('checkout_test');
+            await testRef.set({
+                test: true,
+                timestamp: new Date().toISOString()
+            });
+            console.log('✅ Firebase write test: PASS');
+        } catch (error) {
+            console.error('❌ Firebase write test: FAIL', error);
+        }
+    }
+    
+    console.log('=== DEBUG COMPLETE ===');
+    
+    alert('Debug complete. Check console for details.');
 }
 
 // ============================================
@@ -2054,6 +2276,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         cartSystem = new CartSystem(authSystem);
         await cartSystem.init();
         
+        // ✅ CRITICAL FIX: Force refresh cart on page load
+        console.log('🔄 Ensuring cart is in sync...');
+        await cartSystem.forceRefreshCart();
+        
         // Render cart items
         renderCartItems();
         
@@ -2065,6 +2291,16 @@ document.addEventListener('DOMContentLoaded', async function() {
             if (e.key && e.key.includes('irya_cart_')) {
                 console.log('📢 Cart updated from another tab');
                 cartSystem.loadCartFromLocalStorage().then(() => {
+                    renderCartItems();
+                });
+            }
+        });
+        
+        // Listen for page visibility changes
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                console.log('📱 Page became visible, refreshing cart...');
+                cartSystem.forceRefreshCart().then(() => {
                     renderCartItems();
                 });
             }
@@ -2088,10 +2324,15 @@ function setupCartPageListeners() {
     if (checkoutBtn) {
         checkoutBtn.addEventListener('click', proceedToCheckout);
     }
+    
+    const debugBtn = document.getElementById('debugBtn');
+    if (debugBtn) {
+        debugBtn.addEventListener('click', debugCheckout);
+    }
 }
 
 // ============================================
-// DEBUG AND UTILITY FUNCTIONS
+// UTILITY FUNCTIONS
 // ============================================
 
 // Test Firebase connection
@@ -2184,6 +2425,7 @@ window.debugCart = () => cartSystem?.debugCart();
 window.testFirebaseConnection = testFirebaseConnection;
 window.checkFirebaseCart = checkFirebaseCart;
 window.forceSyncToFirebase = forceSyncToFirebase;
+window.debugCheckout = debugCheckout;
 </script>
 </body>
 </html>
