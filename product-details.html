@@ -9,26 +9,22 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto+Slab:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Roboto+Slab:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
-/* HOME PAGE STYLE */
+/* SIMPLIFIED STYLES */
 :root {
     --primary-gold: #c9a227;
     --gold-light: #f0d77c;
     --gold-dark: #9c7c1f;
     --stone-dark: #1a1a1a;
-    --stone-light: #f4f6f4;
-    --bg-light: #f7f9fc;
-    --text-dark: #222222;
-    --text-light: #666666;
+    --text-dark: #333;
+    --text-light: #666;
     --white: #ffffff;
-    --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
-    --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
-    --shadow-lg: 0 8px 20px rgba(0,0,0,0.12);
+    --bg-light: #f5f5f5;
+    --border-color: #e0e0e0;
+    --shadow: 0 2px 10px rgba(0,0,0,0.1);
     --transition: all 0.3s ease;
-    --border-radius: 12px;
-    --border-radius-lg: 20px;
 }
 
 * {
@@ -39,59 +35,37 @@
 }
 
 body {
-    background: var(--bg-light);
+    background: var(--white);
     color: var(--text-dark);
-    padding-bottom: 80px;
     font-size: 14px;
-    scroll-behavior: smooth;
+    padding-bottom: 60px;
 }
 
-/* HEADER - Same as Home Page */
+/* HEADER - SIMPLIFIED */
 header {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    background: rgba(0, 0, 0, 0.95);
-    backdrop-filter: blur(10px);
-    padding: 8px 15px;
+    background: #000;
+    padding: 10px 15px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     z-index: 1000;
-    gap: 8px;
-    transform: translateY(0);
-    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), background 0.3s ease;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-    height: 60px;
-}
-
-header.scrolled {
-    background: rgba(0, 0, 0, 0.98);
-    backdrop-filter: blur(15px);
-}
-
-header.hidden {
-    transform: translateY(-100%);
-}
-
-header.show {
-    transform: translateY(0);
-    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    height: 55px;
+    border-bottom: 1px solid #333;
 }
 
 .logo {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-weight: 600;
-    min-width: 120px;
 }
 
 .logo i {
     color: var(--primary-gold);
-    font-size: 18px;
+    font-size: 16px;
 }
 
 .logo span {
@@ -101,34 +75,21 @@ header.show {
     font-family: 'Roboto Slab', serif;
 }
 
-/* Search Box */
 .search-box {
     flex: 1;
     margin: 0 10px;
     position: relative;
-    max-width: 450px;
+    max-width: 300px;
 }
 
 .search-box input {
     width: 100%;
     padding: 8px 35px 8px 12px;
     border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid #444;
+    background: #222;
     font-size: 12px;
-    transition: var(--transition);
     color: var(--white);
-}
-
-.search-box input:focus {
-    outline: none;
-    border-color: var(--primary-gold);
-    background: rgba(0, 0, 0, 0.3);
-    box-shadow: 0 0 0 2px rgba(201, 162, 39, 0.2);
-}
-
-.search-box input::placeholder {
-    color: rgba(255, 255, 255, 0.7);
 }
 
 .search-box i {
@@ -136,102 +97,15 @@ header.show {
     right: 12px;
     top: 50%;
     transform: translateY(-50%);
-    color: rgba(255, 255, 255, 0.7);
+    color: #888;
     font-size: 12px;
-    cursor: pointer;
 }
 
-.search-results {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: rgba(0, 0, 0, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-lg);
-    z-index: 1001;
-    display: none;
-    margin-top: 5px;
-    max-height: 320px;
-    overflow-y: auto;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.search-results.active {
-    display: block;
-}
-
-.search-result-item {
-    padding: 10px 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--white);
-    text-decoration: none;
-}
-
-.search-result-item:hover {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.search-result-image {
-    width: 40px;
-    height: 40px;
-    border-radius: 6px;
-    overflow: hidden;
-    background: rgba(255, 255, 255, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.search-result-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    background: #f5f5f5;
-}
-
-.search-result-info {
-    flex: 1;
-}
-
-.search-result-name {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--white);
-    margin-bottom: 2px;
-}
-
-.search-result-category {
-    font-size: 11px;
-    color: rgba(255, 255, 255, 0.6);
-}
-
-.search-result-price {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--primary-gold);
-    white-space: nowrap;
-}
-
-.no-results {
-    padding: 15px;
-    text-align: center;
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 13px;
-}
-
-/* Action Buttons */
 .action-btn {
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
+    background: #222;
     border: none;
     display: flex;
     align-items: center;
@@ -239,25 +113,17 @@ header.show {
     color: var(--white);
     font-size: 14px;
     cursor: pointer;
-    transition: var(--transition);
-    position: relative;
     text-decoration: none;
+    position: relative;
 }
 
-.action-btn:hover {
-    background: var(--primary-gold);
-    color: var(--white);
-    transform: scale(1.05);
-}
-
-.cart-badge, .notification-badge {
+.cart-badge {
     position: absolute;
     top: -2px;
     right: -2px;
-    background: #ff4757;
+    background: var(--primary-gold);
     color: var(--white);
     font-size: 9px;
-    font-weight: 600;
     width: 16px;
     height: 16px;
     border-radius: 50%;
@@ -267,73 +133,24 @@ header.show {
     display: none;
 }
 
-/* BREADCRUMB */
-.breadcrumb {
-    padding: 70px 15px 15px;
-    background: var(--white);
-    margin-top: 60px;
+/* PRODUCT CONTAINER - MINIMAL MARGINS */
+.product-container {
+    margin-top: 55px;
+    padding: 10px;
 }
 
-.breadcrumb-content {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    font-size: 12px;
-}
-
-.breadcrumb-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--text-light);
-}
-
-.breadcrumb-item a {
-    color: var(--text-light);
-    text-decoration: none;
-    transition: var(--transition);
-}
-
-.breadcrumb-item a:hover {
-    color: var(--primary-gold);
-}
-
-.breadcrumb-item.active {
-    color: var(--primary-gold);
-    font-weight: 500;
-}
-
-.breadcrumb-divider {
-    color: var(--text-light);
-    font-size: 10px;
-}
-
-/* PRODUCT DETAILS CONTAINER */
-.product-details-container {
-    padding: 20px 15px;
-    background: var(--white);
-}
-
-/* PRODUCT IMAGE GALLERY */
+/* PRODUCT GALLERY - FULLSCREEN READY */
 .product-gallery {
-    position: relative;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .main-image-wrapper {
-    position: relative;
     width: 100%;
-    height: 300px;
+    height: 280px;
     overflow: hidden;
-    border-radius: var(--border-radius);
+    border-radius: 8px;
     background: var(--bg-light);
     cursor: pointer;
-}
-
-.main-image-container {
-    width: 100%;
-    height: 100%;
     position: relative;
 }
 
@@ -342,123 +159,24 @@ header.show {
     height: 100%;
     object-fit: contain;
     padding: 10px;
-    transition: transform 0.3s ease;
 }
 
-/* Fullscreen Image Modal */
-.fullscreen-modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.95);
-    z-index: 9999;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
-
-.fullscreen-modal.active {
-    display: flex;
-}
-
-.fullscreen-image-container {
-    max-width: 90%;
-    max-height: 90%;
-    position: relative;
-}
-
-.fullscreen-image {
-    width: 100%;
-    height: auto;
-    max-height: 80vh;
-    object-fit: contain;
-}
-
-.modal-nav {
-    position: absolute;
-    top: 50%;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    padding: 0 20px;
-    transform: translateY(-50%);
-}
-
-.modal-nav-btn {
-    background: rgba(255,255,255,0.2);
-    color: white;
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: var(--transition);
-    backdrop-filter: blur(5px);
-}
-
-.modal-nav-btn:hover {
-    background: var(--primary-gold);
-}
-
-.close-modal {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: rgba(255,255,255,0.2);
-    color: white;
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    backdrop-filter: blur(5px);
-    z-index: 10000;
-}
-
-.image-counter {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0,0,0,0.7);
-    color: white;
-    padding: 5px 15px;
-    border-radius: 20px;
-    font-size: 14px;
-}
-
-/* Thumbnails */
 .thumbnails-container {
     display: flex;
     gap: 8px;
     margin-top: 10px;
     overflow-x: auto;
     padding: 5px 0;
-    scrollbar-width: none;
-}
-
-.thumbnails-container::-webkit-scrollbar {
-    display: none;
 }
 
 .thumbnail {
     flex: 0 0 auto;
-    width: 70px;
-    height: 70px;
-    border-radius: 8px;
+    width: 60px;
+    height: 60px;
+    border-radius: 6px;
     overflow: hidden;
     border: 2px solid transparent;
     cursor: pointer;
-    transition: var(--transition);
     background: var(--bg-light);
 }
 
@@ -473,9 +191,9 @@ header.show {
     padding: 5px;
 }
 
-/* PRODUCT INFO */
+/* PRODUCT INFO - COMPACT */
 .product-info h1 {
-    font-size: 22px;
+    font-size: 18px;
     margin-bottom: 8px;
     color: var(--stone-dark);
     font-family: 'Roboto Slab', serif;
@@ -485,110 +203,215 @@ header.show {
 .product-category-badge {
     display: inline-block;
     background: var(--bg-light);
-    color: var(--primary-gold);
-    padding: 4px 12px;
-    border-radius: 15px;
+    color: var(--text-dark);
+    padding: 4px 10px;
+    border-radius: 12px;
     font-size: 12px;
-    font-weight: 500;
-    margin-bottom: 15px;
-    border: 1px solid rgba(201, 162, 39, 0.3);
+    margin-bottom: 10px;
+    border: 1px solid var(--border-color);
 }
 
 .price-section {
-    margin-bottom: 15px;
+    margin-bottom: 12px;
+    padding: 10px;
+    background: linear-gradient(135deg, #fff8e1, #fff3cd);
+    border-radius: 8px;
+    border-left: 3px solid var(--primary-gold);
 }
 
 .price-value {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 700;
     color: var(--primary-gold);
-    font-family: 'Roboto Slab', serif;
 }
 
 .price-unit {
-    font-size: 13px;
-    color: var(--text-light);
+    font-size: 12px;
+    color: var(--gold-dark);
 }
 
 .product-description {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     line-height: 1.5;
     color: var(--text-dark);
-    font-size: 14px;
-}
-
-/* SPECIFICATIONS */
-.specifications-section {
-    background: var(--bg-light);
-    padding: 15px;
-    border-radius: var(--border-radius);
-    margin-bottom: 20px;
-}
-
-.section-title {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 12px;
-    color: var(--stone-dark);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.section-title i {
-    color: var(--primary-gold);
-    font-size: 14px;
-}
-
-.specs-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-}
-
-.spec-item {
-    background: var(--white);
+    font-size: 13px;
     padding: 10px;
+    background: var(--bg-light);
     border-radius: 8px;
 }
 
+/* SPECIFICATIONS - SIMPLE */
+.specs-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.spec-item {
+    background: var(--bg-light);
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 12px;
+}
+
 .spec-label {
-    font-size: 11px;
+    font-weight: 600;
     color: var(--text-light);
     margin-bottom: 3px;
 }
 
 .spec-value {
-    font-size: 13px;
-    font-weight: 500;
+    color: var(--text-dark);
+}
+
+/* ACTION BUTTONS - STICKY AT BOTTOM */
+.action-buttons {
+    position: fixed;
+    bottom: 60px;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    padding: 10px;
+    display: flex;
+    gap: 10px;
+    z-index: 100;
+    border-top: 1px solid var(--border-color);
+}
+
+.btn-primary {
+    flex: 1;
+    padding: 12px;
+    background: var(--primary-gold);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-secondary {
+    flex: 1;
+    padding: 12px;
+    background: #2c3e50;
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* BOTTOM NAV */
+.bottom-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #000;
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0;
+    z-index: 999;
+    height: 60px;
+}
+
+.nav-btn {
+    text-align: center;
+    font-size: 10px;
+    color: #888;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    text-decoration: none;
+    min-width: 55px;
+}
+
+.nav-btn.active {
+    color: var(--primary-gold);
+}
+
+.nav-btn i {
+    font-size: 16px;
+}
+
+/* MODAL STYLES */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--white);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.modal-header {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    font-size: 16px;
     color: var(--stone-dark);
 }
 
-/* SMART CALCULATOR */
-.calculator-section {
-    background: var(--bg-light);
-    padding: 15px;
-    border-radius: var(--border-radius);
-    margin-bottom: 20px;
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--text-light);
 }
 
+.modal-body {
+    padding: 15px;
+}
+
+/* CALCULATOR IN MODAL */
 .calculator-tabs {
     display: flex;
     gap: 8px;
     margin-bottom: 15px;
-    flex-wrap: wrap;
 }
 
 .calc-tab {
-    padding: 8px 15px;
-    border-radius: 20px;
-    border: 1px solid #e0e0e0;
+    flex: 1;
+    padding: 8px;
+    border: 1px solid var(--border-color);
     background: var(--white);
-    color: var(--text-dark);
-    font-size: 12px;
-    font-weight: 500;
+    border-radius: 8px;
     cursor: pointer;
-    transition: var(--transition);
+    text-align: center;
+    font-size: 12px;
 }
 
 .calc-tab.active {
@@ -598,497 +421,48 @@ header.show {
 }
 
 .calculator-inputs {
-    display: grid;
-    gap: 12px;
-}
-
-.input-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    margin-bottom: 15px;
 }
 
 .input-group {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+    margin-bottom: 10px;
 }
 
 .input-group label {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--stone-dark);
-}
-
-.input-group input, .input-group select {
-    padding: 10px 12px;
-    border-radius: 8px;
-    border: 1px solid #e0e0e0;
+    display: block;
+    margin-bottom: 5px;
     font-size: 13px;
-    background: var(--white);
-    transition: var(--transition);
+    color: var(--text-dark);
 }
 
-.input-group input:focus, .input-group select:focus {
-    outline: none;
-    border-color: var(--primary-gold);
-    box-shadow: 0 0 0 2px rgba(201, 162, 39, 0.1);
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 14px;
 }
 
 .calculation-result {
-    background: var(--white);
+    background: #2c3e50;
+    color: var(--white);
     padding: 15px;
-    border-radius: 10px;
+    border-radius: 8px;
     margin-top: 15px;
-    border-left: 3px solid var(--primary-gold);
 }
 
-.calculation-row {
+.result-row {
     display: flex;
     justify-content: space-between;
-    align-items: center;
     margin-bottom: 8px;
-    padding-bottom: 8px;
-    border-bottom: 1px dashed #eee;
-}
-
-.calculation-row:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
-    font-weight: 600;
-    color: var(--primary-gold);
-}
-
-.calculation-label {
     font-size: 13px;
-    color: var(--text-light);
 }
 
-.calculation-value {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--stone-dark);
-}
-
-.shipping-note {
-    font-size: 11px;
-    color: var(--text-light);
-    margin-top: 10px;
-    padding: 8px;
-    background: #f9f9f9;
-    border-radius: 6px;
-    border-left: 2px solid var(--primary-gold);
-}
-
-/* PAYMENT INFO */
-.payment-info-box {
-    background: linear-gradient(135deg, #fff8e1, #fff3cd);
-    padding: 15px;
-    border-radius: var(--border-radius);
-    margin-bottom: 20px;
-    border: 1px solid rgba(201, 162, 39, 0.3);
-}
-
-.payment-steps {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.payment-step {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px;
-    background: rgba(255, 255, 255, 0.7);
-    border-radius: 8px;
-}
-
-.step-number {
-    width: 24px;
-    height: 24px;
-    background: var(--primary-gold);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.result-row.total {
     font-weight: 600;
-    font-size: 12px;
-    flex-shrink: 0;
-}
-
-.step-content h5 {
-    font-size: 13px;
-    margin-bottom: 2px;
-    color: var(--stone-dark);
-}
-
-.step-content p {
-    font-size: 11px;
-    color: var(--text-light);
-}
-
-/* ACTION BUTTONS */
-.action-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-    position: sticky;
-    bottom: 65px;
-    background: var(--white);
-    padding: 15px 0;
-    z-index: 10;
-}
-
-.action-btn-large {
-    flex: 1;
-    padding: 12px 15px;
-    border-radius: 10px;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    font-size: 14px;
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, var(--primary-gold), var(--gold-dark));
-    color: var(--white);
-}
-
-.btn-primary:hover {
-    opacity: 0.9;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(201, 162, 39, 0.3);
-}
-
-.btn-secondary {
-    background: var(--bg-light);
-    color: var(--text-dark);
-    border: 2px solid #e0e0e0;
-}
-
-.btn-secondary:hover {
-    background: #f0f0f0;
-    border-color: var(--primary-gold);
-}
-
-/* CUSTOM REQUIREMENTS */
-.custom-requirements {
-    margin: 15px 0;
-}
-
-.custom-requirements textarea {
-    width: 100%;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #e0e0e0;
-    font-size: 13px;
-    resize: vertical;
-    min-height: 80px;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    padding-top: 8px;
     margin-top: 8px;
-    transition: var(--transition);
-}
-
-.custom-requirements textarea:focus {
-    outline: none;
-    border-color: var(--primary-gold);
-    box-shadow: 0 0 0 2px rgba(201, 162, 39, 0.1);
-}
-
-/* SIMILAR PRODUCTS SECTION */
-.similar-products {
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 1px solid #eee;
-}
-
-.similar-products h2 {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 15px;
-    color: var(--stone-dark);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.similar-products h2 i {
-    color: var(--primary-gold);
-}
-
-/* FILTER CONTROLS FOR SIMILAR PRODUCTS */
-.filter-controls {
-    display: flex;
-    overflow-x: auto;
-    gap: 8px;
-    padding: 3px 0 10px;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-    margin-bottom: 15px;
-}
-
-.filter-controls::-webkit-scrollbar {
-    display: none;
-}
-
-.filter-select {
-    padding: 7px 12px;
-    border-radius: 15px;
-    border: 1px solid #e0e0e0;
-    background: var(--white);
-    color: var(--text-dark);
-    font-size: 11px;
-    cursor: pointer;
-    min-width: 120px;
-    flex-shrink: 0;
-    transition: var(--transition);
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 8px center;
-    background-size: 12px;
-    padding-right: 30px;
-}
-
-.filter-select:focus {
-    outline: none;
-    border-color: var(--primary-gold);
-    box-shadow: 0 0 0 2px rgba(201, 162, 39, 0.1);
-}
-
-.filter-select:hover {
-    border-color: var(--primary-gold);
-}
-
-/* SIMILAR PRODUCTS GRID - SAME AS HOME PAGE */
-.similar-products-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-}
-
-.similar-product-card {
-    background: var(--white);
-    border-radius: 10px;
-    box-shadow: var(--shadow-sm);
-    transition: var(--transition);
-    border: 1px solid #f0f0f0;
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    text-decoration: none;
-    color: inherit;
-    display: block;
-    height: 220px;
-}
-
-.similar-product-card:hover {
-    border-color: var(--primary-gold);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-3px);
-}
-
-.similar-product-image-container {
-    width: 100%;
-    height: 140px;
-    overflow: hidden;
-    position: relative;
-    background: #f5f5f5;
-}
-
-.similar-product-image {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    padding: 10px;
-    transition: transform 0.5s ease;
-    background: #f8f9fa;
-}
-
-.similar-product-card:hover .similar-product-image {
-    transform: scale(1.05);
-}
-
-.add-cart-icon {
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    width: 28px;
-    height: 28px;
-    background: var(--primary-gold);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    opacity: 0;
-    transform: translateY(-5px);
-    transition: all 0.3s ease;
-    z-index: 2;
-    border: none;
-    box-shadow: var(--shadow-sm);
-    font-size: 12px;
-}
-
-.similar-product-card:hover .add-cart-icon {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.add-cart-icon:hover {
-    background: var(--gold-dark);
-    transform: scale(1.05) !important;
-}
-
-.similar-product-info-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-    color: white;
-    padding: 10px 8px;
-    transform: translateY(0);
-    transition: transform 0.3s ease;
-    border-radius: 0 0 10px 10px;
-}
-
-.similar-product-name {
-    font-size: 12px;
-    font-weight: 600;
-    margin-bottom: 4px;
-    font-family: 'Roboto Slab', serif;
-    line-height: 1.2;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.similar-product-price {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--gold-light);
-    font-family: 'Roboto Slab', serif;
-}
-
-.similar-product-category {
-    font-size: 10px;
-    color: rgba(255, 255, 255, 0.8);
-    margin-top: 2px;
-}
-
-.no-products {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--text-light);
-}
-
-.no-products i {
-    font-size: 40px;
-    margin-bottom: 15px;
-    opacity: 0.5;
-    color: var(--primary-gold);
-}
-
-.no-products h3 {
-    font-size: 16px;
-    margin-bottom: 10px;
-    color: var(--stone-dark);
-}
-
-.no-products p {
-    font-size: 13px;
-    max-width: 300px;
-    margin: 0 auto;
-    line-height: 1.5;
-}
-
-/* BOTTOM NAVIGATION */
-.bottom-nav {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.95);
-    backdrop-filter: blur(15px);
-    display: flex;
-    justify-content: space-around;
-    padding: 10px 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    z-index: 999;
-    box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
-    transform: translateY(0);
-    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), background 0.3s ease;
-    height: 65px;
-}
-
-.bottom-nav.scrolled {
-    background: rgba(0, 0, 0, 0.98);
-    backdrop-filter: blur(20px);
-}
-
-.bottom-nav.hidden {
-    transform: translateY(100%);
-}
-
-.bottom-nav.show {
-    transform: translateY(0);
-    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.nav-btn {
-    text-align: center;
-    font-size: 10px;
-    color: rgba(255, 255, 255, 0.8);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-    transition: var(--transition);
-    cursor: pointer;
-    padding: 6px 10px;
-    border-radius: 8px;
-    min-width: 55px;
-    text-decoration: none;
-    height: 45px;
-    justify-content: center;
-}
-
-.nav-btn:hover, .nav-btn.active {
-    color: var(--primary-gold);
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.nav-btn i {
-    font-size: 16px;
-}
-
-.bottom-cart-badge {
-    position: absolute;
-    top: -2px;
-    right: -2px;
-    background: #ff4757;
-    color: var(--white);
-    font-size: 9px;
-    font-weight: 600;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    display: none;
 }
 
 /* LOADING & NOTIFICATION */
@@ -1100,7 +474,7 @@ header.show {
     transform: translate(-50%, -50%);
     width: 40px;
     height: 40px;
-    border: 3px solid rgba(201, 162, 39, 0.3);
+    border: 3px solid rgba(201, 162, 39, 0.2);
     border-radius: 50%;
     border-top-color: var(--primary-gold);
     animation: spin 1s ease-in-out infinite;
@@ -1113,125 +487,95 @@ header.show {
 
 .notification {
     position: fixed;
-    top: 15px;
-    right: 15px;
+    top: 20px;
+    right: 20px;
     background: var(--primary-gold);
     color: white;
-    padding: 10px 15px;
-    border-radius: 6px;
-    box-shadow: var(--shadow-md);
+    padding: 12px 16px;
+    border-radius: 8px;
     z-index: 9999;
-    transform: translateX(100%);
-    transition: transform 0.3s ease;
-    max-width: 250px;
     display: none;
     font-size: 13px;
 }
 
-.notification.show {
-    transform: translateX(0);
-    display: block;
+/* FULLSCREEN IMAGE VIEWER */
+.fullscreen-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 9998;
+    align-items: center;
+    justify-content: center;
+}
+
+.fullscreen-modal.active {
+    display: flex;
+}
+
+.fullscreen-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.fullscreen-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    background: rgba(0,0,0,0.5);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* RESPONSIVE */
 @media (min-width: 768px) {
-    .breadcrumb {
-        padding: 75px 20px 20px;
-        margin-top: 65px;
-    }
-    
-    .product-details-container {
-        padding: 30px 20px;
-        max-width: 1200px;
-        margin: 0 auto;
+    .product-container {
+        max-width: 1000px;
+        margin: 55px auto 0;
+        padding: 20px;
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 30px;
     }
     
-    .product-gallery {
-        margin-bottom: 0;
-    }
-    
     .main-image-wrapper {
-        height: 400px;
+        height: 350px;
     }
     
-    .thumbnail {
-        width: 80px;
-        height: 80px;
+    .product-info h1 {
+        font-size: 22px;
     }
     
-    .similar-products-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 15px;
-    }
-    
-    .similar-product-card {
-        height: 240px;
-    }
-    
-    .similar-product-image-container {
-        height: 160px;
-    }
-}
-
-@media (min-width: 1024px) {
-    .product-details-container {
-        grid-template-columns: 1fr 1fr;
-        gap: 40px;
-    }
-    
-    .main-image-wrapper {
-        height: 450px;
-    }
-    
-    .similar-products-grid {
-        grid-template-columns: repeat(4, 1fr);
+    .action-buttons {
+        position: static;
+        margin-top: 20px;
+        border-top: none;
     }
 }
 
 @media (max-width: 480px) {
-    .breadcrumb {
-        padding: 55px 12px 12px;
-        margin-top: 55px;
-    }
-    
-    .product-info h1 {
-        font-size: 20px;
-    }
-    
     .main-image-wrapper {
-        height: 250px;
+        height: 220px;
     }
     
     .thumbnail {
-        width: 60px;
-        height: 60px;
+        width: 50px;
+        height: 50px;
     }
     
     .specs-grid {
         grid-template-columns: 1fr;
-    }
-    
-    .similar-products-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .similar-product-card {
-        height: 200px;
-    }
-    
-    .similar-product-image-container {
-        height: 120px;
-    }
-    
-    .similar-product-name {
-        font-size: 11px;
-    }
-    
-    .similar-product-price {
-        font-size: 12px;
     }
 }
 </style>
@@ -1247,21 +591,32 @@ header.show {
 
 <!-- Fullscreen Image Modal -->
 <div class="fullscreen-modal" id="fullscreenModal">
-    <div class="fullscreen-image-container">
-        <img src="" alt="" class="fullscreen-image" id="fullscreenImage">
-        <div class="image-counter" id="imageCounter">1 / 1</div>
-    </div>
-    <div class="modal-nav">
-        <button class="modal-nav-btn" onclick="prevImage()">
-            <i class="fas fa-chevron-left"></i>
-        </button>
-        <button class="modal-nav-btn" onclick="nextImage()">
-            <i class="fas fa-chevron-right"></i>
-        </button>
-    </div>
-    <button class="close-modal" onclick="closeFullscreenModal()">
+    <div class="fullscreen-close" onclick="closeFullscreenModal()">
         <i class="fas fa-times"></i>
-    </button>
+    </div>
+    <img src="" alt="" class="fullscreen-image" id="fullscreenImage">
+</div>
+
+<!-- Buy Now Calculator Modal -->
+<div class="modal-overlay" id="buyNowModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-calculator"></i> Calculate & Buy Now</h3>
+            <button class="close-modal" onclick="closeBuyNowModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div id="modalCalculatorContent">
+                <!-- Calculator will be loaded here -->
+            </div>
+            <div class="action-buttons" style="position: static; margin-top: 20px;">
+                <button class="btn-primary" onclick="proceedToCheckout()">
+                    <i class="fas fa-shopping-bag"></i> Proceed to Checkout
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Header -->
@@ -1271,56 +626,28 @@ header.show {
         <span>IRYA STONE</span>
     </div>
 
-    <!-- Search -->
     <div class="search-box">
-        <input type="text" placeholder="Search for sandstone, kota stone..." id="searchInput">
+        <input type="text" placeholder="Search..." id="searchInput">
         <i class="fas fa-search" id="searchIcon"></i>
-        <div class="search-results" id="searchResults"></div>
     </div>
 
     <div style="display: flex; gap: 8px; align-items: center;">
-        <!-- Notifications -->
-        <a href="#" class="action-btn" id="notificationBtn" onclick="viewNotifications(event)" style="position: relative;">
-            <i class="fas fa-bell"></i>
-            <span class="notification-badge" id="notificationBadge">0</span>
-        </a>
-        
-        <!-- Cart -->
         <a href="cart.html" class="action-btn" style="position: relative;">
             <i class="fas fa-shopping-cart"></i>
             <span class="cart-badge" id="cartBadge">0</span>
         </a>
-        
-        <!-- Home -->
-        <a href="index.html" class="action-btn" title="Back to Home">
+        <a href="index.html" class="action-btn">
             <i class="fas fa-home"></i>
         </a>
     </div>
 </header>
 
-<!-- Breadcrumb -->
-<section class="breadcrumb">
-    <div class="breadcrumb-content">
-        <div class="breadcrumb-item">
-            <a href="index.html"><i class="fas fa-home"></i> Home</a>
-        </div>
-        <div class="breadcrumb-divider">
-            <i class="fas fa-chevron-right"></i>
-        </div>
-        <div class="breadcrumb-item active" id="productNameBreadcrumb">
-            Product Details
-        </div>
-    </div>
-</section>
-
 <!-- Product Details -->
-<section class="product-details-container">
-    <!-- Product Gallery with Fullscreen View -->
+<div class="product-container">
+    <!-- Product Gallery -->
     <div class="product-gallery">
-        <div class="main-image-wrapper" id="mainImageWrapper" onclick="openFullscreenModal(0)">
-            <div class="main-image-container">
-                <img src="" alt="" class="main-image" id="mainProductImage">
-            </div>
+        <div class="main-image-wrapper" onclick="openFullscreenModal()">
+            <img src="" alt="" class="main-image" id="mainProductImage">
         </div>
         
         <div class="thumbnails-container" id="thumbnailContainer">
@@ -1332,52 +659,26 @@ header.show {
     <div class="product-info" id="productInfo">
         <!-- Product info will be loaded here -->
     </div>
-</section>
+</div>
 
-<!-- Similar Products -->
-<section class="similar-products" id="similarProductsSection" style="display: none;">
-    <h2><i class="fas fa-gem"></i> Similar Products</h2>
-    
-    <!-- Filter Controls -->
-    <div class="filter-controls">
-        <select id="similarCategoryFilter" class="filter-select" onchange="applySimilarFilters()">
-            <option value="all">All Categories</option>
-        </select>
-        
-        <select id="similarPriceFilter" class="filter-select" onchange="applySimilarFilters()">
-            <option value="all">All Prices</option>
-            <option value="0-25">Under £25</option>
-            <option value="25-50">£25 - £50</option>
-            <option value="50-100">£50 - £100</option>
-            <option value="100-250">£100 - £250</option>
-            <option value="250+">Over £250</option>
-        </select>
-        
-        <select id="similarColorFilter" class="filter-select" onchange="applySimilarFilters()">
-            <option value="all">All Colors</option>
-        </select>
-        
-        <select id="similarSortFilter" class="filter-select" onchange="applySimilarFilters()">
-            <option value="newest">Newest First</option>
-            <option value="price_low">Price: Low to High</option>
-            <option value="price_high">Price: High to Low</option>
-            <option value="name">Name A-Z</option>
-        </select>
-    </div>
-    
-    <div class="similar-products-grid" id="similarProductsGrid">
-        <!-- Similar products will be loaded here -->
-    </div>
-</section>
+<!-- Action Buttons -->
+<div class="action-buttons">
+    <button class="btn-primary" onclick="addToCart()">
+        <i class="fas fa-cart-plus"></i> Add to Cart
+    </button>
+    <button class="btn-secondary" onclick="openBuyNowModal()">
+        <i class="fas fa-bolt"></i> Buy Now
+    </button>
+</div>
 
-<!-- Bottom Menu -->
-<div class="bottom-nav" id="bottomNav">
+<!-- Bottom Navigation -->
+<div class="bottom-nav">
     <a href="index.html" class="nav-btn">
         <i class="fas fa-home"></i>
         <span>Home</span>
     </a>
     <a href="products.html" class="nav-btn active">
-        <i class="fas fa-th-large"></i>
+        <i class="fas fa-gem"></i>
         <span>Products</span>
     </a>
     <a href="account.html" class="nav-btn">
@@ -1387,7 +688,7 @@ header.show {
     <a href="cart.html" class="nav-btn" style="position: relative;">
         <i class="fas fa-shopping-cart"></i>
         <span>Cart</span>
-        <span class="bottom-cart-badge" id="bottomCartBadge">0</span>
+        <span class="cart-badge" id="bottomCartBadge">0</span>
     </a>
 </div>
 
@@ -1414,129 +715,15 @@ const firebaseConfig = {
 let firebaseApp, firebaseDB, firebaseAuth;
 let currentProduct = null;
 let allProducts = [];
-let similarProducts = [];
-let currentImageIndex = 0;
 
 // ============================================
-// AUTHENTICATION SYSTEM
-// ============================================
-
-class AuthSystem {
-    constructor() {
-        this.currentUser = null;
-        this.authKey = 'irya_stone_user';
-        this.guestIdKey = 'irya_guest_id';
-    }
-    
-    async init() {
-        try {
-            // First initialize Firebase
-            if (!firebaseApp) {
-                await this.initializeFirebase();
-            }
-            
-            // Listen for auth state changes
-            return new Promise((resolve) => {
-                firebaseAuth.onAuthStateChanged((user) => {
-                    if (user) {
-                        console.log("Firebase User Authenticated:", user.uid);
-                        this.currentUser = {
-                            uid: user.uid,
-                            displayName: user.displayName || 'User',
-                            email: user.email,
-                            isFirebaseUser: true
-                        };
-                        this.saveUserToStorage();
-                    } else {
-                        this.currentUser = this.getUserFromStorage();
-                        if (!this.currentUser) {
-                            this.currentUser = this.createGuestUser();
-                            this.saveUserToStorage();
-                        }
-                    }
-                    resolve(this.currentUser);
-                });
-            });
-        } catch (error) {
-            console.error('Auth init error:', error);
-            this.currentUser = this.getUserFromStorage() || this.createGuestUser();
-            return this.currentUser;
-        }
-    }
-    
-    async initializeFirebase() {
-        try {
-            if (typeof firebase === 'undefined') {
-                throw new Error('Firebase SDK not loaded');
-            }
-            
-            if (!firebase.apps.length) {
-                firebaseApp = firebase.initializeApp(firebaseConfig);
-            } else {
-                firebaseApp = firebase.app();
-            }
-            
-            firebaseDB = firebase.firestore();
-            firebaseAuth = firebase.auth();
-            
-            return true;
-        } catch (error) {
-            console.error('Firebase initialization error:', error);
-            throw error;
-        }
-    }
-    
-    saveUserToStorage() {
-        if (this.currentUser) {
-            localStorage.setItem(this.authKey, JSON.stringify(this.currentUser));
-        }
-    }
-    
-    getUserFromStorage() {
-        const userData = localStorage.getItem(this.authKey);
-        return userData ? JSON.parse(userData) : null;
-    }
-    
-    createGuestUser() {
-        let guestId = localStorage.getItem(this.guestIdKey);
-        if (!guestId) {
-            guestId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem(this.guestIdKey, guestId);
-        }
-        
-        return {
-            uid: guestId,
-            displayName: 'Guest',
-            email: '',
-            isFirebaseUser: false,
-            isGuest: true
-        };
-    }
-    
-    getUserId() {
-        return this.currentUser ? this.currentUser.uid : this.createGuestUser().uid;
-    }
-    
-    isLoggedIn() {
-        return this.currentUser && this.currentUser.isFirebaseUser === true;
-    }
-    
-    isGuest() {
-        return !this.isLoggedIn();
-    }
-}
-
-// ============================================
-// CART SYSTEM - UPDATED FOR BUY NOW FIX
+// CART SYSTEM
 // ============================================
 
 class CartSystem {
-    constructor(authSystem) {
-        this.authSystem = authSystem;
-        this.localCartKey = 'irya_local_cart';
-        this.buyNowCartKey = 'irya_buynow_cart';
+    constructor() {
+        this.localCartKey = 'irya_cart';
         this.cartItems = [];
-        this.buyNowItems = [];
     }
     
     async init() {
@@ -1545,82 +732,44 @@ class CartSystem {
         return this;
     }
     
-    getUserId() {
-        return this.authSystem ? this.authSystem.getUserId() : this.createGuestId();
-    }
-    
-    createGuestId() {
-        let guestId = localStorage.getItem('irya_guest_id');
-        if (!guestId) {
-            guestId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('irya_guest_id', guestId);
-        }
-        return guestId;
-    }
-    
     async loadCart() {
         try {
-            const userId = this.getUserId();
-            
-            // Load regular cart
-            const cartKey = this.localCartKey + '_' + userId;
-            const cartData = localStorage.getItem(cartKey);
+            const cartData = localStorage.getItem(this.localCartKey);
             this.cartItems = cartData ? JSON.parse(cartData) : [];
-            
-            // Load buy now cart
-            const buyNowKey = this.buyNowCartKey + '_' + userId;
-            const buyNowData = localStorage.getItem(buyNowKey);
-            this.buyNowItems = buyNowData ? JSON.parse(buyNowData) : [];
-            
-            return { cartItems: this.cartItems, buyNowItems: this.buyNowItems };
-            
+            return this.cartItems;
         } catch (error) {
             console.error('Error loading cart:', error);
             this.cartItems = [];
-            this.buyNowItems = [];
-            return { cartItems: [], buyNowItems: [] };
+            return [];
         }
     }
     
     async saveCart() {
-        try {
-            const userId = this.getUserId();
-            const cartKey = this.localCartKey + '_' + userId;
-            localStorage.setItem(cartKey, JSON.stringify(this.cartItems));
-            this.updateCartBadge();
-            return true;
-        } catch (error) {
-            console.error('Error saving cart:', error);
-            return false;
-        }
+        localStorage.setItem(this.localCartKey, JSON.stringify(this.cartItems));
+        this.updateCartBadge();
+        return true;
     }
     
     async addToCart(product, quantity = 1, calculationData = null, customRequirements = '') {
         try {
-            console.log(`📦 Adding to cart: ${product.stone_name}`);
+            console.log(`Adding to cart: ${product.stone_name}`);
             
             const existingIndex = this.cartItems.findIndex(item => item.id === product.id);
             
             if (existingIndex !== -1) {
                 this.cartItems[existingIndex].quantity += quantity;
-                this.cartItems[existingIndex].updatedAt = new Date().toISOString();
             } else {
                 const newItem = {
                     id: product.id,
                     name: product.stone_name,
-                    stoneName: product.stone_name,
                     price: parseFloat(product.price) || 0,
                     priceUnit: product.price_unit || 'piece',
                     image: getProductImage(product),
                     category: product.category || 'Natural Stone',
-                    description: product.description || '',
                     quantity: quantity,
                     addedAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
                     calculationData: calculationData,
-                    customRequirements: customRequirements || '',
-                    manuallyAdded: true,
-                    totalPrice: this.calculateTotalPrice(product, quantity, calculationData)
+                    customRequirements: customRequirements || ''
                 };
                 
                 this.cartItems.push(newItem);
@@ -1638,64 +787,29 @@ class CartSystem {
     
     async processBuyNow(product, quantity = 1, calculationData = null, customRequirements = '') {
         try {
-            const userId = this.getUserId();
-            console.log("🛒 Processing Buy Now for user:", userId);
+            console.log("Processing Buy Now for:", product.stone_name);
             
-            const itemId = `BUYNOW_${product.id}_${Date.now()}`;
-            
-            // Create Buy Now item - SIMPLE STRUCTURE
             const buyNowItem = {
                 id: product.id,
-                uniqueId: itemId,
-                stone_name: product.stone_name || product.name,
-                name: product.stone_name || product.name,
+                name: product.stone_name,
                 price: parseFloat(product.price) || 0,
                 priceUnit: product.price_unit || 'piece',
                 image: getProductImage(product),
-                category: product.category || 'Natural Stone',
-                description: product.description || '',
                 quantity: quantity,
-                addedAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-                userId: userId,
                 calculationData: calculationData,
                 customRequirements: customRequirements || '',
                 isBuyNow: true,
                 totalPrice: this.calculateTotalPrice(product, quantity, calculationData)
             };
             
-            console.log("✅ Buy Now item created:", buyNowItem);
-            
-            // ✅ FIX: SAVE TO MULTIPLE LOCATIONS FOR REDUNDANCY
-            const buyNowKey = this.buyNowCartKey + '_' + userId;
-            
-            // 1. Save to localStorage with user-specific key
-            localStorage.setItem(buyNowKey, JSON.stringify([buyNowItem]));
-            console.log("✅ Saved to localStorage with user key");
-            
-            // 2. Save to sessionStorage (primary for checkout)
+            // Save to sessionStorage for checkout
             sessionStorage.setItem('irya_buynow_product', JSON.stringify(buyNowItem));
-            sessionStorage.setItem('irya_current_buynow', JSON.stringify(buyNowItem));
-            console.log("✅ Saved to sessionStorage");
-            
-            // 3. Save to universal buy now key (fallback)
-            localStorage.setItem('irya_current_buynow', JSON.stringify(buyNowItem));
-            console.log("✅ Saved to universal localStorage key");
-            
-            // 4. Save user info for checkout
-            sessionStorage.setItem('irya_checkout_user_id', userId);
             sessionStorage.setItem('irya_is_buynow_flow', 'true');
-            sessionStorage.setItem('irya_buynow_product_id', product.id);
-            sessionStorage.setItem('irya_buynow_quantity', quantity.toString());
-            sessionStorage.setItem('irya_buynow_calc_data', JSON.stringify(calculationData));
-            sessionStorage.setItem('irya_buynow_custom_req', customRequirements);
             
-            console.log("✅ All Buy Now data saved successfully");
-            
+            console.log("Buy Now data saved");
             return true;
         } catch (error) {
-            console.error('❌ Buy Now error:', error);
-            showError('Failed to process Buy Now');
+            console.error('Buy Now error:', error);
             return false;
         }
     }
@@ -1731,9 +845,7 @@ class CartSystem {
     }
     
     getCartCount() {
-        const regularCount = this.cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
-        const buyNowCount = this.buyNowItems.reduce((total, item) => total + (item.quantity || 1), 0);
-        return regularCount + buyNowCount;
+        return this.cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
     }
     
     updateCartBadge() {
@@ -1757,16 +869,13 @@ class CartSystem {
 // FULLSCREEN IMAGE VIEWER
 // ============================================
 
-function openFullscreenModal(index) {
+function openFullscreenModal() {
     if (!currentProduct || !currentProduct.images || currentProduct.images.length === 0) return;
     
-    currentImageIndex = index;
     const fullscreenImage = document.getElementById('fullscreenImage');
-    const imageCounter = document.getElementById('imageCounter');
     const modal = document.getElementById('fullscreenModal');
     
-    fullscreenImage.src = currentProduct.images[currentImageIndex];
-    imageCounter.textContent = `${currentImageIndex + 1} / ${currentProduct.images.length}`;
+    fullscreenImage.src = currentProduct.images[0];
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
 }
@@ -1775,28 +884,6 @@ function closeFullscreenModal() {
     const modal = document.getElementById('fullscreenModal');
     modal.classList.remove('active');
     document.body.style.overflow = 'auto';
-}
-
-function nextImage() {
-    if (!currentProduct || !currentProduct.images) return;
-    
-    currentImageIndex = (currentImageIndex + 1) % currentProduct.images.length;
-    const fullscreenImage = document.getElementById('fullscreenImage');
-    const imageCounter = document.getElementById('imageCounter');
-    
-    fullscreenImage.src = currentProduct.images[currentImageIndex];
-    imageCounter.textContent = `${currentImageIndex + 1} / ${currentProduct.images.length}`;
-}
-
-function prevImage() {
-    if (!currentProduct || !currentProduct.images) return;
-    
-    currentImageIndex = (currentImageIndex - 1 + currentProduct.images.length) % currentProduct.images.length;
-    const fullscreenImage = document.getElementById('fullscreenImage');
-    const imageCounter = document.getElementById('imageCounter');
-    
-    fullscreenImage.src = currentProduct.images[currentImageIndex];
-    imageCounter.textContent = `${currentImageIndex + 1} / ${currentProduct.images.length}`;
 }
 
 // ============================================
@@ -1833,11 +920,9 @@ async function loadProductDetails(productId) {
             thickness: data.thickness || '',
             color: data.color || '',
             usage: data.usage || data.uses || 'General Use',
-            type: data.type || '',
-            images: [],
             min_order: data.min_order || 1,
             weight_per_unit: data.weight_per_unit || null,
-            area_per_unit: data.area_per_unit || null
+            images: []
         };
         
         if (data.images && Array.isArray(data.images) && data.images.length > 0) {
@@ -1849,7 +934,6 @@ async function loadProductDetails(productId) {
         }
         
         displayProductDetails();
-        await loadSimilarProducts();
         
     } catch (error) {
         console.error('Error loading product details:', error);
@@ -1863,14 +947,8 @@ function displayProductDetails() {
     const mainImage = document.getElementById('mainProductImage');
     const thumbnailContainer = document.getElementById('thumbnailContainer');
     const productInfo = document.getElementById('productInfo');
-    const breadcrumb = document.getElementById('productNameBreadcrumb');
     
     if (!currentProduct) return;
-    
-    // Update breadcrumb
-    if (breadcrumb) {
-        breadcrumb.textContent = currentProduct.stone_name;
-    }
     
     // Update main image
     if (mainImage && currentProduct.images.length > 0) {
@@ -1903,257 +981,170 @@ function displayProductDetails() {
                 ${currentProduct.description}
             </div>
             
-            <!-- Specifications -->
-            <div class="specifications-section">
-                <h3 class="section-title"><i class="fas fa-info-circle"></i> Specifications</h3>
-                <div class="specs-grid">
-                    ${currentProduct.color ? `
-                        <div class="spec-item">
-                            <div class="spec-label">Color</div>
-                            <div class="spec-value">${currentProduct.color}</div>
-                        </div>
-                    ` : ''}
-                    
-                    ${currentProduct.finish ? `
-                        <div class="spec-item">
-                            <div class="spec-label">Finish</div>
-                            <div class="spec-value">${currentProduct.finish}</div>
-                        </div>
-                    ` : ''}
-                    
-                    ${currentProduct.size ? `
-                        <div class="spec-item">
-                            <div class="spec-label">Size</div>
-                            <div class="spec-value">${currentProduct.size}</div>
-                        </div>
-                    ` : ''}
-                    
-                    ${currentProduct.thickness ? `
-                        <div class="spec-item">
-                            <div class="spec-label">Thickness</div>
-                            <div class="spec-value">${currentProduct.thickness}</div>
-                        </div>
-                    ` : ''}
-                    
-                    ${currentProduct.usage ? `
-                        <div class="spec-item">
-                            <div class="spec-label">Usage</div>
-                            <div class="spec-value">${currentProduct.usage}</div>
-                        </div>
-                    ` : ''}
-                </div>
-            </div>
-            
-            <!-- SMART CALCULATOR -->
-            <div class="calculator-section">
-                <h3 class="section-title"><i class="fas fa-calculator"></i> Smart Calculator</h3>
+            <div class="specs-grid">
+                ${currentProduct.color ? `
+                    <div class="spec-item">
+                        <div class="spec-label">Color</div>
+                        <div class="spec-value">${currentProduct.color}</div>
+                    </div>
+                ` : ''}
                 
-                <div class="calculator-tabs">
-                    <div class="calc-tab active" data-mode="piece" onclick="switchCalculatorMode('piece', this)">
-                        <i class="fas fa-cube"></i> Quantity
+                ${currentProduct.finish ? `
+                    <div class="spec-item">
+                        <div class="spec-label">Finish</div>
+                        <div class="spec-value">${currentProduct.finish}</div>
                     </div>
-                    <div class="calc-tab" data-mode="area" onclick="switchCalculatorMode('area', this)">
-                        <i class="fas fa-ruler-combined"></i> Area Wise
-                    </div>
-                    ${currentProduct.weight_per_unit ? `
-                        <div class="calc-tab" data-mode="weight" onclick="switchCalculatorMode('weight', this)">
-                            <i class="fas fa-weight"></i> Weight
-                        </div>
-                    ` : ''}
-                </div>
+                ` : ''}
                 
-                <!-- Calculator inputs will be loaded dynamically -->
-                <div id="calculatorInputs">
-                    <!-- Dynamic content -->
-                </div>
+                ${currentProduct.size ? `
+                    <div class="spec-item">
+                        <div class="spec-label">Size</div>
+                        <div class="spec-value">${currentProduct.size}</div>
+                    </div>
+                ` : ''}
                 
-                <div class="calculation-result" id="calculationResult">
-                    <!-- Results will be shown here -->
-                </div>
-                
-                <div class="shipping-note">
-                    <i class="fas fa-info-circle"></i> Shipping charges will be calculated at checkout based on location
-                </div>
-            </div>
-            
-            <!-- PAYMENT INFO -->
-            <div class="payment-info-box">
-                <h3 class="section-title"><i class="fas fa-credit-card"></i> Payment Terms</h3>
-                <div class="payment-steps">
-                    <div class="payment-step">
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <h5>30% Advance Payment</h5>
-                            <p>Pay 30% to confirm your order</p>
-                        </div>
+                ${currentProduct.usage ? `
+                    <div class="spec-item">
+                        <div class="spec-label">Usage</div>
+                        <div class="spec-value">${currentProduct.usage}</div>
                     </div>
-                    <div class="payment-step">
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <h5>Ready to Ship Status</h5>
-                            <p>We'll process and prepare for shipping</p>
-                        </div>
-                    </div>
-                    <div class="payment-step">
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <h5>70% Full Payment</h5>
-                            <p>Pay remaining 70% when ready to ship</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- CUSTOM REQUIREMENTS -->
-            <div class="custom-requirements">
-                <h3 class="section-title"><i class="fas fa-edit"></i> Custom Requirements</h3>
-                <textarea id="customRequirements" 
-                          placeholder="Enter any special requirements, dimensions, or custom specifications..."></textarea>
-            </div>
-            
-            <!-- ACTION BUTTONS -->
-            <div class="action-buttons">
-                <button class="action-btn-large btn-primary" onclick="addToCart()">
-                    <i class="fas fa-cart-plus"></i>
-                    Add to Cart
-                </button>
-                <button class="action-btn-large btn-secondary" onclick="buyNow()">
-                    <i class="fas fa-bolt"></i>
-                    Buy Now
-                </button>
+                ` : ''}
             </div>
         `;
+    }
+}
+
+// ============================================
+// BUY NOW MODAL FUNCTIONS
+// ============================================
+
+function openBuyNowModal() {
+    if (!currentProduct) return;
+    
+    const modalContent = document.getElementById('modalCalculatorContent');
+    modalContent.innerHTML = `
+        <h4 style="margin-bottom: 15px; font-size: 15px;">${currentProduct.stone_name}</h4>
         
-        // Initialize calculator
-        switchCalculatorMode('piece');
-        calculatePrice();
-    }
+        <div class="calculator-tabs">
+            <div class="calc-tab active" data-mode="piece" onclick="switchCalcMode('piece', this)">
+                Quantity
+            </div>
+            <div class="calc-tab" data-mode="area" onclick="switchCalcMode('area', this)">
+                Area Wise
+            </div>
+            ${currentProduct.weight_per_unit ? `
+                <div class="calc-tab" data-mode="weight" onclick="switchCalcMode('weight', this)">
+                    Weight Wise
+                </div>
+            ` : ''}
+        </div>
+        
+        <div id="calculatorInputs">
+            <div class="input-group">
+                <label>Quantity</label>
+                <input type="number" id="calcQuantity" min="${currentProduct.min_order}" 
+                       value="${currentProduct.min_order}" oninput="calculateModalPrice()">
+            </div>
+        </div>
+        
+        <div id="calculationResult" class="calculation-result">
+            <!-- Results will be shown here -->
+        </div>
+    `;
+    
+    document.getElementById('buyNowModal').classList.add('active');
+    calculateModalPrice();
 }
 
-// ============================================
-// CALCULATOR FUNCTIONS
-// ============================================
-
-let currentCalcMode = 'piece';
-
-function switchCalculatorMode(mode, element = null) {
-    currentCalcMode = mode;
-    
-    // Update active tab
-    document.querySelectorAll('.calc-tab').forEach(tab => {
-        tab.classList.remove('active');
-    });
-    if (element) {
-        element.classList.add('active');
-    }
-    
-    // Update calculator inputs
-    updateCalculatorInputs();
-    calculatePrice();
+function closeBuyNowModal() {
+    document.getElementById('buyNowModal').classList.remove('active');
 }
 
-function updateCalculatorInputs() {
+function switchCalcMode(mode, element) {
+    document.querySelectorAll('.calc-tab').forEach(tab => tab.classList.remove('active'));
+    element.classList.add('active');
+    
     const calculatorInputs = document.getElementById('calculatorInputs');
-    
     let inputsHTML = '';
     
-    switch(currentCalcMode) {
+    switch(mode) {
         case 'area':
             inputsHTML = `
-                <div class="calculator-inputs">
-                    <div class="input-row">
-                        <div class="input-group">
-                            <label>Length (ft)</label>
-                            <input type="number" id="lengthInput" min="0.1" step="0.01" value="1" 
-                                   oninput="calculatePrice()" placeholder="Enter length">
-                        </div>
-                        <div class="input-group">
-                            <label>Width (ft)</label>
-                            <input type="number" id="widthInput" min="0.1" step="0.01" value="1" 
-                                   oninput="calculatePrice()" placeholder="Enter width">
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <label>Quantity</label>
-                        <input type="number" id="quantityInput" min="${currentProduct.min_order}" step="1" 
-                               value="${currentProduct.min_order}" oninput="calculatePrice()">
-                    </div>
+                <div class="input-group">
+                    <label>Length (ft)</label>
+                    <input type="number" id="calcLength" value="1" oninput="calculateModalPrice()">
+                </div>
+                <div class="input-group">
+                    <label>Width (ft)</label>
+                    <input type="number" id="calcWidth" value="1" oninput="calculateModalPrice()">
+                </div>
+                <div class="input-group">
+                    <label>Quantity</label>
+                    <input type="number" id="calcQuantity" min="${currentProduct.min_order}" 
+                           value="${currentProduct.min_order}" oninput="calculateModalPrice()">
                 </div>
             `;
             break;
             
         case 'weight':
             inputsHTML = `
-                <div class="calculator-inputs">
-                    <div class="input-group">
-                        <label>Weight per unit (kg)</label>
-                        <input type="number" value="${currentProduct.weight_per_unit || 1}" readonly>
-                    </div>
-                    <div class="input-group">
-                        <label>Total Weight (kg)</label>
-                        <input type="number" id="totalWeightInput" min="0.1" step="0.01" value="1" 
-                               oninput="calculatePrice()" placeholder="Enter total weight">
-                    </div>
+                <div class="input-group">
+                    <label>Weight (kg)</label>
+                    <input type="number" id="calcWeight" value="1" oninput="calculateModalPrice()">
                 </div>
             `;
             break;
             
-        case 'piece':
         default:
             inputsHTML = `
-                <div class="calculator-inputs">
-                    <div class="input-group">
-                        <label>Quantity</label>
-                        <input type="number" id="quantityInput" min="${currentProduct.min_order}" step="1" 
-                               value="${currentProduct.min_order}" oninput="calculatePrice()">
-                    </div>
+                <div class="input-group">
+                    <label>Quantity</label>
+                    <input type="number" id="calcQuantity" min="${currentProduct.min_order}" 
+                           value="${currentProduct.min_order}" oninput="calculateModalPrice()">
                 </div>
             `;
             break;
     }
     
     calculatorInputs.innerHTML = inputsHTML;
-    calculatePrice();
+    calculateModalPrice();
 }
 
-function calculatePrice() {
+function calculateModalPrice() {
     if (!currentProduct) return;
     
-    const quantity = parseInt(document.getElementById('quantityInput')?.value) || currentProduct.min_order;
-    let totalPrice = 0;
-    let calculationData = {
-        mode: currentCalcMode,
-        unit: currentProduct.price_unit || 'piece',
-        quantity: quantity
-    };
+    const activeTab = document.querySelector('.calc-tab.active');
+    const mode = activeTab ? activeTab.dataset.mode : 'piece';
     
-    switch(currentCalcMode) {
+    let quantity = 1;
+    let totalPrice = 0;
+    let calculationData = { mode: mode };
+    
+    switch(mode) {
         case 'area':
-            const length = parseFloat(document.getElementById('lengthInput')?.value) || 1;
-            const width = parseFloat(document.getElementById('widthInput')?.value) || 1;
+            const length = parseFloat(document.getElementById('calcLength')?.value) || 1;
+            const width = parseFloat(document.getElementById('calcWidth')?.value) || 1;
+            quantity = parseInt(document.getElementById('calcQuantity')?.value) || currentProduct.min_order;
             const area = length * width;
             totalPrice = currentProduct.price * area * quantity;
             calculationData.length = length;
             calculationData.width = width;
             calculationData.area = area;
+            calculationData.quantity = quantity;
             break;
             
         case 'weight':
-            const weight = parseFloat(document.getElementById('totalWeightInput')?.value) || 1;
+            const weight = parseFloat(document.getElementById('calcWeight')?.value) || 1;
             totalPrice = currentProduct.price * weight;
             calculationData.weight = weight;
             break;
             
         case 'piece':
         default:
+            quantity = parseInt(document.getElementById('calcQuantity')?.value) || currentProduct.min_order;
             totalPrice = currentProduct.price * quantity;
+            calculationData.quantity = quantity;
             break;
-    }
-    
-    if (quantity < currentProduct.min_order) {
-        document.getElementById('quantityInput').value = currentProduct.min_order;
-        calculatePrice();
-        return;
     }
     
     const advancePayment = totalPrice * 0.3;
@@ -2161,42 +1152,104 @@ function calculatePrice() {
     
     const calculationResult = document.getElementById('calculationResult');
     calculationResult.innerHTML = `
-        <div class="calculation-row">
-            <span class="calculation-label">Unit Price:</span>
-            <span class="calculation-value">£${currentProduct.price.toFixed(2)} per ${currentProduct.price_unit}</span>
+        <div class="result-row">
+            <span>Unit Price:</span>
+            <span>£${currentProduct.price.toFixed(2)}</span>
         </div>
-        ${currentCalcMode === 'area' ? `
-            <div class="calculation-row">
-                <span class="calculation-label">Area:</span>
-                <span class="calculation-value">${calculationData.area?.toFixed(2) || '0.00'} sq ft</span>
+        ${mode === 'area' ? `
+            <div class="result-row">
+                <span>Area:</span>
+                <span>${calculationData.area?.toFixed(2) || '0.00'} sq ft</span>
+            </div>
+            <div class="result-row">
+                <span>Quantity:</span>
+                <span>${quantity}</span>
             </div>
         ` : ''}
-        ${currentCalcMode === 'weight' ? `
-            <div class="calculation-row">
-                <span class="calculation-label">Weight:</span>
-                <span class="calculation-value">${calculationData.weight?.toFixed(2) || '0.00'} kg</span>
+        ${mode === 'weight' ? `
+            <div class="result-row">
+                <span>Weight:</span>
+                <span>${calculationData.weight?.toFixed(2) || '0.00'} kg</span>
             </div>
         ` : ''}
-        <div class="calculation-row">
-            <span class="calculation-label">Quantity:</span>
-            <span class="calculation-value">${quantity}</span>
+        ${mode === 'piece' ? `
+            <div class="result-row">
+                <span>Quantity:</span>
+                <span>${quantity}</span>
+            </div>
+        ` : ''}
+        <div class="result-row total">
+            <span>Total Amount:</span>
+            <span>£${totalPrice.toFixed(2)}</span>
         </div>
-        <div class="calculation-row">
-            <span class="calculation-label">Total Amount:</span>
-            <span class="calculation-value">£${totalPrice.toFixed(2)}</span>
+        <div class="result-row">
+            <span>Advance (30%):</span>
+            <span>£${advancePayment.toFixed(2)}</span>
         </div>
-        <div class="calculation-row">
-            <span class="calculation-label">Advance (30%):</span>
-            <span class="calculation-value">£${advancePayment.toFixed(2)}</span>
-        </div>
-        <div class="calculation-row">
-            <span class="calculation-label">Ready to Ship (70%):</span>
-            <span class="calculation-value">£${remainingPayment.toFixed(2)}</span>
+        <div class="result-row">
+            <span>Balance (70%):</span>
+            <span>£${remainingPayment.toFixed(2)}</span>
         </div>
     `;
     
-    window.currentCalculationData = calculationData;
-    window.currentTotalPrice = totalPrice;
+    window.currentModalCalculation = calculationData;
+    window.currentModalTotal = totalPrice;
+    window.currentModalQuantity = quantity || 1;
+}
+
+async function proceedToCheckout() {
+    if (!currentProduct) return;
+    
+    try {
+        showLoading(true);
+        
+        // Get calculation data from modal
+        const quantity = window.currentModalQuantity || currentProduct.min_order;
+        const calculationData = window.currentModalCalculation || { mode: 'piece', quantity: quantity };
+        
+        // Process Buy Now
+        const success = await cartSystem.processBuyNow(
+            currentProduct, 
+            quantity, 
+            calculationData, 
+            ''
+        );
+        
+        if (success) {
+            closeBuyNowModal();
+            showNotification('Redirecting to checkout...');
+            
+            // Redirect to checkout
+            setTimeout(() => {
+                window.location.href = 'checkout.html';
+            }, 500);
+        }
+    } catch (error) {
+        console.error('Checkout error:', error);
+        showError('Failed to process checkout');
+    } finally {
+        showLoading(false);
+    }
+}
+
+// ============================================
+// CART FUNCTIONS
+// ============================================
+
+let cartSystem;
+
+async function addToCart() {
+    if (!currentProduct || !cartSystem) return;
+    
+    try {
+        showLoading(true);
+        await cartSystem.addToCart(currentProduct, 1);
+    } catch (error) {
+        console.error('Add to cart error:', error);
+        showError('Failed to add to cart');
+    } finally {
+        showLoading(false);
+    }
 }
 
 // ============================================
@@ -2213,348 +1266,6 @@ function changeMainImage(imageUrl, thumbnailElement) {
         thumb.classList.remove('active');
     });
     thumbnailElement.classList.add('active');
-    
-    // Find image index
-    const index = Array.from(thumbnailElement.parentElement.children).indexOf(thumbnailElement);
-    currentImageIndex = index;
-}
-
-// ============================================
-// LOAD SIMILAR PRODUCTS
-// ============================================
-
-async function loadSimilarProducts() {
-    try {
-        if (!currentProduct || !currentProduct.usage || !firebaseDB) return;
-        
-        const uses = currentProduct.usage.split(',').map(u => u.trim()).filter(u => u);
-        
-        if (uses.length === 0) return;
-        
-        const querySnapshot = await firebaseDB.collection("products").get();
-        
-        if (!querySnapshot.empty) {
-            similarProducts = [];
-            
-            querySnapshot.forEach((doc) => {
-                if (doc.id !== currentProduct.id) {
-                    const data = doc.data();
-                    const productUsage = data.usage || data.uses || '';
-                    
-                    // Check if product has similar usage
-                    let isSimilar = false;
-                    uses.forEach(use => {
-                        if (productUsage.toLowerCase().includes(use.toLowerCase())) {
-                            isSimilar = true;
-                        }
-                    });
-                    
-                    if (isSimilar || data.category === currentProduct.category) {
-                        similarProducts.push({
-                            id: doc.id,
-                            stone_name: data.stone_name || data.name,
-                            category: data.category || 'Natural Stone',
-                            price: parseFloat(data.price) || 0,
-                            price_unit: data.price_unit || 'piece',
-                            color: data.color || '',
-                            images: data.images ? data.images : (data.image ? [data.image] : []),
-                            image: data.image || '',
-                            usage: data.usage || data.uses || ''
-                        });
-                    }
-                }
-            });
-            
-            if (similarProducts.length > 0) {
-                displaySimilarProducts(similarProducts);
-                populateSimilarFilters();
-            }
-        }
-    } catch (error) {
-        console.error('Error loading similar products:', error);
-    }
-}
-
-function populateSimilarFilters() {
-    // Category filter
-    const categoryFilter = document.getElementById('similarCategoryFilter');
-    const categories = [...new Set(similarProducts.map(p => p.category).filter(c => c))];
-    
-    categories.forEach(category => {
-        if (category !== currentProduct.category) {
-            const option = document.createElement('option');
-            option.value = category;
-            option.textContent = category;
-            categoryFilter.appendChild(option);
-        }
-    });
-    
-    // Color filter
-    const colorFilter = document.getElementById('similarColorFilter');
-    const colors = [...new Set(similarProducts.map(p => p.color).filter(c => c))];
-    
-    colors.forEach(color => {
-        if (color !== currentProduct.color) {
-            const option = document.createElement('option');
-            option.value = color;
-            option.textContent = color;
-            colorFilter.appendChild(option);
-        }
-    });
-}
-
-function applySimilarFilters() {
-    const category = document.getElementById('similarCategoryFilter').value;
-    const price = document.getElementById('similarPriceFilter').value;
-    const color = document.getElementById('similarColorFilter').value;
-    const sort = document.getElementById('similarSortFilter').value;
-    
-    let filtered = [...similarProducts];
-    
-    // Apply category filter
-    if (category !== 'all') {
-        filtered = filtered.filter(p => p.category === category);
-    }
-    
-    // Apply color filter
-    if (color !== 'all') {
-        filtered = filtered.filter(p => p.color === color);
-    }
-    
-    // Apply price filter
-    if (price !== 'all') {
-        const [min, max] = price.split('-').map(Number);
-        if (price.endsWith('+')) {
-            filtered = filtered.filter(p => p.price > 250);
-        } else {
-            filtered = filtered.filter(p => p.price >= min && p.price <= max);
-        }
-    }
-    
-    // Apply sorting
-    if (sort === 'price_low') {
-        filtered.sort((a, b) => a.price - b.price);
-    } else if (sort === 'price_high') {
-        filtered.sort((a, b) => b.price - a.price);
-    } else if (sort === 'name') {
-        filtered.sort((a, b) => a.stone_name.localeCompare(b.stone_name));
-    } else if (sort === 'newest') {
-        // Assuming newer products have higher IDs
-        filtered.sort((a, b) => b.id.localeCompare(a.id));
-    }
-    
-    displaySimilarProducts(filtered);
-}
-
-function displaySimilarProducts(products) {
-    const similarProductsSection = document.getElementById('similarProductsSection');
-    const similarProductsGrid = document.getElementById('similarProductsGrid');
-    
-    if (products.length === 0) {
-        similarProductsSection.style.display = 'block';
-        similarProductsGrid.innerHTML = `
-            <div class="no-products">
-                <i class="fas fa-search"></i>
-                <h3>No Similar Products Found</h3>
-                <p>Try selecting different filters</p>
-            </div>
-        `;
-        return;
-    }
-    
-    similarProductsSection.style.display = 'block';
-    
-    const productsHTML = products.map(product => {
-        const productImage = getProductImage(product);
-        
-        return `
-            <a href="product-details.html?id=${product.id}" class="similar-product-card">
-                <div class="similar-product-image-container">
-                    <img src="${productImage}" alt="${product.stone_name}" 
-                         class="similar-product-image"
-                         onerror="this.src='${getDefaultImage(product.category)}'"
-                         loading="lazy">
-                    
-                    <!-- Add to Cart Button -->
-                    <button class="add-cart-icon" 
-                            onclick="event.preventDefault(); event.stopPropagation(); addSimilarToCart('${product.id}', event)">
-                        <i class="fas fa-cart-plus"></i>
-                    </button>
-                </div>
-                
-                <div class="similar-product-info-overlay">
-                    <div class="similar-product-name">${product.stone_name}</div>
-                    <div class="similar-product-price">£${product.price.toFixed(2)}</div>
-                    ${product.category ? `<div class="similar-product-category">${product.category}</div>` : ''}
-                </div>
-            </a>
-        `;
-    }).join('');
-    
-    similarProductsGrid.innerHTML = productsHTML;
-}
-
-// ============================================
-// CART FUNCTIONS
-// ============================================
-
-let authSystem, cartSystem;
-
-async function addToCart() {
-    if (!currentProduct || !cartSystem) return;
-    
-    const quantity = parseInt(document.getElementById('quantityInput')?.value) || currentProduct.min_order;
-    const customRequirements = document.getElementById('customRequirements')?.value || '';
-    
-    try {
-        showLoading(true);
-        await cartSystem.addToCart(
-            currentProduct, 
-            quantity, 
-            window.currentCalculationData, 
-            customRequirements
-        );
-    } catch (error) {
-        console.error('Add to cart error:', error);
-        showError('Failed to add to cart');
-    } finally {
-        showLoading(false);
-    }
-}
-
-async function addSimilarToCart(productId, event) {
-    event.preventDefault();
-    event.stopPropagation();
-    
-    const product = similarProducts.find(p => p.id === productId);
-    if (!product || !cartSystem) return;
-    
-    try {
-        showLoading(true);
-        await cartSystem.addToCart(product, 1);
-    } catch (error) {
-        console.error('Add to cart error:', error);
-        showError('Failed to add to cart');
-    } finally {
-        showLoading(false);
-    }
-}
-
-// ✅ UPDATED BUY NOW FUNCTION - FIXED VERSION
-async function buyNow() {
-    if (!currentProduct || !cartSystem || !authSystem) {
-        showError('System not initialized. Please refresh the page.');
-        return;
-    }
-    
-    const quantity = parseInt(document.getElementById('quantityInput')?.value) || currentProduct.min_order;
-    const customRequirements = document.getElementById('customRequirements')?.value || '';
-    
-    try {
-        showLoading(true);
-        console.log("🚀 Starting Buy Now process...");
-        
-        // Process Buy Now
-        const success = await cartSystem.processBuyNow(
-            currentProduct, 
-            quantity, 
-            window.currentCalculationData, 
-            customRequirements
-        );
-        
-        if (success) {
-            // Get user ID
-            const userId = authSystem.getUserId();
-            console.log("✅ Buy Now processed successfully for user:", userId);
-            
-            // Show success message
-            showNotification('Redirecting to checkout...');
-            
-            // Wait a moment for data to be saved
-            await new Promise(resolve => setTimeout(resolve, 500));
-            
-            // Simple redirect with minimal parameters
-            window.location.href = `checkout.html?buynow=true&user=${encodeURIComponent(userId)}`;
-        } else {
-            showError('Failed to process Buy Now');
-        }
-        
-    } catch (error) {
-        console.error('❌ Buy Now error:', error);
-        showError('Failed to process Buy Now');
-    } finally {
-        showLoading(false);
-    }
-}
-
-// ============================================
-// NOTIFICATIONS
-// ============================================
-
-function viewNotifications(event) {
-    event.preventDefault();
-    
-    if (!authSystem) return;
-    
-    const userId = authSystem.getUserId();
-    window.location.href = `notification.html?user=${encodeURIComponent(userId)}`;
-}
-
-// ============================================
-// SEARCH FUNCTIONALITY
-// ============================================
-
-function searchProducts(query) {
-    const searchResults = document.getElementById('searchResults');
-    if (!searchResults || !query.trim()) {
-        searchResults.classList.remove('active');
-        return;
-    }
-    
-    // Search in all products
-    const filtered = allProducts.filter(product => 
-        product.stone_name.toLowerCase().includes(query.toLowerCase()) ||
-        (product.category && product.category.toLowerCase().includes(query.toLowerCase())) ||
-        (product.description && product.description.toLowerCase().includes(query.toLowerCase()))
-    ).slice(0, 8);
-    
-    if (filtered.length > 0) {
-        const resultsHTML = filtered.map(product => {
-            let image = getProductImage(product);
-            
-            return `
-                <a href="product-details.html?id=${encodeURIComponent(product.id)}" class="search-result-item">
-                    <div class="search-result-image">
-                        <img src="${image}" alt="${product.stone_name}"
-                             onerror="this.src='${getDefaultImage(product.category)}'">
-                    </div>
-                    <div class="search-result-info">
-                        <div class="search-result-name">${product.stone_name}</div>
-                        <div class="search-result-category">${product.category || 'Stone'}</div>
-                    </div>
-                    <div class="search-result-price">£${product.price.toFixed(2)}</div>
-                </a>
-            `;
-        }).join('');
-        
-        searchResults.innerHTML = resultsHTML;
-    } else {
-        searchResults.innerHTML = `
-            <div class="no-results">
-                <i class="fas fa-search"></i>
-                <p>No products found for "${query}"</p>
-            </div>
-        `;
-    }
-    
-    searchResults.classList.add('active');
-}
-
-function hideSearchResults() {
-    const searchResultsDiv = document.getElementById('searchResults');
-    if (searchResultsDiv) {
-        searchResultsDiv.classList.remove('active');
-    }
 }
 
 // ============================================
@@ -2588,9 +1299,6 @@ function getProductImage(product) {
     if (product.images && product.images.length > 0) {
         return product.images[0];
     }
-    if (product.image) {
-        return product.image;
-    }
     return getDefaultImage(product.category);
 }
 
@@ -2601,8 +1309,6 @@ function getDefaultImage(category) {
         return 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=400&h=300';
     } else if (categoryLower.includes('kota')) {
         return 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=400&h=300';
-    } else if (categoryLower.includes('granite')) {
-        return 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=400&h=300';
     }
     
     return 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=400&h=300';
@@ -2620,82 +1326,15 @@ function showNotification(message) {
     if (!notification) return;
     
     notification.textContent = message;
-    notification.classList.add('show');
+    notification.style.display = 'block';
     
     setTimeout(() => {
-        notification.classList.remove('show');
+        notification.style.display = 'none';
     }, 3000);
 }
 
 function showError(message) {
-    const errorDiv = document.getElementById('errorMessage');
-    if (errorDiv) {
-        errorDiv.textContent = message;
-        errorDiv.style.display = 'block';
-        
-        setTimeout(() => {
-            errorDiv.style.display = 'none';
-        }, 5000);
-    } else {
-        alert(message);
-    }
-}
-
-// ============================================
-// SCROLL HANDLING
-// ============================================
-
-let lastScrollTop = 0;
-let isHeaderVisible = true;
-
-function handleScroll() {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const header = document.getElementById('mainHeader');
-    const bottomNav = document.getElementById('bottomNav');
-    
-    if (!header || !bottomNav) return;
-    
-    // Always show when near top
-    if (scrollTop < 50) {
-        header.classList.remove('hidden');
-        bottomNav.classList.remove('hidden');
-        header.classList.add('show');
-        bottomNav.classList.add('show');
-        isHeaderVisible = true;
-        return;
-    }
-    
-    // Determine scroll direction
-    if (scrollTop > lastScrollTop) {
-        // Scrolling DOWN - hide
-        if (scrollTop > 100 && isHeaderVisible) {
-            header.classList.add('hidden');
-            bottomNav.classList.add('hidden');
-            header.classList.remove('show');
-            bottomNav.classList.remove('show');
-            isHeaderVisible = false;
-        }
-    } else {
-        // Scrolling UP - show
-        if (!isHeaderVisible) {
-            header.classList.remove('hidden');
-            bottomNav.classList.remove('hidden');
-            header.classList.add('show');
-            bottomNav.classList.add('show');
-            isHeaderVisible = true;
-        }
-    }
-    
-    // Add scrolled class when not at top
-    if (scrollTop > 100) {
-        header.classList.add('scrolled');
-        bottomNav.classList.add('scrolled');
-    } else {
-        header.classList.remove('scrolled');
-        bottomNav.classList.remove('scrolled');
-    }
-    
-    lastScrollTop = scrollTop;
+    alert(message);
 }
 
 // ============================================
@@ -2715,122 +1354,28 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Initialize Firebase
     await initializeFirebase();
     
-    // Initialize Auth System
-    authSystem = new AuthSystem();
-    await authSystem.init();
-    
-    console.log("User ID:", authSystem.getUserId());
-    
     // Initialize Cart System
-    cartSystem = new CartSystem(authSystem);
+    cartSystem = new CartSystem();
     await cartSystem.init();
-    
-    // Load all products for search
-    try {
-        const querySnapshot = await firebaseDB.collection("products").get();
-        allProducts = [];
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            allProducts.push({
-                id: doc.id,
-                stone_name: data.stone_name || data.name,
-                category: data.category,
-                description: data.description,
-                price: parseFloat(data.price) || 0,
-                price_unit: data.price_unit || 'piece',
-                image: data.images?.[0] || data.image || getDefaultImage(data.category)
-            });
-        });
-    } catch (error) {
-        console.error('Error loading products for search:', error);
-    }
     
     // Load product details
     await loadProductDetails(productId);
     
-    // Setup event listeners
-    setupEventListeners();
-    
-    // Setup scroll handling
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    
-    // Initial scroll check
-    handleScroll();
-});
-
-// ============================================
-// EVENT LISTENERS SETUP
-// ============================================
-
-function setupEventListeners() {
-    // Search functionality
-    const searchInput = document.getElementById('searchInput');
-    const searchIcon = document.getElementById('searchIcon');
-    
-    if (searchInput && searchIcon) {
-        searchIcon.addEventListener('click', () => {
-            if (searchInput.value.trim()) {
-                searchProducts(searchInput.value);
-            } else {
-                hideSearchResults();
-            }
-        });
-        
-        searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && searchInput.value.trim()) {
-                searchProducts(searchInput.value);
-            }
-        });
-        
-        let searchTimeout;
-        searchInput.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            const query = this.value.trim();
-            
-            if (query.length >= 2) {
-                searchTimeout = setTimeout(() => {
-                    searchProducts(query);
-                }, 300);
-            } else {
-                hideSearchResults();
-            }
-        });
-    }
-    
-    // Close search results when clicking outside
-    document.addEventListener('click', (e) => {
-        const searchResults = document.getElementById('searchResults');
-        const searchInput = document.getElementById('searchInput');
-        if (searchResults && searchInput && 
-            !searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-            hideSearchResults();
-        }
-    });
-    
-    // Close fullscreen modal on escape key
+    // Close modals on escape key
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeFullscreenModal();
+            closeBuyNowModal();
         }
     });
-}
-
-// ============================================
-// GLOBAL FUNCTIONS
-// ============================================
-
-window.changeMainImage = changeMainImage;
-window.openFullscreenModal = openFullscreenModal;
-window.closeFullscreenModal = closeFullscreenModal;
-window.nextImage = nextImage;
-window.prevImage = prevImage;
-window.switchCalculatorMode = switchCalculatorMode;
-window.calculatePrice = calculatePrice;
-window.addToCart = addToCart;
-window.addSimilarToCart = addSimilarToCart;
-window.buyNow = buyNow;
-window.applySimilarFilters = applySimilarFilters;
-window.viewNotifications = viewNotifications;
+    
+    // Close modal when clicking outside
+    document.getElementById('buyNowModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('buyNowModal')) {
+            closeBuyNowModal();
+        }
+    });
+});
 </script>
 </body>
 </html>
