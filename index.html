@@ -1017,6 +1017,24 @@ header.show {
     justify-content: center;
 }
 
+/* Notification Badge */
+.notification-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: #4285f4;
+    color: var(--white);
+    font-size: 9px;
+    font-weight: 600;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    display: none; /* Hidden by default, can be shown when there are notifications */
+}
+
 .loading-spinner {
     display: none;
     position: fixed;
@@ -1510,9 +1528,16 @@ header.show {
 
     <!-- Header Actions -->
     <div style="display: flex; gap: 8px; align-items: center;">
+        <!-- Cart Icon -->
         <a href="cart.html" class="action-btn" style="position: relative;">
             <i class="fas fa-shopping-cart"></i>
             <span class="cart-badge" id="cartBadge">0</span>
+        </a>
+        
+        <!-- Notification Icon - ADDED HERE -->
+        <a href="#" class="action-btn" id="notificationBtn" style="position: relative;">
+            <i class="fas fa-bell"></i>
+            <span class="notification-badge" id="notificationBadge">0</span>
         </a>
         
         <!-- User Profile / Sign In Button -->
@@ -2336,6 +2361,23 @@ function formatPrice(price, unit = 'piece') {
 }
 
 // ============================================
+// NOTIFICATION HANDLER - ADDED FUNCTION
+// ============================================
+
+function handleNotificationClick(e) {
+    e.preventDefault();
+    
+    if (authSystem && authSystem.isLoggedIn()) {
+        const userId = authSystem.getUserId();
+        console.log('Redirecting to notifications with userId:', userId);
+        window.location.href = `notification.html?userId=${userId}`;
+    } else {
+        console.log('User not logged in, redirecting to sign page');
+        window.location.href = 'sign.html';
+    }
+}
+
+// ============================================
 // CATEGORIES AND USES DISPLAY FUNCTIONS
 // ============================================
 
@@ -3140,6 +3182,12 @@ function setupEventListeners() {
                 hideSearchResults();
             }
         });
+    }
+    
+    // Notification button click handler - ADDED HERE
+    const notificationBtn = document.getElementById('notificationBtn');
+    if (notificationBtn) {
+        notificationBtn.addEventListener('click', handleNotificationClick);
     }
     
     // Close search results when clicking outside
