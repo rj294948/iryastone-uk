@@ -291,13 +291,37 @@ header.show {
     background: var(--bg-light);
     cursor: pointer;
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .main-image {
-    width: 100%;
-    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
     object-fit: contain;
     padding: 10px;
+    transition: transform 0.3s ease;
+}
+
+.main-image:hover {
+    transform: scale(1.02);
+}
+
+/* Multiple Images Indicator */
+.multiple-images-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    z-index: 2;
 }
 
 .thumbnails-container {
@@ -306,6 +330,7 @@ header.show {
     margin-top: 10px;
     overflow-x: auto;
     padding: 5px 0;
+    scroll-behavior: smooth;
 }
 
 .thumbnail {
@@ -317,6 +342,7 @@ header.show {
     border: 2px solid transparent;
     cursor: pointer;
     background: var(--bg-light);
+    position: relative;
 }
 
 .thumbnail.active {
@@ -326,8 +352,8 @@ header.show {
 .thumbnail img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    padding: 5px;
+    object-fit: cover;
+    padding: 2px;
 }
 
 /* PRODUCT INFO - WITH BUTTONS BELOW */
@@ -412,7 +438,7 @@ header.show {
     color: var(--text-dark);
 }
 
-/* PRODUCT ACTION BUTTONS (Product Info के नीचे) */
+/* PRODUCT ACTION BUTTONS */
 .product-actions {
     display: flex;
     gap: 10px;
@@ -694,7 +720,7 @@ header.show {
     margin-top: 8px;
 }
 
-/* SIMILAR PRODUCTS SECTION - HOME PAGE STYLE */
+/* SIMILAR PRODUCTS SECTION */
 .similar-products {
     margin-top: 20px;
     padding: 15px;
@@ -762,7 +788,7 @@ header.show {
     transform: scale(1.05);
 }
 
-/* ADD CART ICON ON SIMILAR PRODUCTS (Home Page Style) */
+/* ADD CART ICON ON SIMILAR PRODUCTS */
 .add-cart-icon {
     position: absolute;
     top: 6px;
@@ -875,7 +901,10 @@ header.show {
     }
 }
 
-/* FULLSCREEN IMAGE VIEWER */
+/* ============================================
+   ENHANCED FULLSCREEN IMAGE VIEWER
+   ============================================ */
+
 .fullscreen-modal {
     display: none;
     position: fixed;
@@ -887,18 +916,107 @@ header.show {
     z-index: 9998;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
 }
 
 .fullscreen-modal.active {
     display: flex;
 }
 
-.fullscreen-image {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
+.fullscreen-image-container {
+    width: 100%;
+    height: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
 }
 
+.fullscreen-image {
+    max-width: 95%;
+    max-height: 95%;
+    object-fit: contain;
+    border-radius: 5px;
+    transition: transform 0.3s ease;
+    cursor: zoom-in;
+}
+
+/* Image Navigation Controls */
+.fullscreen-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.7);
+    color: white;
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 20px;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.fullscreen-nav:hover {
+    background: rgba(201, 162, 39, 0.8);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.fullscreen-nav.prev {
+    left: 20px;
+}
+
+.fullscreen-nav.next {
+    right: 20px;
+}
+
+/* Image Thumbnails in Fullscreen */
+.fullscreen-thumbnails {
+    display: flex;
+    gap: 10px;
+    padding: 15px;
+    overflow-x: auto;
+    width: 100%;
+    height: 20%;
+    background: rgba(0,0,0,0.9);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    justify-content: center;
+}
+
+.fullscreen-thumb {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 3px solid transparent;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.fullscreen-thumb.active {
+    border-color: var(--primary-gold);
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+.fullscreen-thumb:hover {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+.fullscreen-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Close Button */
 .fullscreen-close {
     position: absolute;
     top: 20px;
@@ -906,13 +1024,64 @@ header.show {
     color: white;
     font-size: 24px;
     cursor: pointer;
-    background: rgba(0,0,0,0.5);
-    width: 40px;
-    height: 40px;
+    background: rgba(0,0,0,0.7);
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.fullscreen-close:hover {
+    background: rgba(201, 162, 39, 0.8);
+    transform: scale(1.1);
+}
+
+/* Image Counter */
+.image-counter {
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.7);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    z-index: 2;
+}
+
+/* Zoom Controls */
+.zoom-controls {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 2;
+}
+
+.zoom-btn {
+    width: 40px;
+    height: 40px;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.3s ease;
+}
+
+.zoom-btn:hover {
+    background: rgba(201, 162, 39, 0.8);
+    transform: scale(1.1);
 }
 
 /* RESPONSIVE */
@@ -936,6 +1105,25 @@ header.show {
     
     .similar-products-grid {
         grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .fullscreen-nav {
+        width: 60px;
+        height: 60px;
+        font-size: 24px;
+    }
+    
+    .fullscreen-nav.prev {
+        left: 30px;
+    }
+    
+    .fullscreen-nav.next {
+        right: 30px;
+    }
+    
+    .fullscreen-thumb {
+        width: 100px;
+        height: 100px;
     }
 }
 
@@ -964,6 +1152,30 @@ header.show {
     .card-image-container {
         height: 100px;
     }
+    
+    .fullscreen-nav {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+    
+    .fullscreen-nav.prev {
+        left: 10px;
+    }
+    
+    .fullscreen-nav.next {
+        right: 10px;
+    }
+    
+    .fullscreen-thumb {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .image-counter {
+        bottom: 80px;
+        font-size: 12px;
+    }
 }
 </style>
 </head>
@@ -975,14 +1187,6 @@ header.show {
 
 <!-- Notification -->
 <div class="notification" id="notification"></div>
-
-<!-- Fullscreen Image Modal -->
-<div class="fullscreen-modal" id="fullscreenModal">
-    <div class="fullscreen-close" onclick="closeFullscreenModal()">
-        <i class="fas fa-times"></i>
-    </div>
-    <img src="" alt="" class="fullscreen-image" id="fullscreenImage">
-</div>
 
 <!-- Buy Now Calculator Modal -->
 <div class="modal-overlay" id="buyNowModal">
@@ -1073,8 +1277,11 @@ header.show {
 <div class="product-container">
     <!-- Product Gallery -->
     <div class="product-gallery">
-        <div class="main-image-wrapper" onclick="openFullscreenModal()">
+        <div class="main-image-wrapper">
             <img src="" alt="" class="main-image" id="mainProductImage">
+            <div class="multiple-images-indicator" id="multipleImagesIndicator" style="display: none;">
+                <i class="fas fa-layer-group"></i> <span id="imageCount">0</span>
+            </div>
         </div>
         
         <div class="thumbnails-container" id="thumbnailContainer">
@@ -1160,58 +1367,148 @@ let similarProducts = [];
 let cartSystem = null;
 
 // ============================================
-// CART SYSTEM - HOME PAGE STYLE
+// ENHANCED CART SYSTEM - FIRESTORE + LOCALSTORAGE
 // ============================================
 
 class CartSystem {
     constructor() {
         this.localCartKey = 'irya_local_cart';
         this.buyNowKey = 'irya_buynow';
+        this.firestoreCartPath = 'userCarts';
         this.cartItems = [];
         this.buyNowItem = null;
+        this.currentUser = null;
     }
     
     async init() {
-        await this.loadCart();
-        this.updateCartBadge();
-        return this;
-    }
-    
-    async loadCart() {
         try {
-            // Get user ID
-            let userId = localStorage.getItem('irya_user_id');
-            if (!userId) {
-                userId = 'guest_' + Date.now();
-                localStorage.setItem('irya_user_id', userId);
+            // Get current user
+            this.currentUser = firebaseAuth.currentUser;
+            
+            if (this.currentUser) {
+                await this.syncCartWithFirestore();
+            } else {
+                await this.loadLocalCart();
             }
             
-            // Load regular cart
+            this.updateCartBadge();
+            return this;
+        } catch (error) {
+            console.error('Error initializing cart:', error);
+            await this.loadLocalCart();
+            return this;
+        }
+    }
+    
+    async syncCartWithFirestore() {
+        try {
+            const userId = this.currentUser.uid;
+            const cartDoc = await firebaseDB.collection(this.firestoreCartPath).doc(userId).get();
+            
+            if (cartDoc.exists) {
+                const data = cartDoc.data();
+                this.cartItems = data.items || [];
+                console.log('🔄 Cart synced from Firestore:', this.cartItems.length, 'items');
+            } else {
+                // Check if local cart exists
+                await this.loadLocalCart();
+                if (this.cartItems.length > 0) {
+                    await this.saveCartToFirestore();
+                }
+            }
+        } catch (error) {
+            console.error('Error syncing cart with Firestore:', error);
+            await this.loadLocalCart();
+        }
+    }
+    
+    async loadLocalCart() {
+        try {
+            const userId = localStorage.getItem('irya_user_id') || 'guest';
             const cartKey = `${this.localCartKey}_${userId}`;
             const cartData = localStorage.getItem(cartKey);
             this.cartItems = cartData ? JSON.parse(cartData) : [];
-            
-            console.log('🛒 Cart loaded:', this.cartItems.length, 'items');
-            
-            return this.cartItems;
+            console.log('📦 Local cart loaded:', this.cartItems.length, 'items');
         } catch (error) {
-            console.error('Error loading cart:', error);
+            console.error('Error loading local cart:', error);
             this.cartItems = [];
-            return [];
+        }
+    }
+    
+    async saveCartToFirestore() {
+        try {
+            if (!this.currentUser) return false;
+            
+            const userId = this.currentUser.uid;
+            const userEmail = this.currentUser.email || '';
+            const userName = this.currentUser.displayName || 'User';
+            
+            // Calculate totals
+            const subtotal = this.cartItems.reduce((sum, item) => 
+                sum + (item.price * item.quantity), 0);
+            const tax = subtotal * 0.2; // 20% tax
+            const total = subtotal + tax;
+            const advancePayment = total * 0.3;
+            
+            const cartData = {
+                userId: userId,
+                userEmail: userEmail,
+                userName: userName,
+                items: this.cartItems.map(item => ({
+                    id: item.id,
+                    uniqueId: item.uniqueId || `${item.id}_${Date.now()}`,
+                    name: item.name,
+                    stone_name: item.stoneName || item.name,
+                    price: item.price,
+                    priceUnit: item.priceUnit,
+                    image: item.image,
+                    category: item.category,
+                    description: item.description || '',
+                    quantity: item.quantity,
+                    addedAt: item.addedAt || new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                })),
+                itemCount: this.cartItems.reduce((count, item) => count + item.quantity, 0),
+                subtotal: subtotal,
+                tax: tax,
+                total: total,
+                totalAmount: subtotal,
+                advancePayment: advancePayment,
+                lastUpdated: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            
+            await firebaseDB.collection(this.firestoreCartPath).doc(userId).set(cartData, { merge: true });
+            console.log('✅ Cart saved to Firestore');
+            return true;
+        } catch (error) {
+            console.error('Error saving cart to Firestore:', error);
+            return false;
+        }
+    }
+    
+    async saveCartToLocal() {
+        try {
+            const userId = localStorage.getItem('irya_user_id') || 'guest';
+            const cartKey = `${this.localCartKey}_${userId}`;
+            localStorage.setItem(cartKey, JSON.stringify(this.cartItems));
+            return true;
+        } catch (error) {
+            console.error('Error saving local cart:', error);
+            return false;
         }
     }
     
     async saveCart() {
         try {
-            // Get user ID
-            let userId = localStorage.getItem('irya_user_id');
-            if (!userId) {
-                userId = 'guest_' + Date.now();
-                localStorage.setItem('irya_user_id', userId);
+            // Always save to local first
+            await this.saveCartToLocal();
+            
+            // If user is logged in, save to Firestore
+            if (this.currentUser) {
+                await this.saveCartToFirestore();
             }
             
-            const cartKey = `${this.localCartKey}_${userId}`;
-            localStorage.setItem(cartKey, JSON.stringify(this.cartItems));
             this.updateCartBadge();
             return true;
         } catch (error) {
@@ -1224,9 +1521,10 @@ class CartSystem {
         try {
             console.log(`📦 Adding to cart: ${product.stone_name || product.name}`);
             
-            // Create cart item
+            // Create cart item with unique ID
             const newItem = {
                 id: product.id,
+                uniqueId: `${product.id}_${Date.now()}`,
                 name: product.stone_name || product.name || 'Stone Product',
                 stoneName: product.stone_name || product.name,
                 price: parseFloat(product.price) || 0,
@@ -1235,7 +1533,8 @@ class CartSystem {
                 category: product.category || 'Natural Stone',
                 description: product.description || '',
                 quantity: 1,
-                addedAt: new Date().toISOString()
+                addedAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
             };
             
             // Check if product already exists
@@ -1244,6 +1543,7 @@ class CartSystem {
             if (existingIndex !== -1) {
                 // Update quantity
                 this.cartItems[existingIndex].quantity += 1;
+                this.cartItems[existingIndex].updatedAt = new Date().toISOString();
             } else {
                 // Add new item
                 this.cartItems.push(newItem);
@@ -1335,7 +1635,176 @@ class CartSystem {
 }
 
 // ============================================
-// SEARCH FUNCTIONALITY - HOME PAGE STYLE
+// ENHANCED FULLSCREEN IMAGE VIEWER
+// ============================================
+
+let currentImageIndex = 0;
+let imageZoom = 1;
+
+// Create enhanced fullscreen modal dynamically
+function createFullscreenModal() {
+    const fullscreenModalHTML = `
+        <div class="fullscreen-modal" id="fullscreenModal">
+            <div class="fullscreen-close" onclick="closeFullscreenModal()">
+                <i class="fas fa-times"></i>
+            </div>
+            
+            <button class="fullscreen-nav prev" onclick="prevImage()">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            
+            <div class="fullscreen-image-container">
+                <img src="" alt="" class="fullscreen-image" id="fullscreenImage"
+                     onclick="toggleZoom()">
+                
+                <div class="image-counter" id="imageCounter">1 / 1</div>
+            </div>
+            
+            <button class="fullscreen-nav next" onclick="nextImage()">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+            
+            <div class="zoom-controls">
+                <button class="zoom-btn" onclick="zoomOut()" title="Zoom Out">
+                    <i class="fas fa-search-minus"></i>
+                </button>
+                <button class="zoom-btn" onclick="resetZoom()" title="Reset Zoom">
+                    <i class="fas fa-expand-arrows-alt"></i>
+                </button>
+                <button class="zoom-btn" onclick="zoomIn()" title="Zoom In">
+                    <i class="fas fa-search-plus"></i>
+                </button>
+            </div>
+            
+            <div class="fullscreen-thumbnails" id="fullscreenThumbnails"></div>
+        </div>
+    `;
+    
+    // Insert modal into body if not exists
+    if (!document.getElementById('fullscreenModal')) {
+        document.body.insertAdjacentHTML('beforeend', fullscreenModalHTML);
+    }
+}
+
+function openFullscreenModal(initialIndex = 0) {
+    if (!currentProduct || !currentProduct.images || currentProduct.images.length === 0) return;
+    
+    createFullscreenModal();
+    
+    currentImageIndex = initialIndex;
+    imageZoom = 1;
+    
+    const modal = document.getElementById('fullscreenModal');
+    const fullscreenImage = document.getElementById('fullscreenImage');
+    const thumbnailsContainer = document.getElementById('fullscreenThumbnails');
+    
+    // Update main image
+    updateFullscreenImage();
+    
+    // Create thumbnails
+    if (thumbnailsContainer && currentProduct.images.length > 1) {
+        thumbnailsContainer.innerHTML = currentProduct.images.map((img, index) => `
+            <div class="fullscreen-thumb ${index === currentImageIndex ? 'active' : ''}" 
+                 onclick="switchFullscreenImage(${index})">
+                <img src="${img}" alt="Thumbnail ${index + 1}" loading="lazy">
+            </div>
+        `).join('');
+        thumbnailsContainer.style.display = 'flex';
+    } else if (thumbnailsContainer) {
+        thumbnailsContainer.style.display = 'none';
+    }
+    
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeFullscreenModal() {
+    const modal = document.getElementById('fullscreenModal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+    document.body.style.overflow = 'auto';
+    currentImageIndex = 0;
+    imageZoom = 1;
+}
+
+function updateFullscreenImage() {
+    const fullscreenImage = document.getElementById('fullscreenImage');
+    const imageCounter = document.getElementById('imageCounter');
+    const thumbnails = document.querySelectorAll('.fullscreen-thumb');
+    
+    if (!fullscreenImage || !currentProduct.images[currentImageIndex]) return;
+    
+    // Update image
+    fullscreenImage.src = currentProduct.images[currentImageIndex];
+    fullscreenImage.style.transform = `scale(${imageZoom})`;
+    fullscreenImage.alt = currentProduct.stone_name || 'Product Image';
+    
+    // Update counter
+    if (imageCounter) {
+        imageCounter.textContent = `${currentImageIndex + 1} / ${currentProduct.images.length}`;
+    }
+    
+    // Update active thumbnail
+    thumbnails.forEach((thumb, index) => {
+        thumb.classList.toggle('active', index === currentImageIndex);
+    });
+}
+
+function nextImage() {
+    if (!currentProduct || !currentProduct.images) return;
+    
+    currentImageIndex = (currentImageIndex + 1) % currentProduct.images.length;
+    imageZoom = 1;
+    updateFullscreenImage();
+}
+
+function prevImage() {
+    if (!currentProduct || !currentProduct.images) return;
+    
+    currentImageIndex = (currentImageIndex - 1 + currentProduct.images.length) % currentProduct.images.length;
+    imageZoom = 1;
+    updateFullscreenImage();
+}
+
+function switchFullscreenImage(index) {
+    if (index >= 0 && index < currentProduct.images.length) {
+        currentImageIndex = index;
+        imageZoom = 1;
+        updateFullscreenImage();
+    }
+}
+
+function zoomIn() {
+    if (imageZoom < 3) {
+        imageZoom += 0.5;
+        updateFullscreenImage();
+    }
+}
+
+function zoomOut() {
+    if (imageZoom > 0.5) {
+        imageZoom -= 0.5;
+        updateFullscreenImage();
+    }
+}
+
+function resetZoom() {
+    imageZoom = 1;
+    updateFullscreenImage();
+}
+
+function toggleZoom() {
+    if (imageZoom === 1) {
+        imageZoom = 2;
+    } else {
+        imageZoom = 1;
+    }
+    updateFullscreenImage();
+}
+
+// ============================================
+// SEARCH FUNCTIONALITY
 // ============================================
 
 let searchTimeout = null;
@@ -1422,10 +1891,10 @@ function performSearch(query) {
         );
     });
     
-    displaySearchResults(results);
+    displaySearchResults(results, query);
 }
 
-function displaySearchResults(results) {
+function displaySearchResults(results, query) {
     const container = document.getElementById('searchResults');
     if (!container) return;
     
@@ -1462,27 +1931,6 @@ function hideSearchResults() {
     if (container) {
         container.classList.remove('active');
     }
-}
-
-// ============================================
-// FULLSCREEN IMAGE VIEWER
-// ============================================
-
-function openFullscreenModal() {
-    if (!currentProduct || !currentProduct.images || currentProduct.images.length === 0) return;
-    
-    const fullscreenImage = document.getElementById('fullscreenImage');
-    const modal = document.getElementById('fullscreenModal');
-    
-    fullscreenImage.src = currentProduct.images[0];
-    modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeFullscreenModal() {
-    const modal = document.getElementById('fullscreenModal');
-    modal.classList.remove('active');
-    document.body.style.overflow = 'auto';
 }
 
 // ============================================
@@ -1547,6 +1995,8 @@ function displayProductDetails() {
     const mainImage = document.getElementById('mainProductImage');
     const thumbnailContainer = document.getElementById('thumbnailContainer');
     const productInfo = document.getElementById('productInfo');
+    const multipleImagesIndicator = document.getElementById('multipleImagesIndicator');
+    const imageCount = document.getElementById('imageCount');
     
     if (!currentProduct) return;
     
@@ -1554,14 +2004,25 @@ function displayProductDetails() {
     if (mainImage && currentProduct.images.length > 0) {
         mainImage.src = currentProduct.images[0];
         mainImage.alt = currentProduct.stone_name;
+        
+        // Add click handler for fullscreen
+        mainImage.parentElement.onclick = () => openFullscreenModal(0);
     }
     
-    // Create thumbnails
+    // Show multiple images indicator
+    if (multipleImagesIndicator && imageCount && currentProduct.images.length > 1) {
+        imageCount.textContent = currentProduct.images.length;
+        multipleImagesIndicator.style.display = 'flex';
+    }
+    
+    // Create thumbnails with index
     if (thumbnailContainer) {
         thumbnailContainer.innerHTML = currentProduct.images.map((img, index) => `
             <div class="thumbnail ${index === 0 ? 'active' : ''}" 
-                 onclick="changeMainImage('${img}', this)">
-                <img src="${img}" alt="Thumbnail ${index + 1}">
+                 onclick="changeMainImage('${img}', this, ${index})"
+                 onkeypress="if(event.key === 'Enter') changeMainImage('${img}', this, ${index})"
+                 tabindex="0">
+                <img src="${img}" alt="Thumbnail ${index + 1}" loading="lazy">
             </div>
         `).join('');
     }
@@ -1621,8 +2082,30 @@ function displayProductDetails() {
     }
 }
 
+function changeMainImage(imageUrl, thumbnailElement, index = 0) {
+    const mainImage = document.getElementById('mainProductImage');
+    
+    if (mainImage) {
+        mainImage.src = imageUrl;
+    }
+    
+    // Update active thumbnail
+    document.querySelectorAll('.thumbnail').forEach(thumb => {
+        thumb.classList.remove('active');
+    });
+    
+    if (thumbnailElement) {
+        thumbnailElement.classList.add('active');
+    }
+    
+    // Update current image index
+    if (index !== undefined) {
+        currentImageIndex = index;
+    }
+}
+
 // ============================================
-// LOAD SIMILAR PRODUCTS - WITH ADD TO CART
+// LOAD SIMILAR PRODUCTS
 // ============================================
 
 async function loadSimilarProducts() {
@@ -1725,9 +2208,9 @@ function displaySimilarProducts() {
                          class="card-image"
                          onerror="this.src='${getDefaultImage(product.category)}'"
                          loading="lazy">
-                    <div class="add-cart-icon" onclick="addSimilarToCart('${product.id}', event)">
+                    <button class="add-cart-icon" onclick="addSimilarToCart('${product.id}', event)">
                         <i class="fas fa-cart-plus"></i>
-                    </div>
+                    </button>
                 </div>
                 <div class="product-info-overlay">
                     <div class="product-name">${product.stone_name}</div>
@@ -1968,7 +2451,7 @@ function calculateModalPrice() {
 }
 
 // ============================================
-// PROCEED TO CHECKOUT - UPDATED
+// PROCEED TO CHECKOUT
 // ============================================
 
 async function proceedToCheckout() {
@@ -2033,22 +2516,6 @@ async function addToCart() {
 }
 
 // ============================================
-// PRODUCT IMAGE FUNCTIONS
-// ============================================
-
-function changeMainImage(imageUrl, thumbnailElement) {
-    const mainImage = document.getElementById('mainProductImage');
-    
-    mainImage.src = imageUrl;
-    
-    // Update active thumbnail
-    document.querySelectorAll('.thumbnail').forEach(thumb => {
-        thumb.classList.remove('active');
-    });
-    thumbnailElement.classList.add('active');
-}
-
-// ============================================
 // UTILITY FUNCTIONS
 // ============================================
 
@@ -2068,6 +2535,7 @@ async function initializeFirebase() {
         firebaseDB = firebase.firestore();
         firebaseAuth = firebase.auth();
         
+        console.log('✅ Firebase initialized successfully');
         return true;
     } catch (error) {
         console.error('Firebase initialization error:', error);
@@ -2135,7 +2603,7 @@ function showError(message) {
 }
 
 // ============================================
-// SCROLL HANDLING - HOME PAGE STYLE
+// SCROLL HANDLING
 // ============================================
 
 let lastScrollTop = 0;
@@ -2214,6 +2682,9 @@ function updateNotificationBadge() {
 // ============================================
 
 document.addEventListener('DOMContentLoaded', async function() {
+    // Create fullscreen modal
+    createFullscreenModal();
+    
     // Get product ID from URL
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
@@ -2226,15 +2697,30 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Initialize Firebase
     await initializeFirebase();
     
-    // Initialize Cart System
-    cartSystem = new CartSystem();
-    await cartSystem.init();
+    // Setup auth state listener
+    firebaseAuth.onAuthStateChanged(async (user) => {
+        console.log('Auth state changed:', user ? 'Logged in' : 'Logged out');
+        
+        // Initialize Cart System with user
+        cartSystem = new CartSystem();
+        await cartSystem.init();
+        
+        // Load product details
+        await loadProductDetails(productId);
+        
+        // Update cart badge
+        cartSystem.updateCartBadge();
+    }, (error) => {
+        console.error('Auth state error:', error);
+        
+        // Initialize Cart System without user
+        cartSystem = new CartSystem();
+        cartSystem.init();
+        loadProductDetails(productId);
+    });
     
     // Initialize Search
     await initializeSearch();
-    
-    // Load product details
-    await loadProductDetails(productId);
     
     // Setup scroll handling
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -2250,6 +2736,34 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (searchResults && searchInput && 
             !searchResults.contains(e.target) && !searchInput.contains(e.target)) {
             hideSearchResults();
+        }
+    });
+    
+    // Keyboard navigation for fullscreen
+    document.addEventListener('keydown', (e) => {
+        const modal = document.getElementById('fullscreenModal');
+        if (!modal || !modal.classList.contains('active')) return;
+        
+        switch(e.key) {
+            case 'Escape':
+                closeFullscreenModal();
+                break;
+            case 'ArrowRight':
+                nextImage();
+                break;
+            case 'ArrowLeft':
+                prevImage();
+                break;
+            case '+':
+            case '=':
+                zoomIn();
+                break;
+            case '-':
+                zoomOut();
+                break;
+            case '0':
+                resetZoom();
+                break;
         }
     });
     
