@@ -1269,6 +1269,35 @@ body {
     line-height: 1.5;
 }
 
+/* ===== TOAST MESSAGE ===== */
+.message-toast {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    background: var(--primary-gold);
+    color: white;
+    padding: 12px 20px;
+    border-radius: var(--border-radius);
+    z-index: 10000;
+    animation: slideIn 0.3s ease;
+    box-shadow: var(--shadow-lg);
+    max-width: 90%;
+    word-wrap: break-word;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}
+
 /* ===== RESPONSIVE DESIGN ===== */
 @media (min-width: 768px) {
     .header {
@@ -1751,6 +1780,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     checkNotificationRedirect();
     checkPaymentSuccess();
+    checkAutoOpenTracking();
     
     // Setup cancel reason dropdown listener
     const cancelReasonSelect = document.getElementById('cancelReason');
@@ -1772,6 +1802,26 @@ document.addEventListener('DOMContentLoaded', async function() {
     showMessage("Failed to load orders. Please try again.", 'error');
   }
 });
+
+// ============================================
+// CHECK AUTO OPEN TRACKING FROM URL
+// ============================================
+
+function checkAutoOpenTracking() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const autoTrack = urlParams.get('auto_track');
+  const orderId = urlParams.get('order_id');
+  
+  if (autoTrack === 'true' && orderId) {
+    setTimeout(() => {
+      showTrackingModal(orderId);
+      
+      // Clean URL
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
+    }, 1500);
+  }
+}
 
 // ============================================
 // ORDERS MANAGEMENT - REAL-TIME
@@ -2224,14 +2274,32 @@ function displayOrders(ordersList) {
   
   ordersDiv.innerHTML = ordersHTML;
   
+  // Check if we need to scroll to a specific order
   const urlParams = new URLSearchParams(window.location.search);
   const orderToScroll = urlParams.get('order_id');
-  if (orderToScroll) {
+  const searchParam = urlParams.get('search');
+  
+  if (orderToScroll || searchParam) {
     setTimeout(() => {
-      const orderElement = document.querySelector(`[data-order-id="${orderToScroll}"]`);
+      let orderElement;
+      
+      if (orderToScroll) {
+        orderElement = document.querySelector(`[data-order-id="${orderToScroll}"]`);
+      }
+      
+      if (!orderElement && searchParam) {
+        const allOrderElements = document.querySelectorAll('[data-order-number]');
+        orderElement = Array.from(allOrderElements).find(el => 
+          el.dataset.orderNumber.includes(searchParam)
+        );
+      }
+      
       if (orderElement) {
         orderElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
         orderElement.style.boxShadow = '0 0 0 3px var(--primary-gold)';
+        orderElement.style.transition = 'box-shadow 0.3s ease';
+        
+        // Remove highlight after 3 seconds
         setTimeout(() => {
           orderElement.style.boxShadow = '';
         }, 3000);
@@ -2323,7 +2391,7 @@ async function payRemainingAmount(orderId) {
     const platformFee = (remainingPayment * 0.025) + 0.30;
     const netAmount = remainingPayment - platformFee;
     
-    // Save payment info for checkout page (pehle jaise)
+    // Save payment info for checkout page
     const paymentData = {
       orderId: order.id,
       orderNumber: order.orderNumber,
@@ -2611,7 +2679,7 @@ function checkNotificationRedirect() {
       const redirectData = JSON.parse(notificationRedirect);
       console.log("📌 Processing notification redirect:", redirectData);
       
-      const { orderId, orderNumber } = redirectData;
+      const { orderId, orderNumber, trackOrder, showTracking } = redirectData;
       
       if (orderId || orderNumber) {
         setTimeout(() => {
@@ -2622,19 +2690,33 @@ function checkNotificationRedirect() {
           }
           
           if (!orderElement && orderNumber) {
-            orderElement = document.querySelector(`[data-order-number="${orderNumber}"]`);
+            const allOrderElements = document.querySelectorAll('[data-order-number]');
+            orderElement = Array.from(allOrderElements).find(el => 
+              el.dataset.orderNumber.includes(orderNumber)
+            );
           }
           
           if (orderElement) {
             orderElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
             orderElement.style.boxShadow = '0 0 0 3px var(--primary-gold)';
+            
+            // If trackOrder is true, open tracking modal
+            if (trackOrder || showTracking) {
+              setTimeout(() => {
+                if (orderId) {
+                  showTrackingModal(orderId);
+                }
+              }, 1000);
+            }
+            
             setTimeout(() => {
               orderElement.style.boxShadow = '';
             }, 3000);
           }
-        }, 1000);
+        }, 1500);
       }
       
+      // Clear redirect data
       localStorage.removeItem('irya_notification_redirect');
       
     } catch (error) {
@@ -2647,9 +2729,11 @@ function checkNotificationRedirect() {
 function checkPaymentSuccess() {
   const urlParams = new URLSearchParams(window.location.search);
   const paymentSuccess = urlParams.get('payment_success');
+  const trackParam = urlParams.get('track');
+  const showTrackingParam = urlParams.get('show_tracking');
+  const orderId = urlParams.get('order_id');
   
   if (paymentSuccess === 'true') {
-    const orderId = urlParams.get('order_id');
     const orderNumber = urlParams.get('order_number');
     
     if (orderId || orderNumber) {
@@ -2678,6 +2762,525 @@ function checkPaymentSuccess() {
     const newUrl = window.location.pathname;
     window.history.replaceState({}, document.title, newUrl);
   }
+  
+  // Check if we should show tracking modal
+  if ((trackParam === 'true' || showTrackingParam === 'true') && orderId) {
+    setTimeout(() => {
+      showTrackingModal(orderId);
+      
+      // Clean URL parameters after showing modal
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
+    }, 2000);
+  }
+}
+
+// ============================================
+// TRACKING MODAL FUNCTIONS
+// ============================================
+
+async function showTrackingModal(orderId) {
+  try {
+    const order = orders.find(o => o.id === orderId);
+    if (!order) {
+      showMessage("Order not found", "error");
+      return;
+    }
+    
+    const trackingModal = document.getElementById('trackingModal');
+    const modalContent = document.getElementById('trackingModalContent');
+    
+    // Clear previous content
+    modalContent.innerHTML = '';
+    
+    // Create timeline HTML
+    const timelineHTML = createTrackingTimeline(order);
+    
+    // Build modal content
+    modalContent.innerHTML = `
+      <div style="padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: var(--border-radius); margin-bottom: 20px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
+          <div>
+            <div style="font-size: 12px; opacity: 0.9;">Order Number</div>
+            <div style="font-family: monospace; font-size: 18px; font-weight: 600;">${order.orderNumber || order.id.substring(0, 8)}</div>
+          </div>
+          <div>
+            <div style="font-size: 12px; opacity: 0.9;">Current Status</div>
+            <div class="status-badge ${getStatusClass(order.orderStatus || order.status)}" style="margin-top: 5px; background: white;">
+              ${getStatusText(order.orderStatus || order.status)}
+            </div>
+          </div>
+          ${order.trackingNumber ? `
+          <div>
+            <div style="font-size: 12px; opacity: 0.9;">Tracking Number</div>
+            <div style="font-family: monospace; font-size: 18px; font-weight: 600;">${order.trackingNumber}</div>
+          </div>
+          ` : ''}
+        </div>
+      </div>
+      
+      <div class="tracking-timeline">
+        <h3 style="margin-bottom: 20px; color: var(--stone-dark); font-size: 18px;">
+          <i class="fas fa-shipping-fast"></i> Order Journey
+        </h3>
+        ${timelineHTML}
+      </div>
+      
+      ${order.shippingDetails || order.shippingAddress ? `
+      <div class="address-section" style="margin-top: 20px;">
+        <div class="address-header">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>Delivery Address</span>
+        </div>
+        <div class="address-details">
+          ${getAddressHTML(order.shippingDetails || order.shippingAddress)}
+        </div>
+      </div>
+      ` : ''}
+      
+      <div style="margin-top: 30px;">
+        ${order.trackingNumber ? `
+        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+          <button class="btn btn-primary" onclick="copyTrackingNumber('${order.trackingNumber}')">
+            <i class="fas fa-copy"></i> Copy Tracking
+          </button>
+          <button class="btn btn-outline" onclick="trackOnWebsite('${order.trackingNumber}')">
+            <i class="fas fa-external-link-alt"></i> Track Online
+          </button>
+        </div>
+        ` : ''}
+        <button class="btn btn-secondary" onclick="closeTrackingModal()" style="width: 100%;">
+          <i class="fas fa-times"></i> Close
+        </button>
+      </div>
+    `;
+    
+    // Show modal
+    trackingModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    
+  } catch (error) {
+    console.error("❌ Error showing tracking modal:", error);
+    showMessage("Failed to load tracking information", "error");
+  }
+}
+
+function createTrackingTimeline(order) {
+  const status = order.orderStatus || order.status || 'payment_pending';
+  const statusHistory = order.statusHistory || [];
+  
+  const timelineSteps = [
+    {
+      id: 'order_placed',
+      title: 'Order Placed',
+      description: 'Your order has been successfully placed',
+      icon: 'fa-shopping-cart',
+      date: order.createdAt,
+      statusCheck: () => true
+    },
+    {
+      id: 'payment_confirmed',
+      title: 'Payment Confirmed',
+      description: order.paymentMethod === 'bank' ? 'Bank transfer confirmed' : 'Payment confirmed',
+      icon: 'fa-credit-card',
+      date: order.paymentConfirmedAt,
+      statusCheck: () => order.advancePayment > 0 || order.submittedAmount > 0
+    },
+    {
+      id: 'order_confirmed',
+      title: 'Order Confirmed',
+      description: 'Order has been confirmed by our team',
+      icon: 'fa-check-circle',
+      date: order.confirmedAt,
+      statusCheck: () => status !== 'payment_pending'
+    },
+    {
+      id: 'processing',
+      title: 'Processing',
+      description: 'Your order is being processed',
+      icon: 'fa-cogs',
+      date: order.processingAt,
+      statusCheck: () => ['processing', 'ready_to_ship', 'shipped', 'out_for_delivery', 'delivered'].includes(status)
+    },
+    {
+      id: 'ready_to_ship',
+      title: 'Ready to Ship',
+      description: 'Order is packed and ready for shipping',
+      icon: 'fa-box',
+      date: order.readyToShipAt,
+      statusCheck: () => ['ready_to_ship', 'shipped', 'out_for_delivery', 'delivered'].includes(status)
+    },
+    {
+      id: 'shipped',
+      title: 'Shipped',
+      description: order.trackingNumber ? `Shipped via courier` : 'Order has been shipped',
+      icon: 'fa-shipping-fast',
+      date: order.shippedAt,
+      statusCheck: () => ['shipped', 'out_for_delivery', 'delivered'].includes(status)
+    },
+    {
+      id: 'out_for_delivery',
+      title: 'Out for Delivery',
+      description: 'Order is out for delivery',
+      icon: 'fa-truck',
+      date: order.outForDeliveryAt,
+      statusCheck: () => ['out_for_delivery', 'delivered'].includes(status)
+    },
+    {
+      id: 'delivered',
+      title: 'Delivered',
+      description: 'Order has been delivered successfully',
+      icon: 'fa-check-double',
+      date: order.deliveredAt,
+      statusCheck: () => status === 'delivered'
+    }
+  ];
+  
+  let html = '';
+  
+  let currentStepIndex = 0;
+  for (let i = 0; i < timelineSteps.length; i++) {
+    const step = timelineSteps[i];
+    if (step.statusCheck()) {
+      currentStepIndex = i;
+    } else {
+      break;
+    }
+  }
+  
+  timelineSteps.forEach((step, index) => {
+    let stepClass = 'pending';
+    let icon = step.icon;
+    
+    if (index < currentStepIndex) {
+      stepClass = 'completed';
+    } else if (index === currentStepIndex) {
+      stepClass = 'active';
+    }
+    
+    let actualDate = step.date;
+    if (statusHistory && statusHistory.length > 0) {
+      const historyItem = statusHistory.find(h => 
+        h.status.toLowerCase() === step.title.toLowerCase()
+      );
+      if (historyItem) {
+        actualDate = historyItem.at;
+      }
+    }
+    
+    html += `
+      <div class="timeline-step ${stepClass}">
+        <div class="timeline-icon">
+          <i class="fas ${icon}"></i>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-title">
+            ${step.title}
+            ${stepClass === 'active' ? '<span style="color: var(--primary-gold); font-size: 10px; margin-left: 5px;">●</span>' : ''}
+          </div>
+          <div class="timeline-desc">${step.description}</div>
+          ${actualDate ? `
+          <div class="timeline-date">
+            <i class="far fa-clock"></i> ${formatDateTime(actualDate)}
+          </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  });
+  
+  return html;
+}
+
+function closeTrackingModal() {
+  const trackingModal = document.getElementById('trackingModal');
+  trackingModal.style.display = 'none';
+  document.body.style.overflow = 'auto';
+}
+
+function copyTrackingNumber(trackingNumber) {
+  if (!trackingNumber) {
+    showMessage("No tracking number available", "info");
+    return;
+  }
+  
+  navigator.clipboard.writeText(trackingNumber).then(() => {
+    showMessage("Tracking number copied to clipboard", "success");
+  }).catch(err => {
+    console.error('❌ Failed to copy tracking number:', err);
+    showMessage("Failed to copy tracking number", "error");
+  });
+}
+
+function trackOnWebsite(trackingNumber) {
+  if (!trackingNumber) {
+    showMessage("No tracking number available", "info");
+    return;
+  }
+  
+  showMessage(`Tracking number: ${trackingNumber}`, "info");
+}
+
+// ============================================
+// NOTIFICATIONS
+// ============================================
+
+async function loadNotifications() {
+  try {
+    if (!db || !currentUserId) return;
+    
+    const notificationsRef = collection(db, "users", currentUserId, "notifications");
+    const notificationsQuery = query(notificationsRef, orderBy("createdAt", "desc"), limit(20));
+    
+    if (notificationsUnsubscribe) notificationsUnsubscribe();
+    
+    notificationsUnsubscribe = onSnapshot(notificationsQuery,
+      (snapshot) => {
+        notifications = [];
+        const notificationList = document.getElementById("notificationList");
+        notificationList.innerHTML = '';
+        
+        if (snapshot.empty) {
+          notificationList.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: var(--text-light);">
+              <i class="fas fa-bell-slash" style="font-size: 24px; margin-bottom: 10px;"></i>
+              <p>No notifications yet</p>
+            </div>
+          `;
+          updateNotificationBadge();
+          return;
+        }
+        
+        let unreadCount = 0;
+        
+        snapshot.forEach((doc) => {
+          const note = doc.data();
+          note.id = doc.id;
+          notifications.push(note);
+          
+          if (!note.read) unreadCount++;
+          
+          const noteElement = createNotificationElement(note);
+          notificationList.appendChild(noteElement);
+        });
+        
+        updateNotificationBadge(unreadCount);
+        
+      },
+      (error) => {
+        console.error("❌ Error in notifications listener:", error);
+      }
+    );
+    
+  } catch (error) {
+    console.error("❌ Error loading notifications:", error);
+  }
+}
+
+function createNotificationElement(note) {
+  const div = document.createElement('div');
+  div.className = `notification-item ${note.read ? '' : 'unread'}`;
+  
+  const timeAgo = getTimeAgo(note.createdAt);
+  
+  div.innerHTML = `
+    <div class="notification-title">
+      <i class="fas fa-bell" style="color: var(--primary-gold);"></i>
+      ${note.title || 'Notification'}
+    </div>
+    <div class="notification-message">${note.message || ''}</div>
+    <div class="notification-time">
+      <i class="far fa-clock"></i> ${timeAgo}
+    </div>
+  `;
+  
+  div.onclick = () => {
+    markNotificationAsRead(note.id);
+  };
+  
+  return div;
+}
+
+async function markNotificationAsRead(notificationId) {
+  try {
+    if (!db || !currentUserId) return;
+    
+    const notificationRef = doc(db, "users", currentUserId, "notifications", notificationId);
+    await updateDoc(notificationRef, {
+      read: true,
+      readAt: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    console.error("❌ Error marking notification as read:", error);
+  }
+}
+
+async function markAllAsRead() {
+  try {
+    if (!db || !currentUserId) return;
+    
+    const unreadNotifications = notifications.filter(n => !n.read);
+    
+    for (const note of unreadNotifications) {
+      const notificationRef = doc(db, "users", currentUserId, "notifications", note.id);
+      await updateDoc(notificationRef, {
+        read: true,
+        readAt: new Date().toISOString()
+      });
+    }
+    
+    showMessage("All notifications marked as read", "success");
+    
+  } catch (error) {
+    console.error("❌ Error marking all as read:", error);
+    showMessage("Failed to mark notifications as read", "error");
+  }
+}
+
+function updateNotificationBadge(count = null) {
+  const badge = document.getElementById("notificationBadge");
+  if (!badge) return;
+  
+  const unreadCount = count !== null ? count : notifications.filter(n => !n.read).length;
+  
+  if (unreadCount > 0) {
+    badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+    badge.style.display = 'flex';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function toggleNotifications() {
+  const dropdown = document.getElementById("notificationDropdown");
+  dropdown.classList.toggle("active");
+}
+
+document.addEventListener('click', function(event) {
+  const dropdown = document.getElementById("notificationDropdown");
+  const button = document.querySelector('.notification-btn');
+  
+  if (dropdown && button && !dropdown.contains(event.target) && !button.contains(event.target)) {
+    dropdown.classList.remove("active");
+  }
+});
+
+// ============================================
+// CART BADGE UPDATE
+// ============================================
+
+function updateCartBadge() {
+  try {
+    const userId = localStorage.getItem('irya_guest_id') || 'guest';
+    const cartKey = 'irya_cart_' + userId;
+    const cartData = localStorage.getItem(cartKey);
+    const cartItems = cartData ? JSON.parse(cartData) : [];
+    const count = cartItems.reduce((total, item) => total + (item.quantity || 0), 0);
+    
+    const cartBadge = document.getElementById('cartBadge');
+    if (cartBadge) {
+      cartBadge.textContent = count;
+      cartBadge.style.display = count > 0 ? 'flex' : 'none';
+    }
+  } catch (error) {
+    console.error('❌ Error updating cart badge:', error);
+  }
+}
+
+// ============================================
+// INVOICE FUNCTION
+// ============================================
+
+async function downloadInvoice(orderId) {
+  try {
+    const order = orders.find(o => o.id === orderId);
+    if (!order) {
+      showMessage("Order not found", "error");
+      return;
+    }
+    
+    // Open invoice in new window
+    const win = window.open("", "_blank");
+    const invoiceHTML = generateInvoiceHTML(order);
+    win.document.write(invoiceHTML);
+    win.document.close();
+    
+    showMessage("Invoice generated successfully", "success");
+    
+  } catch (error) {
+    console.error("❌ Error generating invoice:", error);
+    showMessage("Failed to generate invoice", "error");
+  }
+}
+
+function generateInvoiceHTML(order) {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Invoice - ${order.orderNumber}</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .invoice-header { text-align: center; margin-bottom: 30px; }
+        .invoice-details { margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .total-row { font-weight: bold; }
+      </style>
+    </head>
+    <body>
+      <div class="invoice-header">
+        <h1>IRYA STONE</h1>
+        <h2>INVOICE</h2>
+        <p>Order: ${order.orderNumber}</p>
+      </div>
+      <div class="invoice-details">
+        <p><strong>Date:</strong> ${formatDate(order.createdAt)}</p>
+        <p><strong>Status:</strong> ${order.orderStatus}</p>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${order.items ? order.items.map(item => `
+            <tr>
+              <td>${item.name}</td>
+              <td>${item.quantity || 1}</td>
+              <td>£${(item.price || 0).toFixed(2)}</td>
+              <td>£${(item.totalPrice || (item.price * (item.quantity || 1)) || 0).toFixed(2)}</td>
+            </tr>
+          `).join('') : ''}
+        </tbody>
+        <tfoot>
+          <tr class="total-row">
+            <td colspan="3">Subtotal</td>
+            <td>£${(order.subtotal || 0).toFixed(2)}</td>
+          </tr>
+          <tr>
+            <td colspan="3">Shipping</td>
+            <td>£${(order.shipping || 0).toFixed(2)}</td>
+          </tr>
+          <tr>
+            <td colspan="3">Tax</td>
+            <td>£${(order.tax || 0).toFixed(2)}</td>
+          </tr>
+          <tr class="total-row">
+            <td colspan="3">TOTAL</td>
+            <td>£${(order.total || 0).toFixed(2)}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </body>
+    </html>
+  `;
 }
 
 // ============================================
@@ -2882,448 +3485,6 @@ function closeSuccessModal() {
 function closeErrorModal() {
   document.getElementById('errorModal').style.display = 'none';
 }
-
-// ============================================
-// TRACKING MODAL FUNCTIONS (same as before)
-// ============================================
-
-async function showTrackingModal(orderId) {
-  try {
-    const order = orders.find(o => o.id === orderId);
-    if (!order) {
-      showMessage("Order not found", "error");
-      return;
-    }
-    
-    const trackingModal = document.getElementById('trackingModal');
-    const modalContent = document.getElementById('trackingModalContent');
-    
-    const timelineHTML = createTrackingTimeline(order);
-    
-    modalContent.innerHTML = `
-      <div style="padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: var(--border-radius); margin-bottom: 20px;">
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
-          <div>
-            <div style="font-size: 12px; opacity: 0.9;">Order Number</div>
-            <div style="font-family: monospace; font-size: 18px; font-weight: 600;">${order.orderNumber || order.id.substring(0, 8)}</div>
-          </div>
-          <div>
-            <div style="font-size: 12px; opacity: 0.9;">Current Status</div>
-            <div class="status-badge ${getStatusClass(order.orderStatus || order.status)}" style="margin-top: 5px; background: white;">
-              ${getStatusText(order.orderStatus || order.status)}
-            </div>
-          </div>
-          ${order.trackingNumber ? `
-          <div>
-            <div style="font-size: 12px; opacity: 0.9;">Tracking Number</div>
-            <div style="font-family: monospace; font-size: 18px; font-weight: 600;">${order.trackingNumber}</div>
-          </div>
-          ` : ''}
-        </div>
-      </div>
-      
-      <div class="tracking-timeline">
-        <h3 style="margin-bottom: 20px; color: var(--stone-dark); font-size: 18px;">
-          <i class="fas fa-shipping-fast"></i> Order Journey
-        </h3>
-        ${timelineHTML}
-      </div>
-      
-      ${order.shippingDetails || order.shippingAddress ? `
-      <div class="address-section" style="margin-top: 20px;">
-        <div class="address-header">
-          <i class="fas fa-map-marker-alt"></i>
-          <span>Delivery Address</span>
-        </div>
-        <div class="address-details">
-          ${getAddressHTML(order.shippingDetails || order.shippingAddress)}
-        </div>
-      </div>
-      ` : ''}
-      
-      <div style="margin-top: 30px;">
-        ${order.trackingNumber ? `
-        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-          <button class="btn btn-primary" onclick="copyTrackingNumber('${order.trackingNumber}')">
-            <i class="fas fa-copy"></i> Copy Tracking
-          </button>
-          <button class="btn btn-outline" onclick="trackOnWebsite('${order.trackingNumber}')">
-            <i class="fas fa-external-link-alt"></i> Track Online
-          </button>
-        </div>
-        ` : ''}
-        <button class="btn btn-secondary" onclick="closeTrackingModal()" style="width: 100%;">
-          <i class="fas fa-times"></i> Close
-        </button>
-      </div>
-    `;
-    
-    trackingModal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-    
-  } catch (error) {
-    console.error("❌ Error showing tracking modal:", error);
-    showMessage("Failed to load tracking information", "error");
-  }
-}
-
-function createTrackingTimeline(order) {
-  const status = order.orderStatus || order.status || 'payment_pending';
-  const statusHistory = order.statusHistory || [];
-  
-  const timelineSteps = [
-    {
-      id: 'order_placed',
-      title: 'Order Placed',
-      description: 'Your order has been successfully placed',
-      icon: 'fa-shopping-cart',
-      date: order.createdAt,
-      statusCheck: () => true
-    },
-    {
-      id: 'payment_confirmed',
-      title: 'Payment Confirmed',
-      description: order.paymentMethod === 'bank' ? 'Bank transfer confirmed' : 'Payment confirmed',
-      icon: 'fa-credit-card',
-      date: order.paymentConfirmedAt,
-      statusCheck: () => order.advancePayment > 0 || order.submittedAmount > 0
-    },
-    {
-      id: 'order_confirmed',
-      title: 'Order Confirmed',
-      description: 'Order has been confirmed by our team',
-      icon: 'fa-check-circle',
-      date: order.confirmedAt,
-      statusCheck: () => status !== 'payment_pending'
-    },
-    {
-      id: 'processing',
-      title: 'Processing',
-      description: 'Your order is being processed',
-      icon: 'fa-cogs',
-      date: order.processingAt,
-      statusCheck: () => ['processing', 'ready_to_ship', 'shipped', 'out_for_delivery', 'delivered'].includes(status)
-    },
-    {
-      id: 'ready_to_ship',
-      title: 'Ready to Ship',
-      description: 'Order is packed and ready for shipping',
-      icon: 'fa-box',
-      date: order.readyToShipAt,
-      statusCheck: () => ['ready_to_ship', 'shipped', 'out_for_delivery', 'delivered'].includes(status)
-    },
-    {
-      id: 'shipped',
-      title: 'Shipped',
-      description: order.trackingNumber ? `Shipped via courier` : 'Order has been shipped',
-      icon: 'fa-shipping-fast',
-      date: order.shippedAt,
-      statusCheck: () => ['shipped', 'out_for_delivery', 'delivered'].includes(status)
-    },
-    {
-      id: 'out_for_delivery',
-      title: 'Out for Delivery',
-      description: 'Order is out for delivery',
-      icon: 'fa-truck',
-      date: order.outForDeliveryAt,
-      statusCheck: () => ['out_for_delivery', 'delivered'].includes(status)
-    },
-    {
-      id: 'delivered',
-      title: 'Delivered',
-      description: 'Order has been delivered successfully',
-      icon: 'fa-check-double',
-      date: order.deliveredAt,
-      statusCheck: () => status === 'delivered'
-    }
-  ];
-  
-  let html = '';
-  
-  let currentStepIndex = 0;
-  for (let i = 0; i < timelineSteps.length; i++) {
-    const step = timelineSteps[i];
-    if (step.statusCheck()) {
-      currentStepIndex = i;
-    } else {
-      break;
-    }
-  }
-  
-  timelineSteps.forEach((step, index) => {
-    let stepClass = 'pending';
-    let icon = step.icon;
-    
-    if (index < currentStepIndex) {
-      stepClass = 'completed';
-    } else if (index === currentStepIndex) {
-      stepClass = 'active';
-    }
-    
-    let actualDate = step.date;
-    if (statusHistory && statusHistory.length > 0) {
-      const historyItem = statusHistory.find(h => 
-        h.status.toLowerCase() === step.title.toLowerCase()
-      );
-      if (historyItem) {
-        actualDate = historyItem.at;
-      }
-    }
-    
-    html += `
-      <div class="timeline-step ${stepClass}">
-        <div class="timeline-icon">
-          <i class="fas ${icon}"></i>
-        </div>
-        <div class="timeline-content">
-          <div class="timeline-title">
-            ${step.title}
-            ${stepClass === 'active' ? '<span style="color: var(--primary-gold); font-size: 10px; margin-left: 5px;">●</span>' : ''}
-          </div>
-          <div class="timeline-desc">${step.description}</div>
-          ${actualDate ? `
-          <div class="timeline-date">
-            <i class="far fa-clock"></i> ${formatDateTime(actualDate)}
-          </div>
-          ` : ''}
-        </div>
-      </div>
-    `;
-  });
-  
-  return html;
-}
-
-function closeTrackingModal() {
-  const trackingModal = document.getElementById('trackingModal');
-  trackingModal.style.display = 'none';
-  document.body.style.overflow = 'auto';
-}
-
-function copyTrackingNumber(trackingNumber) {
-  if (!trackingNumber) {
-    showMessage("No tracking number available", "info");
-    return;
-  }
-  
-  navigator.clipboard.writeText(trackingNumber).then(() => {
-    showMessage("Tracking number copied to clipboard", "success");
-  }).catch(err => {
-    console.error('❌ Failed to copy tracking number:', err);
-    showMessage("Failed to copy tracking number", "error");
-  });
-}
-
-function trackOnWebsite(trackingNumber) {
-  if (!trackingNumber) {
-    showMessage("No tracking number available", "info");
-    return;
-  }
-  
-  showMessage(`Tracking number: ${trackingNumber}`, "info");
-}
-
-// ============================================
-// NOTIFICATIONS (same as before)
-// ============================================
-
-async function loadNotifications() {
-  try {
-    if (!db || !currentUserId) return;
-    
-    const notificationsRef = collection(db, "users", currentUserId, "notifications");
-    const notificationsQuery = query(notificationsRef, orderBy("createdAt", "desc"), limit(20));
-    
-    if (notificationsUnsubscribe) notificationsUnsubscribe();
-    
-    notificationsUnsubscribe = onSnapshot(notificationsQuery,
-      (snapshot) => {
-        notifications = [];
-        const notificationList = document.getElementById("notificationList");
-        notificationList.innerHTML = '';
-        
-        if (snapshot.empty) {
-          notificationList.innerHTML = `
-            <div style="text-align: center; padding: 40px; color: var(--text-light);">
-              <i class="fas fa-bell-slash" style="font-size: 24px; margin-bottom: 10px;"></i>
-              <p>No notifications yet</p>
-            </div>
-          `;
-          updateNotificationBadge();
-          return;
-        }
-        
-        let unreadCount = 0;
-        
-        snapshot.forEach((doc) => {
-          const note = doc.data();
-          note.id = doc.id;
-          notifications.push(note);
-          
-          if (!note.read) unreadCount++;
-          
-          const noteElement = createNotificationElement(note);
-          notificationList.appendChild(noteElement);
-        });
-        
-        updateNotificationBadge(unreadCount);
-        
-      },
-      (error) => {
-        console.error("❌ Error in notifications listener:", error);
-      }
-    );
-    
-  } catch (error) {
-    console.error("❌ Error loading notifications:", error);
-  }
-}
-
-function createNotificationElement(note) {
-  const div = document.createElement('div');
-  div.className = `notification-item ${note.read ? '' : 'unread'}`;
-  
-  const timeAgo = getTimeAgo(note.createdAt);
-  
-  div.innerHTML = `
-    <div class="notification-title">
-      <i class="fas fa-bell" style="color: var(--primary-gold);"></i>
-      ${note.title || 'Notification'}
-    </div>
-    <div class="notification-message">${note.message || ''}</div>
-    <div class="notification-time">
-      <i class="far fa-clock"></i> ${timeAgo}
-    </div>
-  `;
-  
-  div.onclick = () => {
-    markNotificationAsRead(note.id);
-  };
-  
-  return div;
-}
-
-async function markNotificationAsRead(notificationId) {
-  try {
-    if (!db || !currentUserId) return;
-    
-    const notificationRef = doc(db, "users", currentUserId, "notifications", notificationId);
-    await updateDoc(notificationRef, {
-      read: true,
-      readAt: new Date().toISOString()
-    });
-    
-  } catch (error) {
-    console.error("❌ Error marking notification as read:", error);
-  }
-}
-
-async function markAllAsRead() {
-  try {
-    if (!db || !currentUserId) return;
-    
-    const unreadNotifications = notifications.filter(n => !n.read);
-    
-    for (const note of unreadNotifications) {
-      const notificationRef = doc(db, "users", currentUserId, "notifications", note.id);
-      await updateDoc(notificationRef, {
-        read: true,
-        readAt: new Date().toISOString()
-      });
-    }
-    
-    showMessage("All notifications marked as read", "success");
-    
-  } catch (error) {
-    console.error("❌ Error marking all as read:", error);
-    showMessage("Failed to mark notifications as read", "error");
-  }
-}
-
-function updateNotificationBadge(count = null) {
-  const badge = document.getElementById("notificationBadge");
-  if (!badge) return;
-  
-  const unreadCount = count !== null ? count : notifications.filter(n => !n.read).length;
-  
-  if (unreadCount > 0) {
-    badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
-    badge.style.display = 'flex';
-  } else {
-    badge.style.display = 'none';
-  }
-}
-
-function toggleNotifications() {
-  const dropdown = document.getElementById("notificationDropdown");
-  dropdown.classList.toggle("active");
-}
-
-document.addEventListener('click', function(event) {
-  const dropdown = document.getElementById("notificationDropdown");
-  const button = document.querySelector('.notification-btn');
-  
-  if (dropdown && button && !dropdown.contains(event.target) && !button.contains(event.target)) {
-    dropdown.classList.remove("active");
-  }
-});
-
-// ============================================
-// CART BADGE UPDATE
-// ============================================
-
-function updateCartBadge() {
-  try {
-    const userId = localStorage.getItem('irya_guest_id') || 'guest';
-    const cartKey = 'irya_cart_' + userId;
-    const cartData = localStorage.getItem(cartKey);
-    const cartItems = cartData ? JSON.parse(cartData) : [];
-    const count = cartItems.reduce((total, item) => total + (item.quantity || 0), 0);
-    
-    const cartBadge = document.getElementById('cartBadge');
-    if (cartBadge) {
-      cartBadge.textContent = count;
-      cartBadge.style.display = count > 0 ? 'flex' : 'none';
-    }
-  } catch (error) {
-    console.error('❌ Error updating cart badge:', error);
-  }
-}
-
-// ============================================
-// INVOICE FUNCTION (same as before)
-// ============================================
-
-async function downloadInvoice(orderId) {
-  try {
-    const order = orders.find(o => o.id === orderId);
-    if (!order) {
-      showMessage("Order not found", "error");
-      return;
-    }
-    
-    // Open invoice in new window
-    const win = window.open("", "_blank");
-    const invoiceHTML = generateInvoiceHTML(order);
-    win.document.write(invoiceHTML);
-    win.document.close();
-    
-    showMessage("Invoice generated successfully", "success");
-    
-  } catch (error) {
-    console.error("❌ Error generating invoice:", error);
-    showMessage("Failed to generate invoice", "error");
-  }
-}
-
-function generateInvoiceHTML(order) {
-  // Same invoice HTML as before
-  // ... (invoice generation code)
-}
-
-// ============================================
-// UTILITY FUNCTIONS
-// ============================================
 
 function getTimeAgo(dateString) {
   if (!dateString) return 'Just now';
