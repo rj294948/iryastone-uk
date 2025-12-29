@@ -450,6 +450,60 @@ header.hidden {
     box-shadow: var(--shadow-md);
 }
 
+/* Sign In Required Message */
+.signin-required {
+    text-align: center;
+    padding: 50px 20px;
+    background: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    margin-top: 20px;
+}
+
+.signin-required-icon {
+    font-size: 60px;
+    color: var(--primary-gold);
+    margin-bottom: 20px;
+}
+
+.signin-required h2 {
+    font-size: 22px;
+    color: var(--stone-dark);
+    margin-bottom: 10px;
+    font-family: 'Roboto Slab', serif;
+}
+
+.signin-required p {
+    color: var(--text-light);
+    margin-bottom: 25px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+.signin-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, var(--primary-gold), var(--gold-dark));
+    color: white;
+    padding: 12px 30px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: var(--transition);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.signin-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
 /* ============================================
    ORDER SUMMARY - HOME PAGE CARD STYLE
    ============================================ */
@@ -822,6 +876,28 @@ header.hidden {
         font-size: 14px;
     }
     
+    .signin-required {
+        padding: 70px 40px;
+    }
+    
+    .signin-required-icon {
+        font-size: 80px;
+    }
+    
+    .signin-required h2 {
+        font-size: 26px;
+    }
+    
+    .signin-required p {
+        font-size: 16px;
+        max-width: 500px;
+    }
+    
+    .signin-btn {
+        padding: 14px 35px;
+        font-size: 15px;
+    }
+    
     .order-summary {
         padding: 25px;
     }
@@ -1019,6 +1095,28 @@ header.hidden {
         font-size: 12px;
     }
     
+    .signin-required {
+        padding: 40px 20px;
+    }
+    
+    .signin-required-icon {
+        font-size: 50px;
+    }
+    
+    .signin-required h2 {
+        font-size: 18px;
+    }
+    
+    .signin-required p {
+        font-size: 13px;
+        max-width: 300px;
+    }
+    
+    .signin-btn {
+        padding: 10px 20px;
+        font-size: 13px;
+    }
+    
     .order-summary {
         padding: 15px;
     }
@@ -1114,72 +1212,8 @@ header.hidden {
         <p>Review and manage your selected stone products</p>
     </div>
     
-    <div class="cart-container">
-        <!-- Cart Items Section -->
-        <div class="cart-items" id="cartItemsContainer">
-            <!-- Cart items will be loaded here -->
-            <div class="empty-cart" id="emptyCartMessage" style="display: none;">
-                <div class="empty-cart-icon">
-                    <i class="fas fa-shopping-cart"></i>
-                </div>
-                <h2>Your cart is empty</h2>
-                <p>Add some premium natural stones to your cart and they will appear here.</p>
-                <a href="products.html" class="continue-shopping-btn">
-                    <i class="fas fa-gem"></i>
-                    Browse Products
-                </a>
-            </div>
-        </div>
-        
-        <!-- Order Summary Section -->
-        <div class="order-summary">
-            <h2>Order Summary</h2>
-            
-            <div class="summary-row">
-                <span class="summary-label">Items Total</span>
-                <span class="summary-value" id="subtotalAmount">£0.00</span>
-            </div>
-            
-            <div class="summary-row">
-                <span class="summary-label">Shipping</span>
-                <span class="summary-value">Calculated at checkout</span>
-            </div>
-            
-            <div class="summary-row">
-                <span class="summary-label">Tax (VAT 20%)</span>
-                <span class="summary-value" id="taxAmount">£0.00</span>
-            </div>
-            
-            <div class="summary-row" id="advancePaymentRow" style="display: none;">
-                <span class="summary-label">Advance Payment (30%)</span>
-                <span class="summary-value" id="advanceAmount">£0.00</span>
-            </div>
-            
-            <div class="summary-total">
-                <span class="summary-label">Total Amount</span>
-                <span class="summary-value" id="totalAmount">£0.00</span>
-            </div>
-            
-            <button class="checkout-btn" id="checkoutBtn" disabled>
-                <i class="fas fa-lock"></i>
-                Proceed to Checkout
-            </button>
-            
-            <button class="debug-btn" id="debugBtn">
-                <i class="fas fa-bug"></i>
-                Debug Checkout
-            </button>
-            
-            <div class="security-note">
-                <i class="fas fa-shield-alt"></i>
-                <span>Secure & encrypted checkout</span>
-            </div>
-            
-            <div class="advance-note">
-                <i class="fas fa-info-circle"></i>
-                <span>30% advance payment required for all orders</span>
-            </div>
-        </div>
+    <div class="cart-container" id="cartMainContainer">
+        <!-- Cart will be loaded here dynamically -->
     </div>
 </main>
 
@@ -1291,7 +1325,7 @@ function handleScroll() {
 }
 
 // ============================================
-// AUTH SYSTEM - UPDATED FOR FIREBASE SYNC
+// AUTH SYSTEM - NO AUTO GUEST CREATION
 // ============================================
 
 class AuthSystem {
@@ -1302,16 +1336,6 @@ class AuthSystem {
     }
     
     async init() {
-        // Get user from localStorage first
-        const userData = localStorage.getItem(this.authKey);
-        if (userData) {
-            try {
-                this.currentUser = JSON.parse(userData);
-            } catch (e) {
-                this.currentUser = null;
-            }
-        }
-        
         // Initialize Firebase Auth listener
         if (firebaseAuth) {
             this.isFirebaseReady = true;
@@ -1333,52 +1357,28 @@ class AuthSystem {
                     // Save to localStorage
                     localStorage.setItem(this.authKey, JSON.stringify(this.currentUser));
                     
-                } else if (this.currentUser && this.currentUser.isFirebaseUser) {
-                    // User was logged in with Firebase but signed out
-                    console.log('👤 Firebase user signed out');
+                } else {
+                    // User is not signed in - NO GUEST CREATION
+                    console.log('🔒 User not signed in - cart access disabled');
                     this.currentUser = null;
                     localStorage.removeItem(this.authKey);
-                    this.currentUser = this.createGuestUser();
-                    localStorage.setItem(this.authKey, JSON.stringify(this.currentUser));
                 }
                 
-                // Update UI if needed
-                this.updateAuthUI();
+                // Update cart badge based on auth status
+                this.updateCartBadge();
             });
-        }
-        
-        // If no user found, create guest user
-        if (!this.currentUser) {
-            this.currentUser = this.createGuestUser();
-            localStorage.setItem(this.authKey, JSON.stringify(this.currentUser));
         }
         
         console.log('Auth initialized:', this.currentUser);
         return this;
     }
     
-    createGuestUser() {
-        let guestId = localStorage.getItem('irya_guest_id');
-        if (!guestId) {
-            guestId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('irya_guest_id', guestId);
-        }
-        
-        return {
-            uid: guestId,
-            displayName: 'Guest User',
-            email: '',
-            isFirebaseUser: false,
-            isGuest: true
-        };
-    }
-    
     getUserId() {
-        return this.currentUser ? this.currentUser.uid : 'guest_unknown';
+        return this.currentUser ? this.currentUser.uid : null;
     }
     
     getUserName() {
-        return this.currentUser ? this.currentUser.displayName : 'Guest';
+        return this.currentUser ? this.currentUser.displayName : '';
     }
     
     getUserEmail() {
@@ -1393,13 +1393,26 @@ class AuthSystem {
         return this.isFirebaseReady && firebaseDB;
     }
     
-    updateAuthUI() {
-        // Your auth UI update logic here
+    updateCartBadge() {
+        const headerCartBadge = document.getElementById('headerCartBadge');
+        const bottomCartBadge = document.getElementById('bottomCartBadge');
+        
+        if (!this.isLoggedIn()) {
+            // Show 0 for non-logged in users
+            if (headerCartBadge) {
+                headerCartBadge.textContent = '0';
+                headerCartBadge.style.display = 'none';
+            }
+            if (bottomCartBadge) {
+                bottomCartBadge.textContent = '0';
+                bottomCartBadge.style.display = 'none';
+            }
+        }
     }
 }
 
 // ============================================
-// CART SYSTEM - COMPLETE FIREBASE FIRESTORE SYNC
+// CART SYSTEM - REQUIRES AUTHENTICATION
 // ============================================
 
 class CartSystem {
@@ -1412,10 +1425,18 @@ class CartSystem {
     }
     
     async init() {
+        // Only initialize if user is logged in
+        if (!this.authSystem.isLoggedIn()) {
+            console.log('🔒 Cart: User not logged in, cart disabled');
+            this.cartItems = [];
+            this.updateCartBadge();
+            return this;
+        }
+        
         this.userId = this.authSystem.getUserId();
         console.log('🛒 Initializing cart for user:', this.userId);
         
-        // Load cart from localStorage first
+        // Load cart from localStorage
         await this.loadCartFromLocalStorage();
         
         // If user is logged in with Firebase, sync with Firestore
@@ -1433,6 +1454,11 @@ class CartSystem {
     
     async loadCartFromLocalStorage() {
         try {
+            if (!this.userId) {
+                this.cartItems = [];
+                return;
+            }
+            
             const cartKey = this.getCartKey();
             const cartData = localStorage.getItem(cartKey);
             
@@ -1460,16 +1486,13 @@ class CartSystem {
     }
     
     async syncWithFirebase() {
-        if (this.isSyncing) return;
+        if (this.isSyncing || !this.userId) return;
         
         try {
             this.isSyncing = true;
             console.log('🔄 Syncing cart with Firebase...');
             
-            const userId = this.authSystem.getUserId();
-            
-            // Check if user document exists in Firestore
-            const userCartRef = firebaseDB.collection('userCarts').doc(userId);
+            const userCartRef = firebaseDB.collection('userCarts').doc(this.userId);
             const cartDoc = await userCartRef.get();
             
             if (cartDoc.exists) {
@@ -1537,6 +1560,8 @@ class CartSystem {
     
     async saveToLocalStorage() {
         try {
+            if (!this.userId) return false;
+            
             const cartKey = this.getCartKey();
             const cartData = JSON.stringify(this.cartItems);
             localStorage.setItem(cartKey, cartData);
@@ -1550,20 +1575,19 @@ class CartSystem {
     }
     
     async saveToFirebase() {
-        if (!this.authSystem.isFirebaseAvailable() || !this.authSystem.isLoggedIn()) {
+        if (!this.authSystem.isFirebaseAvailable() || !this.authSystem.isLoggedIn() || !this.userId) {
             console.log('⚠️ Firebase not available or user not logged in, skipping Firebase save');
             return false;
         }
         
         try {
-            const userId = this.authSystem.getUserId();
             const userEmail = this.authSystem.getUserEmail();
             const userName = this.authSystem.getUserName();
             
-            console.log(`📤 Saving cart to Firebase for user: ${userEmail || userId}`);
+            console.log(`📤 Saving cart to Firebase for user: ${userEmail || this.userId}`);
             
             const cartData = {
-                userId: userId,
+                userId: this.userId,
                 userEmail: userEmail,
                 userName: userName,
                 items: this.cartItems,
@@ -1577,7 +1601,7 @@ class CartSystem {
             };
             
             // Save to Firestore
-            await firebaseDB.collection('userCarts').doc(userId).set(cartData, { merge: true });
+            await firebaseDB.collection('userCarts').doc(this.userId).set(cartData, { merge: true });
             
             console.log('✅ Cart saved to Firebase successfully');
             return true;
@@ -1589,6 +1613,11 @@ class CartSystem {
     }
     
     async saveCart() {
+        if (!this.authSystem.isLoggedIn()) {
+            console.log('🔒 Cannot save cart - user not logged in');
+            return false;
+        }
+        
         // Always save to localStorage first
         await this.saveToLocalStorage();
         
@@ -1604,6 +1633,12 @@ class CartSystem {
     }
     
     async addToCart(product, quantity = 1) {
+        // CHECK: User must be logged in to add to cart
+        if (!this.authSystem.isLoggedIn()) {
+            showError('Please sign in to add items to cart');
+            return false;
+        }
+        
         try {
             console.log(`📦 Adding to cart: ${product.id} - ${product.stone_name || product.name}`);
             
@@ -1683,6 +1718,12 @@ class CartSystem {
     }
     
     async updateQuantity(itemId, newQuantity) {
+        // CHECK: User must be logged in
+        if (!this.authSystem.isLoggedIn()) {
+            showError('Please sign in to update cart');
+            return false;
+        }
+        
         try {
             const itemIndex = this.cartItems.findIndex(item => 
                 item.uniqueId === itemId || item.id === itemId
@@ -1709,6 +1750,12 @@ class CartSystem {
     }
     
     async removeFromCart(itemId) {
+        // CHECK: User must be logged in
+        if (!this.authSystem.isLoggedIn()) {
+            showError('Please sign in to modify cart');
+            return false;
+        }
+        
         try {
             const initialCount = this.cartItems.length;
             this.cartItems = this.cartItems.filter(item => 
@@ -1728,6 +1775,12 @@ class CartSystem {
     }
     
     async forceRefreshCart() {
+        // CHECK: User must be logged in
+        if (!this.authSystem.isLoggedIn()) {
+            console.log('🔒 Cannot refresh cart - user not logged in');
+            return [];
+        }
+        
         console.log('🔄 Force refreshing cart...');
         
         // Clear current cart
@@ -1746,14 +1799,23 @@ class CartSystem {
     }
     
     getCartCount() {
+        if (!this.authSystem.isLoggedIn()) {
+            return 0;
+        }
         return this.cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
     }
     
     getCartItems() {
+        if (!this.authSystem.isLoggedIn()) {
+            return [];
+        }
         return this.cartItems;
     }
     
     getSubtotal() {
+        if (!this.authSystem.isLoggedIn()) {
+            return 0;
+        }
         return this.cartItems.reduce((total, item) => {
             const itemTotal = (item.price || 0) * (item.quantity || 1);
             return total + itemTotal;
@@ -1791,21 +1853,28 @@ class CartSystem {
     }
     
     async clearCart() {
+        // CHECK: User must be logged in
+        if (!this.authSystem.isLoggedIn()) {
+            showError('Please sign in to clear cart');
+            return false;
+        }
+        
         this.cartItems = [];
         await this.saveCart();
         console.log('🧹 Cart cleared completely');
         showNotification('Cart cleared!');
+        return true;
     }
     
     // DEBUG: View cart data
     debugCart() {
         console.log('=== CART DEBUG INFO ===');
         console.log('User ID:', this.userId);
+        console.log('User Logged In:', this.authSystem.isLoggedIn());
         console.log('Cart Key:', this.getCartKey());
         console.log('Items Count:', this.cartItems.length);
         console.log('Cart Items:', this.cartItems);
         console.log('Firebase Available:', this.authSystem.isFirebaseAvailable());
-        console.log('User Logged In:', this.authSystem.isLoggedIn());
         console.log('Subtotal:', this.getSubtotal());
         console.log('Total:', this.getTotal());
         console.log('========================');
@@ -1857,26 +1926,41 @@ function formatPrice(price) {
 // ============================================
 
 async function renderCartItems() {
-    const container = document.getElementById('cartItemsContainer');
-    const emptyCartMessage = document.getElementById('emptyCartMessage');
-    const checkoutBtn = document.getElementById('checkoutBtn');
+    const container = document.getElementById('cartMainContainer');
     
-    if (!cartSystem || !container) return;
+    if (!authSystem || !container) return;
+    
+    // Check if user is logged in
+    if (!authSystem.isLoggedIn()) {
+        showSignInRequired();
+        return;
+    }
+    
+    if (!cartSystem) {
+        container.innerHTML = '<div class="empty-cart"><p>Loading cart...</p></div>';
+        return;
+    }
     
     const cartItems = cartSystem.getCartItems();
     
     console.log(`🔄 Rendering ${cartItems.length} cart items`);
     
     if (cartItems.length === 0) {
-        container.innerHTML = '';
-        if (emptyCartMessage) emptyCartMessage.style.display = 'block';
-        if (checkoutBtn) checkoutBtn.disabled = true;
-        updateOrderSummary();
+        container.innerHTML = `
+            <div class="empty-cart" id="emptyCartMessage">
+                <div class="empty-cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <h2>Your cart is empty</h2>
+                <p>Add some premium natural stones to your cart and they will appear here.</p>
+                <a href="products.html" class="continue-shopping-btn">
+                    <i class="fas fa-gem"></i>
+                    Browse Products
+                </a>
+            </div>
+        `;
         return;
     }
-    
-    if (emptyCartMessage) emptyCartMessage.style.display = 'none';
-    if (checkoutBtn) checkoutBtn.disabled = false;
     
     // Sort items by latest added
     const sortedItems = [...cartItems].sort((a, b) => 
@@ -1940,23 +2024,85 @@ async function renderCartItems() {
         `;
     }).join('');
     
-    container.innerHTML = itemsHTML;
-    updateOrderSummary();
+    const orderSummaryHTML = `
+        <div class="cart-items" id="cartItemsContainer">
+            ${itemsHTML}
+        </div>
+        
+        <div class="order-summary">
+            <h2>Order Summary</h2>
+            
+            <div class="summary-row">
+                <span class="summary-label">Items Total</span>
+                <span class="summary-value" id="subtotalAmount">${formatPrice(cartSystem.getSubtotal())}</span>
+            </div>
+            
+            <div class="summary-row">
+                <span class="summary-label">Shipping</span>
+                <span class="summary-value">Calculated at checkout</span>
+            </div>
+            
+            <div class="summary-row">
+                <span class="summary-label">Tax (VAT 20%)</span>
+                <span class="summary-value" id="taxAmount">${formatPrice(cartSystem.getTax())}</span>
+            </div>
+            
+            <div class="summary-row" id="advancePaymentRow">
+                <span class="summary-label">Advance Payment (30%)</span>
+                <span class="summary-value" id="advanceAmount">${formatPrice(cartSystem.getAdvancePayment())}</span>
+            </div>
+            
+            <div class="summary-total">
+                <span class="summary-label">Total Amount</span>
+                <span class="summary-value" id="totalAmount">${formatPrice(cartSystem.getTotal())}</span>
+            </div>
+            
+            <button class="checkout-btn" id="checkoutBtn">
+                <i class="fas fa-lock"></i>
+                Proceed to Checkout
+            </button>
+            
+            <div class="security-note">
+                <i class="fas fa-shield-alt"></i>
+                <span>Secure & encrypted checkout</span>
+            </div>
+            
+            <div class="advance-note">
+                <i class="fas fa-info-circle"></i>
+                <span>30% advance payment required for all orders</span>
+            </div>
+        </div>
+    `;
+    
+    container.innerHTML = orderSummaryHTML;
+    
+    // Setup checkout button listener
+    const checkoutBtn = document.getElementById('checkoutBtn');
+    if (checkoutBtn) {
+        checkoutBtn.addEventListener('click', proceedToCheckout);
+    }
 }
 
-function updateOrderSummary() {
-    if (!cartSystem) return;
+function showSignInRequired() {
+    const container = document.getElementById('cartMainContainer');
+    if (!container) return;
     
-    const subtotal = cartSystem.getSubtotal();
-    const tax = cartSystem.getTax();
-    const total = cartSystem.getTotal();
-    const advancePayment = cartSystem.getAdvancePayment();
-    
-    document.getElementById('subtotalAmount').textContent = formatPrice(subtotal);
-    document.getElementById('taxAmount').textContent = formatPrice(tax);
-    document.getElementById('totalAmount').textContent = formatPrice(total);
-    document.getElementById('advanceAmount').textContent = formatPrice(advancePayment);
-    document.getElementById('advancePaymentRow').style.display = 'flex';
+    container.innerHTML = `
+        <div class="signin-required">
+            <div class="signin-required-icon">
+                <i class="fas fa-user-lock"></i>
+            </div>
+            <h2>Sign In Required</h2>
+            <p>Please sign in to view and manage your shopping cart. Your cart items will be saved and synced across all your devices.</p>
+            <a href="account.html" class="signin-btn">
+                <i class="fas fa-sign-in-alt"></i>
+                Sign In / Register
+            </a>
+            <p style="margin-top: 20px; font-size: 12px; color: var(--text-light);">
+                Don't have an account? <a href="account.html" style="color: var(--primary-gold); text-decoration: none;">Create one now</a>
+            </p>
+        </div>
+    `;
 }
 
 async function updateItemQuantity(itemId, newQuantity) {
@@ -1992,10 +2138,15 @@ async function removeItemFromCart(itemId) {
 }
 
 // ============================================
-// CHECKOUT FUNCTIONS - FIXED VERSION
+// CHECKOUT FUNCTIONS
 // ============================================
 
 async function proceedToCheckout() {
+    if (!authSystem || !authSystem.isLoggedIn()) {
+        showError('Please sign in to proceed to checkout');
+        return;
+    }
+    
     if (!cartSystem) {
         showError('Cart system not initialized');
         return;
@@ -2013,7 +2164,7 @@ async function proceedToCheckout() {
         console.log('🛒 Starting checkout process...');
         console.log(`📊 Cart items before checkout: ${cartItems.length}`);
         
-        // ✅ IMPORTANT: Force refresh cart from Firebase before proceeding
+        // Force refresh cart from Firebase before proceeding
         if (authSystem.isFirebaseAvailable() && authSystem.isLoggedIn()) {
             console.log('🔄 Refreshing cart from Firebase...');
             await cartSystem.syncWithFirebase();
@@ -2028,7 +2179,7 @@ async function proceedToCheckout() {
                 return;
             }
             
-            // Save to sessionStorage WITH timestamp
+            // Save to sessionStorage
             const checkoutData = {
                 userId: cartSystem.authSystem.getUserId(),
                 userName: cartSystem.authSystem.getUserName(),
@@ -2041,31 +2192,14 @@ async function proceedToCheckout() {
                 cartSessionId: 'cart_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
                 syncTimestamp: new Date().toISOString(),
                 itemCount: freshItems.length,
-                createdAt: new Date().toISOString(),
-                // Debug info
-                _debug: {
-                    source: 'firebase_sync',
-                    firebaseAvailable: true,
-                    userLoggedIn: true,
-                    localStorageItems: localStorage.getItem(cartSystem.getCartKey()) ? 
-                        JSON.parse(localStorage.getItem(cartSystem.getCartKey())).length : 0
-                }
+                createdAt: new Date().toISOString()
             };
             
-            // Multiple backup methods
             console.log('💾 Saving checkout data...');
             
-            // Method 1: sessionStorage (primary)
+            // Multiple backup methods
             sessionStorage.setItem('irya_checkout_data', JSON.stringify(checkoutData));
-            
-            // Method 2: localStorage (backup)
             localStorage.setItem('irya_checkout_backup', JSON.stringify(checkoutData));
-            
-            // Method 3: Temporary key (extra backup)
-            const tempKey = 'irya_checkout_temp_' + Date.now();
-            localStorage.setItem(tempKey, JSON.stringify(checkoutData));
-            
-            // Method 4: Direct cart items
             sessionStorage.setItem('irya_cart_items', JSON.stringify(freshItems));
             sessionStorage.setItem('irya_cart_total', cartSystem.getTotal().toString());
             sessionStorage.setItem('irya_cart_user_id', cartSystem.authSystem.getUserId());
@@ -2088,12 +2222,7 @@ async function proceedToCheckout() {
                 cartSessionId: 'cart_' + Date.now(),
                 syncTimestamp: new Date().toISOString(),
                 itemCount: cartItems.length,
-                createdAt: new Date().toISOString(),
-                _debug: {
-                    source: 'localStorage',
-                    firebaseAvailable: false,
-                    userLoggedIn: false
-                }
+                createdAt: new Date().toISOString()
             };
             
             sessionStorage.setItem('irya_checkout_data', JSON.stringify(checkoutData));
@@ -2143,74 +2272,7 @@ async function proceedToCheckout() {
 }
 
 // ============================================
-// DEBUG FUNCTIONS
-// ============================================
-
-async function debugCheckout() {
-    console.log('=== CHECKOUT DEBUG ===');
-    
-    if (!cartSystem) {
-        console.log('❌ Cart system not initialized');
-        return;
-    }
-    
-    // Current cart info
-    const cartItems = cartSystem.getCartItems();
-    console.log('Current Cart Items:', cartItems);
-    console.log('Cart Count:', cartSystem.getCartCount());
-    console.log('Cart Subtotal:', cartSystem.getSubtotal());
-    console.log('Cart Total:', cartSystem.getTotal());
-    
-    // Test sessionStorage
-    const testData = {
-        test: true,
-        items: cartItems,
-        timestamp: new Date().toISOString(),
-        count: cartItems.length
-    };
-    
-    sessionStorage.setItem('irya_debug_test', JSON.stringify(testData));
-    
-    const retrieved = sessionStorage.getItem('irya_debug_test');
-    console.log('SessionStorage test:', retrieved ? 'PASS' : 'FAIL');
-    
-    if (retrieved) {
-        console.log('Retrieved data:', JSON.parse(retrieved));
-    }
-    
-    // Check existing checkout data
-    const existingCheckoutData = sessionStorage.getItem('irya_checkout_data');
-    console.log('Existing checkout data in sessionStorage:', existingCheckoutData ? 'EXISTS' : 'NOT FOUND');
-    
-    // Check localStorage backup
-    const backupData = localStorage.getItem('irya_checkout_backup');
-    console.log('Backup data in localStorage:', backupData ? 'EXISTS' : 'NOT FOUND');
-    
-    // Clear test data
-    sessionStorage.removeItem('irya_debug_test');
-    
-    // Test Firebase connection
-    if (firebaseDB) {
-        console.log('🔍 Testing Firebase connection...');
-        try {
-            const testRef = firebaseDB.collection('test_debug').doc('checkout_test');
-            await testRef.set({
-                test: true,
-                timestamp: new Date().toISOString()
-            });
-            console.log('✅ Firebase write test: PASS');
-        } catch (error) {
-            console.error('❌ Firebase write test: FAIL', error);
-        }
-    }
-    
-    console.log('=== DEBUG COMPLETE ===');
-    
-    alert('Debug complete. Check console for details.');
-}
-
-// ============================================
-// FIREBASE INITIALIZATION - IMPROVED
+// FIREBASE INITIALIZATION
 // ============================================
 
 async function initializeFirebase() {
@@ -2252,7 +2314,7 @@ async function initializeFirebase() {
 }
 
 // ============================================
-// CART PAGE INITIALIZATION - UPDATED
+// CART PAGE INITIALIZATION
 // ============================================
 
 document.addEventListener('DOMContentLoaded', async function() {
@@ -2261,53 +2323,36 @@ document.addEventListener('DOMContentLoaded', async function() {
     showLoading(true);
     
     try {
-        // Initialize Firebase first
+        // Initialize Firebase
         const firebaseInitialized = await initializeFirebase();
         
         if (!firebaseInitialized) {
-            console.log('⚠️ Firebase not initialized, using localStorage only');
+            console.log('⚠️ Firebase not initialized');
+            showError('Please check your internet connection');
+            showLoading(false);
+            return;
         }
         
         // Initialize auth system
         authSystem = new AuthSystem();
         await authSystem.init();
         
-        // Initialize cart system
+        // Show sign in required message if user is not logged in
+        if (!authSystem.isLoggedIn()) {
+            showSignInRequired();
+            showLoading(false);
+            return;
+        }
+        
+        // Initialize cart system only if logged in
         cartSystem = new CartSystem(authSystem);
         await cartSystem.init();
-        
-        // ✅ CRITICAL FIX: Force refresh cart on page load
-        console.log('🔄 Ensuring cart is in sync...');
-        await cartSystem.forceRefreshCart();
         
         // Render cart items
         renderCartItems();
         
         // Setup scroll listener
         window.addEventListener('scroll', handleScroll, { passive: true });
-        
-        // Listen for cart updates from other tabs
-        window.addEventListener('storage', function(e) {
-            if (e.key && e.key.includes('irya_cart_')) {
-                console.log('📢 Cart updated from another tab');
-                cartSystem.loadCartFromLocalStorage().then(() => {
-                    renderCartItems();
-                });
-            }
-        });
-        
-        // Listen for page visibility changes
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) {
-                console.log('📱 Page became visible, refreshing cart...');
-                cartSystem.forceRefreshCart().then(() => {
-                    renderCartItems();
-                });
-            }
-        });
-        
-        // Setup listeners
-        setupCartPageListeners();
         
         console.log('✅ Cart page initialized successfully');
         
@@ -2319,113 +2364,22 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 });
 
-function setupCartPageListeners() {
-    const checkoutBtn = document.getElementById('checkoutBtn');
-    if (checkoutBtn) {
-        checkoutBtn.addEventListener('click', proceedToCheckout);
+// Listen for auth state changes
+window.addEventListener('storage', function(e) {
+    if (e.key === 'irya_stone_user') {
+        console.log('📢 Auth state changed, reloading page...');
+        location.reload();
     }
-    
-    const debugBtn = document.getElementById('debugBtn');
-    if (debugBtn) {
-        debugBtn.addEventListener('click', debugCheckout);
-    }
-}
+});
 
 // ============================================
-// UTILITY FUNCTIONS
+// GLOBAL FUNCTIONS
 // ============================================
-
-// Test Firebase connection
-async function testFirebaseConnection() {
-    try {
-        console.log('🔍 Testing Firebase connection...');
-        
-        if (!firebaseDB) {
-            console.log('❌ Firebase DB not initialized');
-            return false;
-        }
-        
-        // Try to write a test document
-        const testRef = firebaseDB.collection('test').doc('connection_test');
-        await testRef.set({
-            test: true,
-            timestamp: new Date().toISOString()
-        });
-        
-        console.log('✅ Firebase connection test: WRITE successful');
-        
-        // Try to read it back
-        const doc = await testRef.get();
-        if (doc.exists) {
-            console.log('✅ Firebase connection test: READ successful');
-        }
-        
-        // Clean up
-        await testRef.delete();
-        console.log('✅ Firebase connection test: CLEANUP successful');
-        
-        return true;
-        
-    } catch (error) {
-        console.error('❌ Firebase connection test failed:', error);
-        return false;
-    }
-}
-
-// Check cart data in Firebase
-async function checkFirebaseCart() {
-    try {
-        if (!firebaseDB || !authSystem.isLoggedIn()) {
-            console.log('❌ Firebase not available or user not logged in');
-            return;
-        }
-        
-        const userId = authSystem.getUserId();
-        const cartRef = firebaseDB.collection('userCarts').doc(userId);
-        const cartDoc = await cartRef.get();
-        
-        if (cartDoc.exists) {
-            console.log('📊 Firebase Cart Data:', cartDoc.data());
-            return cartDoc.data();
-        } else {
-            console.log('📭 No cart found in Firebase');
-            return null;
-        }
-        
-    } catch (error) {
-        console.error('❌ Error checking Firebase cart:', error);
-    }
-}
-
-// Force sync cart to Firebase
-async function forceSyncToFirebase() {
-    if (!cartSystem) {
-        console.log('❌ Cart system not initialized');
-        return;
-    }
-    
-    showLoading(true);
-    try {
-        console.log('🔄 Forcing sync to Firebase...');
-        await cartSystem.saveToFirebase();
-        showNotification('Cart synced to Firebase!');
-    } catch (error) {
-        console.error('❌ Error syncing to Firebase:', error);
-        showError('Sync failed: ' + error.message);
-    } finally {
-        showLoading(false);
-    }
-}
 
 // Make functions available globally
 window.updateItemQuantity = updateItemQuantity;
 window.removeItemFromCart = removeItemFromCart;
 window.proceedToCheckout = proceedToCheckout;
-window.debugCart = () => cartSystem?.debugCart();
-window.testFirebaseConnection = testFirebaseConnection;
-window.checkFirebaseCart = checkFirebaseCart;
-window.forceSyncToFirebase = forceSyncToFirebase;
-window.debugCheckout = debugCheckout;
 </script>
 </body>
 </html>
