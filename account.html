@@ -1506,30 +1506,25 @@ let allProducts = []; // For search functionality
 let searchTimeout = null;
 
 // ============================================
-// AUTHENTICATION SYSTEM
+// AUTHENTICATION SYSTEM - NO AUTO SIGN-IN
 // ============================================
 
 class AccountAuthSystem {
     constructor() {
         this.currentUser = null;
         this.authKey = 'irya_stone_auth_user';
-        this.guestIdKey = 'irya_guest_id';
     }
     
     async init() {
         try {
             await this.initializeFirebase();
             
-            // Check for user ID in URL parameters
-            const urlParams = new URLSearchParams(window.location.search);
-            const userIdFromUrl = urlParams.get('userId');
-            
             return new Promise((resolve) => {
                 firebaseAuth.onAuthStateChanged((user) => {
                     console.log("📱 Auth State Changed:", user ? user.uid : "No user");
                     
                     if (user) {
-                        // Firebase authenticated user
+                        // ✅ Only Firebase authenticated users
                         this.currentUser = {
                             uid: user.uid,
                             displayName: user.displayName || 'User',
@@ -1544,25 +1539,10 @@ class AccountAuthSystem {
                         localStorage.setItem(this.authKey, JSON.stringify(this.currentUser));
                         console.log("✅ Firebase user saved:", user.uid);
                         
-                    } else if (userIdFromUrl) {
-                        // User ID from URL (from home page)
-                        this.currentUser = this.createUserFromUrl(userIdFromUrl);
-                        localStorage.setItem(this.authKey, JSON.stringify(this.currentUser));
-                        console.log("✅ User loaded from URL:", userIdFromUrl);
-                        
                     } else {
-                        // No Firebase user, check localStorage
-                        const storedUser = this.getUserFromStorage();
-                        
-                        if (storedUser && storedUser.isFirebaseUser) {
-                            this.currentUser = storedUser;
-                            console.log("✅ Using stored user from localStorage:", storedUser.uid);
-                        } else {
-                            // Create guest user
-                            this.currentUser = this.createGuestUser();
-                            localStorage.setItem(this.authKey, JSON.stringify(this.currentUser));
-                            console.log("✅ Guest user created:", this.currentUser.uid);
-                        }
+                        // ✅ ALWAYS CREATE FRESH GUEST (NO AUTO SIGN-IN)
+                        this.currentUser = this.createFreshGuestUser();
+                        console.log("✅ Fresh guest user created:", this.currentUser.uid);
                     }
                     
                     // Update auth menu
@@ -1574,20 +1554,27 @@ class AccountAuthSystem {
             
         } catch (error) {
             console.error('❌ Auth init error:', error);
-            // Try to get user from URL or create guest
-            const urlParams = new URLSearchParams(window.location.search);
-            const userIdFromUrl = urlParams.get('userId');
-            
-            if (userIdFromUrl) {
-                this.currentUser = this.createUserFromUrl(userIdFromUrl);
-            } else {
-                this.currentUser = this.getUserFromStorage() || this.createGuestUser();
-            }
-            
-            localStorage.setItem(this.authKey, JSON.stringify(this.currentUser));
+            // ✅ ALWAYS CREATE FRESH GUEST ON ERROR
+            this.currentUser = this.createFreshGuestUser();
             updateAuthMenu(this.currentUser.isFirebaseUser);
             return this.currentUser;
         }
+    }
+    
+    createFreshGuestUser() {
+        // ✅ ALWAYS CREATE NEW GUEST (NO PREVIOUS DATA)
+        const guestId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        
+        return {
+            uid: guestId,
+            displayName: 'Guest',
+            email: '',
+            photoURL: '',
+            providerId: 'guest',
+            isFirebaseUser: false,
+            isGuest: true,
+            createdAt: new Date().toISOString()
+        };
     }
     
     async initializeFirebase() {
@@ -1613,60 +1600,12 @@ class AccountAuthSystem {
         }
     }
     
-    createUserFromUrl(userId) {
-        // Extract user info from URL or create from ID
-        return {
-            uid: userId,
-            displayName: 'User',
-            email: '',
-            photoURL: '',
-            providerId: 'url',
-            isFirebaseUser: false,
-            isGuest: true,
-            source: 'url_parameter'
-        };
-    }
-    
-    getUserFromStorage() {
-        const userData = localStorage.getItem(this.authKey);
-        if (userData) {
-            try {
-                return JSON.parse(userData);
-            } catch (e) {
-                console.error('❌ Error parsing user data:', e);
-                return null;
-            }
-        }
-        return null;
-    }
-    
-    createGuestUser() {
-        let guestId = localStorage.getItem(this.guestIdKey);
-        if (!guestId) {
-            guestId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem(this.guestIdKey, guestId);
-        }
-        
-        return {
-            uid: guestId,
-            displayName: 'Guest',
-            email: '',
-            photoURL: '',
-            providerId: 'guest',
-            isFirebaseUser: false,
-            isGuest: true
-        };
-    }
-    
     isLoggedIn() {
         return this.currentUser && this.currentUser.isFirebaseUser === true;
     }
     
     getUserId() {
-        if (!this.currentUser) {
-            return this.createGuestUser().uid;
-        }
-        return this.currentUser.uid;
+        return this.currentUser ? this.currentUser.uid : 'guest_unknown';
     }
     
     getUserEmail() {
@@ -1870,17 +1809,19 @@ function handleScroll() {
 // ============================================
 
 document.addEventListener('DOMContentLoaded', async function() {
-    console.log("📱 Account page loaded");
+    console.log("📱 Account page loaded - NO AUTO SIGN-IN");
     
     // Initialize Search
     await initializeSearch();
     
-    // Initialize Auth System
+    // ✅ ALWAYS START WITH FRESH GUEST (NO AUTO SIGN-IN)
     authSystem = new AccountAuthSystem();
     await authSystem.init();
     
     const userId = authSystem.getUserId();
-    console.log("✅ Auth initialized. User ID:", userId, "Logged in:", authSystem.isLoggedIn());
+    console.log("✅ Fresh auth initialized. User ID:", userId, 
+                "Logged in:", authSystem.isLoggedIn(), 
+                "Is Guest:", !authSystem.isLoggedIn());
     
     // Set current user
     currentUser = authSystem.currentUser;
@@ -1985,13 +1926,11 @@ function updateUserProfileUI() {
     // Update name and email
     document.getElementById('userName').textContent = userName;
     document.getElementById('userEmail').textContent = userEmail || 'Not provided';
-    document.getElementById('userType').textContent = currentUser.isFirebaseUser ? 'Registered User' : (currentUser.isGuest ? 'Guest User' : 'User');
+    document.getElementById('userType').textContent = currentUser.isFirebaseUser ? 'Registered User' : 'Guest User';
     
     // Update profile info
     const profileInfo = document.getElementById('profileInfo');
-    const userType = currentUser.isFirebaseUser ? 'Registered Account' : 
-                    currentUser.isGuest ? 'Guest Account' : 
-                    'User Account';
+    const isGuest = !currentUser.isFirebaseUser;
     
     profileInfo.innerHTML = `
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
@@ -2009,18 +1948,18 @@ function updateUserProfileUI() {
             </div>
             <div>
                 <div style="font-size: 13px; color: rgba(255, 255, 255, 0.6); margin-bottom: 5px;">Account Type</div>
-                <div style="font-weight: 600; font-size: 16px; color: var(--white);">${userType}</div>
+                <div style="font-weight: 600; font-size: 16px; color: var(--white);">${isGuest ? 'Guest Account' : 'Registered Account'}</div>
             </div>
         </div>
         
-        ${!currentUser.isFirebaseUser ? `
+        ${isGuest ? `
             <div class="empty-state" style="margin-top: 30px; padding: 20px; background: rgba(255, 255, 255, 0.05); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1);">
                 <div style="display: flex; align-items: center; gap: 15px;">
                     <i class="fas fa-info-circle" style="color: var(--primary-gold); font-size: 20px;"></i>
                     <div style="flex: 1;">
                         <div style="font-weight: 600; color: var(--white); margin-bottom: 5px;">Guest Account</div>
                         <div style="font-size: 13px; color: rgba(255, 255, 255, 0.7);">
-                            You are using a guest account. 
+                            You are using a temporary guest account. 
                             <a href="sign.html" style="color: var(--primary-gold); text-decoration: none; font-weight: 500;">Sign up</a> 
                             to save your orders, addresses, and access your account from any device.
                         </div>
@@ -2033,7 +1972,7 @@ function updateUserProfileUI() {
     // Show/hide edit profile button based on login status
     const editProfileBtn = document.getElementById('editProfileBtn');
     if (editProfileBtn) {
-        if (!currentUser.isFirebaseUser) {
+        if (isGuest) {
             editProfileBtn.style.display = 'none';
         } else {
             editProfileBtn.style.display = 'flex';
@@ -2048,22 +1987,25 @@ function updateUserProfileUI() {
 }
 
 // ============================================
-// ADDRESS MANAGEMENT
+// ADDRESS MANAGEMENT - GUEST USERS SEE EMPTY
 // ============================================
 
 async function loadUserAddresses() {
     try {
-        if (!firebaseDB || !currentUser) return;
+        if (!currentUser) return;
         
         const userId = currentUser.uid;
         console.log("🔄 Loading addresses for user:", userId);
         
         let addresses = [];
         
-        // For Firebase users, try to fetch from Firestore
+        // ✅ Only load addresses for logged-in users
         if (currentUser.isFirebaseUser) {
             try {
-                // Try users/{userId}/addresses collection
+                if (!firebaseDB) {
+                    await authSystem.initializeFirebase();
+                }
+                
                 const addressesRef = firebaseDB.collection('users').doc(userId).collection('addresses');
                 const addressesSnapshot = await addressesRef.get();
                 
@@ -2078,25 +2020,11 @@ async function loadUserAddresses() {
                     });
                 }
             } catch (error) {
-                console.log("❌ Error fetching from users/{userId}/addresses:", error.message);
+                console.log("❌ Error fetching addresses:", error.message);
             }
-        }
-        
-        // Also check localStorage for all users
-        try {
-            const localAddressesKey = `irya_addresses_${userId}`;
-            const localAddresses = localStorage.getItem(localAddressesKey);
-            if (localAddresses) {
-                const parsedAddresses = JSON.parse(localAddresses);
-                // Merge with Firestore addresses, avoiding duplicates
-                parsedAddresses.forEach(addr => {
-                    if (!addresses.find(a => a.id === addr.id)) {
-                        addresses.push(addr);
-                    }
-                });
-            }
-        } catch (error) {
-            console.log("❌ Error loading local addresses:", error.message);
+        } else {
+            // 🔴 Guest users don't see any saved addresses
+            console.log("📭 Guest user - no addresses loaded");
         }
         
         displayAddresses(addresses);
@@ -2109,19 +2037,20 @@ async function loadUserAddresses() {
 
 function displayAddresses(addresses) {
     const addressesGrid = document.getElementById('addressesGrid');
-    const addAddressBtn = document.getElementById('addAddressBtn');
     
     if (addresses.length === 0) {
+        const isGuest = !currentUser.isFirebaseUser;
+        
         addressesGrid.innerHTML = `
             <div class="empty-state" style="grid-column: 1 / -1;">
                 <i class="fas fa-map-marker-alt empty-state-icon"></i>
                 <div class="empty-state-title">No Addresses Saved</div>
                 <div class="empty-state-message">
-                    ${!currentUser.isFirebaseUser ? 
+                    ${isGuest ? 
                         'Sign in to save your addresses for faster checkout.' : 
                         'Add your first address to make checkout faster.'}
                 </div>
-                ${!currentUser.isFirebaseUser ? 
+                ${isGuest ? 
                     `<a href="sign.html" class="edit-btn">
                         <i class="fas fa-sign-in-alt"></i>
                         Sign In / Register
@@ -2208,22 +2137,25 @@ function getCountryName(countryCode) {
 }
 
 // ============================================
-// ORDER MANAGEMENT
+// ORDER MANAGEMENT - GUEST USERS SEE EMPTY
 // ============================================
 
 async function loadRecentOrders() {
     try {
-        if (!firebaseDB) return;
+        if (!currentUser) return;
         
         const userId = currentUser.uid;
         console.log("🔄 Loading recent orders for user:", userId);
         
         let orders = [];
         
-        // For Firebase users, try to fetch from Firestore
+        // ✅ Only load orders for logged-in users
         if (currentUser.isFirebaseUser) {
             try {
-                // Try users/{userId}/orders collection
+                if (!firebaseDB) {
+                    await authSystem.initializeFirebase();
+                }
+                
                 const ordersRef = firebaseDB.collection('users').doc(userId).collection('orders');
                 const ordersSnapshot = await ordersRef.orderBy('createdAt', 'desc').limit(3).get();
                 
@@ -2232,12 +2164,6 @@ async function loadRecentOrders() {
                 if (!ordersSnapshot.empty) {
                     ordersSnapshot.forEach(doc => {
                         const orderData = doc.data();
-                        console.log(`📦 Recent order: ${doc.id}`, {
-                            orderNumber: orderData.orderNumber,
-                            status: orderData.status,
-                            paymentStatus: orderData.paymentStatus
-                        });
-                        
                         orders.push({
                             id: doc.id,
                             ...orderData
@@ -2245,27 +2171,11 @@ async function loadRecentOrders() {
                     });
                 }
             } catch (error) {
-                console.log("❌ Error fetching from users/{userId}/orders:", error.message);
+                console.log("❌ Error fetching orders:", error.message);
             }
-        }
-        
-        // Also check localStorage for all users
-        try {
-            const localOrdersKey = `irya_orders_${userId}`;
-            const localOrders = localStorage.getItem(localOrdersKey);
-            if (localOrders) {
-                const parsedOrders = JSON.parse(localOrders);
-                // Merge with Firestore orders, avoiding duplicates
-                parsedOrders.forEach(order => {
-                    if (!orders.find(o => o.id === order.id)) {
-                        orders.push(order);
-                    }
-                });
-                // Sort by date and limit to 3
-                orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 3);
-            }
-        } catch (error) {
-            console.log("❌ Error loading local orders:", error.message);
+        } else {
+            // 🔴 Guest users don't see any saved orders
+            console.log("📭 Guest user - no orders loaded");
         }
         
         displayRecentOrders(orders);
@@ -2278,6 +2188,7 @@ async function loadRecentOrders() {
 
 function displayRecentOrders(orders) {
     const recentOrdersDiv = document.getElementById('recentOrders');
+    const isGuest = !currentUser.isFirebaseUser;
     
     if (orders.length === 0) {
         recentOrdersDiv.innerHTML = `
@@ -2285,7 +2196,7 @@ function displayRecentOrders(orders) {
                 <i class="fas fa-box-open empty-state-icon"></i>
                 <div class="empty-state-title">No Orders Yet</div>
                 <div class="empty-state-message">
-                    ${!currentUser.isFirebaseUser ? 
+                    ${isGuest ? 
                         'Start shopping to see your orders here. Sign in to save your order history.' : 
                         'Start shopping to see your orders here.'}
                 </div>
