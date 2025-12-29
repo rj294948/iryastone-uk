@@ -771,6 +771,15 @@ body {
     background: #d97706;
 }
 
+.btn-pay-remaining {
+    background: linear-gradient(135deg, #ff6b6b, #ff4757);
+    color: white;
+}
+
+.btn-pay-remaining:hover {
+    background: linear-gradient(135deg, #ff4757, #ff3838);
+}
+
 .btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -1298,6 +1307,50 @@ body {
     to { transform: translateX(100%); opacity: 0; }
 }
 
+/* ===== PAYMENT MODAL ===== */
+.payment-modal-content {
+    background: var(--white);
+    border-radius: var(--border-radius-lg);
+    padding: 30px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: var(--shadow-lg);
+}
+
+.payment-summary {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid #e9ecef;
+}
+
+.payment-summary-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.payment-summary-item.total {
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--primary-gold);
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 2px dashed #e0e0e0;
+}
+
+.payment-method-select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin: 15px 0;
+    font-size: 14px;
+    background: var(--bg-light);
+}
+
 /* ===== RESPONSIVE DESIGN ===== */
 @media (min-width: 768px) {
     .header {
@@ -1530,6 +1583,52 @@ body {
     </div>
 </div>
 
+<!-- Payment Modal -->
+<div class="modal" id="paymentModal">
+    <div class="payment-modal-content">
+        <div class="modal-icon" style="background: linear-gradient(135deg, #ff6b6b, #ff4757);">
+            <i class="fas fa-money-bill-wave"></i>
+        </div>
+        <h3 class="modal-title">Pay Remaining Amount</h3>
+        
+        <div class="payment-summary" id="paymentSummary">
+            <!-- Payment summary will be loaded here -->
+        </div>
+        
+        <div style="text-align: left; margin: 20px 0;">
+            <label style="display: block; margin-bottom: 8px; font-weight: 500;">Payment Method:</label>
+            <select class="payment-method-select" id="paymentMethod">
+                <option value="stripe">Credit/Debit Card (Stripe)</option>
+                <option value="bank">Bank Transfer</option>
+            </select>
+            
+            <div id="bankDetails" style="display: none; margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef;">
+                <p style="margin-bottom: 10px; font-weight: 600; color: var(--primary-gold);">
+                    <i class="fas fa-university"></i> Bank Transfer Details
+                </p>
+                <p style="font-size: 12px; color: var(--text-light); margin-bottom: 8px;">
+                    Account Name: IRYA STONE LTD<br>
+                    Account Number: 12345678<br>
+                    Sort Code: 04-00-04<br>
+                    Reference: <span id="bankReference"></span>
+                </p>
+                <p style="font-size: 11px; color: var(--text-light); font-style: italic;">
+                    Please use the reference above when making the transfer. Order will be processed once payment is confirmed.
+                </p>
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button class="btn btn-primary" style="flex: 1;" onclick="processRemainingPayment()" id="processPaymentBtn">
+                <i class="fas fa-bolt"></i> Process Payment
+            </button>
+            <button class="btn btn-secondary" style="flex: 1;" onclick="closePaymentModal()">
+                <i class="fas fa-times"></i> Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- Tracking Modal -->
 <div class="tracking-modal" id="trackingModal">
     <div class="tracking-modal-content">
@@ -1703,6 +1802,8 @@ let notifications = [];
 let ordersUnsubscribe = null;
 let notificationsUnsubscribe = null;
 let cancelOrderId = null;
+let paymentOrderId = null;
+let paymentOrderData = null;
 
 // ============================================
 // SCROLL HIDE/SHOW HEADER & FOOTER
@@ -1791,6 +1892,19 @@ document.addEventListener('DOMContentLoaded', async function() {
           otherContainer.style.display = 'block';
         } else {
           otherContainer.style.display = 'none';
+        }
+      });
+    }
+    
+    // Setup payment method dropdown listener
+    const paymentMethodSelect = document.getElementById('paymentMethod');
+    if (paymentMethodSelect) {
+      paymentMethodSelect.addEventListener('change', function() {
+        const bankDetails = document.getElementById('bankDetails');
+        if (this.value === 'bank') {
+          bankDetails.style.display = 'block';
+        } else {
+          bankDetails.style.display = 'none';
         }
       });
     }
@@ -2048,7 +2162,7 @@ function displayOrders(ordersList) {
     const platformFee = order.platformFee || 0;
     const netAdvance = order.netAdvance || (advancePayment - platformFee);
     
-    // FIX: Agar order shipped hai lekin payment pending dikh raha hai
+    // Payment badge logic
     let paymentBadgeClass = 'pending';
     let paymentBadgeText = 'Pending';
     let paymentIcon = 'fa-clock';
@@ -2077,6 +2191,9 @@ function displayOrders(ordersList) {
     
     // Check if payment is due but order is shipped - show warning
     const showPaymentReminder = remainingPayment > 0 && (orderStatus === 'shipped' || orderStatus === 'out_for_delivery' || orderStatus === 'delivered');
+    
+    // Check if remaining payment exists
+    const showRemainingPayment = remainingPayment > 0;
     
     ordersHTML += `
       <div class="${cardClass}" data-order-id="${order.id}" data-order-number="${order.orderNumber || ''}">
@@ -2257,9 +2374,9 @@ function displayOrders(ordersList) {
           <button class="btn btn-success" onclick="downloadInvoice('${order.id}')">
             <i class="fas fa-file-invoice"></i> Invoice
           </button>
-          ${!isCancelled && orderStatus !== 'delivered' && orderStatus !== 'returned' && remainingPayment > 0 ? `
-          <button class="btn btn-warning" onclick="payRemainingAmount('${order.id}')">
-            <i class="fas fa-money-bill-wave"></i> Pay Remaining
+          ${!isCancelled && showRemainingPayment ? `
+          <button class="btn btn-pay-remaining" onclick="payRemainingAmount('${order.id}')">
+            <i class="fas fa-bolt"></i> Pay Remaining
           </button>
           ` : ''}
           ${!isCancelled && orderStatus !== 'delivered' && orderStatus !== 'returned' && orderStatus !== 'shipped' && orderStatus !== 'out_for_delivery' && orderStatus !== 'cancelled' ? `
@@ -2367,7 +2484,7 @@ function getAddressHTML(address) {
 }
 
 // ============================================
-// PAY REMAINING AMOUNT - IMPROVED
+// PAY REMAINING AMOUNT - COMPLETE SYSTEM
 // ============================================
 
 async function payRemainingAmount(orderId) {
@@ -2387,14 +2504,79 @@ async function payRemainingAmount(orderId) {
       return;
     }
     
-    // Calculate platform fee for remaining payment
+    // Save order data for payment modal
+    paymentOrderId = orderId;
+    paymentOrderData = order;
+    
+    // Calculate platform fee for remaining payment (2.5% + £0.30)
     const platformFee = (remainingPayment * 0.025) + 0.30;
     const netAmount = remainingPayment - platformFee;
     
-    // Save payment info for checkout page
+    // Generate bank reference
+    const bankReference = `IRYA-${order.orderNumber || orderId.substring(0, 8)}-${Date.now().toString().slice(-6)}`;
+    
+    // Update payment modal content
+    const paymentSummary = document.getElementById('paymentSummary');
+    paymentSummary.innerHTML = `
+      <div class="payment-summary-item">
+        <span>Order Number:</span>
+        <span>${order.orderNumber || orderId.substring(0, 8)}</span>
+      </div>
+      <div class="payment-summary-item">
+        <span>Remaining Amount:</span>
+        <span>£${remainingPayment.toFixed(2)}</span>
+      </div>
+      <div class="payment-summary-item">
+        <span>Platform Fee (2.5% + £0.30):</span>
+        <span>£${platformFee.toFixed(2)}</span>
+      </div>
+      <div class="payment-summary-item total">
+        <span>Net Amount to Pay:</span>
+        <span>£${netAmount.toFixed(2)}</span>
+      </div>
+    `;
+    
+    // Update bank reference
+    document.getElementById('bankReference').textContent = bankReference;
+    
+    // Show payment modal
+    document.getElementById('paymentModal').style.display = 'flex';
+    
+  } catch (error) {
+    console.error("❌ Error processing remaining payment:", error);
+    showMessage("Failed to process payment", "error");
+  }
+}
+
+function closePaymentModal() {
+  document.getElementById('paymentModal').style.display = 'none';
+  paymentOrderId = null;
+  paymentOrderData = null;
+}
+
+async function processRemainingPayment() {
+  try {
+    if (!paymentOrderId || !paymentOrderData) {
+      showMessage("Payment data not found", "error");
+      return;
+    }
+    
+    const paymentMethod = document.getElementById('paymentMethod').value;
+    const total = paymentOrderData.total || 0;
+    const advancePayment = paymentOrderData.advancePayment || paymentOrderData.submittedAmount || 0;
+    const remainingPayment = paymentOrderData.remainingPayment || (total - advancePayment);
+    const platformFee = (remainingPayment * 0.025) + 0.30;
+    const netAmount = remainingPayment - platformFee;
+    
+    // Disable button to prevent double click
+    const processBtn = document.getElementById('processPaymentBtn');
+    processBtn.disabled = true;
+    processBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    
+    // Save payment data for checkout page
     const paymentData = {
-      orderId: order.id,
-      orderNumber: order.orderNumber,
+      orderId: paymentOrderId,
+      orderNumber: paymentOrderData.orderNumber,
       amount: remainingPayment,
       platformFee: platformFee,
       netAmount: netAmount,
@@ -2403,30 +2585,90 @@ async function payRemainingAmount(orderId) {
       userEmail: userEmail,
       userName: userName,
       orderDetails: {
-        ...order,
+        ...paymentOrderData,
         remainingAmount: remainingPayment
       },
       source: 'orders_page',
-      paymentMethod: order.paymentMethod || 'stripe',
-      items: order.items || [],
-      shippingDetails: order.shippingDetails || order.shippingAddress,
+      paymentMethod: paymentMethod,
+      items: paymentOrderData.items || [],
+      shippingDetails: paymentOrderData.shippingDetails || paymentOrderData.shippingAddress,
       createdAt: new Date().toISOString()
     };
     
     localStorage.setItem('irya_remaining_payment', JSON.stringify(paymentData));
     
-    // Redirect to checkout page with proper parameters
-    const checkoutUrl = `checkout.html?type=remaining_payment&order_id=${order.id}&user=${currentUserId}&amount=${remainingPayment}&order_number=${order.orderNumber}`;
-    
-    showMessage("Redirecting to payment page...", "info");
-    
-    setTimeout(() => {
-      window.location.href = checkoutUrl;
-    }, 500);
+    if (paymentMethod === 'bank') {
+      // For bank transfer, create notification and update order
+      const bankReference = document.getElementById('bankReference').textContent;
+      
+      // Update order with bank transfer details
+      if (db) {
+        try {
+          const orderRef = doc(db, "users", currentUserId, "orders", paymentOrderId);
+          await updateDoc(orderRef, {
+            remainingPayment: remainingPayment,
+            bankTransferReference: bankReference,
+            paymentMethod: 'bank',
+            paymentStatus: 'pending',
+            updatedAt: new Date().toISOString()
+          });
+          
+          // Create notification
+          const notificationData = {
+            title: "Bank Transfer Payment Pending",
+            message: `Remaining payment of £${remainingPayment.toFixed(2)} for order ${paymentOrderData.orderNumber || paymentOrderId.substring(0, 8)} is pending. Please transfer £${netAmount.toFixed(2)} to our bank account. Reference: ${bankReference}`,
+            type: "payment_pending",
+            orderId: paymentOrderId,
+            orderNumber: paymentOrderData.orderNumber,
+            read: false,
+            createdAt: new Date().toISOString(),
+            userId: currentUserId
+          };
+          
+          const notificationsRef = collection(db, "users", currentUserId, "notifications");
+          await addDoc(notificationsRef, notificationData);
+          
+        } catch (firebaseError) {
+          console.error("❌ Firebase update error:", firebaseError);
+        }
+      }
+      
+      // Close modal and show success message
+      closePaymentModal();
+      
+      document.getElementById('successTitle').textContent = "Bank Transfer Initiated";
+      document.getElementById('successMessage').textContent = `Please transfer £${netAmount.toFixed(2)} to our bank account. Use reference: ${bankReference}. Your order will be processed once payment is confirmed.`;
+      document.getElementById('successModal').style.display = 'flex';
+      
+      // Update order display
+      setTimeout(() => {
+        const orderIndex = orders.findIndex(o => o.id === paymentOrderId);
+        if (orderIndex !== -1) {
+          orders[orderIndex].remainingPayment = remainingPayment;
+          orders[orderIndex].paymentMethod = 'bank';
+          displayOrders(orders);
+        }
+      }, 100);
+      
+    } else {
+      // For Stripe payment, redirect to checkout
+      const checkoutUrl = `checkout.html?type=remaining_payment&order_id=${paymentOrderId}&user=${currentUserId}&amount=${remainingPayment}&order_number=${paymentOrderData.orderNumber}`;
+      
+      showMessage("Redirecting to payment page...", "info");
+      
+      setTimeout(() => {
+        window.location.href = checkoutUrl;
+      }, 500);
+    }
     
   } catch (error) {
-    console.error("❌ Error processing remaining payment:", error);
+    console.error("❌ Error processing payment:", error);
     showMessage("Failed to process payment", "error");
+    
+    // Re-enable button
+    const processBtn = document.getElementById('processPaymentBtn');
+    processBtn.disabled = false;
+    processBtn.innerHTML = '<i class="fas fa-bolt"></i> Process Payment';
   }
 }
 
@@ -3539,6 +3781,8 @@ window.confirmCancelOrder = confirmCancelOrder;
 window.closeCancelModal = closeCancelModal;
 window.closeSuccessModal = closeSuccessModal;
 window.closeErrorModal = closeErrorModal;
+window.closePaymentModal = closePaymentModal;
+window.processRemainingPayment = processRemainingPayment;
 </script>
 
 </body>
