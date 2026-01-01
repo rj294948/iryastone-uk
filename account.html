@@ -1086,7 +1086,7 @@ header.show {
    ORDER ITEMS
    ============================================ */
 .order-item {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255,255, 0.05);
     border-radius: 10px;
     padding: 15px;
     margin-bottom: 15px;
@@ -1502,17 +1502,18 @@ const firebaseConfig = {
 let firebaseApp, firebaseDB, firebaseAuth;
 let authSystem = null;
 let currentUser = null;
-let allProducts = []; // For search functionality
+let allProducts = [];
 let searchTimeout = null;
 
 // ============================================
-// AUTHENTICATION SYSTEM - NO AUTO SIGN-IN
+// AUTHENTICATION SYSTEM
 // ============================================
 
 class AccountAuthSystem {
     constructor() {
         this.currentUser = null;
         this.authKey = 'irya_stone_auth_user';
+        this.logoutFlag = 'irya_logout_flag';
     }
     
     async init() {
@@ -1523,8 +1524,17 @@ class AccountAuthSystem {
                 firebaseAuth.onAuthStateChanged((user) => {
                     console.log("📱 Auth State Changed:", user ? user.uid : "No user");
                     
-                    if (user) {
-                        // ✅ Only Firebase authenticated users
+                    // Check if logout was triggered
+                    const isLogout = sessionStorage.getItem(this.logoutFlag) === 'true';
+                    
+                    if (isLogout) {
+                        console.log("🚪 Logout detected - creating fresh guest");
+                        sessionStorage.removeItem(this.logoutFlag);
+                        this.currentUser = this.createFreshGuestUser();
+                        localStorage.removeItem(this.authKey);
+                        
+                    } else if (user) {
+                        // ✅ Firebase authenticated user
                         this.currentUser = {
                             uid: user.uid,
                             displayName: user.displayName || 'User',
@@ -1540,21 +1550,33 @@ class AccountAuthSystem {
                         console.log("✅ Firebase user saved:", user.uid);
                         
                     } else {
-                        // ✅ ALWAYS CREATE FRESH GUEST (NO AUTO SIGN-IN)
-                        this.currentUser = this.createFreshGuestUser();
-                        console.log("✅ Fresh guest user created:", this.currentUser.uid);
+                        // Check for saved guest
+                        const savedUser = localStorage.getItem(this.authKey);
+                        
+                        if (savedUser) {
+                            try {
+                                const parsed = JSON.parse(savedUser);
+                                if (parsed.isFirebaseUser === false) {
+                                    this.currentUser = parsed;
+                                    console.log("✅ Using saved guest:", parsed.uid);
+                                } else {
+                                    this.currentUser = this.createFreshGuestUser();
+                                }
+                            } catch {
+                                this.currentUser = this.createFreshGuestUser();
+                            }
+                        } else {
+                            this.currentUser = this.createFreshGuestUser();
+                        }
                     }
                     
-                    // Update auth menu
                     updateAuthMenu(this.currentUser.isFirebaseUser);
-                    
                     resolve(this.currentUser);
                 });
             });
             
         } catch (error) {
             console.error('❌ Auth init error:', error);
-            // ✅ ALWAYS CREATE FRESH GUEST ON ERROR
             this.currentUser = this.createFreshGuestUser();
             updateAuthMenu(this.currentUser.isFirebaseUser);
             return this.currentUser;
@@ -1562,7 +1584,6 @@ class AccountAuthSystem {
     }
     
     createFreshGuestUser() {
-        // ✅ ALWAYS CREATE NEW GUEST (NO PREVIOUS DATA)
         const guestId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         
         return {
@@ -1618,7 +1639,7 @@ class AccountAuthSystem {
 }
 
 // ============================================
-// SEARCH FUNCTIONALITY - HOME PAGE STYLE
+// SEARCH FUNCTIONALITY
 // ============================================
 
 async function initializeSearch() {
@@ -1646,7 +1667,6 @@ async function initializeSearch() {
         
         console.log(`✅ ${allProducts.length} products loaded for search`);
         
-        // Setup search event listeners
         const searchInput = document.getElementById('searchInput');
         const searchIcon = document.getElementById('searchIcon');
         
@@ -1745,7 +1765,7 @@ function hideSearchResults() {
 }
 
 // ============================================
-// SCROLL HANDLING - HOME PAGE STYLE
+// SCROLL HANDLING
 // ============================================
 
 let lastScrollTop = 0;
@@ -1809,40 +1829,29 @@ function handleScroll() {
 // ============================================
 
 document.addEventListener('DOMContentLoaded', async function() {
-    console.log("📱 Account page loaded - NO AUTO SIGN-IN");
+    console.log("📱 Account page loaded");
     
-    // Initialize Search
     await initializeSearch();
     
-    // ✅ ALWAYS START WITH FRESH GUEST (NO AUTO SIGN-IN)
     authSystem = new AccountAuthSystem();
     await authSystem.init();
     
     const userId = authSystem.getUserId();
-    console.log("✅ Fresh auth initialized. User ID:", userId, 
-                "Logged in:", authSystem.isLoggedIn(), 
-                "Is Guest:", !authSystem.isLoggedIn());
+    console.log("✅ Auth initialized. User ID:", userId, 
+                "Logged in:", authSystem.isLoggedIn());
     
-    // Set current user
     currentUser = authSystem.currentUser;
     
-    // Load user data
     await loadUserData();
     
-    // Update cart badge
     updateCartBadge();
-    
-    // Update notification badge
     updateNotificationBadge();
     
-    // Initialize event listeners
     initEventListeners();
     
-    // Setup scroll handling
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
     
-    // Close search results when clicking outside
     document.addEventListener('click', (e) => {
         const searchResults = document.getElementById('searchResults');
         const searchInput = document.getElementById('searchInput');
@@ -1889,16 +1898,9 @@ async function loadUserData() {
         
         console.log("🔄 Loading user data for:", currentUser.uid);
         
-        // Update UI with user data
         updateUserProfileUI();
-        
-        // Load user addresses
         await loadUserAddresses();
-        
-        // Load recent orders
         await loadRecentOrders();
-        
-        // Load wishlist items
         await loadWishlistItems();
         
     } catch (error) {
@@ -1917,18 +1919,15 @@ function updateUserProfileUI() {
     const firstName = userName.split(' ')[0];
     const firstLetter = firstName.charAt(0).toUpperCase();
     
-    // Update avatar
     const userAvatar = document.getElementById('userAvatar');
     if (userAvatar) {
         userAvatar.innerHTML = `<span style="font-size: 24px;">${firstLetter}</span>`;
     }
     
-    // Update name and email
     document.getElementById('userName').textContent = userName;
     document.getElementById('userEmail').textContent = userEmail || 'Not provided';
     document.getElementById('userType').textContent = currentUser.isFirebaseUser ? 'Registered User' : 'Guest User';
     
-    // Update profile info
     const profileInfo = document.getElementById('profileInfo');
     const isGuest = !currentUser.isFirebaseUser;
     
@@ -1969,7 +1968,6 @@ function updateUserProfileUI() {
         ` : ''}
     `;
     
-    // Show/hide edit profile button based on login status
     const editProfileBtn = document.getElementById('editProfileBtn');
     if (editProfileBtn) {
         if (isGuest) {
@@ -1979,7 +1977,6 @@ function updateUserProfileUI() {
         }
     }
     
-    // Pre-fill edit form
     const nameParts = userName.split(' ');
     document.getElementById('firstName').value = nameParts[0] || '';
     document.getElementById('lastName').value = nameParts.slice(1).join(' ') || '';
@@ -1987,7 +1984,7 @@ function updateUserProfileUI() {
 }
 
 // ============================================
-// ADDRESS MANAGEMENT - GUEST USERS SEE EMPTY
+// ADDRESS MANAGEMENT
 // ============================================
 
 async function loadUserAddresses() {
@@ -1999,7 +1996,6 @@ async function loadUserAddresses() {
         
         let addresses = [];
         
-        // ✅ Only load addresses for logged-in users
         if (currentUser.isFirebaseUser) {
             try {
                 if (!firebaseDB) {
@@ -2022,9 +2018,6 @@ async function loadUserAddresses() {
             } catch (error) {
                 console.log("❌ Error fetching addresses:", error.message);
             }
-        } else {
-            // 🔴 Guest users don't see any saved addresses
-            console.log("📭 Guest user - no addresses loaded");
         }
         
         displayAddresses(addresses);
@@ -2137,7 +2130,7 @@ function getCountryName(countryCode) {
 }
 
 // ============================================
-// ORDER MANAGEMENT - GUEST USERS SEE EMPTY
+// ORDER MANAGEMENT
 // ============================================
 
 async function loadRecentOrders() {
@@ -2149,7 +2142,6 @@ async function loadRecentOrders() {
         
         let orders = [];
         
-        // ✅ Only load orders for logged-in users
         if (currentUser.isFirebaseUser) {
             try {
                 if (!firebaseDB) {
@@ -2173,9 +2165,6 @@ async function loadRecentOrders() {
             } catch (error) {
                 console.log("❌ Error fetching orders:", error.message);
             }
-        } else {
-            // 🔴 Guest users don't see any saved orders
-            console.log("📭 Guest user - no orders loaded");
         }
         
         displayRecentOrders(orders);
@@ -2339,7 +2328,6 @@ function displayWishlistItems(items) {
         return;
     }
     
-    // Display first 3 items
     const displayItems = items.slice(0, 3);
     
     const itemsHTML = displayItems.map(item => `
@@ -2405,9 +2393,7 @@ function removeFromWishlist(productId) {
             wishlistItems = wishlistItems.filter(item => item.id !== productId);
             localStorage.setItem(wishlistKey, JSON.stringify(wishlistItems));
             
-            // Refresh display
             loadWishlistItems();
-            
             showNotification('Product removed from wishlist');
         }
     } catch (error) {
@@ -2432,7 +2418,6 @@ function showLoading(show) {
 }
 
 function showNotification(message) {
-    // Create notification element
     const notification = document.createElement('div');
     notification.className = 'notification';
     notification.innerHTML = `
@@ -2447,7 +2432,6 @@ function showNotification(message) {
     
     document.body.appendChild(notification);
     
-    // Auto remove after 3 seconds
     setTimeout(() => {
         notification.style.animation = 'slideOut 0.3s ease';
         setTimeout(() => {
@@ -2503,15 +2487,12 @@ function updateNotificationBadge() {
 // ============================================
 
 function showSection(sectionId) {
-    // Hide all sections
     document.querySelectorAll('.account-section').forEach(section => {
         section.style.display = 'none';
     });
     
-    // Show selected section
     document.getElementById(sectionId + 'Section').style.display = 'block';
     
-    // Update active menu item
     document.querySelectorAll('.menu-item').forEach(item => {
         item.classList.remove('active');
     });
@@ -2546,8 +2527,6 @@ function editAddress(addressId) {
         return;
     }
     
-    // In a real implementation, you would fetch the address data
-    // For now, we'll just show the modal
     document.getElementById('modalTitle').textContent = 'Edit Address';
     document.getElementById('addressModal').classList.add('active');
     document.body.style.overflow = 'hidden';
@@ -2569,7 +2548,6 @@ async function saveAddress(event) {
     
     showNotification('Address saved successfully');
     closeAddressModal();
-    // Reload addresses
     await loadUserAddresses();
 }
 
@@ -2591,7 +2569,6 @@ function deleteAddress(addressId) {
     }
     
     showNotification('Address deleted successfully');
-    // Reload addresses
     loadUserAddresses();
 }
 
@@ -2628,7 +2605,6 @@ async function saveProfile(event) {
     
     showNotification('Profile updated successfully');
     cancelEditProfile();
-    // Reload user data
     await loadUserData();
 }
 
@@ -2664,37 +2640,84 @@ async function changePassword() {
     
     showNotification('Password changed successfully');
     
-    // Clear form
     document.getElementById('currentPassword').value = '';
     document.getElementById('newPassword').value = '';
     document.getElementById('confirmPassword').value = '';
 }
 
 // ============================================
-// LOGOUT
+// LOGOUT FUNCTION - COMPLETE CLEANUP
 // ============================================
 
 async function logout() {
     try {
-        if (confirm('Are you sure you want to logout?')) {
-            // Clear localStorage auth data
-            localStorage.removeItem('irya_stone_auth_user');
+        if (confirm('Are you sure you want to logout? All your data will be cleared.')) {
+            showLoading(true);
+            showNotification('Logging out...');
             
-            // Sign out from Firebase
+            // 1. Set logout flag in session storage
+            sessionStorage.setItem('irya_logout_flag', 'true');
+            
+            // 2. Firebase sign out
             if (firebaseAuth) {
-                await firebaseAuth.signOut();
+                try {
+                    await firebaseAuth.signOut();
+                    console.log("✅ Firebase signed out successfully");
+                } catch (firebaseError) {
+                    console.log("⚠️ Firebase sign out error (may not be signed in):", firebaseError.message);
+                }
             }
             
-            showNotification('Logged out successfully');
+            // 3. Clear ALL localStorage data
+            console.log("🧹 Clearing localStorage...");
             
-            // Redirect to home page
+            // Clear all keys starting with 'irya_'
+            const keysToRemove = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith('irya_') || key.startsWith('firebase:')) {
+                    keysToRemove.push(key);
+                }
+            }
+            
+            keysToRemove.forEach(key => {
+                localStorage.removeItem(key);
+                console.log(`🗑️ Removed: ${key}`);
+            });
+            
+            // Clear specific known keys
+            localStorage.removeItem('irya_stone_auth_user');
+            localStorage.removeItem('irya_guest_user');
+            localStorage.removeItem('irya_user_session');
+            
+            // 4. Clear session storage
+            sessionStorage.clear();
+            
+            // 5. Clear cookies
+            document.cookie.split(";").forEach(function(c) {
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+            });
+            
+            // 6. Clear current user data
+            currentUser = null;
+            authSystem.currentUser = null;
+            
+            console.log("✅ All storage cleared successfully");
+            
+            showNotification('Logged out successfully! Redirecting to home page...');
+            
+            // 7. Redirect to home page with cache-busting parameters
             setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 1000);
+                showLoading(false);
+                // Force reload and prevent caching
+                window.location.href = 'index.html?logout=true&nocache=' + Date.now();
+            }, 1500);
+            
         }
     } catch (error) {
         console.error('❌ Error during logout:', error);
-        showError('Failed to logout');
+        showError('Failed to logout. Please try again.');
+        showLoading(false);
     }
 }
 
@@ -2703,19 +2726,16 @@ async function logout() {
 // ============================================
 
 function initEventListeners() {
-    // Address form submit
     const addressForm = document.getElementById('addressForm');
     if (addressForm) {
         addressForm.addEventListener('submit', saveAddress);
     }
     
-    // Profile form submit
     const profileForm = document.getElementById('profileForm');
     if (profileForm) {
         profileForm.addEventListener('submit', saveProfile);
     }
     
-    // Modal close
     const modalCloseBtn = document.getElementById('modalCloseBtn');
     const addressModal = document.getElementById('addressModal');
     
