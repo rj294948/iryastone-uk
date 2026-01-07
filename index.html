@@ -2524,16 +2524,16 @@ function getDefaultImage(category) {
     const categoryLower = (category || '').toLowerCase();
     
     if (categoryLower.includes('sand')) {
-        return 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=400&h=300';
+        return 'https://regattaexports.com/wp-content/uploads/2024/10/Autumn-Brown-Sandstone-Quarry.webp';
     } else if (categoryLower.includes('kota')) {
         return 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=400&h=300';
     } else if (categoryLower.includes('granite')) {
         return 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=400&h=300';
     } else if (categoryLower.includes('marble')) {
-        return 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=400&h=300';
+        return 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=400&h=300';
     }
     
-    return 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=400&h=300';
+    return 'https://regattaexports.com/wp-content/uploads/2024/10/Autumn-Brown-Sandstone-Quarry.webp';
 }
 
 // ============================================
@@ -2638,7 +2638,7 @@ function loadDefaultCategories() {
     const defaultCategories = [
         {
             name: 'Sand Stone',
-            image: 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=400&h=300',
+            image: 'https://regattaexports.com/wp-content/uploads/2024/10/Autumn-Brown-Sandstone-Quarry.webp',
             count: 12
         },
         {
@@ -2652,7 +2652,8 @@ function loadDefaultCategories() {
 }
 
 // ============================================
-// TRENDING PRODUCTS FETCHING
+// TRENDING PRODUCTS FETCHING - FIXED
+// Only products with latest="new" should appear in trending
 // ============================================
 
 async function loadTrendingProducts() {
@@ -2662,9 +2663,9 @@ async function loadTrendingProducts() {
             if (!initialized) return;
         }
         
-        console.log('Loading trending products from Firebase...');
+        console.log('Loading trending products from Firebase (latest="new")...');
         
-        // First, try to get products where latest = "new"
+        // Get ONLY products where latest = "new"
         const trendingQuery = await firebaseDB.collection("products")
             .where("latest", "==", "new")
             .limit(10)
@@ -2684,34 +2685,8 @@ async function loadTrendingProducts() {
             });
             
             console.log(`Loaded ${trendingProducts.length} trending products with latest="new"`);
-        }
-        
-        // If no trending products found, get latest products
-        if (trendingProducts.length < 4) {
-            const latestQuery = await firebaseDB.collection("products")
-                .orderBy("created_at", "desc")
-                .limit(10)
-                .get();
-            
-            const latestProducts = [];
-            latestQuery.forEach((doc) => {
-                const productId = doc.id;
-                const data = doc.data();
-                
-                const product = createProductObject(productId, data);
-                if (product.is_active && !trendingProducts.find(p => p.id === productId)) {
-                    latestProducts.push(product);
-                }
-            });
-            
-            // Add latest products to trending
-            latestProducts.forEach(product => {
-                if (trendingProducts.length < 10) {
-                    trendingProducts.push(product);
-                }
-            });
-            
-            console.log(`Added ${trendingProducts.length} total trending products`);
+        } else {
+            console.log('No products found with latest="new"');
         }
         
         if (trendingProducts.length > 0) {
@@ -2719,17 +2694,31 @@ async function loadTrendingProducts() {
             setupTrendingSlider();
         } else {
             console.log('No trending products found');
+            // If no trending products, show empty state
+            const container = document.getElementById('trendingTrack');
+            if (container) {
+                container.innerHTML = `
+                    <div class="no-products">
+                        <i class="fas fa-fire"></i>
+                        <h3>No Trending Products Found</h3>
+                        <p>Check back later for trending products</p>
+                    </div>
+                `;
+            }
         }
         
     } catch (error) {
         console.error('Error loading trending products:', error);
-        // If error, use some products from allProducts as trending
-        if (allProducts.length > 0) {
-            trendingProducts = allProducts
-                .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
-                .slice(0, 8);
-            displayTrendingProducts();
-            setupTrendingSlider();
+        // If error, show empty state
+        const container = document.getElementById('trendingTrack');
+        if (container) {
+            container.innerHTML = `
+                <div class="no-products">
+                    <i class="fas fa-fire"></i>
+                    <h3>No Trending Products Found</h3>
+                    <p>Check back later for trending products</p>
+                </div>
+            `;
         }
     }
 }
@@ -2777,15 +2766,11 @@ function displayTrendingProducts() {
     
     const trendingHTML = trendingProducts.map(product => {
         const productImage = getProductImage(product);
-        const usage = product.usage || '';
-        
-        // Check if product has latest = "new"
-        const isNewProduct = product.latest === "new";
         
         return `
             <div class="trending-slide">
-                <a href="products.html?stone_name=${encodeURIComponent(product.stone_name)}" class="trending-card">
-                    ${isNewProduct ? '<div class="trending-badge">New</div>' : ''}
+                <a href="product-details.html?id=${product.id}" class="trending-card">
+                    <div class="trending-badge">New</div>
                     <div class="trending-image-container">
                         <img src="${productImage}" 
                              alt="${product.stone_name}" 
@@ -2835,8 +2820,10 @@ function setupTrendingSlider() {
     
     // Update slider position
     const updateSlider = () => {
-        const slideWidth = document.querySelector('.trending-slide').offsetWidth + 15; // + gap
-        track.style.transform = `translateX(-${currentTrendingSlide * slidesPerView * slideWidth}px)`;
+        const slideWidth = document.querySelector('.trending-slide')?.offsetWidth || 250;
+        const gap = 15;
+        const totalWidth = slideWidth + gap;
+        track.style.transform = `translateX(-${currentTrendingSlide * slidesPerView * totalWidth}px)`;
         
         // Update active dot
         const activePage = Math.floor(currentTrendingSlide / slidesPerView);
@@ -2898,7 +2885,9 @@ function setupTrendingSlider() {
     }
     
     // Initial update
-    updateSlider();
+    setTimeout(() => {
+        updateSlider();
+    }, 100);
 }
 
 // ============================================
@@ -2985,7 +2974,7 @@ function applyFilter() {
 }
 
 // ============================================
-// PRODUCTS LOADING & DISPLAY
+// PRODUCTS LOADING & DISPLAY - FIXED
 // ============================================
 
 async function loadAllProducts() {
@@ -3076,26 +3065,32 @@ function displayProducts(products) {
         const usage = product.usage || '';
         const usageLower = usage.toLowerCase();
         
-        // Determine which buttons to show based on usage
+        // Create usage-specific links
         let buttons = '';
+        
+        // Wall Cladding button - filter by stone_name AND usage contains wall/cladding
         if (usageLower.includes('wall') || usageLower.includes('cladding')) {
-            buttons += `<button class="usage-btn wall-cladding-btn" onclick="event.stopPropagation();">
+            buttons += `<a href="products.html?stone_name=${encodeURIComponent(product.stone_name)}&usage=wall" class="usage-btn wall-cladding-btn" onclick="event.stopPropagation();">
                 <i class="fas fa-wall"></i> Wall Cladding
-            </button>`;
+            </a>`;
         }
+        
+        // Flooring button - filter by stone_name AND usage contains floor
         if (usageLower.includes('floor')) {
-            buttons += `<button class="usage-btn flooring-btn" onclick="event.stopPropagation();">
+            buttons += `<a href="products.html?stone_name=${encodeURIComponent(product.stone_name)}&usage=floor" class="usage-btn flooring-btn" onclick="event.stopPropagation();">
                 <i class="fas fa-th-large"></i> Flooring
-            </button>`;
+            </a>`;
         }
+        
+        // Other button - for products that don't have wall/cladding or floor in usage
         if (!usageLower.includes('wall') && !usageLower.includes('cladding') && !usageLower.includes('floor')) {
-            buttons += `<button class="usage-btn other-btn" onclick="event.stopPropagation();">
+            buttons += `<a href="products.html?stone_name=${encodeURIComponent(product.stone_name)}&usage=other" class="usage-btn other-btn" onclick="event.stopPropagation();">
                 <i class="fas fa-ellipsis-h"></i> Other
-            </button>`;
+            </a>`;
         }
         
         return `
-            <a href="products.html?stone_name=${encodeURIComponent(product.stone_name)}" class="product-card">
+            <a href="product-details.html?id=${product.id}" class="product-card">
                 <div class="product-image-container">
                     <img src="${productImage}" 
                          alt="${product.stone_name}" 
@@ -3117,11 +3112,11 @@ function displayProducts(products) {
     
     container.innerHTML = productsHTML;
     
-    // Update View All button to show total product count
+    // Update View All button - link to all-products.html (full collection)
     const viewAllBtn = document.getElementById('viewAllBtn');
     if (viewAllBtn && allProducts.length > 0) {
         viewAllBtn.innerHTML = `<i class="fas fa-eye"></i> View All ${allProducts.length} Products`;
-        viewAllBtn.href = 'all-products.html';
+        viewAllBtn.href = 'all-products.html'; // This should open full products collection
     }
 }
 
@@ -3150,7 +3145,7 @@ function showDefaultProducts() {
             color: 'Autumn Brown',
             finish: 'Natural',
             size: '30x30cm',
-            images: ['https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=400&h=300'],
+            images: ['https://regattaexports.com/wp-content/uploads/2024/10/Autumn-Brown-Sandstone-Quarry.webp'],
             usage: 'Wall Cladding, Flooring'
         },
         {
@@ -3194,7 +3189,7 @@ function searchProducts(query) {
             let image = getProductImage(product);
             
             return `
-                <a href="products.html?stone_name=${encodeURIComponent(product.stone_name)}" class="search-result-item">
+                <a href="product-details.html?id=${product.id}" class="search-result-item">
                     <div class="search-result-image">
                         <img src="${image}" alt="${product.stone_name}"
                              onerror="this.src='${getDefaultImage(product.category)}'">
