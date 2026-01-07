@@ -44,11 +44,9 @@
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
 }
-
 body {
     background: var(--bg-light);
     color: var(--text-dark);
-    padding-bottom: 80px;
     font-size: 14px;
     scroll-behavior: smooth;
 }
@@ -61,17 +59,14 @@ header {
     top: 0;
     left: 0;
     right: 0;
-    background: rgba(0, 0, 0, 0.95);
+    background: rgba(0,0,0,0.95);
     backdrop-filter: blur(10px);
     padding: 8px 15px;
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    z-index: 1000;
+    align-items: center;
     gap: 8px;
-    transform: translateY(0);
-    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), background 0.3s ease;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 1000;
     box-shadow: 0 4px 20px rgba(0,0,0,0.25);
     height: 60px;
 }
@@ -921,36 +916,36 @@ header.show {
 }
 
 /* ============================================
-   PRODUCT CARD DESIGN - UPDATED
+   PRODUCT CARD UPDATED STRUCTURE
 ============================================ */
 .product-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
+    gap: 20px;
     margin-bottom: 20px;
+}
+
+.product-card-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .product-card {
     background: var(--white);
-    border-radius: 12px;
-    box-shadow: var(--shadow-sm);
-    transition: var(--transition);
-    border: 1px solid #f0f0f0;
-    position: relative;
+    border-radius: 15px;
     overflow: hidden;
-    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition);
+    height: 180px;
+    display: block;
     text-decoration: none;
     color: inherit;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 280px;
 }
 
 .product-card:hover {
-    border-color: var(--primary-gold);
-    box-shadow: var(--shadow-md);
     transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
 }
 
 .product-image-container {
@@ -958,7 +953,7 @@ header.show {
     height: 180px;
     overflow: hidden;
     background: var(--bg-light);
-    border-radius: 12px 12px 0 0;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -976,102 +971,147 @@ header.show {
     transform: scale(1.08);
 }
 
-.product-info {
-    padding: 12px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+/* Stone name box styling */
+.stone-name-box {
+    width: 100%;
+    padding: 12px 15px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 10px;
+    border: 1px solid #dee2e6;
+    transition: var(--transition);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
     text-align: center;
-    gap: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.product-name {
+.stone-name-box:hover {
+    background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+    border-color: var(--primary-gold);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Shine effect on hover */
+.stone-name-box::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255,255,255,0.3), 
+        transparent);
+    transition: left 0.6s ease;
+}
+
+.stone-name-box:hover::after {
+    left: 100%;
+}
+
+.stone-name-box .product-name {
     font-size: 15px;
     font-weight: 600;
-    margin-bottom: 0;
-    font-family: 'Roboto Slab', serif;
+    color: var(--stone-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 0;
     line-height: 1.3;
-    color: #222;
-    text-align: center;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
 }
 
-/* ============================================
-   USAGE BUTTONS - COOL COMPACT VIEW
-============================================ */
+.stone-name-box .stone-icon {
+    font-size: 14px;
+    color: var(--primary-gold);
+    transition: transform 0.3s ease;
+}
+
+.stone-name-box:hover .stone-icon {
+    transform: scale(1.2) rotate(15deg);
+}
+
+/* Usage buttons container */
+.usage-buttons-container {
+    margin-top: 5px;
+}
+
 .usage-buttons {
     display: flex;
-    justify-content: center;
-    gap: 5px;
-    margin-top: 6px;
-    padding-bottom: 4px;
     flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
 }
 
 .usage-btn {
-    padding: 3px 8px;
-    border-radius: 20px;
-    font-size: 11px;
+    padding: 8px 14px;
+    font-size: 12px;
     font-weight: 500;
-    border: 1px solid #ddd;
+    border-radius: 20px;
+    border: none;
     cursor: pointer;
     transition: var(--transition);
     text-decoration: none;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    min-width: 80px;
+    gap: 6px;
+    position: relative;
+    overflow: hidden;
+    min-width: 110px;
     justify-content: center;
-    line-height: 1.2;
-    white-space: nowrap;
-    background: #f9f9f9;
-    color: #333;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .usage-btn:hover {
-    background: #efefef;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
-.usage-btn i {
-    font-size: 10px;
-}
-
-/* Wall Cladding Button */
+/* Button types */
 .wall-cladding-btn {
-    background: #f3f3f3;
-    color: #444;
-    border-color: #ddd;
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    color: #374151;
+    border: 1px solid #d1d5db;
 }
 
 .wall-cladding-btn:hover {
-    background: #e6e6e6;
+    background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+    border-color: #9ca3af;
 }
 
-/* Flooring Button */
 .flooring-btn {
-    background: #eef6ff;
-    color: #1e6fd9;
-    border-color: #cfe3ff;
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1e40af;
+    border: 1px solid #93c5fd;
 }
 
 .flooring-btn:hover {
-    background: #dbeeff;
+    background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%);
+    border-color: #60a5fa;
 }
 
-/* Other Button */
 .other-btn {
-    background: #fff3e0;
-    color: #e65100;
-    border-color: #ffd8a8;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    color: #92400e;
+    border: 1px solid #fbbf24;
 }
 
 .other-btn:hover {
-    background: #ffe0b2;
+    background: linear-gradient(135deg, #fde68a 0%, #fbbf24 100%);
+    border-color: #f59e0b;
+}
+
+/* Button icon animation */
+.usage-btn i {
+    font-size: 13px;
+    transition: transform 0.3s ease;
+}
+
+.usage-btn:hover i {
+    transform: scale(1.1);
 }
 
 /* ============================================
@@ -1500,33 +1540,37 @@ header.show {
     
     .product-grid {
         grid-template-columns: repeat(3, 1fr);
-        gap: 20px;
+        gap: 25px;
     }
     
     .product-card {
-        height: 300px;
+        height: 200px;
     }
     
     .product-image-container {
         height: 200px;
     }
     
-    .product-name {
+    .stone-name-box {
+        padding: 15px 20px;
+    }
+    
+    .stone-name-box .product-name {
         font-size: 16px;
     }
     
     .usage-buttons {
-        gap: 6px;
+        gap: 10px;
     }
     
     .usage-btn {
-        padding: 4px 9px;
-        font-size: 12px;
-        min-width: 85px;
+        padding: 10px 16px;
+        font-size: 13px;
+        min-width: 120px;
     }
     
     .usage-btn i {
-        font-size: 11px;
+        font-size: 14px;
     }
     
     .notification-permission {
@@ -1671,34 +1715,38 @@ header.show {
     }
     
     .product-grid {
-        gap: 12px;
+        gap: 15px;
     }
     
     .product-card {
-        height: 260px;
+        height: 160px;
     }
     
     .product-image-container {
         height: 160px;
     }
     
-    .product-name {
-        font-size: 13px;
+    .stone-name-box {
+        padding: 10px 12px;
+    }
+    
+    .stone-name-box .product-name {
+        font-size: 14px;
     }
     
     .usage-buttons {
-        gap: 5px;
+        gap: 6px;
     }
     
     .usage-btn {
-        padding: 3px 7px;
-        font-size: 10px;
-        min-width: 70px;
-        gap: 3px;
+        padding: 7px 12px;
+        font-size: 11px;
+        min-width: 100px;
+        gap: 4px;
     }
     
     .usage-btn i {
-        font-size: 9px;
+        font-size: 12px;
     }
     
     .notification-permission {
@@ -1727,6 +1775,24 @@ header.show {
     
     .nav-btn i {
         font-size: 14px;
+    }
+}
+
+@media (max-width: 360px) {
+    .usage-buttons {
+        flex-direction: column;
+        gap: 6px;
+        align-items: center;
+    }
+    
+    .usage-btn {
+        width: 100%;
+        min-width: unset;
+        max-width: 180px;
+    }
+    
+    .product-grid {
+        grid-template-columns: 1fr;
     }
 }
 </style>
@@ -2568,14 +2634,18 @@ function showError(message) {
 }
 
 function getProductImage(product) {
-    if (product.images && product.images.length > 0) {
+    if (Array.isArray(product.images) && product.images.length > 0) {
         return product.images[0];
     }
-    
-    if (product.image) {
+
+    if (typeof product.images === 'string' && product.images.trim() !== '') {
+        return product.images;
+    }
+
+    if (typeof product.image === 'string' && product.image.trim() !== '') {
         return product.image;
     }
-    
+
     return getDefaultImage(product.category);
 }
 
@@ -2724,7 +2794,6 @@ async function loadTrendingProducts() {
         
         console.log('Loading trending products from Firebase (latest="new")...');
         
-        // Get ONLY products where latest = "new"
         const trendingQuery = await firebaseDB.collection("products")
             .where("latest", "==", "new")
             .limit(10)
@@ -2753,7 +2822,6 @@ async function loadTrendingProducts() {
             setupTrendingSlider();
         } else {
             console.log('No trending products found');
-            // If no trending products, show empty state
             const container = document.getElementById('trendingTrack');
             if (container) {
                 container.innerHTML = `
@@ -2768,7 +2836,6 @@ async function loadTrendingProducts() {
         
     } catch (error) {
         console.error('Error loading trending products:', error);
-        // If error, show empty state
         const container = document.getElementById('trendingTrack');
         if (container) {
             container.innerHTML = `
@@ -2856,7 +2923,6 @@ function setupTrendingSlider() {
     
     if (!track || trendingProducts.length === 0) return;
     
-    // Calculate slides per view based on screen width
     const calculateSlidesPerView = () => {
         if (window.innerWidth >= 1024) return 4;
         if (window.innerWidth >= 768) return 3;
@@ -2868,7 +2934,6 @@ function setupTrendingSlider() {
     let totalSlides = trendingProducts.length;
     let totalPages = Math.ceil(totalSlides / slidesPerView);
     
-    // Create dots
     dotsContainer.innerHTML = '';
     for (let i = 0; i < totalPages; i++) {
         const dot = document.createElement('div');
@@ -2877,21 +2942,18 @@ function setupTrendingSlider() {
         dotsContainer.appendChild(dot);
     }
     
-    // Update slider position
     const updateSlider = () => {
         const slideWidth = document.querySelector('.trending-slide')?.offsetWidth || 250;
         const gap = 15;
         const totalWidth = slideWidth + gap;
         track.style.transform = `translateX(-${currentTrendingSlide * slidesPerView * totalWidth}px)`;
         
-        // Update active dot
         const activePage = Math.floor(currentTrendingSlide / slidesPerView);
         document.querySelectorAll('.slider-dot').forEach((dot, index) => {
             dot.classList.toggle('active', index === activePage);
         });
     };
     
-    // Manual navigation
     prevBtn.addEventListener('click', () => {
         if (currentTrendingSlide > 0) {
             currentTrendingSlide--;
@@ -2906,7 +2968,6 @@ function setupTrendingSlider() {
         }
     });
     
-    // Auto slide
     if (trendingSlideInterval) {
         clearInterval(trendingSlideInterval);
     }
@@ -2918,14 +2979,12 @@ function setupTrendingSlider() {
             currentTrendingSlide++;
         }
         updateSlider();
-    }, 5000); // Change every 5 seconds
+    }, 5000);
     
-    // Handle window resize
     window.addEventListener('resize', () => {
         slidesPerView = calculateSlidesPerView();
         totalPages = Math.ceil(totalSlides / slidesPerView);
         
-        // Recreate dots
         dotsContainer.innerHTML = '';
         for (let i = 0; i < totalPages; i++) {
             const dot = document.createElement('div');
@@ -2937,13 +2996,11 @@ function setupTrendingSlider() {
         updateSlider();
     });
     
-    // Go to specific slide
     function goToSlide(page) {
         currentTrendingSlide = page * slidesPerView;
         updateSlider();
     }
     
-    // Initial update
     setTimeout(() => {
         updateSlider();
     }, 100);
@@ -2968,11 +3025,9 @@ function setupFilter() {
             currentStoneNameFilter = this.value.trim();
             
             if (currentStoneNameFilter) {
-                // Show filter tag
                 filterTag.style.display = 'inline-flex';
                 activeFilterText.textContent = `Filter: ${currentStoneNameFilter}`;
             } else {
-                // Hide filter tag
                 filterTag.style.display = 'none';
                 activeFilterText.textContent = '';
             }
@@ -2981,7 +3036,6 @@ function setupFilter() {
         }, 300);
     });
     
-    // Add event listener for Enter key
     filterInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             currentStoneNameFilter = this.value.trim();
@@ -3018,10 +3072,8 @@ function applyFilter() {
     }
     
     if (!currentStoneNameFilter) {
-        // Show all products if no filter
         filteredProducts = [...allProducts];
     } else {
-        // Filter by stone name
         const searchTerm = currentStoneNameFilter.toLowerCase();
         filteredProducts = allProducts.filter(product => 
             product.stone_name && product.stone_name.toLowerCase().includes(searchTerm)
@@ -3029,11 +3081,11 @@ function applyFilter() {
     }
     
     console.log('After filtering:', filteredProducts.length, 'products');
-    displayProducts(filteredProducts.slice(0, 8)); // Show only first 8 products on homepage
+    displayProducts(filteredProducts.slice(0, 8));
 }
 
 // ============================================
-// PRODUCTS LOADING & DISPLAY - FIXED
+// PRODUCTS LOADING & DISPLAY - UPDATED
 // ============================================
 
 async function loadAllProducts() {
@@ -3087,11 +3139,8 @@ async function loadAllProducts() {
             if (allProducts.length === 0) {
                 showNoProducts();
             } else {
-                // Setup filter
                 setupFilter();
                 applyFilter();
-                
-                // Also load trending products
                 loadTrendingProducts();
             }
             
@@ -3124,58 +3173,88 @@ function displayProducts(products) {
         const usage = product.usage || '';
         const usageLower = usage.toLowerCase();
         
-        // Create usage-specific links
-        let buttons = '';
+        let buttonsHTML = '';
+        let hasButtons = false;
         
-        // Wall Cladding button - filter by stone_name AND usage contains wall/cladding
+        const uses = [];
+        
         if (usageLower.includes('wall') || usageLower.includes('cladding')) {
-            buttons += `<a href="products.html?stone_name=${encodeURIComponent(product.stone_name)}&usage=wall" class="usage-btn wall-cladding-btn" onclick="event.stopPropagation();">
-                <i class="fas fa-wall"></i> Wall Cladding
-            </a>`;
+            uses.push('wall');
         }
         
-        // Flooring button - filter by stone_name AND usage contains floor
         if (usageLower.includes('floor')) {
-            buttons += `<a href="products.html?stone_name=${encodeURIComponent(product.stone_name)}&usage=floor" class="usage-btn flooring-btn" onclick="event.stopPropagation();">
-                <i class="fas fa-th-large"></i> Flooring
-            </a>`;
+            uses.push('floor');
         }
         
-        // Other button - for products that don't have wall/cladding or floor in usage
-        if (!usageLower.includes('wall') && !usageLower.includes('cladding') && !usageLower.includes('floor')) {
-            buttons += `<a href="products.html?stone_name=${encodeURIComponent(product.stone_name)}&usage=other" class="usage-btn other-btn" onclick="event.stopPropagation();">
-                <i class="fas fa-ellipsis-h"></i> Other
-            </a>`;
+        if (!usageLower.includes('wall') && !usageLower.includes('cladding') && !usageLower.includes('floor') && usage.trim()) {
+            uses.push('other');
         }
+        
+        uses.forEach(use => {
+            let buttonClass = '';
+            let buttonIcon = '';
+            let buttonText = '';
+            
+            if (use === 'wall') {
+                buttonClass = 'wall-cladding-btn';
+                buttonIcon = 'fas fa-wall';
+                buttonText = 'Wall Cladding';
+            } else if (use === 'floor') {
+                buttonClass = 'flooring-btn';
+                buttonIcon = 'fas fa-th-large';
+                buttonText = 'Flooring';
+            } else {
+                buttonClass = 'other-btn';
+                buttonIcon = 'fas fa-ellipsis-h';
+                buttonText = 'Other Uses';
+            }
+            
+            buttonsHTML += `
+                <a href="products.html?stone_name=${encodeURIComponent(product.stone_name)}&usage=${use}" 
+                   class="usage-btn ${buttonClass}" 
+                   onclick="event.stopPropagation();">
+                    <i class="${buttonIcon}"></i> ${buttonText}
+                </a>
+            `;
+            hasButtons = true;
+        });
         
         return `
-            <a href="product-details.html?id=${product.id}" class="product-card">
-                <div class="product-image-container">
-                    <img src="${productImage}" 
-                         alt="${product.stone_name}" 
-                         class="product-image" 
-                         onerror="this.src='${getDefaultImage(product.category)}'"
-                         loading="lazy">
-                </div>
+            <div class="product-card-wrapper">
+                <a href="product-details.html?id=${product.id}" class="product-card">
+                    <div class="product-image-container">
+                        <img src="${productImage}" 
+                             alt="${product.stone_name}" 
+                             class="product-image" 
+                             onerror="this.src='${getDefaultImage(product.category)}'"
+                             loading="lazy">
+                    </div>
+                </a>
                 
-                <div class="product-info">
-                    <div class="product-name">${product.stone_name}</div>
-                    
-                    <div class="usage-buttons">
-                        ${buttons}
+                <div class="stone-name-box">
+                    <div class="product-name">
+                        <i class="fas fa-gem stone-icon"></i>
+                        ${product.stone_name}
                     </div>
                 </div>
-            </a>
+                
+                ${hasButtons ? `
+                    <div class="usage-buttons-container">
+                        <div class="usage-buttons">
+                            ${buttonsHTML}
+                        </div>
+                    </div>
+                ` : ''}
+            </div>
         `;
     }).join('');
     
     container.innerHTML = productsHTML;
     
-    // Update View All button - link to all-products.html (full collection)
     const viewAllBtn = document.getElementById('viewAllBtn');
     if (viewAllBtn && allProducts.length > 0) {
         viewAllBtn.innerHTML = `<i class="fas fa-eye"></i> View All ${allProducts.length} Products`;
-        viewAllBtn.href = 'all-products.html'; // This should open full products collection
+        viewAllBtn.href = 'all-products.html';
     }
 }
 
@@ -3358,34 +3437,26 @@ function handleScroll() {
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('🚀 IRYA STONE Initializing...');
     
-    // Initialize Firebase
     initializeFirebase();
     
-    // Initialize auth system
     authSystem = new AuthSystem();
     await authSystem.init();
     
-    // Initialize cart system
     cartSystem = new CartSystem();
     await cartSystem.init();
     
     console.log('✅ All systems initialized successfully');
     
-    // Load categories (only 2 per row)
     await loadCategories();
     
-    // Load all products
     await loadAllProducts();
     
-    // Setup event listeners
     setupEventListeners();
     
-    // Make functions available globally
     window.clearFilter = clearFilter;
 });
 
 function setupEventListeners() {
-    // Search functionality
     const searchInput = document.getElementById('searchInput');
     const searchIcon = document.getElementById('searchIcon');
     const searchResults = document.getElementById('searchResults');
@@ -3420,13 +3491,11 @@ function setupEventListeners() {
         });
     }
     
-    // Notification button click handler
     const notificationBtn = document.getElementById('notificationBtn');
     if (notificationBtn) {
         notificationBtn.addEventListener('click', handleNotificationClick);
     }
     
-    // Close search results when clicking outside
     document.addEventListener('click', (e) => {
         if (searchResults && searchInput && 
             !searchInput.contains(e.target) && !searchResults.contains(e.target)) {
@@ -3434,7 +3503,6 @@ function setupEventListeners() {
         }
     });
     
-    // Scroll to top button
     const scrollTopBtn = document.getElementById('scrollTopBtn');
     if (scrollTopBtn) {
         scrollTopBtn.addEventListener('click', () => {
@@ -3445,10 +3513,8 @@ function setupEventListeners() {
         });
     }
     
-    // Scroll handling
     window.addEventListener('scroll', handleScroll, { passive: true });
     
-    // Initial scroll check
     handleScroll();
 }
 
