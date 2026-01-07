@@ -460,6 +460,92 @@ header.show {
     padding: 8px 16px;
     font-size: 13px;
 }
+/* Product card layout */
+.product-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Product info section */
+.product-info {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Product name */
+.product-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #222;
+    text-align: center;
+}
+
+/* ===== USAGE BUTTONS COOL VIEW ===== */
+.usage-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+/* Common button style */
+.usage-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+/* Wall cladding */
+.wall-cladding-btn {
+    background: #f3f3f3;
+    color: #444;
+    border: 1px solid #ddd;
+}
+.wall-cladding-btn:hover {
+    background: #e6e6e6;
+}
+
+/* Flooring */
+.flooring-btn {
+    background: #eef6ff;
+    color: #1e6fd9;
+    border: 1px solid #cfe3ff;
+}
+.flooring-btn:hover {
+    background: #dbeeff;
+}
+
+/* Other */
+.other-btn {
+    background: #fff3e0;
+    color: #e65100;
+    border: 1px solid #ffd8a8;
+}
+.other-btn:hover {
+    background: #ffe0b2;
+}
+
+/* Mobile friendly */
+@media (max-width: 480px) {
+    .usage-buttons {
+        gap: 6px;
+    }
+    .usage-btn {
+        font-size: 11px;
+        padding: 5px 9px;
+    }
+}
 
 /* ============================================
    CATEGORIES SECTION - ONLY 2 CATEGORIES IN ONE ROW
