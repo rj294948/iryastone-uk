@@ -457,7 +457,7 @@ header.show {
 }
 
 /* ============================================
-   CATEGORIES SECTION - ONLY 2 CATEGORIES IN ONE ROW
+   CATEGORIES SECTION - UPDATED DESIGN
 ============================================ */
 .categories-section {
     background: var(--white);
@@ -487,30 +487,44 @@ header.show {
     color: var(--white);
     font-family: 'Roboto Slab', serif;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
     text-transform: uppercase;
+    position: relative;
+    padding-bottom: 8px;
+}
+
+.categories-section .section-title-wrapper h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 2px;
+    background: var(--primary-gold);
 }
 
 .categories-section .section-title-wrapper .subtitle {
     font-size: 12px !important;
     color: rgba(255, 255, 255, 0.9);
     max-width: 700px;
-    margin: 0 auto;
+    margin: 8px auto 0;
     line-height: 1.4;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     font-weight: 400;
     opacity: 0.9;
+    font-style: italic;
 }
 
 .categories-container {
-    padding: 20px 15px;
+    padding: 25px 15px;
     background: var(--bg-light);
 }
 
 .categories-row {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
+    gap: 20px;
     max-width: 600px;
     margin: 0 auto;
 }
@@ -524,20 +538,25 @@ header.show {
     text-decoration: none;
     color: inherit;
     display: block;
-    height: 220px;
+    height: 240px;
     position: relative;
+    border: 1px solid rgba(0,0,0,0.05);
 }
 
 .category-card-large:hover {
-    transform: translateY(-5px);
+    transform: translateY(-8px);
     box-shadow: var(--shadow-lg);
+    border-color: var(--primary-gold);
 }
 
 .category-image-large {
     width: 100%;
-    height: 150px;
+    height: 170px;
     overflow: hidden;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
 }
 
 .category-image-large img {
@@ -548,31 +567,56 @@ header.show {
 }
 
 .category-card-large:hover .category-image-large img {
-    transform: scale(1.05);
+    transform: scale(1.08);
 }
 
 .category-content-large {
-    padding: 15px;
+    padding: 18px 15px;
     text-align: center;
     background: var(--white);
+    position: relative;
 }
 
 .category-name-large {
-    font-size: 16px;
+    font-size: 17px;
     font-weight: 700;
     color: var(--stone-dark);
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     font-family: 'Roboto Slab', serif;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    position: relative;
+    padding-bottom: 8px;
+}
+
+.category-name-large::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 2px;
+    background: var(--primary-gold);
+    transition: width 0.3s ease;
+}
+
+.category-card-large:hover .category-name-large::after {
+    width: 80px;
 }
 
 .category-count-large {
     font-size: 13px;
     color: var(--primary-gold);
     font-weight: 600;
+    background: rgba(201, 162, 39, 0.1);
+    padding: 4px 12px;
+    border-radius: 20px;
+    display: inline-block;
 }
 
 /* ============================================
-   LATEST TRENDING PRODUCTS - SINGLE ROW SLIDER
+   LATEST TRENDING PRODUCTS - IMPROVED DESIGN
 ============================================ */
 .trending-section {
     background: var(--white);
@@ -602,26 +646,40 @@ header.show {
     color: var(--white);
     font-family: 'Roboto Slab', serif;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 12px;
+    position: relative;
+    padding-bottom: 8px;
+}
+
+.trending-section .section-title-wrapper h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 2px;
+    background: var(--primary-gold);
 }
 
 .trending-section .section-title-wrapper .subtitle {
     font-size: 12px !important;
     color: rgba(255, 255, 255, 0.9);
     max-width: 700px;
-    margin: 0 auto;
+    margin: 8px auto 0;
     line-height: 1.4;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     font-weight: 400;
     opacity: 0.9;
+    font-style: italic;
 }
 
 .trending-container {
-    padding: 20px 0;
+    padding: 30px 0;
     background: var(--bg-light);
     position: relative;
 }
@@ -634,14 +692,14 @@ header.show {
 
 .trending-track {
     display: flex;
-    gap: 15px;
+    gap: 20px;
     transition: transform 0.5s ease;
     padding: 5px 0;
 }
 
 .trending-slide {
-    flex: 0 0 250px;
-    height: 280px;
+    flex: 0 0 260px;
+    height: 320px;
 }
 
 .trending-card {
@@ -656,84 +714,98 @@ header.show {
     cursor: pointer;
     text-decoration: none;
     color: inherit;
+    border: 1px solid rgba(0,0,0,0.05);
 }
 
 .trending-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-8px);
     box-shadow: var(--shadow-lg);
+    border-color: var(--primary-gold);
 }
 
 .trending-image-container {
     width: 100%;
-    height: 160px;
+    height: 180px;
     overflow: hidden;
     background: var(--bg-light);
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 15px;
 }
 
 .trending-image {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    padding: 10px;
     transition: transform 0.5s ease;
 }
 
 .trending-card:hover .trending-image {
-    transform: scale(1.05);
+    transform: scale(1.08);
 }
 
 .trending-badge {
     position: absolute;
-    top: 10px;
-    left: 10px;
-    background: #ff4757;
+    top: 12px;
+    left: 12px;
+    background: linear-gradient(135deg, #ff4757, #ff6b81);
     color: white;
-    padding: 4px 10px;
-    border-radius: 15px;
-    font-size: 10px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 11px;
     font-weight: 600;
     z-index: 2;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 .trending-content {
-    padding: 15px;
+    padding: 20px;
     flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
+    gap: 10px;
 }
 
 .trending-name {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 700;
     color: var(--stone-dark);
     margin-bottom: 8px;
     font-family: 'Roboto Slab', serif;
-    line-height: 1.3;
+    line-height: 1.4;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
+.trending-price {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--primary-gold);
+    background: rgba(201, 162, 39, 0.1);
+    padding: 6px 16px;
+    border-radius: 25px;
+    display: inline-block;
+}
+
 .slider-controls {
     display: flex;
     justify-content: center;
     gap: 20px;
-    margin-top: 20px;
+    margin-top: 25px;
 }
 
 .slider-btn {
-    width: 40px;
-    height: 40px;
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
-    background: var(--primary-gold);
+    background: linear-gradient(135deg, var(--primary-gold), var(--gold-dark));
     color: white;
     border: none;
     cursor: pointer;
@@ -742,23 +814,25 @@ header.show {
     align-items: center;
     justify-content: center;
     font-size: 16px;
+    box-shadow: var(--shadow-sm);
 }
 
 .slider-btn:hover {
-    background: var(--gold-dark);
+    background: linear-gradient(135deg, var(--gold-dark), var(--primary-gold));
     transform: scale(1.1);
+    box-shadow: var(--shadow-md);
 }
 
 .slider-dots {
     display: flex;
     justify-content: center;
-    gap: 8px;
-    margin-top: 15px;
+    gap: 10px;
+    margin-top: 20px;
 }
 
 .slider-dot {
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     background: #e0e0e0;
     cursor: pointer;
@@ -771,7 +845,7 @@ header.show {
 }
 
 /* ============================================
-   ALL PRODUCTS SECTION WITH FILTERS
+   ALL PRODUCTS SECTION WITH FILTERS - SPACE FIXED
 ============================================ */
 .products-section {
     background: var(--white);
@@ -801,36 +875,51 @@ header.show {
     color: var(--white);
     font-family: 'Roboto Slab', serif;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
     text-transform: uppercase;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 10px;
+    position: relative;
+    padding-bottom: 8px;
+}
+
+.products-section .section-title-wrapper h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 2px;
+    background: var(--primary-gold);
 }
 
 .products-section .section-title-wrapper .subtitle {
     font-size: 12px !important;
     color: rgba(255, 255, 255, 0.9);
     max-width: 700px;
-    margin: 0 auto;
+    margin: 8px auto 0;
     line-height: 1.4;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     font-weight: 400;
     opacity: 0.9;
+    font-style: italic;
 }
 
 .products-content {
-    padding: 20px 15px;
+    padding: 30px 15px;
+    background: var(--bg-light);
 }
 
 /* Filters Container */
 .filters-container {
     background: var(--white);
-    padding: 15px;
-    border-radius: 12px;
+    padding: 20px;
+    border-radius: 15px;
     box-shadow: var(--shadow-sm);
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     border: 1px solid #f0f0f0;
 }
 
@@ -838,21 +927,21 @@ header.show {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 15px;
+    margin-bottom: 18px;
 }
 
 .filter-header h3 {
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 600;
     color: var(--stone-dark);
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
 }
 
 .filter-header h3 i {
     color: var(--primary-gold);
-    font-size: 14px;
+    font-size: 16px;
 }
 
 .filter-input-container {
@@ -862,13 +951,13 @@ header.show {
 
 .filter-input {
     width: 100%;
-    padding: 12px 15px;
-    padding-left: 40px;
-    border-radius: 8px;
+    padding: 14px 18px;
+    padding-left: 45px;
+    border-radius: 12px;
     border: 1px solid #e0e0e0;
     background: var(--bg-light);
     color: var(--text-dark);
-    font-size: 13px;
+    font-size: 14px;
     transition: var(--transition);
 }
 
@@ -885,50 +974,54 @@ header.show {
 
 .filter-input-icon {
     position: absolute;
-    left: 15px;
+    left: 18px;
     top: 50%;
     transform: translateY(-50%);
     color: var(--primary-gold);
-    font-size: 14px;
+    font-size: 16px;
 }
 
 /* Active Filter Tag */
 .filter-tag {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    background: var(--primary-gold);
+    gap: 8px;
+    background: linear-gradient(135deg, var(--primary-gold), var(--gold-dark));
     color: white;
-    padding: 6px 12px;
-    border-radius: 15px;
-    font-size: 11px;
-    margin-top: 10px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: 15px;
+    box-shadow: var(--shadow-sm);
 }
 
 .filter-tag .remove {
     cursor: pointer;
-    font-size: 10px;
+    font-size: 12px;
     opacity: 0.8;
+    transition: var(--transition);
 }
 
 .filter-tag .remove:hover {
     opacity: 1;
+    transform: scale(1.1);
 }
 
 /* ============================================
-   PRODUCT CARD UPDATED STRUCTURE
+   PRODUCT CARD UPDATED STRUCTURE - IMPROVED BUTTONS
 ============================================ */
 .product-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    margin-bottom: 20px;
+    gap: 25px;
+    margin-bottom: 30px;
 }
 
 .product-card-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 15px;
 }
 
 .product-card {
@@ -937,27 +1030,29 @@ header.show {
     overflow: hidden;
     box-shadow: var(--shadow-md);
     transition: var(--transition);
-    height: 180px;
+    height: 200px;
     display: block;
     text-decoration: none;
     color: inherit;
+    border: 1px solid rgba(0,0,0,0.05);
 }
 
 .product-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-8px);
     box-shadow: var(--shadow-lg);
+    border-color: var(--primary-gold);
 }
 
 .product-image-container {
     width: 100%;
-    height: 180px;
+    height: 200px;
     overflow: hidden;
     background: var(--bg-light);
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 10px;
+    padding: 15px;
 }
 
 .product-image {
@@ -968,33 +1063,116 @@ header.show {
 }
 
 .product-card:hover .product-image {
-    transform: scale(1.08);
+    transform: scale(1.1);
 }
 
-/* Stone name box styling */
+/* Stone name box styling - IMPROVED */
 .stone-name-box {
     width: 100%;
-    padding: 12px 15px;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-radius: 10px;
-    border: 1px solid #dee2e6;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 12px;
+    border: 2px solid #e9ecef;
     transition: var(--transition);
     cursor: pointer;
     position: relative;
     overflow: hidden;
     text-align: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.08);
 }
 
 .stone-name-box:hover {
-    background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     border-color: var(--primary-gold);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.12);
 }
 
 /* Shine effect on hover */
-.stone-name-box::after {
+.stone-name-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255,255,255,0.4), 
+        transparent);
+    transition: left 0.7s ease;
+}
+
+.stone-name-box:hover::before {
+    left: 100%;
+}
+
+.stone-name-box .product-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--stone-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 0;
+    line-height: 1.4;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stone-name-box .stone-icon {
+    font-size: 16px;
+    color: var(--primary-gold);
+    transition: transform 0.3s ease;
+}
+
+.stone-name-box:hover .stone-icon {
+    transform: scale(1.2) rotate(15deg);
+}
+
+/* Usage buttons container - IMPROVED DESIGN */
+.usage-buttons-container {
+    margin-top: 8px;
+}
+
+.usage-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+/* IMPROVED BUTTON DESIGN */
+.usage-btn {
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 25px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+    min-width: 130px;
+    justify-content: center;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.usage-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    letter-spacing: 0.8px;
+}
+
+.usage-btn::after {
     content: '';
     position: absolute;
     top: 0;
@@ -1008,110 +1186,52 @@ header.show {
     transition: left 0.6s ease;
 }
 
-.stone-name-box:hover::after {
+.usage-btn:hover::after {
     left: 100%;
 }
 
-.stone-name-box .product-name {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--stone-dark);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin: 0;
-    line-height: 1.3;
-}
-
-.stone-name-box .stone-icon {
-    font-size: 14px;
-    color: var(--primary-gold);
-    transition: transform 0.3s ease;
-}
-
-.stone-name-box:hover .stone-icon {
-    transform: scale(1.2) rotate(15deg);
-}
-
-/* Usage buttons container */
-.usage-buttons-container {
-    margin-top: 5px;
-}
-
-.usage-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: center;
-}
-
-.usage-btn {
-    padding: 8px 14px;
-    font-size: 12px;
-    font-weight: 500;
-    border-radius: 20px;
-    border: none;
-    cursor: pointer;
-    transition: var(--transition);
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    position: relative;
-    overflow: hidden;
-    min-width: 110px;
-    justify-content: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.usage-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-/* Button types */
+/* Button types - IMPROVED */
 .wall-cladding-btn {
-    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-    color: #374151;
-    border: 1px solid #d1d5db;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: white;
+    border: 2px solid #4f46e5;
 }
 
 .wall-cladding-btn:hover {
-    background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
-    border-color: #9ca3af;
+    background: linear-gradient(135deg, #7c3aed, #4f46e5);
+    border-color: #7c3aed;
 }
 
 .flooring-btn {
-    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-    color: #1e40af;
-    border: 1px solid #93c5fd;
+    background: linear-gradient(135deg, #059669, #10b981);
+    color: white;
+    border: 2px solid #059669;
 }
 
 .flooring-btn:hover {
-    background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%);
-    border-color: #60a5fa;
+    background: linear-gradient(135deg, #10b981, #059669);
+    border-color: #10b981;
 }
 
 .other-btn {
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-    color: #92400e;
-    border: 1px solid #fbbf24;
+    background: linear-gradient(135deg, #dc2626, #ef4444);
+    color: white;
+    border: 2px solid #dc2626;
 }
 
 .other-btn:hover {
-    background: linear-gradient(135deg, #fde68a 0%, #fbbf24 100%);
-    border-color: #f59e0b;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    border-color: #ef4444;
 }
 
 /* Button icon animation */
 .usage-btn i {
-    font-size: 13px;
+    font-size: 14px;
     transition: transform 0.3s ease;
 }
 
 .usage-btn:hover i {
-    transform: scale(1.1);
+    transform: scale(1.2) rotate(5deg);
 }
 
 /* ============================================
@@ -1394,28 +1514,32 @@ header.show {
 
 .view-all-container {
     text-align: center;
-    margin-top: 20px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0,0,0,0.1);
 }
 
 .view-all-btn {
     display: inline-block;
-    padding: 12px 30px;
+    padding: 14px 35px;
     background: linear-gradient(135deg, var(--primary-gold), var(--gold-dark));
     color: white;
-    border-radius: 25px;
+    border-radius: 30px;
     text-decoration: none;
     font-weight: 600;
     transition: var(--transition);
     border: none;
-    font-size: 14px;
+    font-size: 15px;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    box-shadow: 0 4px 10px rgba(201, 162, 39, 0.3);
+    letter-spacing: 0.5px;
 }
 
 .view-all-btn:hover {
     transform: translateY(-3px);
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 8px 20px rgba(201, 162, 39, 0.4);
     opacity: 0.95;
 }
 
@@ -1499,8 +1623,8 @@ header.show {
     .categories-section .section-title-wrapper,
     .trending-section .section-title-wrapper,
     .products-section .section-title-wrapper {
-        height: 100px;
-        min-height: 100px;
+        height: 110px;
+        min-height: 110px;
         padding: 25px 20px !important;
     }
     
@@ -1513,64 +1637,72 @@ header.show {
     .categories-section .section-title-wrapper .subtitle,
     .trending-section .section-title-wrapper .subtitle,
     .products-section .section-title-wrapper .subtitle {
-        font-size: 13px !important;
+        font-size: 14px !important;
     }
     
     .categories-row {
         max-width: 800px;
-        gap: 25px;
+        gap: 30px;
     }
     
     .category-card-large {
-        height: 250px;
+        height: 280px;
     }
     
     .category-image-large {
-        height: 170px;
+        height: 190px;
+    }
+    
+    .category-name-large {
+        font-size: 18px;
     }
     
     .trending-slide {
-        flex: 0 0 280px;
-        height: 300px;
+        flex: 0 0 300px;
+        height: 350px;
     }
     
     .trending-image-container {
-        height: 180px;
+        height: 200px;
+    }
+    
+    .trending-name {
+        font-size: 18px;
     }
     
     .product-grid {
         grid-template-columns: repeat(3, 1fr);
-        gap: 25px;
+        gap: 30px;
     }
     
     .product-card {
-        height: 200px;
+        height: 220px;
     }
     
     .product-image-container {
-        height: 200px;
+        height: 220px;
     }
     
     .stone-name-box {
-        padding: 15px 20px;
+        padding: 18px 22px;
     }
     
     .stone-name-box .product-name {
-        font-size: 16px;
+        font-size: 17px;
     }
     
     .usage-buttons {
-        gap: 10px;
+        gap: 12px;
     }
     
     .usage-btn {
-        padding: 10px 16px;
-        font-size: 13px;
-        min-width: 120px;
+        padding: 12px 22px;
+        font-size: 14px;
+        min-width: 140px;
     }
     
     .usage-btn i {
-        font-size: 14px;
+        font-size: 15px;
     }
     
     .notification-permission {
@@ -1596,14 +1728,20 @@ header.show {
 @media (min-width: 1024px) {
     .product-grid {
         grid-template-columns: repeat(4, 1fr);
+        gap: 30px;
     }
     
     .trending-slide {
-        flex: 0 0 300px;
+        flex: 0 0 320px;
+        height: 360px;
     }
     
     .categories-row {
         max-width: 900px;
+    }
+    
+    .usage-btn {
+        min-width: 150px;
     }
 }
 
@@ -1676,8 +1814,8 @@ header.show {
     .categories-section .section-title-wrapper,
     .trending-section .section-title-wrapper,
     .products-section .section-title-wrapper {
-        height: 80px;
-        min-height: 80px;
+        height: 85px;
+        min-height: 85px;
         padding: 15px 12px !important;
     }
     
@@ -1694,59 +1832,63 @@ header.show {
     }
     
     .category-card-large {
-        height: 200px;
+        height: 220px;
     }
     
     .category-image-large {
-        height: 130px;
-    }
-    
-    .category-name-large {
-        font-size: 14px;
-    }
-    
-    .trending-slide {
-        flex: 0 0 220px;
-        height: 260px;
-    }
-    
-    .trending-image-container {
         height: 140px;
     }
     
+    .category-name-large {
+        font-size: 15px;
+    }
+    
+    .trending-slide {
+        flex: 0 0 240px;
+        height: 300px;
+    }
+    
+    .trending-image-container {
+        height: 160px;
+    }
+    
+    .trending-name {
+        font-size: 15px;
+    }
+    
     .product-grid {
-        gap: 15px;
+        gap: 20px;
     }
     
     .product-card {
-        height: 160px;
+        height: 180px;
     }
     
     .product-image-container {
-        height: 160px;
+        height: 180px;
     }
     
     .stone-name-box {
-        padding: 10px 12px;
+        padding: 14px 16px;
     }
     
     .stone-name-box .product-name {
-        font-size: 14px;
+        font-size: 15px;
     }
     
     .usage-buttons {
-        gap: 6px;
+        gap: 8px;
     }
     
     .usage-btn {
-        padding: 7px 12px;
-        font-size: 11px;
-        min-width: 100px;
-        gap: 4px;
+        padding: 9px 16px;
+        font-size: 12px;
+        min-width: 120px;
+        gap: 6px;
     }
     
     .usage-btn i {
-        font-size: 12px;
+        font-size: 13px;
     }
     
     .notification-permission {
@@ -1781,18 +1923,23 @@ header.show {
 @media (max-width: 360px) {
     .usage-buttons {
         flex-direction: column;
-        gap: 6px;
+        gap: 8px;
         align-items: center;
     }
     
     .usage-btn {
         width: 100%;
         min-width: unset;
-        max-width: 180px;
+        max-width: 200px;
     }
     
     .product-grid {
         grid-template-columns: 1fr;
+    }
+    
+    .categories-row {
+        grid-template-columns: 1fr;
+        gap: 15px;
     }
 }
 </style>
@@ -2666,7 +2813,7 @@ function getDefaultImage(category) {
 }
 
 // ============================================
-// CATEGORIES - ONLY 2 IN ONE ROW
+// CATEGORIES - UPDATED DESIGN
 // ============================================
 
 async function loadCategories() {
@@ -2781,8 +2928,7 @@ function loadDefaultCategories() {
 }
 
 // ============================================
-// TRENDING PRODUCTS FETCHING - FIXED
-// Only products with latest="new" should appear in trending
+// TRENDING PRODUCTS FETCHING
 // ============================================
 
 async function loadTrendingProducts() {
@@ -2896,7 +3042,7 @@ function displayTrendingProducts() {
         return `
             <div class="trending-slide">
                 <a href="product-details.html?id=${product.id}" class="trending-card">
-                    <div class="trending-badge">New</div>
+                    <div class="trending-badge">NEW</div>
                     <div class="trending-image-container">
                         <img src="${productImage}" 
                              alt="${product.stone_name}" 
@@ -2906,6 +3052,7 @@ function displayTrendingProducts() {
                     </div>
                     <div class="trending-content">
                         <div class="trending-name">${product.stone_name}</div>
+                        <div class="trending-price">£${product.price.toFixed(2)}</div>
                     </div>
                 </a>
             </div>
@@ -2943,8 +3090,8 @@ function setupTrendingSlider() {
     }
     
     const updateSlider = () => {
-        const slideWidth = document.querySelector('.trending-slide')?.offsetWidth || 250;
-        const gap = 15;
+        const slideWidth = document.querySelector('.trending-slide')?.offsetWidth || 260;
+        const gap = 20;
         const totalWidth = slideWidth + gap;
         track.style.transform = `translateX(-${currentTrendingSlide * slidesPerView * totalWidth}px)`;
         
@@ -3007,7 +3154,7 @@ function setupTrendingSlider() {
 }
 
 // ============================================
-// FILTER FUNCTIONS (Simple Stone Name Filter)
+// FILTER FUNCTIONS
 // ============================================
 
 function setupFilter() {
@@ -3085,7 +3232,7 @@ function applyFilter() {
 }
 
 // ============================================
-// PRODUCTS LOADING & DISPLAY - UPDATED
+// PRODUCTS LOADING & DISPLAY - UPDATED WITH NEW FUNCTIONALITY
 // ============================================
 
 async function loadAllProducts() {
@@ -3159,6 +3306,22 @@ async function loadAllProducts() {
     }
 }
 
+// Function to handle stone name click - redirect to products.html with filter
+function handleStoneNameClick(stoneName) {
+    // Store the stone name in localStorage to filter in products.html
+    localStorage.setItem('filterStoneName', stoneName);
+    localStorage.setItem('filterUsage', 'all');
+    window.location.href = 'products.html';
+}
+
+// Function to handle usage button click - redirect to products.html with stone name and usage filter
+function handleUsageButtonClick(stoneName, usageType) {
+    // Store both stone name and usage type in localStorage
+    localStorage.setItem('filterStoneName', stoneName);
+    localStorage.setItem('filterUsage', usageType);
+    window.location.href = 'products.html';
+}
+
 function displayProducts(products) {
     const container = document.getElementById('productGrid');
     if (!container) return;
@@ -3210,9 +3373,9 @@ function displayProducts(products) {
             }
             
             buttonsHTML += `
-                <a href="products.html?stone_name=${encodeURIComponent(product.stone_name)}&usage=${use}" 
+                <a href="javascript:void(0)" 
                    class="usage-btn ${buttonClass}" 
-                   onclick="event.stopPropagation();">
+                   onclick="handleUsageButtonClick('${product.stone_name.replace(/'/g, "\\'")}', '${use}')">
                     <i class="${buttonIcon}"></i> ${buttonText}
                 </a>
             `;
@@ -3231,7 +3394,7 @@ function displayProducts(products) {
                     </div>
                 </a>
                 
-                <div class="stone-name-box">
+                <div class="stone-name-box" onclick="handleStoneNameClick('${product.stone_name.replace(/'/g, "\\'")}')">
                     <div class="product-name">
                         <i class="fas fa-gem stone-icon"></i>
                         ${product.stone_name}
@@ -3251,10 +3414,19 @@ function displayProducts(products) {
     
     container.innerHTML = productsHTML;
     
+    // Update View All button - when clicked, clear filters and show all products
     const viewAllBtn = document.getElementById('viewAllBtn');
     if (viewAllBtn && allProducts.length > 0) {
         viewAllBtn.innerHTML = `<i class="fas fa-eye"></i> View All ${allProducts.length} Products`;
         viewAllBtn.href = 'all-products.html';
+        
+        // Add click event to clear filters
+        viewAllBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.removeItem('filterStoneName');
+            localStorage.removeItem('filterUsage');
+            window.location.href = 'all-products.html';
+        });
     }
 }
 
@@ -3453,7 +3625,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     setupEventListeners();
     
+    // Make functions available globally
     window.clearFilter = clearFilter;
+    window.handleStoneNameClick = handleStoneNameClick;
+    window.handleUsageButtonClick = handleUsageButtonClick;
 });
 
 function setupEventListeners() {
