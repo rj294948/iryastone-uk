@@ -570,7 +570,7 @@ header.show {
 }
 
 .filters-section.expanded {
-    max-height: 300px;
+    max-height: 400px;
     padding-bottom: 15px;
 }
 
@@ -579,13 +579,25 @@ header.show {
     overflow-x: auto;
     gap: 8px;
     padding: 15px 15px 0;
-    scrollbar-width: none;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-gold) transparent;
     -webkit-overflow-scrolling: touch;
     background: transparent;
 }
 
 .filter-controls::-webkit-scrollbar {
-    display: none;
+    height: 4px;
+    display: block;
+}
+
+.filter-controls::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.1);
+    border-radius: 2px;
+}
+
+.filter-controls::-webkit-scrollbar-thumb {
+    background: var(--primary-gold);
+    border-radius: 2px;
 }
 
 .filter-select {
@@ -596,7 +608,7 @@ header.show {
     color: var(--text-dark);
     font-size: 13px;
     cursor: pointer;
-    min-width: 130px;
+    min-width: 140px;
     flex-shrink: 0;
     transition: var(--transition);
     appearance: none;
@@ -749,7 +761,7 @@ header.show {
     text-decoration: none;
     color: inherit;
     display: block;
-    height: 320px;
+    height: 380px;
 }
 
 .product-card:hover {
@@ -758,10 +770,27 @@ header.show {
     border-color: var(--primary-gold);
 }
 
+/* Product Type Badge */
+.product-type-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: linear-gradient(135deg, var(--primary-gold), var(--gold-dark));
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 700;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
 /* Product Image Container */
 .product-image-container {
     width: 100%;
-    height: 180px;
+    height: 200px;
     overflow: hidden;
     position: relative;
     background: linear-gradient(135deg, #f5f5f5 0%, #e9ecef 100%);
@@ -796,7 +825,7 @@ header.show {
     left: 0;
     opacity: 0;
     transition: opacity 0.8s ease-in-out;
-    background: transparent;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }
 
 .product-image.active {
@@ -861,7 +890,7 @@ header.show {
 .product-name {
     font-size: 14px;
     font-weight: 700;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     color: var(--white);
     font-family: 'Roboto Slab', serif;
     line-height: 1.3;
@@ -869,24 +898,50 @@ header.show {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    padding-right: 15px;
+}
+
+/* Product Specifications */
+.product-specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 10px;
+    margin-top: 5px;
+}
+
+.spec-item {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-weight: 500;
 }
 
 .product-description {
     font-size: 11px;
-    color: rgba(255, 255, 255, 0.85);
+    color: rgba(255, 255, 255, 0.9);
     margin-bottom: 10px;
     line-height: 1.4;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    height: 30px;
+    min-height: 45px;
+}
+
+.product-description strong {
+    color: var(--gold-light);
+    font-weight: 700;
 }
 
 .product-price-section {
     display: flex;
     align-items: baseline;
     gap: 5px;
+    margin-top: 8px;
 }
 
 .product-price {
@@ -1204,15 +1259,20 @@ header.show {
     }
     
     .product-card {
-        height: 350px;
+        height: 400px;
     }
     
     .product-image-container {
-        height: 200px;
+        height: 220px;
     }
     
     .product-name {
         font-size: 15px;
+    }
+    
+    .product-description {
+        font-size: 12px;
+        -webkit-line-clamp: 3;
     }
     
     .product-price {
@@ -1302,7 +1362,7 @@ header.show {
     }
     
     .filter-select {
-        min-width: 115px;
+        min-width: 130px;
         font-size: 12px;
         padding: 8px 12px;
         padding-right: 30px;
@@ -1313,15 +1373,19 @@ header.show {
     }
     
     .product-card {
-        height: 300px;
+        height: 360px;
     }
     
     .product-image-container {
-        height: 160px;
+        height: 180px;
     }
     
     .product-name {
         font-size: 13px;
+    }
+    
+    .product-description {
+        font-size: 11px;
     }
     
     .product-price {
@@ -1351,9 +1415,13 @@ header.show {
     }
     
     .product-card {
-        height: 320px;
+        height: 380px;
         max-width: 280px;
         margin: 0 auto;
+    }
+    
+    .filter-select {
+        min-width: 120px;
     }
 }
 </style>
@@ -1447,6 +1515,16 @@ header.show {
         <select id="categoryFilter" class="filter-select">
             <option value="all">All Categories</option>
             <!-- Categories will be populated dynamically -->
+        </select>
+        
+        <select id="stoneNameFilter" class="filter-select">
+            <option value="all">All Stone Names</option>
+            <!-- Stone names will be populated dynamically -->
+        </select>
+        
+        <select id="typeFilter" class="filter-select">
+            <option value="all">All Types</option>
+            <!-- Types will be populated dynamically -->
         </select>
         
         <select id="priceFilter" class="filter-select">
@@ -1556,8 +1634,13 @@ let cartSystem = null;
 let authSystem = null;
 let imageSlideshows = {};
 
-// Filter variables
+// ============================================
+// FILTER VARIABLES - UPDATED
+// ============================================
+
 let currentCategory = 'all';
+let currentStoneNameFilter = 'all';
+let currentTypeFilter = 'all';
 let currentPriceFilter = 'all';
 let currentUsageFilter = 'all';
 let currentColorFilter = 'all';
@@ -1565,6 +1648,8 @@ let currentSort = 'newest';
 
 // Smart filter data
 let availableCategories = [];
+let availableStoneNames = [];
+let availableTypes = [];
 let availableUses = [];
 let availableColors = [];
 
@@ -1883,6 +1968,7 @@ class CartSystem {
                     priceUnit: product.price_unit || 'piece',
                     image: getProductImage(product),
                     category: product.category || 'Natural Stone',
+                    type: product.type || '',
                     description: product.description || '',
                     quantity: 1,
                     addedAt: new Date().toISOString(),
@@ -2005,6 +2091,10 @@ function getDefaultImage(category) {
         return 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=400&h=300';
     } else if (categoryLower.includes('marble')) {
         return 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=400&h=300';
+    } else if (categoryLower.includes('limestone')) {
+        return 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=400&h=300';
+    } else if (categoryLower.includes('slate')) {
+        return 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=400&h=300';
     }
     
     return 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=400&h=300';
@@ -2023,6 +2113,8 @@ function formatPrice(price, unit = 'piece') {
         return `£${priceNum.toFixed(2)} per piece`;
     } else if (unit === 'kg') {
         return `£${priceNum.toFixed(2)}/kg`;
+    } else if (unit === 'ton') {
+        return `£${priceNum.toFixed(2)}/ton`;
     } else {
         return `£${priceNum.toFixed(2)}`;
     }
@@ -2050,7 +2142,7 @@ function toggleFilters() {
 }
 
 // ============================================
-// LOAD SMART FILTERS
+// LOAD SMART FILTERS - UPDATED
 // ============================================
 
 async function loadSmartFilters() {
@@ -2068,28 +2160,45 @@ async function loadSmartFilters() {
         }
         
         const categoriesSet = new Set();
+        const stoneNamesSet = new Set();
+        const typesSet = new Set();
         const usesSet = new Set();
         const colorsSet = new Set();
         
         querySnapshot.forEach((doc) => {
             const data = doc.data();
             
+            // Category
             if (data.category && data.category.trim() !== '') {
                 categoriesSet.add(data.category);
             }
             
+            // Stone Name
+            if (data.stone_name && data.stone_name.trim() !== '') {
+                stoneNamesSet.add(data.stone_name);
+            }
+            
+            // Type
+            if (data.type && data.type.trim() !== '') {
+                typesSet.add(data.type);
+            }
+            
+            // Usage
             const usage = data.usage || data.uses || data.application;
             if (usage && usage.trim() !== '') {
                 const usesArray = usage.split(',').map(u => u.trim()).filter(u => u !== '');
                 usesArray.forEach(u => usesSet.add(u));
             }
             
+            // Color
             if (data.color && data.color.trim() !== '') {
                 colorsSet.add(data.color);
             }
         });
         
         availableCategories = Array.from(categoriesSet).sort();
+        availableStoneNames = Array.from(stoneNamesSet).sort();
+        availableTypes = Array.from(typesSet).sort();
         availableUses = Array.from(usesSet).sort();
         availableColors = Array.from(colorsSet).sort();
         
@@ -2114,6 +2223,36 @@ function populateFilterOptions() {
             option.value = category;
             option.textContent = category;
             categoryFilter.appendChild(option);
+        });
+    }
+    
+    // Stone Name filter
+    const stoneNameFilter = document.getElementById('stoneNameFilter');
+    if (stoneNameFilter) {
+        while (stoneNameFilter.options.length > 1) {
+            stoneNameFilter.remove(1);
+        }
+        
+        availableStoneNames.forEach(stoneName => {
+            const option = document.createElement('option');
+            option.value = stoneName;
+            option.textContent = stoneName;
+            stoneNameFilter.appendChild(option);
+        });
+    }
+    
+    // Type filter
+    const typeFilter = document.getElementById('typeFilter');
+    if (typeFilter) {
+        while (typeFilter.options.length > 1) {
+            typeFilter.remove(1);
+        }
+        
+        availableTypes.forEach(type => {
+            const option = document.createElement('option');
+            option.value = type;
+            option.textContent = type;
+            typeFilter.appendChild(option);
         });
     }
     
@@ -2150,10 +2289,14 @@ function populateFilterOptions() {
 
 function populateDefaultFilters() {
     const defaultCategories = ['Sand Stone', 'Kota Stone', 'Granite', 'Marble', 'Limestone', 'Slate'];
-    const defaultUses = ['Flooring', 'Wall Cladding', 'Kitchen Countertops', 'Staircase', 'Garden Paving'];
-    const defaultColors = ['Gray', 'Brown', 'Black', 'White', 'Green', 'Blue', 'Red', 'Yellow'];
+    const defaultStoneNames = ['Premium Sandstone', 'Kota Blue Stone', 'Classic Granite', 'White Marble', 'Natural Limestone', 'Slate Tiles', 'Sandstone Cobbles', 'Kota Stone Slabs'];
+    const defaultTypes = ['Tile', 'Slab', 'Cobble', 'Block', 'Paver', 'Panel', 'Boulder', 'Pebble'];
+    const defaultUses = ['Flooring', 'Wall Cladding', 'Kitchen Countertops', 'Staircase', 'Garden Paving', 'Driveway', 'Patio', 'Roofing', 'Landscaping'];
+    const defaultColors = ['Gray', 'Brown', 'Black', 'White', 'Green', 'Blue', 'Red', 'Yellow', 'Beige', 'Multicolor'];
     
     availableCategories = defaultCategories;
+    availableStoneNames = defaultStoneNames;
+    availableTypes = defaultTypes;
     availableUses = defaultUses;
     availableColors = defaultColors;
     
@@ -2161,7 +2304,7 @@ function populateDefaultFilters() {
 }
 
 // ============================================
-// PRODUCT LOADING WITH FILTERS
+// PRODUCT LOADING WITH FILTERS - UPDATED
 // ============================================
 
 async function loadProductsFromFirebase() {
@@ -2265,6 +2408,16 @@ function checkUrlFilters() {
         document.getElementById('categoryFilter').value = currentCategory;
     }
     
+    if (urlParams.has('stonename')) {
+        currentStoneNameFilter = urlParams.get('stonename');
+        document.getElementById('stoneNameFilter').value = currentStoneNameFilter;
+    }
+    
+    if (urlParams.has('type')) {
+        currentTypeFilter = urlParams.get('type');
+        document.getElementById('typeFilter').value = currentTypeFilter;
+    }
+    
     if (urlParams.has('usage')) {
         currentUsageFilter = urlParams.get('usage');
         document.getElementById('usageFilter').value = currentUsageFilter;
@@ -2272,7 +2425,7 @@ function checkUrlFilters() {
 }
 
 function applyAllFiltersClientSide() {
-    console.log(`🔄 Applying filters: Category=${currentCategory}, Usage=${currentUsageFilter}, Color=${currentColorFilter}, Price=${currentPriceFilter}, Sort=${currentSort}`);
+    console.log(`🔄 Applying filters: Category=${currentCategory}, StoneName=${currentStoneNameFilter}, Type=${currentTypeFilter}, Usage=${currentUsageFilter}, Color=${currentColorFilter}, Price=${currentPriceFilter}, Sort=${currentSort}`);
     
     if (allProducts.length === 0) {
         showNoProducts();
@@ -2287,6 +2440,22 @@ function applyAllFiltersClientSide() {
             product.category && product.category === currentCategory
         );
         console.log(`📊 After category filter: ${filteredProducts.length} products`);
+    }
+    
+    // Apply stone name filter
+    if (currentStoneNameFilter !== 'all') {
+        filteredProducts = filteredProducts.filter(product => 
+            product.stone_name && product.stone_name === currentStoneNameFilter
+        );
+        console.log(`📊 After stone name filter: ${filteredProducts.length} products`);
+    }
+    
+    // Apply type filter
+    if (currentTypeFilter !== 'all') {
+        filteredProducts = filteredProducts.filter(product => 
+            product.type && product.type === currentTypeFilter
+        );
+        console.log(`📊 After type filter: ${filteredProducts.length} products`);
     }
     
     // Apply usage filter
@@ -2360,21 +2529,31 @@ function updateFilterDisplay() {
     let productsDisplayTitle = 'Premium Natural Stones';
     
     // Update based on filters
-    if (currentCategory !== 'all' && currentUsageFilter !== 'all') {
-        // Both category and usage filters are selected
-        displayText = `${currentCategory} (${currentUsageFilter})`;
-        pageTitle = `${currentCategory} - ${currentUsageFilter}`;
-        productsDisplayTitle = `${currentCategory} (${currentUsageFilter})`;
+    if (currentCategory !== 'all' && currentStoneNameFilter !== 'all') {
+        // Both category and stone name filters are selected
+        displayText = `${currentStoneNameFilter} (${currentCategory})`;
+        pageTitle = `${currentStoneNameFilter} - ${currentCategory}`;
+        productsDisplayTitle = `${currentStoneNameFilter}`;
     } else if (currentCategory !== 'all') {
         // Only category filter is selected
         displayText = currentCategory;
         pageTitle = currentCategory;
         productsDisplayTitle = currentCategory;
+    } else if (currentStoneNameFilter !== 'all') {
+        // Only stone name filter is selected
+        displayText = currentStoneNameFilter;
+        pageTitle = currentStoneNameFilter;
+        productsDisplayTitle = currentStoneNameFilter;
     } else if (currentUsageFilter !== 'all') {
         // Only usage filter is selected
         displayText = currentUsageFilter;
         pageTitle = `Products for ${currentUsageFilter}`;
         productsDisplayTitle = `Products for ${currentUsageFilter}`;
+    } else if (currentTypeFilter !== 'all') {
+        // Only type filter is selected
+        displayText = `${currentTypeFilter} Stones`;
+        pageTitle = `${currentTypeFilter} Stones`;
+        productsDisplayTitle = `${currentTypeFilter} Stones`;
     }
     
     // Update texts
@@ -2384,6 +2563,8 @@ function updateFilterDisplay() {
     
     // Show/hide clear all button based on active filters
     const hasActiveFilters = currentCategory !== 'all' || 
+                            currentStoneNameFilter !== 'all' ||
+                            currentTypeFilter !== 'all' ||
                             currentPriceFilter !== 'all' || 
                             currentUsageFilter !== 'all' || 
                             currentColorFilter !== 'all' || 
@@ -2403,28 +2584,36 @@ function updateSelectedFilters() {
     const activeFilters = [];
     
     if (currentCategory !== 'all') {
-        activeFilters.push({ type: 'Category', value: currentCategory });
+        activeFilters.push({ type: 'category', value: currentCategory });
+    }
+    
+    if (currentStoneNameFilter !== 'all') {
+        activeFilters.push({ type: 'stonename', value: currentStoneNameFilter });
+    }
+    
+    if (currentTypeFilter !== 'all') {
+        activeFilters.push({ type: 'type', value: currentTypeFilter });
     }
     
     if (currentUsageFilter !== 'all') {
-        activeFilters.push({ type: 'Usage', value: currentUsageFilter });
+        activeFilters.push({ type: 'usage', value: currentUsageFilter });
     }
     
     if (currentColorFilter !== 'all') {
-        activeFilters.push({ type: 'Color', value: currentColorFilter });
+        activeFilters.push({ type: 'color', value: currentColorFilter });
     }
     
     if (currentPriceFilter !== 'all') {
         const priceText = currentPriceFilter === '250+' ? 'Over £250' : 
                          `£${currentPriceFilter.replace('-', ' - £')}`;
-        activeFilters.push({ type: 'Price', value: priceText });
+        activeFilters.push({ type: 'price', value: priceText });
     }
     
     if (currentSort !== 'newest') {
         const sortText = currentSort === 'price_low' ? 'Price: Low to High' :
                         currentSort === 'price_high' ? 'Price: High to Low' :
                         currentSort === 'name' ? 'Name A-Z' : 'Most Popular';
-        activeFilters.push({ type: 'Sort', value: sortText });
+        activeFilters.push({ type: 'sort', value: sortText });
     }
     
     if (activeFilters.length > 0) {
@@ -2433,7 +2622,7 @@ function updateSelectedFilters() {
         filterTags.innerHTML = activeFilters.map(filter => `
             <div class="filter-tag">
                 ${filter.value}
-                <span class="remove-tag" onclick="removeFilter('${filter.type.toLowerCase()}')">
+                <span class="remove-tag" onclick="removeFilter('${filter.type}')">
                     <i class="fas fa-times"></i>
                 </span>
             </div>
@@ -2448,6 +2637,14 @@ function removeFilter(filterType) {
         case 'category':
             currentCategory = 'all';
             document.getElementById('categoryFilter').value = 'all';
+            break;
+        case 'stonename':
+            currentStoneNameFilter = 'all';
+            document.getElementById('stoneNameFilter').value = 'all';
+            break;
+        case 'type':
+            currentTypeFilter = 'all';
+            document.getElementById('typeFilter').value = 'all';
             break;
         case 'usage':
             currentUsageFilter = 'all';
@@ -2472,12 +2669,16 @@ function removeFilter(filterType) {
 
 function clearAllFilters() {
     currentCategory = 'all';
+    currentStoneNameFilter = 'all';
+    currentTypeFilter = 'all';
     currentPriceFilter = 'all';
     currentUsageFilter = 'all';
     currentColorFilter = 'all';
     currentSort = 'newest';
     
     document.getElementById('categoryFilter').value = 'all';
+    document.getElementById('stoneNameFilter').value = 'all';
+    document.getElementById('typeFilter').value = 'all';
     document.getElementById('priceFilter').value = 'all';
     document.getElementById('usageFilter').value = 'all';
     document.getElementById('colorFilter').value = 'all';
@@ -2503,7 +2704,7 @@ function updateProductsCount(count) {
 }
 
 // ============================================
-// DISPLAY PRODUCTS
+// DISPLAY PRODUCTS - IMPROVED
 // ============================================
 
 function displayProducts(products) {
@@ -2524,8 +2725,11 @@ function displayProducts(products) {
         const formattedPrice = formatPrice(product.price, product.price_unit);
         const firstImage = getProductImage(product);
         
-        // Create image slideshow HTML
-        const images = product.images && product.images.length > 0 ? product.images : [firstImage];
+        // Highlight description with key features
+        const description = getHighlightedDescription(product);
+        
+        // Create image slideshow HTML with proper image handling
+        const images = getProductImagesArray(product);
         const imagesHTML = images.map((img, index) => `
             <img src="${img}" 
                  alt="${product.stone_name}" 
@@ -2534,8 +2738,13 @@ function displayProducts(products) {
                  loading="lazy">
         `).join('');
         
+        // Product specifications
+        const specs = getProductSpecs(product);
+        
         return `
             <a href="product-details.html?id=${encodeURIComponent(product.id)}" class="product-card" data-id="${product.id}">
+                ${product.type ? `<div class="product-type-badge">${product.type}</div>` : ''}
+                
                 <div class="product-image-container">
                     <div class="image-slideshow" id="slideshow-${product.id}">
                         ${imagesHTML}
@@ -2547,8 +2756,14 @@ function displayProducts(products) {
                     <!-- Add to Cart Button -->
                     <div class="product-actions">
                         <button class="action-icon" 
-                                onclick="event.preventDefault(); quickAddToCart('${product.id}', event)">
+                                onclick="event.preventDefault(); quickAddToCart('${product.id}', event)"
+                                title="Add to Cart">
                             <i class="fas fa-cart-plus"></i>
+                        </button>
+                        <button class="action-icon" 
+                                onclick="event.preventDefault(); window.location.href='product-details.html?id=${encodeURIComponent(product.id)}'"
+                                title="View Details">
+                            <i class="fas fa-eye"></i>
                         </button>
                     </div>
                 </div>
@@ -2556,10 +2771,15 @@ function displayProducts(products) {
                 <div class="product-info">
                     <h3 class="product-name">${product.stone_name}</h3>
                     
+                    <!-- Product Specifications -->
+                    ${specs}
+                    
+                    <!-- Highlighted Description -->
                     <div class="product-description">
-                        ${product.description || 'Premium quality natural stone with excellent durability.'}
+                        ${description}
                     </div>
                     
+                    <!-- Price Section -->
                     <div class="product-price-section">
                         <div class="product-price">${formattedPrice}</div>
                         ${product.price_unit ? `<div class="price-unit">per ${product.price_unit}</div>` : ''}
@@ -2573,11 +2793,94 @@ function displayProducts(products) {
     
     // Initialize image slideshows for products with multiple images
     products.forEach(product => {
-        const images = product.images && product.images.length > 0 ? product.images : [getProductImage(product)];
+        const images = getProductImagesArray(product);
         if (images.length > 1) {
             initializeImageSlideshow(product.id, images);
         }
     });
+}
+
+// Helper function to get product images array
+function getProductImagesArray(product) {
+    if (product.images && Array.isArray(product.images) && product.images.length > 0) {
+        return product.images.map(img => {
+            // Ensure proper image URLs
+            if (img.startsWith('http')) {
+                return img;
+            } else if (img.startsWith('/') || img.startsWith('./')) {
+                return img;
+            } else {
+                return `https://images.unsplash.com/photo-${img}?auto=format&fit=crop&w=400&h=300`;
+            }
+        });
+    } else if (product.image) {
+        return [product.image];
+    } else {
+        return [getDefaultImage(product.category)];
+    }
+}
+
+// Helper function to get highlighted description
+function getHighlightedDescription(product) {
+    let description = product.description || 'Premium quality natural stone with excellent durability.';
+    
+    // Add key features from product data
+    const features = [];
+    
+    if (product.finish && product.finish.trim() !== '') {
+        features.push(`<strong>${product.finish}</strong> finish`);
+    }
+    
+    if (product.color && product.color.trim() !== '') {
+        features.push(`<strong>${product.color}</strong> color`);
+    }
+    
+    if (product.usage && product.usage.trim() !== '') {
+        const usageText = product.usage.length > 50 ? product.usage.substring(0, 50) + '...' : product.usage;
+        features.push(`Ideal for <strong>${usageText}</strong>`);
+    }
+    
+    if (features.length > 0) {
+        description += ` Features: ${features.join(', ')}.`;
+    }
+    
+    // Limit description length
+    if (description.length > 150) {
+        description = description.substring(0, 150) + '...';
+    }
+    
+    return description;
+}
+
+// Helper function to get product specifications
+function getProductSpecs(product) {
+    const specs = [];
+    
+    if (product.size && product.size.trim() !== '') {
+        specs.push(`Size: ${product.size}`);
+    }
+    
+    if (product.thickness && product.thickness.trim() !== '') {
+        specs.push(`Thickness: ${product.thickness}`);
+    }
+    
+    if (product.color && product.color.trim() !== '') {
+        specs.push(`Color: ${product.color}`);
+    }
+    
+    if (product.category && product.category.trim() !== '') {
+        specs.push(`Type: ${product.category}`);
+    }
+    
+    if (specs.length > 0) {
+        return `
+            <div class="product-specs">
+                ${specs.map(spec => `<span class="spec-item">${spec}</span>`).join('')}
+            </div>
+        `;
+    }
+    
+    return '';
 }
 
 function initializeImageSlideshow(productId, images) {
@@ -2632,7 +2935,7 @@ function startSlideshow(productId) {
         
         // Update current index
         slideshow.currentIndex = nextIndex;
-    }, 2000);
+    }, 3000);
 }
 
 function stopSlideshow(productId) {
@@ -2660,123 +2963,163 @@ function showNoProducts() {
 }
 
 // ============================================
-// DEFAULT PRODUCTS WITH MORE VARIETY
+// DEFAULT PRODUCTS WITH COMPLETE DATA
 // ============================================
 
 function loadDefaultProducts() {
     allProducts = [
         {
             id: 'default1',
-            stone_name: 'Premium Sandstone',
+            stone_name: 'Premium Sandstone Tiles',
             category: 'Sand Stone',
-            description: 'High quality sandstone for various applications',
+            type: 'Tile',
+            description: 'High quality sandstone tiles with natural texture and excellent durability for various applications. These tiles are perfect for both indoor and outdoor use.',
             price: 45.00,
             images: [
-                'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=400&h=300',
-                'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=400&h=300'
+                'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=800&h=600&q=80',
+                'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&h=600&q=80',
+                'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800&h=600&q=80'
             ],
             price_unit: 'sqft',
             color: 'Brown',
-            usage: 'Flooring, Wall Cladding',
+            finish: 'Natural',
+            size: '12x12 inch',
+            thickness: '1.5 cm',
+            usage: 'Flooring, Wall Cladding, Patio',
             created_at: '2024-01-15'
         },
         {
             id: 'default2',
-            stone_name: 'Kota Blue Stone',
+            stone_name: 'Kota Blue Stone Slabs',
             category: 'Kota Stone',
-            description: 'Beautiful blue kota stone for flooring',
+            type: 'Slab',
+            description: 'Beautiful blue kota stone slabs with smooth finish, perfect for flooring and exterior applications. Highly durable and weather resistant.',
             price: 35.00,
             images: [
-                'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=400&h=300',
-                'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=400&h=300'
+                'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&h=600&q=80',
+                'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=800&h=600&q=80',
+                'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800&h=600&q=80'
             ],
             price_unit: 'sqft',
             color: 'Blue',
-            usage: 'Flooring, Garden Paving',
+            finish: 'Polished',
+            size: '24x24 inch',
+            thickness: '2 cm',
+            usage: 'Flooring, Garden Paving, Driveway',
             created_at: '2024-01-10'
         },
         {
             id: 'default3',
-            stone_name: 'Classic Granite',
+            stone_name: 'Classic Granite Countertop',
             category: 'Granite',
-            description: 'Durable granite for countertops',
+            type: 'Slab',
+            description: 'Durable granite slabs with polished finish for kitchen countertops and tabletops. Heat resistant and easy to maintain.',
             price: 85.00,
             images: [
-                'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=400&h=300'
+                'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800&h=600&q=80',
+                'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=800&h=600&q=80'
             ],
             price_unit: 'sqft',
             color: 'Gray',
-            usage: 'Kitchen Countertops',
+            finish: 'Polished',
+            size: 'Custom',
+            thickness: '3 cm',
+            usage: 'Kitchen Countertops, Bathroom Vanity',
             created_at: '2024-01-20'
         },
         {
             id: 'default4',
-            stone_name: 'White Marble',
+            stone_name: 'White Marble Flooring',
             category: 'Marble',
-            description: 'Elegant white marble for interiors',
+            type: 'Tile',
+            description: 'Elegant white marble tiles with glossy finish for luxurious interior flooring. Adds sophistication to any space.',
             price: 120.00,
             images: [
-                'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=400&h=300'
+                'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800&h=600&q=80',
+                'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&h=600&q=80'
             ],
             price_unit: 'sqft',
             color: 'White',
+            finish: 'Polished',
+            size: '18x18 inch',
+            thickness: '2 cm',
             usage: 'Flooring, Wall Cladding',
             created_at: '2024-01-05'
         },
         {
             id: 'default5',
-            stone_name: 'Natural Limestone',
+            stone_name: 'Natural Limestone Blocks',
             category: 'Limestone',
-            description: 'Natural limestone for exterior applications',
+            type: 'Block',
+            description: 'Natural limestone blocks for exterior wall cladding and landscaping. Weather resistant and ages beautifully.',
             price: 65.00,
             images: [
-                'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=400&h=300'
+                'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=800&h=600&q=80',
+                'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&h=600&q=80'
             ],
-            price_unit: 'sqft',
+            price_unit: 'piece',
             color: 'Beige',
-            usage: 'Exterior Wall Cladding',
+            finish: 'Natural',
+            size: 'Various',
+            thickness: '5-10 cm',
+            usage: 'Exterior Wall Cladding, Landscaping',
             created_at: '2024-01-18'
         },
         {
             id: 'default6',
-            stone_name: 'Slate Tiles',
+            stone_name: 'Slate Roofing Tiles',
             category: 'Slate',
-            description: 'Durable slate tiles for roofing',
+            type: 'Tile',
+            description: 'Durable slate tiles for roofing and flooring applications. Fire resistant and long-lasting.',
             price: 55.00,
             images: [
-                'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=400&h=300'
+                'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&h=600&q=80',
+                'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=800&h=600&q=80'
             ],
             price_unit: 'sqft',
             color: 'Black',
-            usage: 'Roofing, Flooring',
+            finish: 'Natural',
+            size: '12x24 inch',
+            thickness: '1 cm',
+            usage: 'Roofing, Flooring, Wall Cladding',
             created_at: '2024-01-12'
         },
         {
             id: 'default7',
             stone_name: 'Sandstone Cobbles',
             category: 'Sand Stone',
-            description: 'Cobbles for garden pathways',
+            type: 'Cobble',
+            description: 'Cobbles for garden pathways and driveways. Natural texture provides excellent grip and aesthetic appeal.',
             price: 28.00,
             images: [
-                'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=400&h=300'
+                'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=800&h=600&q=80',
+                'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&h=600&q=80'
             ],
             price_unit: 'piece',
             color: 'Red',
-            usage: 'Garden Paving',
+            finish: 'Natural',
+            size: 'Various',
+            thickness: '3-5 cm',
+            usage: 'Garden Paving, Pathway, Driveway',
             created_at: '2024-01-08'
         },
         {
             id: 'default8',
-            stone_name: 'Kota Stone Slabs',
+            stone_name: 'Kota Stone Pavers',
             category: 'Kota Stone',
-            description: 'Large slabs for commercial projects',
+            type: 'Paver',
+            description: 'Large pavers for commercial projects and public spaces. High strength and low maintenance.',
             price: 95.00,
             images: [
-                'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=400&h=300'
+                'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&h=600&q=80',
+                'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=800&h=600&q=80'
             ],
             price_unit: 'sqft',
             color: 'Green',
-            usage: 'Commercial Flooring',
+            finish: 'Honed',
+            size: '24x24 inch',
+            thickness: '2.5 cm',
+            usage: 'Commercial Flooring, Public Spaces',
             created_at: '2024-01-22'
         }
     ];
@@ -2804,8 +3147,10 @@ function searchProducts(query) {
     const filtered = allProducts.filter(product => 
         product.stone_name.toLowerCase().includes(query.toLowerCase()) ||
         (product.category && product.category.toLowerCase().includes(query.toLowerCase())) ||
-        (product.description && product.description.toLowerCase().includes(query.toLowerCase())) ||
-        (product.color && product.color.toLowerCase().includes(query.toLowerCase()))
+        (product.description && description.toLowerCase().includes(query.toLowerCase())) ||
+        (product.type && product.type.toLowerCase().includes(query.toLowerCase())) ||
+        (product.color && product.color.toLowerCase().includes(query.toLowerCase())) ||
+        (product.usage && product.usage.toLowerCase().includes(query.toLowerCase()))
     ).slice(0, 8);
     
     if (filtered.length > 0) {
@@ -2820,7 +3165,7 @@ function searchProducts(query) {
                     </div>
                     <div class="search-result-info">
                         <div class="search-result-name">${product.stone_name}</div>
-                        <div class="search-result-category">${product.category || 'Stone'}</div>
+                        <div class="search-result-category">${product.category || 'Stone'} • ${product.type || 'Product'}</div>
                     </div>
                     <div class="search-result-price">${formatPrice(product.price, product.price_unit)}</div>
                 </a>
@@ -2939,7 +3284,7 @@ function handleScroll() {
 }
 
 // ============================================
-// EVENT LISTENERS SETUP - UPDATED SEARCH
+// EVENT LISTENERS SETUP - UPDATED
 // ============================================
 
 function setupEventListeners() {
@@ -2955,8 +3300,8 @@ function setupEventListeners() {
         clearAllFiltersBtn.addEventListener('click', clearAllFilters);
     }
     
-    // Filter event listeners
-    const filterIds = ['categoryFilter', 'priceFilter', 'usageFilter', 'colorFilter', 'sortFilter'];
+    // Filter event listeners - UPDATED with new filters
+    const filterIds = ['categoryFilter', 'stoneNameFilter', 'typeFilter', 'priceFilter', 'usageFilter', 'colorFilter', 'sortFilter'];
     
     filterIds.forEach(filterId => {
         const filter = document.getElementById(filterId);
@@ -2965,6 +3310,12 @@ function setupEventListeners() {
                 switch(filterId) {
                     case 'categoryFilter':
                         currentCategory = this.value;
+                        break;
+                    case 'stoneNameFilter':
+                        currentStoneNameFilter = this.value;
+                        break;
+                    case 'typeFilter':
+                        currentTypeFilter = this.value;
                         break;
                     case 'priceFilter':
                         currentPriceFilter = this.value;
