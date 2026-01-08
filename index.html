@@ -2133,26 +2133,24 @@ function getDefaultImage(category) {
     return 'https://regattaexports.com/wp-content/uploads/2024/10/Autumn-Brown-Sandstone-Quarry.webp';
 }
 
+// Function getProductUsageButtons में URLs बदलें:
 function getProductUsageButtons(product) {
-    const usage = (product.usage || '').toLowerCase();
-    const uses = [];
-    
-    // Always add Wall Cladding button
+    // Always add Wall Cladding button - TYPE के according URL
     uses.push({
         type: 'wall',
         text: 'Wall Cladding',
         icon: 'fas fa-wall',
         class: 'wall-cladding-btn',
-        url: `products.html?stone_name=${encodeURIComponent(product.stone_name)}&usage=wall`
+        url: `products.html?stone_name=${encodeURIComponent(product.stone_name)}&type=wall-cladding`
     });
     
-    // Always add Flooring button
+    // Always add Flooring button - TYPE के according URL
     uses.push({
         type: 'floor',
         text: 'Flooring',
         icon: 'fas fa-th-large',
         class: 'flooring-btn',
-        url: `products.html?stone_name=${encodeURIComponent(product.stone_name)}&usage=floor`
+        url: `products.html?stone_name=${encodeURIComponent(product.stone_name)}&type=flooring`
     });
     
     // Add Other button only if usage doesn't contain wall or floor
@@ -2162,7 +2160,7 @@ function getProductUsageButtons(product) {
             text: 'Other Uses',
             icon: 'fas fa-ellipsis-h',
             class: 'other-btn',
-            url: `products.html?stone_name=${encodeURIComponent(product.stone_name)}&usage=other`
+            url: `products.html?stone_name=${encodeURIComponent(product.stone_name)}&type=other`
         });
     }
     
