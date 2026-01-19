@@ -249,6 +249,27 @@ header.show {
     transform: scale(1.05);
 }
 
+.cart-badge, .notification-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: #ff4757;
+    color: var(--white);
+    font-size: 9px;
+    font-weight: 600;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    display: none;
+}
+
+.notification-badge {
+    background: #4285f4;
+}
+
 /* PRODUCT CONTAINER - 2 COLUMN LAYOUT */
 .product-container {
     margin-top: 60px;
@@ -899,7 +920,7 @@ header.show {
     border-top: 1px solid var(--border-color);
 }
 
-/* SIMILAR PRODUCTS */
+/* SIMILAR PRODUCTS - HEIGHT FIXED */
 .similar-products {
     margin-top: 20px;
     padding: 15px;
@@ -944,7 +965,8 @@ header.show {
     text-decoration: none;
     color: inherit;
     display: block;
-    height: 200px;
+    height: auto; /* Changed to auto for fit-content */
+    min-height: 180px;
 }
 
 .similar-product-card:hover {
@@ -954,7 +976,7 @@ header.show {
 
 .card-image-container {
     width: 100%;
-    height: 130px;
+    height: 140px;
     overflow: hidden;
     position: relative;
 }
@@ -998,6 +1020,10 @@ header.show {
     font-size: 11px;
     color: var(--text-light);
     margin-top: 2px;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* LOADING & NOTIFICATION */
@@ -1043,6 +1069,43 @@ header.show {
         transform: translateX(0);
         opacity: 1;
     }
+}
+
+/* NOTIFICATION SYSTEM */
+.notification-item {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.notification-icon {
+    width: 30px;
+    height: 30px;
+    background: var(--primary-gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-title {
+    font-weight: 600;
+    font-size: 12px;
+    margin-bottom: 2px;
+}
+
+.notification-time {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.7);
 }
 
 /* FULLSCREEN MODAL */
@@ -1170,12 +1233,8 @@ header.show {
         grid-template-columns: repeat(2, 1fr);
     }
     
-    .similar-product-card {
-        height: 180px;
-    }
-    
     .card-image-container {
-        height: 110px;
+        height: 120px;
     }
 }
 
@@ -1187,10 +1246,6 @@ header.show {
     .thumbnail {
         width: 50px;
         height: 50px;
-    }
-    
-    .similar-product-card {
-        height: 160px;
     }
     
     .card-image-container {
@@ -1348,6 +1403,12 @@ header.show {
 
     <!-- Header Actions -->
     <div class="header-actions">
+        <!-- Notification Icon -->
+        <a href="notification.html" class="action-btn" style="position: relative;" id="notificationBtn">
+            <i class="fas fa-bell"></i>
+            <span class="notification-badge" id="notificationBadge">0</span>
+        </a>
+        
         <!-- Enquiry Icon -->
         <a href="#" class="action-btn" onclick="openEnquiryModal(event)">
             <i class="fas fa-envelope"></i>
@@ -1424,13 +1485,14 @@ header.show {
         <i class="fas fa-search"></i>
         <span>Search</span>
     </a>
+    <a href="notification.html" class="nav-btn" style="position: relative;">
+        <i class="fas fa-bell"></i>
+        <span>Notifications</span>
+        <span class="notification-badge" id="bottomNotificationBadge">0</span>
+    </a>
     <a href="#" class="nav-btn" onclick="openEnquiryModal(event)">
         <i class="fas fa-envelope"></i>
         <span>Enquiry</span>
-    </a>
-    <a href="#" class="nav-btn" onclick="openWhatsApp()">
-        <i class="fab fa-whatsapp"></i>
-        <span>WhatsApp</span>
     </a>
 </div>
 
@@ -1480,6 +1542,121 @@ let allProducts = [];
 let similarProducts = [];
 let filteredSimilarProducts = [];
 let currentImageIndex = 0;
+
+// ============================================
+// NOTIFICATION SYSTEM
+// ============================================
+
+class NotificationSystem {
+    constructor() {
+        this.notifications = [];
+        this.unreadCount = 0;
+        this.localKey = 'irya_notifications';
+    }
+    
+    async init() {
+        try {
+            await this.loadNotifications();
+            this.updateNotificationBadge();
+            return this;
+        } catch (error) {
+            console.error('Error initializing notification system:', error);
+            return this;
+        }
+    }
+    
+    async loadNotifications() {
+        try {
+            // Try to load from Firebase first
+            if (firebaseDB) {
+                const snapshot = await firebaseDB.collection('notifications')
+                    .orderBy('timestamp', 'desc')
+                    .limit(20)
+                    .get();
+                
+                this.notifications = [];
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    this.notifications.push({
+                        id: doc.id,
+                        title: data.title || 'Notification',
+                        message: data.message || '',
+                        type: data.type || 'info',
+                        timestamp: data.timestamp || new Date().toISOString(),
+                        read: data.read || false
+                    });
+                });
+            } else {
+                // Fallback to localStorage
+                const stored = localStorage.getItem(this.localKey);
+                this.notifications = stored ? JSON.parse(stored) : [];
+            }
+            
+            // Calculate unread count
+            this.unreadCount = this.notifications.filter(n => !n.read).length;
+            
+        } catch (error) {
+            console.error('Error loading notifications:', error);
+            this.notifications = [];
+            this.unreadCount = 0;
+        }
+    }
+    
+    updateNotificationBadge() {
+        const badge = document.getElementById('notificationBadge');
+        const bottomBadge = document.getElementById('bottomNotificationBadge');
+        
+        if (badge) {
+            badge.textContent = this.unreadCount > 9 ? '9+' : this.unreadCount;
+            badge.style.display = this.unreadCount > 0 ? 'flex' : 'none';
+        }
+        
+        if (bottomBadge) {
+            bottomBadge.textContent = this.unreadCount > 9 ? '9+' : this.unreadCount;
+            bottomBadge.style.display = this.unreadCount > 0 ? 'flex' : 'none';
+        }
+    }
+    
+    async addNotification(title, message, type = 'info') {
+        try {
+            const newNotification = {
+                title: title,
+                message: message,
+                type: type,
+                timestamp: new Date().toISOString(),
+                read: false
+            };
+            
+            // Add to Firebase if available
+            if (firebaseDB) {
+                await firebaseDB.collection('notifications').add(newNotification);
+            }
+            
+            // Add to local array
+            this.notifications.unshift(newNotification);
+            
+            // Keep only last 20 notifications
+            if (this.notifications.length > 20) {
+                this.notifications = this.notifications.slice(0, 20);
+            }
+            
+            // Save to localStorage
+            localStorage.setItem(this.localKey, JSON.stringify(this.notifications));
+            
+            // Update unread count and badge
+            this.unreadCount++;
+            this.updateNotificationBadge();
+            
+            // Show notification
+            showNotification(`${title}: ${message}`);
+            
+        } catch (error) {
+            console.error('Error adding notification:', error);
+        }
+    }
+}
+
+let notificationSystem = null;
 
 // ============================================
 // ZOOM SYSTEM
@@ -1583,6 +1760,15 @@ function openWhatsApp() {
     const phoneNumber = "917737740207";
     
     window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
+    
+    // Add notification
+    if (notificationSystem) {
+        notificationSystem.addNotification(
+            'WhatsApp Enquiry',
+            `Sent enquiry for ${currentProduct?.stone_name || 'product'}`,
+            'whatsapp'
+        );
+    }
 }
 
 // ============================================
@@ -1656,6 +1842,15 @@ async function submitEnquiry(event) {
         
         // Open WhatsApp with pre-filled message
         window.open(`https://wa.me/917737740207?text=${whatsappMessage}`, '_blank');
+        
+        // Add notification
+        if (notificationSystem) {
+            notificationSystem.addNotification(
+                'Enquiry Submitted',
+                `Enquiry sent for ${enquiryData.productName}`,
+                'enquiry'
+            );
+        }
         
         showNotification('Enquiry submitted! We will contact you within 24 hours.');
         closeEnquiryModal();
@@ -1877,6 +2072,15 @@ async function loadProductDetails(productId) {
         
         displayProductDetails();
         await loadSimilarProducts();
+        
+        // Add notification for product view
+        if (notificationSystem) {
+            notificationSystem.addNotification(
+                'Product Viewed',
+                `You viewed ${currentProduct.stone_name}`,
+                'view'
+            );
+        }
         
     } catch (error) {
         console.error('Error loading product details:', error);
@@ -2299,6 +2503,10 @@ $(document).ready(async function() {
     
     // Initialize Firebase
     await initializeFirebase();
+    
+    // Initialize Notification System
+    notificationSystem = new NotificationSystem();
+    await notificationSystem.init();
     
     // Load product details
     await loadProductDetails(productId);
