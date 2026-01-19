@@ -249,21 +249,36 @@ header.show {
     transform: scale(1.05);
 }
 
-/* PRODUCT CONTAINER */
+/* PRODUCT CONTAINER - 2 COLUMN LAYOUT */
 .product-container {
     margin-top: 60px;
-    padding: 10px;
+    padding: 15px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
 }
 
-/* PRODUCT GALLERY - SIMPLE ZOOM LIKE SAMPLE */
+@media (min-width: 768px) {
+    .product-container {
+        grid-template-columns: 1fr 1fr;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+/* PRODUCT GALLERY - LEFT SIDE */
 .product-gallery {
-    margin-bottom: 15px;
+    background: var(--white);
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: var(--shadow);
 }
 
 /* Main Image Container - CLEAN ZOOM */
 .main-image-wrapper {
     width: 100%;
-    height: 280px;
+    height: 300px;
     overflow: hidden;
     border-radius: 12px;
     background: var(--bg-light);
@@ -329,8 +344,8 @@ header.show {
 
 .thumbnail {
     flex: 0 0 auto;
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
     border-radius: 8px;
     overflow: hidden;
     border: 2px solid transparent;
@@ -360,17 +375,19 @@ header.show {
     transform: scale(1.1);
 }
 
-/* PRODUCT INFO */
+/* PRODUCT INFO - RIGHT SIDE */
 .product-info-section {
     background: var(--white);
     border-radius: 12px;
     padding: 15px;
-    margin-bottom: 15px;
     box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .product-info h1 {
-    font-size: 18px;
+    font-size: 22px;
     margin-bottom: 8px;
     color: var(--stone-dark);
     font-family: 'Roboto Slab', serif;
@@ -381,67 +398,82 @@ header.show {
     display: inline-block;
     background: var(--bg-light);
     color: var(--text-dark);
-    padding: 4px 10px;
+    padding: 4px 12px;
     border-radius: 12px;
-    font-size: 12px;
-    margin-bottom: 15px;
+    font-size: 13px;
+    margin-bottom: 10px;
     border: 1px solid var(--border-color);
 }
 
-/* PRODUCT DESCRIPTION - Moved below image */
-.product-description {
-    margin-bottom: 15px;
-    line-height: 1.5;
-    color: var(--text-dark);
-    font-size: 14px;
-    padding: 12px;
+/* PRODUCT DESCRIPTION - BELOW IMAGE */
+.product-description-box {
+    margin-top: 15px;
     background: var(--bg-light);
     border-radius: 8px;
+    padding: 15px;
     border-left: 3px solid var(--primary-gold);
+}
+
+.product-description-box h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: var(--stone-dark);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.product-description-content {
+    line-height: 1.6;
+    color: var(--text-dark);
+    font-size: 14px;
 }
 
 .price-section {
-    margin-bottom: 12px;
-    padding: 10px;
+    padding: 15px;
     background: linear-gradient(135deg, #fff8e1, #fff3cd);
     border-radius: 8px;
     border-left: 3px solid var(--primary-gold);
+    margin-top: 10px;
 }
 
 .price-value {
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 700;
     color: var(--primary-gold);
 }
 
 .price-unit {
-    font-size: 12px;
+    font-size: 14px;
     color: var(--gold-dark);
+    margin-top: 5px;
 }
 
 /* SPECIFICATIONS */
 .specs-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    margin-bottom: 20px;
+    gap: 10px;
+    margin-top: 15px;
 }
 
 .spec-item {
     background: var(--bg-light);
-    padding: 8px;
-    border-radius: 6px;
-    font-size: 12px;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 13px;
 }
 
 .spec-label {
     font-weight: 600;
     color: var(--text-light);
-    margin-bottom: 3px;
+    margin-bottom: 5px;
+    font-size: 12px;
 }
 
 .spec-value {
     color: var(--text-dark);
+    font-size: 13px;
 }
 
 /* PRODUCT ACTION BUTTONS */
@@ -449,7 +481,7 @@ header.show {
     display: flex;
     gap: 10px;
     margin-top: 20px;
-    padding: 15px 0;
+    padding-top: 15px;
     border-top: 1px solid var(--border-color);
 }
 
@@ -464,7 +496,7 @@ header.show {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    font-size: 13px;
+    font-size: 14px;
     transition: var(--transition);
 }
 
@@ -475,17 +507,6 @@ header.show {
 
 .btn-primary:hover {
     background: var(--gold-dark);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow);
-}
-
-.btn-secondary {
-    background: #25D366;
-    color: var(--white);
-}
-
-.btn-secondary:hover {
-    background: #1da851;
     transform: translateY(-2px);
     box-shadow: var(--shadow);
 }
@@ -890,7 +911,7 @@ header.show {
 }
 
 .similar-products h2 {
-    font-size: 16px;
+    font-size: 18px;
     margin-bottom: 15px;
     color: var(--stone-dark);
     display: flex;
@@ -901,8 +922,14 @@ header.show {
 .similar-products-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    gap: 12px;
     margin-top: 10px;
+}
+
+@media (min-width: 768px) {
+    .similar-products-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
 }
 
 .similar-product-card {
@@ -917,7 +944,7 @@ header.show {
     text-decoration: none;
     color: inherit;
     display: block;
-    height: 180px;
+    height: 200px;
 }
 
 .similar-product-card:hover {
@@ -927,7 +954,7 @@ header.show {
 
 .card-image-container {
     width: 100%;
-    height: 120px;
+    height: 130px;
     overflow: hidden;
     position: relative;
 }
@@ -944,12 +971,12 @@ header.show {
 }
 
 .product-info-overlay {
-    padding: 8px;
+    padding: 10px;
     background: white;
 }
 
 .product-name {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     margin-bottom: 4px;
     font-family: 'Roboto Slab', serif;
@@ -961,10 +988,16 @@ header.show {
 }
 
 .product-price {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--primary-gold);
     font-family: 'Roboto Slab', serif;
+}
+
+.product-type {
+    font-size: 11px;
+    color: var(--text-light);
+    margin-top: 2px;
 }
 
 /* LOADING & NOTIFICATION */
@@ -1115,26 +1148,34 @@ header.show {
 }
 
 /* RESPONSIVE */
-@media (min-width: 768px) {
+@media (max-width: 767px) {
     .product-container {
-        max-width: 1000px;
-        margin: 65px auto 0;
-        padding: 20px;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 30px;
+        grid-template-columns: 1fr;
     }
     
     .main-image-wrapper {
-        height: 350px;
+        height: 250px;
     }
     
-    .product-info h1 {
-        font-size: 22px;
+    .thumbnail {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .specs-grid {
+        grid-template-columns: 1fr;
     }
     
     .similar-products-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .similar-product-card {
+        height: 180px;
+    }
+    
+    .card-image-container {
+        height: 110px;
     }
 }
 
@@ -1146,14 +1187,6 @@ header.show {
     .thumbnail {
         width: 50px;
         height: 50px;
-    }
-    
-    .specs-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .similar-products-grid {
-        grid-template-columns: repeat(2, 1fr);
     }
     
     .similar-product-card {
@@ -1324,7 +1357,7 @@ header.show {
 
 <!-- Product Details -->
 <div class="product-container">
-    <!-- Product Gallery with Simple Zoom -->
+    <!-- Left Column: Product Gallery -->
     <div class="product-gallery">
         <div class="main-image-wrapper">
             <div class="zoom-container" id="zoomContainer">
@@ -1339,9 +1372,14 @@ header.show {
         <div class="thumbnails-container" id="thumbnailContainer">
             <!-- Thumbnails will be loaded here -->
         </div>
+        
+        <!-- Product Description BELOW Image -->
+        <div class="product-description-box" id="productDescriptionBox">
+            <!-- Description will be loaded here -->
+        </div>
     </div>
     
-    <!-- Product Info -->
+    <!-- Right Column: Product Info -->
     <div class="product-info-section">
         <div class="product-info" id="productInfo">
             <!-- Product info will be loaded here -->
@@ -1852,6 +1890,7 @@ function displayProductDetails() {
     const mainImage = document.getElementById('mainProductImage');
     const thumbnailContainer = document.getElementById('thumbnailContainer');
     const productInfo = document.getElementById('productInfo');
+    const productDescriptionBox = document.getElementById('productDescriptionBox');
     const multipleImagesIndicator = document.getElementById('multipleImagesIndicator');
     const imageCount = document.getElementById('imageCount');
     
@@ -1887,16 +1926,22 @@ function displayProductDetails() {
         `).join('');
     }
     
-    // Display product info with description RIGHT AFTER IMAGE (as requested)
+    // Display product description BELOW image (left column)
+    if (productDescriptionBox) {
+        productDescriptionBox.innerHTML = `
+            <h3><i class="fas fa-info-circle"></i> Product Description</h3>
+            <div class="product-description-content">
+                ${currentProduct.description || 'No description available.'}
+            </div>
+        `;
+    }
+    
+    // Display product info on RIGHT side
     if (productInfo) {
         productInfo.innerHTML = `
             <h1>${currentProduct.stone_name}</h1>
-            <div class="product-category-badge">${currentProduct.category}</div>
-            
-            <!-- DESCRIPTION MOVED TO TOP - RIGHT AFTER IMAGE -->
-            <div class="product-description">
-                <strong>Description:</strong><br>
-                ${currentProduct.description}
+            <div class="product-category-badge">
+                <i class="fas fa-gem"></i> ${currentProduct.category}
             </div>
             
             <div class="price-section">
@@ -1907,42 +1952,42 @@ function displayProductDetails() {
             <div class="specs-grid">
                 ${currentProduct.type ? `
                     <div class="spec-item">
-                        <div class="spec-label">Type</div>
+                        <div class="spec-label"><i class="fas fa-tag"></i> Type</div>
                         <div class="spec-value">${currentProduct.type}</div>
                     </div>
                 ` : ''}
                 
                 ${currentProduct.color ? `
                     <div class="spec-item">
-                        <div class="spec-label">Color</div>
+                        <div class="spec-label"><i class="fas fa-palette"></i> Color</div>
                         <div class="spec-value">${currentProduct.color}</div>
                     </div>
                 ` : ''}
                 
                 ${currentProduct.finish ? `
                     <div class="spec-item">
-                        <div class="spec-label">Finish</div>
+                        <div class="spec-label"><i class="fas fa-brush"></i> Finish</div>
                         <div class="spec-value">${currentProduct.finish}</div>
                     </div>
                 ` : ''}
                 
                 ${currentProduct.size ? `
                     <div class="spec-item">
-                        <div class="spec-label">Size</div>
+                        <div class="spec-label"><i class="fas fa-ruler-combined"></i> Size</div>
                         <div class="spec-value">${currentProduct.size}</div>
                     </div>
                 ` : ''}
                 
                 ${currentProduct.thickness ? `
                     <div class="spec-item">
-                        <div class="spec-label">Thickness</div>
+                        <div class="spec-label"><i class="fas fa-layer-group"></i> Thickness</div>
                         <div class="spec-value">${currentProduct.thickness}</div>
                     </div>
                 ` : ''}
                 
                 ${currentProduct.usage ? `
                     <div class="spec-item">
-                        <div class="spec-label">Usage</div>
+                        <div class="spec-label"><i class="fas fa-hammer"></i> Usage</div>
                         <div class="spec-value">${currentProduct.usage}</div>
                     </div>
                 ` : ''}
@@ -1972,7 +2017,7 @@ function changeMainImage(imageUrl, thumbnailElement, index = 0) {
 }
 
 // ============================================
-// SIMILAR PRODUCTS - FIXED: Now shows by product type
+// SIMILAR PRODUCTS - FIXED: Shows by SAME TYPE
 // ============================================
 
 async function loadSimilarProducts() {
@@ -1982,21 +2027,21 @@ async function loadSimilarProducts() {
             return;
         }
         
-        console.log('Loading similar products for type:', currentProduct.type);
+        console.log('Current product type for similar products:', currentProduct.type);
         
         let query;
         
         if (currentProduct.type && currentProduct.type.trim() !== '') {
-            // Load products with SAME TYPE as current product
+            // Load products with SAME TYPE and SAME CATEGORY
             query = firebaseDB.collection("products")
                 .where("type", "==", currentProduct.type)
-                .where("category", "==", "Sandstone")
-                .limit(20);
+                .where("category", "==", currentProduct.category)
+                .limit(12);
         } else {
-            // If no type, load all sandstone products
+            // If no type, load by SAME CATEGORY only
             query = firebaseDB.collection("products")
-                .where("category", "==", "Sandstone")
-                .limit(20);
+                .where("category", "==", currentProduct.category)
+                .limit(12);
         }
         
         const querySnapshot = await query.get();
@@ -2016,16 +2061,15 @@ async function loadSimilarProducts() {
             similarProducts.push({
                 id: doc.id,
                 stone_name: data.stone_name || data.name || 'Stone Product',
-                category: data.category || 'Sandstone',
+                category: data.category || 'Sand Stone',
                 type: data.type || '',
                 price: parseFloat(data.price) || 0,
                 price_unit: data.price_unit || 'piece',
-                image: getProductImage(data),
-                description: data.description || ''
+                image: getProductImage(data)
             });
         });
         
-        console.log(`Found ${similarProducts.length} similar products`);
+        console.log(`Found ${similarProducts.length} similar products for type: ${currentProduct.type}`);
         
         if (similarProducts.length > 0) {
             filteredSimilarProducts = [...similarProducts];
@@ -2038,7 +2082,41 @@ async function loadSimilarProducts() {
         
     } catch (error) {
         console.error('Error loading similar products:', error);
-        document.getElementById('similarProductsSection').style.display = 'none';
+        // Fallback: load all products from same category
+        try {
+            const fallbackQuery = await firebaseDB.collection("products")
+                .where("category", "==", currentProduct.category)
+                .limit(12)
+                .get();
+            
+            similarProducts = [];
+            
+            fallbackQuery.forEach((doc) => {
+                if (doc.id === currentProduct.id) return;
+                
+                const data = doc.data();
+                similarProducts.push({
+                    id: doc.id,
+                    stone_name: data.stone_name || data.name || 'Stone Product',
+                    category: data.category || 'Sand Stone',
+                    type: data.type || '',
+                    price: parseFloat(data.price) || 0,
+                    price_unit: data.price_unit || 'piece',
+                    image: getProductImage(data)
+                });
+            });
+            
+            if (similarProducts.length > 0) {
+                filteredSimilarProducts = [...similarProducts];
+                populateFilterOptions();
+                displaySimilarProducts();
+            } else {
+                document.getElementById('similarProductsSection').style.display = 'none';
+            }
+        } catch (fallbackError) {
+            console.error('Fallback error:', fallbackError);
+            document.getElementById('similarProductsSection').style.display = 'none';
+        }
     }
 }
 
@@ -2064,7 +2142,7 @@ function displaySimilarProducts() {
                 <div class="product-info-overlay">
                     <div class="product-name">${product.stone_name}</div>
                     <div class="product-price">£${product.price.toFixed(2)}</div>
-                    ${product.type ? `<div style="font-size: 11px; color: var(--text-light); margin-top: 2px;">${product.type}</div>` : ''}
+                    ${product.type ? `<div class="product-type"><i class="fas fa-tag"></i> ${product.type}</div>` : ''}
                 </div>
             </a>
         `;
@@ -2274,9 +2352,9 @@ async function initializeSearch() {
             await initializeFirebase();
         }
         
-        // Only load Sandstone products for search
+        // Load Sandstone products for search
         const querySnapshot = await firebaseDB.collection("products")
-            .where("category", "==", "Sandstone")
+            .where("category", "==", "Sand Stone")
             .limit(50)
             .get();
         
@@ -2287,7 +2365,7 @@ async function initializeSearch() {
             allProducts.push({
                 id: doc.id,
                 name: data.stone_name || data.name || 'Sandstone Product',
-                category: data.category || 'Sandstone',
+                category: data.category || 'Sand Stone',
                 type: data.type || '',
                 price: parseFloat(data.price) || 0,
                 priceUnit: data.price_unit || 'piece',
@@ -2295,7 +2373,7 @@ async function initializeSearch() {
             });
         });
         
-        console.log(`✅ ${allProducts.length} sandstone products loaded for search`);
+        console.log(`✅ ${allProducts.length} Sand Stone products loaded for search`);
         
     } catch (error) {
         console.error('Error loading products for search:', error);
