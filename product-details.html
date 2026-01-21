@@ -1321,6 +1321,35 @@ header.show {
     color: var(--text-light);
     margin-bottom: 25px;
 }
+#mainImageWrapper {
+    position: relative;
+}
+
+#hoverBox {
+    position: absolute;
+    border: 2px solid rgba(255,255,255,0.7);
+    background: rgba(255,255,255,0.2);
+    pointer-events: none;
+    z-index: 10;
+}
+
+#zoomPanel {
+    position: absolute;
+    right: -340px;
+    top: 0;
+    width: 320px;
+    height: 320px;
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background: #fff;
+}
+
+#zoomImage {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
 </style>
 </head>
 
@@ -1632,8 +1661,8 @@ let activeFilters = {
 
 
 // ============================================
-// FINAL ADVANCED IMAGE ZOOM SYSTEM
-// LIKE sandstoneindia.in (STABLE VERSION)
+// FINAL ADVANCED IMAGE ZOOM SYSTEM (FIXED)
+// WORKS WITH DYNAMIC IMAGES (Firebase / JS)
 // ============================================
 
 function initZoomSystem() {
@@ -1645,38 +1674,61 @@ function initZoomSystem() {
     const zoomImage = document.getElementById("zoomImage");
 
     if (!mainImage || !wrapper || !hoverBox || !zoomPanel || !zoomImage) {
-        console.warn("Zoom elements missing");
+        console.warn("❌ Zoom elements missing");
         return;
     }
 
     let zoomActive = false;
 
-    const ZOOM_LEVEL = 2.4;     // natural zoom (not too much)
-    const BOX_SIZE  = 150;     // hover box size
+    const ZOOM_LEVEL = 2.5;
+    const BOX_SIZE  = 140;
 
+    // -------------------------------
+    // RESET EVERYTHING (VERY IMPORTANT)
+    // -------------------------------
+    function resetZoom() {
+        zoomActive = false;
+        hoverBox.style.display = "none";
+        zoomPanel.style.display = "none";
+        zoomImage.style.transform = "translate(0,0)";
+    }
+
+    // -------------------------------
+    // SETUP AFTER IMAGE LOAD
+    // -------------------------------
     function setup() {
+
+        if (!mainImage.src) return;
+
         zoomImage.src = mainImage.src;
 
-        const imgW = mainImage.offsetWidth;
-        const imgH = mainImage.offsetHeight;
-
-        const natW = mainImage.naturalWidth;
-        const natH = mainImage.naturalHeight;
+        const natW = mainImage.naturalWidth || mainImage.width;
+        const natH = mainImage.naturalHeight || mainImage.height;
 
         zoomImage.style.width  = natW * ZOOM_LEVEL + "px";
         zoomImage.style.height = natH * ZOOM_LEVEL + "px";
 
-        wrapper.addEventListener("mouseenter", onEnter);
-        wrapper.addEventListener("mousemove", onMove);
-        wrapper.addEventListener("mouseleave", onLeave);
+        wrapper.onmouseenter = onEnter;
+        wrapper.onmousemove  = onMove;
+        wrapper.onmouseleave = onLeave;
+
+        resetZoom();
     }
 
+    // -------------------------------
+    // MOUSE ENTER
+    // -------------------------------
     function onEnter(e) {
         if (window.innerWidth <= 768) return;
 
         zoomActive = true;
-        zoomPanel.classList.add("active");
+
+        hoverBox.style.display  = "block";
+        zoomPanel.style.display = "block";
+
         hoverBox.classList.add("active");
+        zoomPanel.classList.add("active");
+
         move(e);
     }
 
@@ -1686,11 +1738,12 @@ function initZoomSystem() {
     }
 
     function onLeave() {
-        zoomActive = false;
-        zoomPanel.classList.remove("active");
-        hoverBox.classList.remove("active");
+        resetZoom();
     }
 
+    // -------------------------------
+    // CORE MOVE LOGIC
+    // -------------------------------
     function move(e) {
         const rect = wrapper.getBoundingClientRect();
 
@@ -1703,7 +1756,7 @@ function initZoomSystem() {
         x = Math.max(0, Math.min(x, imgW));
         y = Math.max(0, Math.min(y, imgH));
 
-        // Hover box
+        // Hover Box Position
         let boxX = x - BOX_SIZE / 2;
         let boxY = y - BOX_SIZE / 2;
 
@@ -1715,7 +1768,7 @@ function initZoomSystem() {
         hoverBox.style.left   = boxX + "px";
         hoverBox.style.top    = boxY + "px";
 
-        // Zoom panel movement
+        // Zoom Image Movement
         const zoomW = zoomImage.offsetWidth;
         const zoomH = zoomImage.offsetHeight;
 
@@ -1728,12 +1781,27 @@ function initZoomSystem() {
         zoomImage.style.transform = `translate(${zx}px, ${zy}px)`;
     }
 
-    if (!mainImage.complete) {
+    // ---------------------------------
+    // WATCH IMAGE CHANGE (🔥 MAIN FIX)
+    // ---------------------------------
+    const observer = new MutationObserver(() => {
         mainImage.onload = setup;
-    } else {
+        if (mainImage.complete) setup();
+    });
+
+    observer.observe(mainImage, {
+        attributes: true,
+        attributeFilter: ["src"]
+    });
+
+    // Initial load
+    if (mainImage.complete) {
         setup();
+    } else {
+        mainImage.onload = setup;
     }
 }
+
 
 
 
