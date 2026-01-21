@@ -13,6 +13,8 @@
 
 <!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
 <style>
 /* SIMPLIFIED STYLES */
@@ -1404,56 +1406,65 @@ header.show {
                 We'll get back to you within 24 hours. For urgent queries, call: +91 77377 40207
             </div>
             
-            <form class="enquiry-form" id="enquiryForm" onsubmit="submitEnquiry(event)">
-                <input type="hidden" id="enquiryProductId" value="">
-                <input type="hidden" id="enquiryProductName" value="">
-                
-                <div class="form-group">
-                    <label for="enquiryName">Full Name <span class="required">*</span></label>
-                    <input type="text" id="enquiryName" required placeholder="Enter your full name">
-                </div>
-                
-                <div class="form-group">
-                    <label for="enquiryEmail">Email Address <span class="required">*</span></label>
-                    <input type="email" id="enquiryEmail" required placeholder="Enter your email">
-                </div>
-                
-                <div class="form-group">
-                    <label for="enquiryPhone">Phone Number <span class="required">*</span></label>
-                    <input type="tel" id="enquiryPhone" required placeholder="Enter your phone number">
-                </div>
-                
-                <div class="form-group">
-                    <label for="enquiryType">Enquiry Type <span class="required">*</span></label>
-                    <select id="enquiryType" required>
-                        <option value="">Select type</option>
-                        <option value="price">Price Inquiry</option>
-                        <option value="sample">Sample Request</option>
-                        <option value="bulk">Bulk Order</option>
-                        <option value="custom">Custom Requirements</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="enquiryQuantity">Required Quantity</label>
-                    <input type="text" id="enquiryQuantity" placeholder="e.g., 1000 sq ft, 50 pieces">
-                </div>
-                
-                <div class="form-group">
-                    <label for="enquiryRequirements">Specific Requirements</label>
-                    <textarea id="enquiryRequirements" placeholder="Please specify any special requirements..."></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="enquiryMessage">Message <span class="required">*</span></label>
-                    <textarea id="enquiryMessage" required placeholder="Tell us about your project requirements..."></textarea>
-                </div>
-                
-                <button type="submit" class="btn btn-primary" style="width: 100%;">
-                    <i class="fas fa-paper-plane"></i> Send Enquiry
-                </button>
-            </form>
+           <form class="enquiry-form" id="enquiryForm" onsubmit="submitEnquiry(event)">
+    <input type="hidden" id="enquiryProductId" value="">
+    <input type="hidden" id="enquiryProductName" value="">
+    
+    <!-- EmailJS Template ID और Public Key के लिए hidden fields -->
+    <input type="hidden" id="emailjs_template" value="template_irya_enquiry">
+    <input type="hidden" id="emailjs_public_key" value="YOUR_PUBLIC_KEY_HERE">
+    
+    <div class="form-group">
+        <label for="enquiryName">Full Name <span class="required">*</span></label>
+        <input type="text" id="enquiryName" required placeholder="Enter your full name">
+    </div>
+    
+    <div class="form-group">
+        <label for="enquiryEmail">Email Address <span class="required">*</span></label>
+        <input type="email" id="enquiryEmail" required placeholder="Enter your email">
+    </div>
+    
+    <div class="form-group">
+        <label for="enquiryPhone">Phone Number <span class="required">*</span></label>
+        <input type="tel" id="enquiryPhone" required placeholder="Enter your phone number">
+    </div>
+    
+    <div class="form-group">
+        <label for="enquiryType">Enquiry Type <span class="required">*</span></label>
+        <select id="enquiryType" required>
+            <option value="">Select type</option>
+            <option value="price">Price Inquiry</option>
+            <option value="sample">Sample Request</option>
+            <option value="bulk">Bulk Order</option>
+            <option value="custom">Custom Requirements</option>
+            <option value="other">Other</option>
+        </select>
+    </div>
+    
+    <div class="form-group">
+        <label for="enquiryQuantity">Required Quantity</label>
+        <input type="text" id="enquiryQuantity" placeholder="e.g., 1000 sq ft, 50 pieces">
+    </div>
+    
+    <div class="form-group">
+        <label for="enquiryRequirements">Specific Requirements</label>
+        <textarea id="enquiryRequirements" placeholder="Please specify any special requirements..."></textarea>
+    </div>
+    
+    <div class="form-group">
+        <label for="enquiryMessage">Message <span class="required">*</span></label>
+        <textarea id="enquiryMessage" required placeholder="Tell us about your project requirements..."></textarea>
+    </div>
+    
+    <div class="form-group" style="font-size: 11px; color: var(--text-light); padding: 8px; background: #f9f9f9; border-radius: 6px;">
+        <input type="checkbox" id="consentCheckbox" required>
+        <label for="consentCheckbox">I agree to receive emails from IRYA STONE regarding my enquiry</label>
+    </div>
+    
+    <button type="submit" class="btn btn-primary" style="width: 100%;" id="submitEnquiryBtn">
+        <i class="fas fa-paper-plane"></i> Send Enquiry
+    </button>
+</form>
         </div>
     </div>
 </div>
@@ -1961,6 +1972,262 @@ function openWhatsApp() {
 // ENQUIRY SYSTEM
 // ============================================
 
+// ============================================
+// ENQUIRY SYSTEM - COMPLETE EMAIL + FIREBASE
+// ============================================
+
+// EmailJS Initialization
+function initializeEmailJS() {
+    // Replace with your actual EmailJS Public Key
+    const publicKey = 'YOUR_PUBLIC_KEY_HERE';
+    
+    if (publicKey && publicKey !== 'YOUR_PUBLIC_KEY_HERE') {
+        emailjs.init(publicKey);
+        console.log('✅ EmailJS initialized successfully');
+    } else {
+        console.warn('⚠️ EmailJS not configured. Please add your public key.');
+    }
+}
+
+// Check if user exists in Firebase
+async function checkUserExists(email, phone) {
+    try {
+        if (!firebaseDB) return null;
+        
+        // Check by email
+        const emailQuery = await firebaseDB.collection('enquiries')
+            .where('email', '==', email)
+            .limit(1)
+            .get();
+            
+        if (!emailQuery.empty) {
+            return emailQuery.docs[0];
+        }
+        
+        // Check by phone
+        const phoneQuery = await firebaseDB.collection('enquiries')
+            .where('phone', '==', phone)
+            .limit(1)
+            .get();
+            
+        if (!phoneQuery.empty) {
+            return phoneQuery.docs[0];
+        }
+        
+        return null;
+        
+    } catch (error) {
+        console.error('Error checking user:', error);
+        return null;
+    }
+}
+
+// Update existing enquiry
+async function updateExistingEnquiry(docRef, newData) {
+    try {
+        // Get existing data
+        const doc = await docRef.get();
+        if (!doc.exists) return false;
+        
+        const existingData = doc.data();
+        
+        // Merge enquiries (append new enquiry to history)
+        const enquiryHistory = existingData.enquiryHistory || [];
+        enquiryHistory.push({
+            enquiryId: newData.enquiryId,
+            productName: newData.productName,
+            enquiryType: newData.enquiryType,
+            quantity: newData.quantity,
+            message: newData.message,
+            submittedAt: newData.submittedAt
+        });
+        
+        // Update the document
+        await docRef.update({
+            name: newData.name || existingData.name,
+            email: newData.email || existingData.email,
+            phone: newData.phone || existingData.phone,
+            lastEnquiryDate: newData.submittedAt,
+            enquiryCount: (existingData.enquiryCount || 1) + 1,
+            enquiryHistory: enquiryHistory,
+            updatedAt: new Date().toISOString()
+        });
+        
+        console.log('✅ Existing enquiry updated');
+        return true;
+        
+    } catch (error) {
+        console.error('Error updating enquiry:', error);
+        return false;
+    }
+}
+
+// Send email via EmailJS
+async function sendEmailViaEmailJS(enquiryData) {
+    try {
+        const templateParams = {
+            to_email: 'youremail@domain.com', // Your email address
+            from_name: enquiryData.name,
+            from_email: enquiryData.email,
+            phone: enquiryData.phone,
+            enquiry_type: enquiryData.enquiryType,
+            product_name: enquiryData.productName,
+            quantity: enquiryData.quantity,
+            requirements: enquiryData.requirements,
+            message: enquiryData.message,
+            submitted_at: new Date().toLocaleString(),
+            enquiry_id: enquiryData.enquiryId
+        };
+        
+        // Send email using EmailJS
+        const response = await emailjs.send(
+            'service_your_service_id', // Your EmailJS Service ID
+            'template_irya_enquiry',   // Your EmailJS Template ID
+            templateParams
+        );
+        
+        console.log('✅ Email sent successfully:', response);
+        return { success: true, response: response };
+        
+    } catch (error) {
+        console.error('❌ Email sending failed:', error);
+        return { success: false, error: error };
+    }
+}
+
+// Main submit enquiry function - UPDATED VERSION
+async function submitEnquiry(event) {
+    event.preventDefault();
+    
+    const submitBtn = document.getElementById('submitEnquiryBtn');
+    const originalBtnText = submitBtn.innerHTML;
+    
+    try {
+        // Disable button and show loading
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+        
+        // Collect form data
+        const enquiryData = {
+            enquiryId: 'ENQ-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9),
+            productId: document.getElementById('enquiryProductId').value,
+            productName: document.getElementById('enquiryProductName').value,
+            name: document.getElementById('enquiryName').value.trim(),
+            email: document.getElementById('enquiryEmail').value.trim(),
+            phone: document.getElementById('enquiryPhone').value.trim(),
+            enquiryType: document.getElementById('enquiryType').value,
+            quantity: document.getElementById('enquiryQuantity').value.trim(),
+            requirements: document.getElementById('enquiryRequirements').value.trim(),
+            message: document.getElementById('enquiryMessage').value.trim(),
+            submittedAt: new Date().toISOString(),
+            status: 'pending',
+            source: 'website_form'
+        };
+        
+        // Validate data
+        if (!enquiryData.name || !enquiryData.email || !enquiryData.phone) {
+            throw new Error('Please fill all required fields');
+        }
+        
+        // Check if user already exists
+        let existingUserDoc = null;
+        try {
+            existingUserDoc = await checkUserExists(enquiryData.email, enquiryData.phone);
+        } catch (error) {
+            console.warn('User check failed, continuing:', error);
+        }
+        
+        let firebaseResult = null;
+        
+        if (existingUserDoc) {
+            // UPDATE existing user enquiry
+            firebaseResult = await updateExistingEnquiry(existingUserDoc.ref, enquiryData);
+        } else {
+            // CREATE new enquiry
+            enquiryData.enquiryCount = 1;
+            enquiryData.enquiryHistory = [{
+                enquiryId: enquiryData.enquiryId,
+                productName: enquiryData.productName,
+                enquiryType: enquiryData.enquiryType,
+                quantity: enquiryData.quantity,
+                message: enquiryData.message,
+                submittedAt: enquiryData.submittedAt
+            }];
+            enquiryData.createdAt = enquiryData.submittedAt;
+            enquiryData.updatedAt = enquiryData.submittedAt;
+            
+            // Save to Firebase
+            if (firebaseDB) {
+                const docRef = await firebaseDB.collection('enquiries').add(enquiryData);
+                firebaseResult = { id: docRef.id, ...enquiryData };
+                console.log('✅ New enquiry saved to Firebase:', docRef.id);
+            }
+        }
+        
+        // Send email via EmailJS
+        let emailResult = null;
+        try {
+            emailResult = await sendEmailViaEmailJS(enquiryData);
+        } catch (emailError) {
+            console.warn('Email sending failed, but Firebase saved:', emailError);
+            // Continue even if email fails
+        }
+        
+        // Update status if both succeeded
+        if (firebaseResult && existingUserDoc) {
+            await existingUserDoc.ref.update({
+                status: 'email_sent',
+                lastEmailSent: new Date().toISOString()
+            });
+        }
+        
+        // Add notification
+        if (notificationSystem) {
+            notificationSystem.addNotification(
+                'Enquiry Submitted',
+                `Enquiry #${enquiryData.enquiryId} sent for ${enquiryData.productName}`,
+                'enquiry'
+            );
+        }
+        
+        // Show success message
+        showNotification('✅ Enquiry submitted successfully! We\'ll contact you within 24 hours.');
+        
+        // Also open WhatsApp as backup
+        setTimeout(() => {
+            openWhatsAppBackup(enquiryData);
+        }, 1000);
+        
+        // Close modal and reset form
+        closeEnquiryModal();
+        document.getElementById('enquiryForm').reset();
+        
+    } catch (error) {
+        console.error('❌ Error submitting enquiry:', error);
+        showError(error.message || 'Failed to send enquiry. Please try WhatsApp or call +91 77377 40207');
+        
+    } finally {
+        // Reset button
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnText;
+    }
+}
+
+// WhatsApp backup function
+function openWhatsAppBackup(enquiryData) {
+    let message = `*New Enquiry - ${enquiryData.enquiryId}*%0A%0A` +
+                 `*Name:* ${enquiryData.name}%0A` +
+                 `*Phone:* ${enquiryData.phone}%0A` +
+                 `*Email:* ${enquiryData.email}%0A` +
+                 `*Product:* ${enquiryData.productName}%0A` +
+                 `*Type:* ${enquiryData.enquiryType}%0A` +
+                 `*Quantity:* ${enquiryData.quantity}%0A` +
+                 `*Message:* ${enquiryData.message.replace(/\n/g, '%0A')}`;
+    
+    window.open(`https://wa.me/917737740207?text=${message}`, '_blank');
+}
+
+// Open enquiry modal - UPDATED
 function openEnquiryModal(event) {
     if (event) {
         event.preventDefault();
@@ -1986,71 +2253,6 @@ function openEnquiryModal(event) {
     document.getElementById('enquiryModal').classList.add('active');
     document.body.style.overflow = 'hidden';
 }
-
-function closeEnquiryModal() {
-    document.getElementById('enquiryModal').classList.remove('active');
-    document.body.style.overflow = 'auto';
-}
-
-async function submitEnquiry(event) {
-    event.preventDefault();
-    
-    try {
-        showLoading(true);
-        
-        const enquiryData = {
-            productId: document.getElementById('enquiryProductId').value,
-            productName: document.getElementById('enquiryProductName').value,
-            name: document.getElementById('enquiryName').value,
-            email: document.getElementById('enquiryEmail').value,
-            phone: document.getElementById('enquiryPhone').value,
-            enquiryType: document.getElementById('enquiryType').value,
-            quantity: document.getElementById('enquiryQuantity').value,
-            requirements: document.getElementById('enquiryRequirements').value,
-            message: document.getElementById('enquiryMessage').value,
-            submittedAt: new Date().toISOString(),
-            status: 'pending'
-        };
-        
-        // Save to Firebase
-        if (firebaseDB) {
-            await firebaseDB.collection('enquiries').add(enquiryData);
-        }
-        
-        // Also send WhatsApp message
-        const whatsappMessage = `*New Enquiry Received*%0A%0A` +
-                               `*Product:* ${enquiryData.productName}%0A` +
-                               `*Name:* ${enquiryData.name}%0A` +
-                               `*Phone:* ${enquiryData.phone}%0A` +
-                               `*Email:* ${enquiryData.email}%0A` +
-                               `*Type:* ${enquiryData.enquiryType}%0A` +
-                               `*Quantity:* ${enquiryData.quantity}%0A` +
-                               `*Message:* ${enquiryData.message.replace(/\n/g, '%0A')}`;
-        
-        // Open WhatsApp with pre-filled message
-        window.open(`https://wa.me/917737740207?text=${whatsappMessage}`, '_blank');
-        
-        // Add notification
-        if (notificationSystem) {
-            notificationSystem.addNotification(
-                'Enquiry Submitted',
-                `Enquiry sent for ${enquiryData.productName}`,
-                'enquiry'
-            );
-        }
-        
-        showNotification('Enquiry submitted! We will contact you within 24 hours.');
-        closeEnquiryModal();
-        document.getElementById('enquiryForm').reset();
-        
-    } catch (error) {
-        console.error('Error submitting enquiry:', error);
-        showError('Failed to send enquiry. Please try WhatsApp or call +91 77377 40207');
-    } finally {
-        showLoading(false);
-    }
-}
-
 // ============================================
 // FILTER SYSTEM
 // ============================================
@@ -2941,6 +3143,9 @@ $(document).ready(async function() {
     
     // Initialize Firebase
     await initializeFirebase();
+    
+    // Initialize EmailJS
+    initializeEmailJS();
     
     // Initialize Notification System
     notificationSystem = new NotificationSystem();
