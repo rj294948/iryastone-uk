@@ -42,6 +42,7 @@ body {
     color: var(--text-dark);
     font-size: 14px;
     padding-bottom: 60px;
+    overflow-x: hidden;
 }
 
 /* HEADER */
@@ -285,36 +286,38 @@ header.show {
         max-width: 1200px;
         margin-left: auto;
         margin-right: auto;
+        position: relative;
     }
 }
 
-/* PRODUCT GALLERY - LEFT SIDE WITH ZOOM - IMPROVED */
+/* PRODUCT GALLERY - LEFT SIDE WITH ZOOM - FIXED */
 .product-gallery {
     background: var(--white);
     border-radius: 12px;
     padding: 15px;
     box-shadow: var(--shadow);
     position: relative;
-    overflow: hidden;
+    overflow: visible;
 }
 
-/* Main Image Container with Improved Zoom System */
+/* Main Image Container with FIXED Zoom System */
 .main-image-container {
     width: 100%;
     position: relative;
-    overflow: hidden;
     border-radius: 12px;
     background: var(--bg-light);
     margin-bottom: 15px;
+    overflow: hidden;
 }
 
 .main-image-wrapper {
     width: 100%;
-    height: 500px; /* Increased height for better viewing */
+    height: 500px;
     position: relative;
     overflow: hidden;
     cursor: crosshair;
     border: 1px solid var(--border-color);
+    z-index: 1;
 }
 
 .main-image {
@@ -326,7 +329,7 @@ header.show {
     transition: transform 0.3s ease;
 }
 
-/* Hover Box - IMPROVED */
+/* Hover Box - IMPROVED VISIBILITY */
 .hover-box {
     position: absolute;
     width: 150px;
@@ -336,7 +339,7 @@ header.show {
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.2s ease;
-    z-index: 2;
+    z-index: 10;
     box-shadow: 0 0 15px rgba(0,0,0,0.3);
     display: none;
     border-radius: 4px;
@@ -347,11 +350,11 @@ header.show {
     display: block;
 }
 
-/* Zoom Panel - RIGHT SIDE - IMPROVED POSITIONING */
+/* Zoom Panel - ABSOLUTE POSITION (FIXED) */
 .zoom-panel {
     position: absolute;
     top: 50%;
-    right: -410px;
+    left: calc(100% + 20px);
     transform: translateY(-50%);
     width: 400px;
     height: 400px;
@@ -363,15 +366,12 @@ header.show {
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
-    z-index: 100;
-   
-   
+    z-index: 1000;
 }
 
 .zoom-panel.active {
     opacity: 1;
     visibility: visible;
-    right: -430px;
 }
 
 .zoom-image-container {
@@ -409,7 +409,7 @@ header.show {
     backdrop-filter: blur(5px);
 }
 
-/* Thumbnails Container - IMPROVED */
+/* Thumbnails Container */
 .thumbnails-container {
     display: flex;
     gap: 12px;
@@ -1081,6 +1081,9 @@ header.show {
     border-radius: 12px;
     margin-bottom: 80px;
     position: relative;
+    grid-column: 1 / -1;
+    margin-left: 15px;
+    margin-right: 15px;
 }
 
 .similar-products h2 {
@@ -1248,7 +1251,10 @@ header.show {
         height: 350px;
     }
     
- 
+    .zoom-panel {
+        display: none !important;
+    }
+    
     .thumbnail {
         width: 70px;
         height: 70px;
@@ -1269,6 +1275,11 @@ header.show {
     
     .product-info-section {
         position: static;
+    }
+    
+    .similar-products {
+        margin-left: 0;
+        margin-right: 0;
     }
 }
 
@@ -1321,35 +1332,52 @@ header.show {
     color: var(--text-light);
     margin-bottom: 25px;
 }
-#mainImageWrapper {
-    position: relative;
+
+/* Make space for zoom panel on desktop */
+@media (min-width: 992px) {
+    .product-container {
+        position: relative;
+        min-height: 600px;
+    }
+    
+    .product-gallery {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .zoom-panel {
+        z-index: 1000;
+    }
+    
+    body {
+        overflow-x: visible;
+    }
 }
 
-#hoverBox {
+/* Mobile zoom alternative */
+.mobile-zoom-btn {
+    display: none;
     position: absolute;
-    border: 2px solid rgba(255,255,255,0.7);
-    background: rgba(255,255,255,0.2);
-    pointer-events: none;
-    z-index: 10;
+    bottom: 10px;
+    right: 10px;
+    background: var(--primary-gold);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 5;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
 }
 
-#zoomPanel {
-    position: absolute;
-    right: -340px;
-    top: 0;
-    width: 320px;
-    height: 320px;
-    overflow: hidden;
-    border: 1px solid #ccc;
-    background: #fff;
+@media (max-width: 768px) {
+    .mobile-zoom-btn {
+        display: flex;
+    }
 }
-
-#zoomImage {
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-
 </style>
 </head>
 
@@ -1530,7 +1558,7 @@ header.show {
 
 <!-- Product Details -->
 <div class="product-container">
-    <!-- Left Column: Product Gallery with IMPROVED Zoom -->
+    <!-- Left Column: Product Gallery with FIXED Zoom -->
     <div class="product-gallery">
         <div class="main-image-container">
             <div class="main-image-wrapper" id="mainImageWrapper">
@@ -1541,6 +1569,9 @@ header.show {
                         <img src="" alt="" class="zoom-image" id="zoomImage">
                     </div>
                 </div>
+                <button class="mobile-zoom-btn" onclick="toggleMobileZoom()">
+                    <i class="fas fa-search-plus"></i>
+                </button>
             </div>
             <div class="multiple-images-indicator" id="multipleImagesIndicator" style="display: none;">
                 <i class="fas fa-layer-group"></i> <span id="imageCount">0</span>
@@ -1651,6 +1682,7 @@ let filteredSimilarProducts = [];
 let currentImageIndex = 0;
 let zoomActive = false;
 let isZoomPanelLoaded = false;
+let zoomLevel = 2;
 
 // Current active filters
 let activeFilters = {
@@ -1659,151 +1691,158 @@ let activeFilters = {
     finishes: []
 };
 
-
 // ============================================
-// FINAL ADVANCED IMAGE ZOOM SYSTEM (FIXED)
-// WORKS WITH DYNAMIC IMAGES (Firebase / JS)
+// FIXED ZOOM SYSTEM
 // ============================================
 
 function initZoomSystem() {
-
+    console.log('Initializing zoom system...');
+    
     const mainImage = document.getElementById("mainProductImage");
-    const wrapper   = document.getElementById("mainImageWrapper");
-    const hoverBox  = document.getElementById("hoverBox");
+    const wrapper = document.getElementById("mainImageWrapper");
+    const hoverBox = document.getElementById("hoverBox");
     const zoomPanel = document.getElementById("zoomPanel");
     const zoomImage = document.getElementById("zoomImage");
 
     if (!mainImage || !wrapper || !hoverBox || !zoomPanel || !zoomImage) {
-        console.warn("❌ Zoom elements missing");
+        console.warn("Zoom elements missing, retrying in 500ms");
+        setTimeout(initZoomSystem, 500);
         return;
     }
 
-    let zoomActive = false;
+    let isZoomActive = false;
+    const boxSize = 150;
+    zoomLevel = 2.5;
 
-    const ZOOM_LEVEL = 2.5;
-    const BOX_SIZE  = 140;
-
-    // -------------------------------
-    // RESET EVERYTHING (VERY IMPORTANT)
-    // -------------------------------
+    // Reset zoom system
     function resetZoom() {
-        zoomActive = false;
+        isZoomActive = false;
         hoverBox.style.display = "none";
-        zoomPanel.style.display = "none";
-        zoomImage.style.transform = "translate(0,0)";
+        zoomPanel.classList.remove("active");
     }
 
-    // -------------------------------
-    // SETUP AFTER IMAGE LOAD
-    // -------------------------------
-    function setup() {
+    // Setup after image load
+    function setupZoom() {
+        if (!mainImage.src || mainImage.src.includes('undefined')) {
+            console.log('Main image not loaded yet');
+            return;
+        }
 
-        if (!mainImage.src) return;
-
+        // Set zoom image source
         zoomImage.src = mainImage.src;
 
-        const natW = mainImage.naturalWidth || mainImage.width;
-        const natH = mainImage.naturalHeight || mainImage.height;
+        // Remove previous event listeners
+        wrapper.removeEventListener('mouseenter', onMouseEnter);
+        wrapper.removeEventListener('mousemove', onMouseMove);
+        wrapper.removeEventListener('mouseleave', onMouseLeave);
 
-        zoomImage.style.width  = natW * ZOOM_LEVEL + "px";
-        zoomImage.style.height = natH * ZOOM_LEVEL + "px";
+        // Add new event listeners
+        wrapper.addEventListener('mouseenter', onMouseEnter);
+        wrapper.addEventListener('mousemove', onMouseMove);
+        wrapper.addEventListener('mouseleave', onMouseLeave);
 
-        wrapper.onmouseenter = onEnter;
-        wrapper.onmousemove  = onMove;
-        wrapper.onmouseleave = onLeave;
+        // Setup zoom panel for desktop
+        if (window.innerWidth > 768) {
+            zoomPanel.style.display = 'block';
+        }
 
-        resetZoom();
+        console.log('Zoom system setup complete');
     }
 
-    // -------------------------------
-    // MOUSE ENTER
-    // -------------------------------
-    function onEnter(e) {
+    // Mouse enter handler
+    function onMouseEnter(e) {
         if (window.innerWidth <= 768) return;
-
-        zoomActive = true;
-
-        hoverBox.style.display  = "block";
-        zoomPanel.style.display = "block";
-
-        hoverBox.classList.add("active");
+        
+        isZoomActive = true;
+        hoverBox.style.display = "block";
         zoomPanel.classList.add("active");
-
-        move(e);
+        updateZoom(e);
     }
 
-    function onMove(e) {
-        if (!zoomActive) return;
-        move(e);
+    // Mouse move handler
+    function onMouseMove(e) {
+        if (!isZoomActive || window.innerWidth <= 768) return;
+        updateZoom(e);
     }
 
-    function onLeave() {
+    // Mouse leave handler
+    function onMouseLeave() {
         resetZoom();
     }
 
-    // -------------------------------
-    // CORE MOVE LOGIC
-    // -------------------------------
-    function move(e) {
+    // Update zoom position
+    function updateZoom(e) {
         const rect = wrapper.getBoundingClientRect();
-
         let x = e.clientX - rect.left;
         let y = e.clientY - rect.top;
 
         const imgW = mainImage.offsetWidth;
         const imgH = mainImage.offsetHeight;
 
+        // Constrain position
         x = Math.max(0, Math.min(x, imgW));
         y = Math.max(0, Math.min(y, imgH));
 
-        // Hover Box Position
-        let boxX = x - BOX_SIZE / 2;
-        let boxY = y - BOX_SIZE / 2;
+        // Update hover box position
+        let boxX = x - boxSize / 2;
+        let boxY = y - boxSize / 2;
 
-        boxX = Math.max(0, Math.min(boxX, imgW - BOX_SIZE));
-        boxY = Math.max(0, Math.min(boxY, imgH - BOX_SIZE));
+        boxX = Math.max(0, Math.min(boxX, imgW - boxSize));
+        boxY = Math.max(0, Math.min(boxY, imgH - boxSize));
 
-        hoverBox.style.width  = BOX_SIZE + "px";
-        hoverBox.style.height = BOX_SIZE + "px";
-        hoverBox.style.left   = boxX + "px";
-        hoverBox.style.top    = boxY + "px";
+        hoverBox.style.width = boxSize + "px";
+        hoverBox.style.height = boxSize + "px";
+        hoverBox.style.left = boxX + "px";
+        hoverBox.style.top = boxY + "px";
 
-        // Zoom Image Movement
-        const zoomW = zoomImage.offsetWidth;
-        const zoomH = zoomImage.offsetHeight;
-
+        // Calculate zoom position
         const percentX = x / imgW;
         const percentY = y / imgH;
 
-        const zx = -(percentX * zoomW - zoomPanel.offsetWidth / 2);
-        const zy = -(percentY * zoomH - zoomPanel.offsetHeight / 2);
+        const zoomImgW = zoomImage.naturalWidth * zoomLevel;
+        const zoomImgH = zoomImage.naturalHeight * zoomLevel;
 
-        zoomImage.style.transform = `translate(${zx}px, ${zy}px)`;
+        const moveX = -(percentX * zoomImgW - zoomPanel.offsetWidth / 2);
+        const moveY = -(percentY * zoomImgH - zoomPanel.offsetHeight / 2);
+
+        zoomImage.style.transform = `translate(${moveX}px, ${moveY}px)`;
     }
 
-    // ---------------------------------
-    // WATCH IMAGE CHANGE (🔥 MAIN FIX)
-    // ---------------------------------
-    const observer = new MutationObserver(() => {
-        mainImage.onload = setup;
-        if (mainImage.complete) setup();
-    });
+    // Mobile zoom toggle
+    function toggleMobileZoom() {
+        if (window.innerWidth > 768) return;
+        
+        if (mainImage.style.transform === 'scale(2)') {
+            mainImage.style.transform = 'scale(1)';
+        } else {
+            mainImage.style.transform = 'scale(2)';
+            mainImage.style.transformOrigin = 'center center';
+        }
+    }
 
-    observer.observe(mainImage, {
-        attributes: true,
-        attributeFilter: ["src"]
-    });
-
-    // Initial load
+    // Initialize when main image loads
     if (mainImage.complete) {
-        setup();
+        setupZoom();
     } else {
-        mainImage.onload = setup;
+        mainImage.onload = setupZoom;
     }
+
+    // Re-setup when image changes
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.attributeName === 'src') {
+                setTimeout(setupZoom, 100);
+            }
+        });
+    });
+
+    observer.observe(mainImage, { attributes: true });
+
+    // Expose mobile zoom function globally
+    window.toggleMobileZoom = toggleMobileZoom;
+    
+    console.log('Zoom system initialized successfully');
 }
-
-
-
 
 // ============================================
 // NOTIFICATION SYSTEM
@@ -2046,7 +2085,7 @@ async function submitEnquiry(event) {
 }
 
 // ============================================
-// SMART FILTER SYSTEM - IMPROVED FOR SIMILAR PRODUCTS
+// SMART FILTER SYSTEM - TYPE FILTER FIXED
 // ============================================
 
 function openFilterModal() {
@@ -2100,10 +2139,10 @@ function populateFilterOptions() {
         if (sortedTypes.length > 0) {
             typeFilterOptions.innerHTML = sortedTypes.map(([type, count]) => `
                 <div class="filter-option">
-                    <input type="checkbox" id="type_${type.replace(/\s+/g, '_')}" 
+                    <input type="checkbox" id="type_${type.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '')}" 
                            value="${type}" ${activeFilters.types.includes(type) ? 'checked' : ''}
                            onchange="updateFilter('types', '${type.replace(/'/g, "\\'")}', this.checked)">
-                    <label for="type_${type.replace(/\s+/g, '_')}">${type}</label>
+                    <label for="type_${type.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '')}">${type}</label>
                     <span class="filter-count">${count}</span>
                 </div>
             `).join('');
@@ -2118,10 +2157,10 @@ function populateFilterOptions() {
         if (sortedColors.length > 0) {
             colorFilterOptions.innerHTML = sortedColors.map(([color, count]) => `
                 <div class="filter-option">
-                    <input type="checkbox" id="color_${color.replace(/\s+/g, '_')}" 
+                    <input type="checkbox" id="color_${color.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '')}" 
                            value="${color}" ${activeFilters.colors.includes(color) ? 'checked' : ''}
                            onchange="updateFilter('colors', '${color.replace(/'/g, "\\'")}', this.checked)">
-                    <label for="color_${color.replace(/\s+/g, '_')}">${color}</label>
+                    <label for="color_${color.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '')}">${color}</label>
                     <span class="filter-count">${count}</span>
                 </div>
             `).join('');
@@ -2136,10 +2175,10 @@ function populateFilterOptions() {
         if (sortedFinishes.length > 0) {
             finishFilterOptions.innerHTML = sortedFinishes.map(([finish, count]) => `
                 <div class="filter-option">
-                    <input type="checkbox" id="finish_${finish.replace(/\s+/g, '_')}" 
+                    <input type="checkbox" id="finish_${finish.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '')}" 
                            value="${finish}" ${activeFilters.finishes.includes(finish) ? 'checked' : ''}
                            onchange="updateFilter('finishes', '${finish.replace(/'/g, "\\'")}', this.checked)">
-                    <label for="finish_${finish.replace(/\s+/g, '_')}">${finish}</label>
+                    <label for="finish_${finish.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '')}">${finish}</label>
                     <span class="filter-count">${count}</span>
                 </div>
             `).join('');
@@ -2226,7 +2265,7 @@ function removeFilter(category, value) {
     activeFilters[category] = activeFilters[category].filter(item => item !== value);
     
     // Update checkbox in modal
-    const checkboxId = `${category}_${value.replace(/\s+/g, '_')}`;
+    const checkboxId = `${category}_${value.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '')}`;
     const checkbox = document.getElementById(checkboxId);
     if (checkbox) {
         checkbox.checked = false;
@@ -2264,7 +2303,7 @@ function applyFilters() {
     // Start with all similar products
     filteredSimilarProducts = [...similarProducts];
     
-    // Apply type filters
+    // Apply type filters (FILTER BY TYPE FIXED)
     if (activeFilters.types.length > 0) {
         filteredSimilarProducts = filteredSimilarProducts.filter(product => 
             product.type && activeFilters.types.includes(product.type.trim())
@@ -2415,7 +2454,6 @@ async function loadProductDetails(productId) {
         
         if (!doc.exists) {
             showError('Product not found');
-            // Show product not found message
             document.querySelector('.product-container').innerHTML = `
                 <div class="product-not-found">
                     <i class="fas fa-search"></i>
@@ -2465,7 +2503,6 @@ async function loadProductDetails(productId) {
             initZoomSystem();
         }, 500);
         
-        // Add notification for product view
         if (notificationSystem) {
             notificationSystem.addNotification(
                 'Product Viewed',
@@ -2494,14 +2531,18 @@ function displayProductDetails() {
     
     // Update main image
     if (mainImage && currentProduct.images.length > 0) {
-        mainImage.src = currentProduct.images[0];
+        const imgSrc = currentProduct.images[0];
+        mainImage.src = imgSrc;
         mainImage.alt = currentProduct.stone_name;
+        
+        // Set zoom image source immediately
+        const zoomImage = document.getElementById('zoomImage');
+        if (zoomImage) {
+            zoomImage.src = imgSrc;
+        }
         
         mainImage.onload = function() {
             console.log('Main image loaded');
-            if (!isZoomPanelLoaded) {
-                initZoomSystem();
-            }
         };
         
         mainImage.onerror = function() {
@@ -2527,7 +2568,7 @@ function displayProductDetails() {
         `).join('');
     }
     
-    // Display product description BELOW image (left column)
+    // Display product description BELOW image
     if (productDescriptionBox) {
         productDescriptionBox.innerHTML = `
             <h3><i class="fas fa-info-circle"></i> Product Description</h3>
@@ -2635,7 +2676,7 @@ function changeMainImage(imageUrl, thumbnailElement, index = 0) {
 }
 
 // ============================================
-// SIMILAR PRODUCTS - IMPROVED WITH TYPE FILTER
+// SIMILAR PRODUCTS - TYPE FILTER FIXED
 // ============================================
 
 async function loadSimilarProducts() {
@@ -2647,9 +2688,9 @@ async function loadSimilarProducts() {
         
         console.log('Loading similar products...');
         
-        // Load ALL products (not filtered by category to get more results)
+        // Load ALL products
         const querySnapshot = await firebaseDB.collection("products")
-            .limit(50) // Increased limit
+            .limit(50)
             .get();
         
         if (querySnapshot.empty) {
@@ -2981,7 +3022,7 @@ async function initializeSearch() {
             await initializeFirebase();
         }
         
-        // Load ALL products for search (not limited by category)
+        // Load ALL products for search
         const querySnapshot = await firebaseDB.collection("products")
             .limit(100)
             .get();
