@@ -13,6 +13,9 @@
 
 <!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Lightbox for Image Gallery -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
 
 <style>
 /* SIMPLIFIED STYLES */
@@ -273,10 +276,10 @@ header.show {
 /* PRODUCT CONTAINER - 2 COLUMN LAYOUT - COMPACT */
 .product-container {
     margin-top: 60px;
-    padding: 15px;
+    padding: 20px;
     display: grid;
     grid-template-columns: 1fr;
-    gap: 15px;
+    gap: 20px;
     max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
@@ -284,159 +287,109 @@ header.show {
 
 @media (min-width: 768px) {
     .product-container {
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-        padding: 20px;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 30px;
+        padding: 30px;
     }
 }
 
-/* PRODUCT GALLERY - FIXED ZOOM SYSTEM */
+/* PRODUCT GALLERY - PROFESSIONAL LIGHTBOX SYSTEM */
 .product-gallery {
     background: var(--white);
     border-radius: 12px;
-    padding: 15px;
+    padding: 20px;
     box-shadow: var(--shadow);
     position: relative;
     overflow: visible;
     height: fit-content;
 }
 
-/* Main Image Container - COMPACT SIZE */
+/* Main Image Container - ADAPTIVE SIZE */
 .main-image-container {
     width: 100%;
     position: relative;
     border-radius: 12px;
     background: var(--bg-light);
-    margin-bottom: 12px;
-    overflow: visible;
-    height: 320px;
+    margin-bottom: 15px;
+    overflow: hidden;
+    height: fit-content;
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
 }
 
 .main-image-wrapper {
     width: 100%;
-    height: 100%;
     position: relative;
-    overflow: hidden;
-    cursor: crosshair;
-    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: zoom-in;
+    transition: transform 0.3s ease;
 }
 
 .main-image {
     width: 100%;
-    height: 100%;
+    height: auto;
     object-fit: contain;
     display: block;
     background: #f8f9fa;
     transition: transform 0.3s ease;
+    padding: 10px;
+    max-height: 500px;
 }
 
-/* HOVER BOX */
-.hover-box {
-    position: absolute;
-    width: 100px;
-    height: 100px;
-    background: rgba(201, 162, 39, 0.3);
-    border: 2px solid var(--primary-gold);
-    pointer-events: none;
-    z-index: 10;
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    border-radius: 4px;
-    display: none;
-    opacity: 1;
-}
-
-.hover-box.active {
-    display: block;
-}
-
-/* ZOOM PANEL - NEW POSITION (FLOATING OVER) */
-.zoom-panel {
-    position: fixed; /* Changed from absolute to fixed */
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 400px;
-    height: 400px;
-    background: var(--white);
-    border: 2px solid var(--primary-gold);
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 5px 30px rgba(0,0,0,0.25);
-    z-index: 9999; /* Very high z-index */
-    display: none;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.zoom-panel.active {
-    display: block;
-    opacity: 1;
-}
-
-.zoom-image-container {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    position: relative;
-    background: #f8f9fa;
-}
-
-.zoom-image {
-    position: absolute;
-    top: 0;
-    left: 0;
-    transform-origin: 0 0;
-    max-width: none;
-    transform: scale(2.5);
+/* Desktop zoom effect */
+@media (min-width: 768px) {
+    .main-image-container:hover .main-image {
+        transform: scale(1.5);
+        cursor: zoom-in;
+    }
+    
+    .main-image-container:hover::after {
+        content: '🔍 Zoom';
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 12px;
+        z-index: 2;
+    }
 }
 
 /* Multiple Images Indicator */
 .multiple-images-indicator {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 15px;
+    right: 15px;
     background: rgba(0,0,0,0.8);
     color: white;
-    padding: 5px 10px;
+    padding: 6px 12px;
     border-radius: 15px;
-    font-size: 11px;
+    font-size: 12px;
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
     z-index: 3;
     backdrop-filter: blur(5px);
 }
 
-/* Thumbnails Container */
+/* Thumbnails Container - PROFESSIONAL STYLE */
 .thumbnails-container {
-    display: flex;
-    gap: 8px;
-    margin-top: 12px;
-    overflow-x: auto;
-    padding: 8px;
-    scroll-behavior: smooth;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+    padding: 10px;
     background: var(--bg-light);
     border-radius: 8px;
 }
 
-.thumbnails-container::-webkit-scrollbar {
-    height: 4px;
-}
-
-.thumbnails-container::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 2px;
-}
-
-.thumbnails-container::-webkit-scrollbar-thumb {
-    background: var(--primary-gold);
-    border-radius: 2px;
-}
-
 .thumbnail {
-    flex: 0 0 auto;
-    width: 60px;
-    height: 60px;
+    width: 100%;
+    height: 80px;
     border-radius: 6px;
     overflow: hidden;
     border: 2px solid transparent;
@@ -468,23 +421,47 @@ header.show {
     transform: scale(1.1);
 }
 
+/* View All Images Button */
+.view-all-images {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--primary-gold);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-weight: 500;
+    transition: var(--transition);
+    width: 100%;
+}
+
+.view-all-images:hover {
+    background: var(--gold-dark);
+    transform: translateY(-2px);
+}
+
 /* PRODUCT INFO - COMPACT SPACING */
 .product-info-section {
     background: var(--white);
     border-radius: 12px;
-    padding: 15px;
+    padding: 20px;
     box-shadow: var(--shadow);
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 15px;
     height: fit-content;
     position: sticky;
-    top: 70px;
+    top: 80px;
+    border: 1px solid var(--border-color);
 }
 
 .product-info h1 {
-    font-size: 18px;
-    margin-bottom: 6px;
+    font-size: 22px;
+    margin-bottom: 8px;
     color: var(--stone-dark);
     font-family: 'Roboto Slab', serif;
     line-height: 1.3;
@@ -494,112 +471,113 @@ header.show {
     display: inline-block;
     background: var(--bg-light);
     color: var(--text-dark);
-    padding: 4px 10px;
+    padding: 6px 12px;
     border-radius: 15px;
-    font-size: 12px;
-    margin-bottom: 8px;
+    font-size: 13px;
+    margin-bottom: 10px;
     border: 1px solid var(--border-color);
     font-weight: 500;
 }
 
 /* PRODUCT DESCRIPTION */
 .product-description-box {
-    margin-top: 12px;
+    margin-top: 15px;
     background: var(--bg-light);
     border-radius: 8px;
-    padding: 12px;
+    padding: 15px;
     border-left: 3px solid var(--primary-gold);
     box-shadow: var(--shadow);
-    font-size: 13px;
+    font-size: 14px;
 }
 
 .product-description-box h3 {
-    font-size: 14px;
-    margin-bottom: 6px;
+    font-size: 16px;
+    margin-bottom: 8px;
     color: var(--stone-dark);
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
 }
 
 .product-description-content {
-    line-height: 1.5;
+    line-height: 1.6;
     color: var(--text-dark);
-    font-size: 13px;
+    font-size: 14px;
 }
 
 .price-section {
-    padding: 12px;
+    padding: 15px;
     background: linear-gradient(135deg, #fff8e1, #fff3cd);
     border-radius: 8px;
     border-left: 3px solid var(--primary-gold);
-    margin-top: 8px;
+    margin-top: 10px;
 }
 
 .price-value {
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 700;
     color: var(--primary-gold);
 }
 
 .price-unit {
-    font-size: 13px;
+    font-size: 14px;
     color: var(--gold-dark);
-    margin-top: 2px;
+    margin-top: 3px;
     font-weight: 500;
 }
 
-/* SPECIFICATIONS - COMPACT */
+/* SPECIFICATIONS - PROFESSIONAL */
 .specs-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    margin-top: 12px;
+    gap: 12px;
+    margin-top: 15px;
 }
 
 .spec-item {
     background: var(--bg-light);
-    padding: 8px;
-    border-radius: 6px;
-    font-size: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 13px;
     transition: var(--transition);
     border: 1px solid var(--border-color);
-    min-height: 45px;
+    min-height: 50px;
 }
 
 .spec-item:hover {
     border-color: var(--primary-gold);
     transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .spec-label {
     font-weight: 600;
     color: var(--text-light);
-    margin-bottom: 3px;
-    font-size: 11px;
+    margin-bottom: 4px;
+    font-size: 12px;
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 5px;
 }
 
 .spec-value {
     color: var(--text-dark);
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 500;
 }
 
 /* PRODUCT ACTION BUTTONS */
 .product-actions {
     display: flex;
-    gap: 8px;
-    margin-top: 15px;
-    padding-top: 12px;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 15px;
     border-top: 1px solid var(--border-color);
 }
 
 .btn {
-    flex: 1;
-    padding: 10px;
+    padding: 12px;
     border: none;
     border-radius: 8px;
     font-weight: 600;
@@ -607,9 +585,10 @@ header.show {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    font-size: 13px;
+    gap: 8px;
+    font-size: 14px;
     transition: var(--transition);
+    width: 100%;
 }
 
 .btn-primary {
@@ -634,6 +613,18 @@ header.show {
     background: #1da851;
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4);
+}
+
+.btn-email {
+    background: #4285f4;
+    color: var(--white);
+    box-shadow: 0 3px 10px rgba(66, 133, 244, 0.3);
+}
+
+.btn-email:hover {
+    background: #3367d6;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(66, 133, 244, 0.4);
 }
 
 /* BOTTOM NAV */
@@ -768,37 +759,37 @@ header.show {
 }
 
 .enquiry-body {
-    padding: 15px;
+    padding: 20px;
 }
 
 .enquiry-form {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
 }
 
 .form-group {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 5px;
 }
 
 .form-group label {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 500;
     color: var(--text-dark);
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 5px;
 }
 
 .form-group input,
 .form-group textarea,
 .form-group select {
-    padding: 8px 10px;
+    padding: 10px 12px;
     border: 1px solid var(--border-color);
     border-radius: 6px;
-    font-size: 13px;
+    font-size: 14px;
     transition: var(--transition);
     font-family: 'Poppins', sans-serif;
 }
@@ -812,7 +803,7 @@ header.show {
 }
 
 .form-group textarea {
-    min-height: 80px;
+    min-height: 100px;
     resize: vertical;
 }
 
@@ -822,12 +813,13 @@ header.show {
 
 .enquiry-note {
     background: linear-gradient(135deg, #fff8e1, #fff3cd);
-    padding: 10px;
+    padding: 12px;
     border-radius: 6px;
-    font-size: 11px;
+    font-size: 12px;
     color: var(--gold-dark);
     border: 1px solid rgba(201, 162, 39, 0.3);
-    margin: 8px 0;
+    margin: 10px 0;
+    line-height: 1.5;
 }
 
 .enquiry-note i {
@@ -1074,32 +1066,32 @@ header.show {
 
 /* SIMILAR PRODUCTS */
 .similar-products {
-    margin-top: 25px;
-    padding: 15px;
+    margin-top: 30px;
+    padding: 20px;
     border-top: 1px solid var(--border-color);
     background: var(--bg-light);
-    border-radius: 10px;
-    margin-bottom: 70px;
+    border-radius: 12px;
+    margin-bottom: 80px;
     position: relative;
     grid-column: 1 / -1;
-    margin-left: 15px;
-    margin-right: 15px;
+    margin-left: 20px;
+    margin-right: 20px;
 }
 
 .similar-products h2 {
-    font-size: 18px;
-    margin-bottom: 12px;
+    font-size: 20px;
+    margin-bottom: 15px;
     color: var(--stone-dark);
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
 
 .similar-products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 12px;
-    margin-top: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
 }
 
 .similar-product-card {
@@ -1116,22 +1108,23 @@ header.show {
     display: flex;
     flex-direction: column;
     height: 100%;
-    min-height: 220px;
+    min-height: 250px;
 }
 
 .similar-product-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
     border-color: var(--primary-gold);
 }
 
 .card-image-container {
     width: 100%;
-    height: 130px;
+    height: 150px;
     overflow: hidden;
     position: relative;
     flex-shrink: 0;
     background: var(--bg-light);
+    cursor: zoom-in;
 }
 
 .card-image {
@@ -1139,15 +1132,31 @@ header.show {
     height: 100%;
     object-fit: contain;
     transition: transform 0.4s ease;
-    padding: 8px;
+    padding: 10px;
 }
 
-.similar-product-card:hover .card-image {
-    transform: scale(1.05);
+/* Desktop hover zoom for similar products */
+@media (min-width: 768px) {
+    .similar-product-card:hover .card-image {
+        transform: scale(1.2);
+    }
+    
+    .card-image-container:hover::after {
+        content: '🔍 Zoom';
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 10px;
+        z-index: 2;
+    }
 }
 
 .product-info-overlay {
-    padding: 10px;
+    padding: 15px;
     background: white;
     flex: 1;
     display: flex;
@@ -1157,9 +1166,9 @@ header.show {
 }
 
 .product-name {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     font-family: 'Roboto Slab', serif;
     line-height: 1.4;
     color: var(--text-dark);
@@ -1167,32 +1176,32 @@ header.show {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    min-height: 35px;
+    min-height: 40px;
 }
 
 .product-price {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 700;
     color: var(--primary-gold);
     font-family: 'Roboto Slab', serif;
-    margin-bottom: 3px;
+    margin-bottom: 5px;
 }
 
 .product-price .price-unit {
-    font-size: 10px;
+    font-size: 11px;
     color: var(--text-light);
     font-weight: normal;
 }
 
 .product-type {
-    font-size: 10px;
+    font-size: 11px;
     color: var(--text-light);
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     margin-top: auto;
-    padding-top: 4px;
+    padding-top: 6px;
     border-top: 1px solid var(--border-color);
 }
 
@@ -1203,8 +1212,8 @@ header.show {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 35px;
-    height: 35px;
+    width: 40px;
+    height: 40px;
     border: 3px solid rgba(201, 162, 39, 0.2);
     border-radius: 50%;
     border-top-color: var(--primary-gold);
@@ -1218,16 +1227,18 @@ header.show {
 
 .notification {
     position: fixed;
-    top: 15px;
-    right: 15px;
+    top: 20px;
+    right: 20px;
     background: var(--primary-gold);
     color: white;
-    padding: 10px 14px;
-    border-radius: 6px;
+    padding: 12px 16px;
+    border-radius: 8px;
     z-index: 9999;
     display: none;
-    font-size: 12px;
+    font-size: 13px;
     animation: slideIn 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    max-width: 300px;
 }
 
 @keyframes slideIn {
@@ -1236,7 +1247,7 @@ header.show {
         opacity: 0;
     }
     to {
-        transform: translateX(0);
+        transform: translateY(0);
         opacity: 1;
     }
 }
@@ -1245,20 +1256,19 @@ header.show {
 @media (max-width: 767px) {
     .product-container {
         grid-template-columns: 1fr;
+        padding: 15px;
     }
     
     .main-image-container {
-        height: 280px;
+        max-height: 400px;
     }
     
-    .zoom-panel {
-        width: 300px;
-        height: 300px;
+    .thumbnails-container {
+        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
     }
     
     .thumbnail {
-        width: 55px;
-        height: 55px;
+        height: 70px;
     }
     
     .specs-grid {
@@ -1267,11 +1277,11 @@ header.show {
     
     .similar-products-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
+        gap: 12px;
     }
     
     .card-image-container {
-        height: 110px;
+        height: 130px;
     }
     
     .product-info-section {
@@ -1279,95 +1289,198 @@ header.show {
     }
     
     .similar-products {
-        margin-left: 0;
-        margin-right: 0;
-        padding: 12px;
+        margin-left: 15px;
+        margin-right: 15px;
+        padding: 15px;
+    }
+    
+    .product-info h1 {
+        font-size: 20px;
+    }
+    
+    .price-value {
+        font-size: 22px;
+    }
+    
+    /* Mobile touch zoom for images */
+    .card-image {
+        cursor: pointer;
     }
 }
 
 @media (max-width: 480px) {
     .main-image-container {
-        height: 240px;
-    }
-    
-    .zoom-panel {
-        width: 280px;
-        height: 280px;
+        max-height: 300px;
     }
     
     .thumbnail {
-        width: 50px;
-        height: 50px;
+        height: 60px;
     }
     
     .similar-products-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
+        gap: 10px;
     }
     
     .card-image-container {
-        height: 100px;
+        height: 120px;
     }
     
     .product-info h1 {
-        font-size: 16px;
+        font-size: 18px;
     }
     
     .price-value {
-        font-size: 18px;
+        font-size: 20px;
     }
 }
 
 /* Product not found message */
 .product-not-found {
     text-align: center;
-    padding: 40px 15px;
+    padding: 50px 20px;
     background: var(--bg-light);
-    border-radius: 10px;
-    margin: 80px 15px;
+    border-radius: 12px;
+    margin: 100px 20px;
 }
 
 .product-not-found i {
-    font-size: 35px;
+    font-size: 40px;
     color: var(--text-light);
-    margin-bottom: 12px;
+    margin-bottom: 15px;
 }
 
 .product-not-found h2 {
-    font-size: 18px;
+    font-size: 22px;
     color: var(--text-dark);
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 .product-not-found p {
     color: var(--text-light);
-    margin-bottom: 18px;
-    font-size: 13px;
+    margin-bottom: 20px;
+    font-size: 14px;
 }
 
-/* Mobile zoom alternative */
-.mobile-zoom-btn {
-    display: none;
-    position: absolute;
-    bottom: 8px;
-    right: 8px;
-    background: var(--primary-gold);
+/* Lightbox customization */
+.lb-outerContainer {
+    border-radius: 12px !important;
+}
+
+.lb-dataContainer {
+    padding: 20px !important;
+}
+
+.lb-nav a.lb-prev, .lb-nav a.lb-next {
+    opacity: 0.8 !important;
+}
+
+.lb-nav a.lb-prev:hover, .lb-nav a.lb-next:hover {
+    opacity: 1 !important;
+}
+
+/* Email floating icon */
+.email-float {
+    position: fixed;
+    bottom: 130px;
+    right: 15px;
+    width: 45px;
+    height: 45px;
+    background: #4285f4;
     color: white;
-    border: none;
     border-radius: 50%;
-    width: 32px;
-    height: 32px;
+    display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 5;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    font-size: 13px;
+    z-index: 998;
+    box-shadow: 0 3px 10px rgba(66, 133, 244, 0.3);
+    transition: var(--transition);
+    border: 2px solid white;
+    text-decoration: none;
 }
 
-@media (max-width: 768px) {
-    .mobile-zoom-btn {
-        display: flex;
+.email-float:hover {
+    background: #3367d6;
+    transform: scale(1.1);
+}
+
+.email-float i {
+    font-size: 20px;
+}
+
+/* Enquiry type selection */
+.enquiry-type-selection {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.enquiry-type-btn {
+    padding: 12px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transition: var(--transition);
+}
+
+.enquiry-type-btn.active {
+    border-color: var(--primary-gold);
+    background: #fff8e1;
+}
+
+.enquiry-type-btn i {
+    font-size: 20px;
+}
+
+.enquiry-type-btn.whatsapp-btn i {
+    color: #25D366;
+}
+
+.enquiry-type-btn.email-btn i {
+    color: #4285f4;
+}
+
+/* Image zoom box */
+.image-zoom-box {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 9999;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    cursor: zoom-out;
+}
+
+.image-zoom-box.active {
+    display: flex;
+}
+
+.zoomed-image {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    animation: zoomIn 0.3s ease;
+}
+
+@keyframes zoomIn {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
     }
 }
 </style>
@@ -1389,6 +1502,16 @@ header.show {
     <i class="fab fa-whatsapp"></i>
 </a>
 
+<!-- Email Floating Icon -->
+<div class="email-float" onclick="openEnquiryModal(event, 'email')" title="Send Email Enquiry">
+    <i class="fas fa-envelope"></i>
+</div>
+
+<!-- Image Zoom Box -->
+<div class="image-zoom-box" id="imageZoomBox" onclick="closeZoomBox()">
+    <img src="" alt="" class="zoomed-image" id="zoomedImage">
+</div>
+
 <!-- Enquiry Modal -->
 <div class="enquiry-modal" id="enquiryModal">
     <div class="enquiry-content">
@@ -1399,14 +1522,26 @@ header.show {
             </button>
         </div>
         <div class="enquiry-body">
-            <div class="enquiry-note">
-                <i class="fas fa-info-circle"></i>
-                We'll get back to you within 24 hours. For urgent queries, call: +91 77377 40207
+            <div class="enquiry-type-selection" id="enquiryTypeSelection">
+                <div class="enquiry-type-btn whatsapp-btn active" onclick="selectEnquiryType('whatsapp')">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>WhatsApp Enquiry</span>
+                </div>
+                <div class="enquiry-type-btn email-btn" onclick="selectEnquiryType('email')">
+                    <i class="fas fa-envelope"></i>
+                    <span>Email Enquiry</span>
+                </div>
+            </div>
+            
+            <div class="enquiry-note" id="enquiryNote">
+                <i class="fab fa-whatsapp"></i>
+                WhatsApp enquiry will open WhatsApp app. For email enquiry, fill the form below and send via Gmail.
             </div>
             
             <form class="enquiry-form" id="enquiryForm" onsubmit="submitEnquiry(event)">
                 <input type="hidden" id="enquiryProductId" value="">
                 <input type="hidden" id="enquiryProductName" value="">
+                <input type="hidden" id="enquiryMethod" value="whatsapp">
                 
                 <div class="form-group">
                     <label for="enquiryName">Full Name <span class="required">*</span></label>
@@ -1450,8 +1585,13 @@ header.show {
                     <textarea id="enquiryMessage" required placeholder="Tell us about your project requirements..."></textarea>
                 </div>
                 
-                <button type="submit" class="btn btn-primary" style="width: 100%;">
-                    <i class="fas fa-paper-plane"></i> Send Enquiry
+                <div class="form-group" style="font-size: 12px; color: var(--text-light); padding: 10px; background: #f9f9f9; border-radius: 6px;">
+                    <input type="checkbox" id="consentCheckbox" required>
+                    <label for="consentCheckbox">I agree to receive communications from IRYA STONE regarding my enquiry</label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%;" id="submitEnquiryBtn">
+                    <i class="fab fa-whatsapp"></i> Send WhatsApp Enquiry
                 </button>
             </form>
         </div>
@@ -1542,7 +1682,7 @@ header.show {
         </a>
         
         <!-- Enquiry Icon -->
-        <a href="#" class="action-btn" onclick="openEnquiryModal(event)">
+        <a href="#" class="action-btn" onclick="openEnquiryModal(event, 'whatsapp')">
             <i class="fas fa-envelope"></i>
         </a>
     </div>
@@ -1550,23 +1690,14 @@ header.show {
 
 <!-- Product Details -->
 <div class="product-container">
-    <!-- Left Column: Product Gallery with FIXED Zoom -->
+    <!-- Left Column: Product Gallery -->
     <div class="product-gallery">
         <div class="main-image-container">
-            <div class="main-image-wrapper" id="mainImageWrapper">
+            <div class="main-image-wrapper" id="mainImageWrapper" onclick="zoomMainImage()">
                 <img src="" alt="" class="main-image" id="mainProductImage">
-                <div class="hover-box" id="hoverBox"></div>
-                <div class="zoom-panel" id="zoomPanel">
-                    <div class="zoom-image-container">
-                        <img src="" alt="" class="zoom-image" id="zoomImage">
-                    </div>
+                <div class="multiple-images-indicator" id="multipleImagesIndicator" style="display: none;">
+                    <i class="fas fa-layer-group"></i> <span id="imageCount">0</span> images
                 </div>
-                <button class="mobile-zoom-btn" onclick="toggleMobileZoom()">
-                    <i class="fas fa-search-plus"></i>
-                </button>
-            </div>
-            <div class="multiple-images-indicator" id="multipleImagesIndicator" style="display: none;">
-                <i class="fas fa-layer-group"></i> <span id="imageCount">0</span>
             </div>
         </div>
         
@@ -1574,7 +1705,11 @@ header.show {
             <!-- Thumbnails will be loaded here -->
         </div>
         
-        <!-- Product Description BELOW Image -->
+        <button class="view-all-images" id="viewAllImages" style="display: none;" onclick="viewAllImages()">
+            <i class="fas fa-images"></i> View All Images
+        </button>
+        
+        <!-- Product Description -->
         <div class="product-description-box" id="productDescriptionBox">
             <!-- Description will be loaded here -->
         </div>
@@ -1588,11 +1723,14 @@ header.show {
         
         <!-- Action Buttons -->
         <div class="product-actions">
-            <button class="btn btn-primary" onclick="openEnquiryModal(event)">
-                <i class="fas fa-envelope"></i> Send Enquiry
+            <button class="btn btn-whatsapp" onclick="openEnquiryModal(event, 'whatsapp')">
+                <i class="fab fa-whatsapp"></i> WhatsApp Enquiry
             </button>
-            <button class="btn btn-whatsapp" onclick="openWhatsApp()">
-                <i class="fab fa-whatsapp"></i> WhatsApp
+            <button class="btn btn-email" onclick="openEnquiryModal(event, 'email')">
+                <i class="fas fa-envelope"></i> Email Enquiry
+            </button>
+            <button class="btn btn-primary" onclick="openEnquiryModal(event, 'form')">
+                <i class="fas fa-edit"></i> Fill Enquiry Form
             </button>
         </div>
     </div>
@@ -1640,7 +1778,7 @@ header.show {
         <span>Notifications</span>
         <span class="notification-badge" id="bottomNotificationBadge">0</span>
     </a>
-    <a href="#" class="nav-btn" onclick="openEnquiryModal(event)">
+    <a href="#" class="nav-btn" onclick="openEnquiryModal(event, 'whatsapp')">
         <i class="fas fa-envelope"></i>
         <span>Enquiry</span>
     </a>
@@ -1680,115 +1818,436 @@ let activeFilters = {
 };
 
 // ============================================
-// COMPLETELY FIXED ZOOM SYSTEM
+// IMAGE GALLERY SYSTEM - PROFESSIONAL
 // ============================================
 
-function initZoomSystem() {
-    console.log('🚀 Initializing zoom system...');
+function initImageGallery() {
+    console.log('🖼️ Initializing image gallery...');
     
-    const mainImage = document.getElementById("mainProductImage");
-    const wrapper = document.getElementById("mainImageWrapper");
-    const hoverBox = document.getElementById("hoverBox");
-    const zoomPanel = document.getElementById("zoomPanel");
-    const zoomImage = document.getElementById("zoomImage");
-
-    if (!mainImage || !wrapper || !hoverBox || !zoomPanel || !zoomImage) {
-        console.error("❌ Zoom elements missing!");
-        return;
-    }
-
-    // Reset hover box
-    hoverBox.style.display = 'none';
-    zoomPanel.classList.remove('active');
+    // Initialize Lightbox
+    lightbox.option({
+        'resizeDuration': 200,
+        'wrapAround': true,
+        'showImageNumberLabel': true,
+        'positionFromTop': 100,
+        'alwaysShowNavOnTouchDevices': true
+    });
     
-    // Set zoom image source
-    if (mainImage.src) {
-        zoomImage.src = mainImage.src;
-    }
-
-    // Mouse event handlers
-    wrapper.addEventListener('mouseenter', function(e) {
-        if (window.innerWidth <= 768) return;
-        
-        console.log('🖱️ Mouse entered image');
-        hoverBox.style.display = 'block';
-        zoomPanel.classList.add('active');
-        updateZoom(e);
-    });
-
-    wrapper.addEventListener('mousemove', function(e) {
-        if (window.innerWidth <= 768) return;
-        updateZoom(e);
-    });
-
-    wrapper.addEventListener('mouseleave', function() {
-        hoverBox.style.display = 'none';
-        zoomPanel.classList.remove('active');
-    });
-
-    function updateZoom(e) {
-        const rect = wrapper.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        const boxSize = 150;
-        const zoomLevel = 2.5;
-        
-        // Calculate hover box position
-        let boxX = x - boxSize / 2;
-        let boxY = y - boxSize / 2;
-        
-        // Constrain to image boundaries
-        const maxX = rect.width - boxSize;
-        const maxY = rect.height - boxSize;
-        
-        boxX = Math.max(0, Math.min(boxX, maxX));
-        boxY = Math.max(0, Math.min(boxY, maxY));
-        
-        // Update hover box
-        hoverBox.style.left = boxX + 'px';
-        hoverBox.style.top = boxY + 'px';
-        hoverBox.style.width = boxSize + 'px';
-        hoverBox.style.height = boxSize + 'px';
-        
-        // Calculate zoom position
-        const percentX = x / rect.width;
-        const percentY = y / rect.height;
-        
-        // Update zoom image position
-        if (mainImage.naturalWidth && mainImage.naturalHeight) {
-            const zoomImgWidth = mainImage.naturalWidth * zoomLevel;
-            const zoomImgHeight = mainImage.naturalHeight * zoomLevel;
-            
-            const moveX = -(percentX * zoomImgWidth - zoomPanel.offsetWidth / 2);
-            const moveY = -(percentY * zoomImgHeight - zoomPanel.offsetHeight / 2);
-            
-            zoomImage.style.width = zoomImgWidth + 'px';
-            zoomImage.style.height = zoomImgHeight + 'px';
-            zoomImage.style.transform = `translate(${moveX}px, ${moveY}px)`;
+    // Setup image click handlers for mobile
+    if (window.innerWidth < 768) {
+        const mainImage = document.getElementById('mainProductImage');
+        if (mainImage) {
+            mainImage.style.cursor = 'pointer';
         }
+        
+        // Setup click handlers for similar product images
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('card-image') || e.target.classList.contains('main-image')) {
+                openZoomBox(e.target.src, e.target.alt);
+            }
+        });
     }
-
-    // Handle image load
-    mainImage.onload = function() {
-        console.log('✅ Main image loaded');
-        if (zoomImage) {
-            zoomImage.src = mainImage.src;
-        }
-    };
-
-    console.log('✅ Zoom system initialized successfully');
 }
 
-// Mobile zoom function
-function toggleMobileZoom() {
-    const mainImage = document.getElementById('mainProductImage');
-    if (mainImage.style.transform === 'scale(2)') {
-        mainImage.style.transform = 'scale(1)';
+function zoomMainImage() {
+    if (window.innerWidth < 768) {
+        // On mobile, open zoom box
+        const mainImage = document.getElementById('mainProductImage');
+        if (mainImage) {
+            openZoomBox(mainImage.src, mainImage.alt);
+        }
     } else {
-        mainImage.style.transform = 'scale(2)';
-        mainImage.style.transformOrigin = 'center center';
+        // On desktop, just use hover effect
+        const mainImageLink = document.getElementById('mainImageLink');
+        if (mainImageLink) {
+            $(mainImageLink).click();
+        }
     }
+}
+
+function viewAllImages() {
+    // Open first image in lightbox
+    const firstThumbnail = document.querySelector('.thumbnail');
+    if (firstThumbnail) {
+        const link = firstThumbnail.querySelector('a');
+        if (link) {
+            $(link).click();
+        }
+    }
+}
+
+// Image zoom box functions
+function openZoomBox(imageSrc, altText) {
+    const zoomBox = document.getElementById('imageZoomBox');
+    const zoomedImage = document.getElementById('zoomedImage');
+    
+    if (zoomBox && zoomedImage) {
+        zoomedImage.src = imageSrc;
+        zoomedImage.alt = altText;
+        zoomBox.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeZoomBox() {
+    const zoomBox = document.getElementById('imageZoomBox');
+    if (zoomBox) {
+        zoomBox.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+}
+
+// Close zoom box on ESC key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeZoomBox();
+    }
+});
+
+// ============================================
+// EMAIL SYSTEM - GMAIL INTEGRATION
+// ============================================
+
+// No EmailJS configuration needed - using native mailto links
+
+let currentEnquiryMethod = 'whatsapp';
+
+function selectEnquiryType(type) {
+    currentEnquiryMethod = type;
+    
+    // Update UI
+    const whatsappBtn = document.querySelector('.whatsapp-btn');
+    const emailBtn = document.querySelector('.email-btn');
+    const submitBtn = document.getElementById('submitEnquiryBtn');
+    const enquiryNote = document.getElementById('enquiryNote');
+    const enquiryMethodField = document.getElementById('enquiryMethod');
+    
+    if (type === 'whatsapp') {
+        whatsappBtn.classList.add('active');
+        emailBtn.classList.remove('active');
+        submitBtn.innerHTML = '<i class="fab fa-whatsapp"></i> Send WhatsApp Enquiry';
+        enquiryNote.innerHTML = '<i class="fab fa-whatsapp"></i> WhatsApp enquiry will open WhatsApp app. Quick response guaranteed!';
+        enquiryMethodField.value = 'whatsapp';
+    } else {
+        emailBtn.classList.add('active');
+        whatsappBtn.classList.remove('active');
+        submitBtn.innerHTML = '<i class="fas fa-envelope"></i> Send Email Enquiry';
+        enquiryNote.innerHTML = '<i class="fas fa-envelope"></i> Email enquiry will open your email client (like Gmail) with pre-filled details.';
+        enquiryMethodField.value = 'email';
+    }
+}
+
+function openEnquiryModal(event, method = 'whatsapp') {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    
+    if (!currentProduct) return;
+    
+    // Set enquiry method
+    selectEnquiryType(method);
+    
+    // Set product details in form
+    document.getElementById('enquiryProductId').value = currentProduct.id;
+    document.getElementById('enquiryProductName').value = currentProduct.stone_name;
+    
+    // Set auto-generated message
+    let message = `I'm interested in: ${currentProduct.stone_name}\n`;
+    message += `Type: ${currentProduct.type || 'Not specified'}\n`;
+    message += `Price: ₹${currentProduct.price.toFixed(2)} per ${currentProduct.price_unit}\n`;
+    message += `Please provide details about:\n`;
+    message += `- Pricing and discounts\n`;
+    message += `- Availability and lead time\n`;
+    message += `- Minimum order quantity\n`;
+    message += `- Delivery options and charges\n\n`;
+    message += `Additional Requirements: `;
+    
+    document.getElementById('enquiryMessage').value = message;
+    
+    // Open modal
+    document.getElementById('enquiryModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeEnquiryModal() {
+    document.getElementById('enquiryModal').classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+
+// WhatsApp enquiry function
+function sendWhatsAppEnquiry(enquiryData) {
+    let message = `*New Enquiry - IRYA STONE*%0A%0A`;
+    message += `*Enquiry ID:* ${enquiryData.enquiryId}%0A`;
+    message += `*Name:* ${enquiryData.name}%0A`;
+    message += `*Phone:* ${enquiryData.phone}%0A`;
+    message += `*Email:* ${enquiryData.email}%0A`;
+    message += `*Product:* ${enquiryData.productName}%0A`;
+    message += `*Type:* ${enquiryData.enquiryType}%0A`;
+    message += `*Quantity:* ${enquiryData.quantity || 'Not specified'}%0A`;
+    message += `*Requirements:* ${enquiryData.requirements || 'None'}%0A`;
+    message += `*Message:* ${enquiryData.message.replace(/\n/g, '%0A')}`;
+    
+    window.open(`https://wa.me/917737740207?text=${message}`, '_blank');
+    return true;
+}
+
+// Email enquiry function - using native mailto
+function sendEmailEnquiry(enquiryData) {
+    const subject = `Enquiry for ${enquiryData.productName} - ${enquiryData.enquiryId}`;
+    const body = `ENQUIRY DETAILS
+================
+Enquiry ID: ${enquiryData.enquiryId}
+Date: ${new Date(enquiryData.submittedAt).toLocaleString('en-IN')}
+
+CUSTOMER INFORMATION
+====================
+Name: ${enquiryData.name}
+Email: ${enquiryData.email}
+Phone: ${enquiryData.phone}
+
+PRODUCT INFORMATION
+===================
+Product: ${enquiryData.productName}
+Enquiry Type: ${enquiryData.enquiryType}
+Quantity Required: ${enquiryData.quantity || 'Not specified'}
+
+REQUIREMENTS
+============
+${enquiryData.requirements || 'None specified'}
+
+MESSAGE
+=======
+${enquiryData.message}
+
+---
+This enquiry was submitted through IRYA STONE Website`;
+
+    // Open default email client with pre-filled details
+    window.location.href = `mailto:ravi.jain236129@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    
+    return true;
+}
+
+// Check if user exists in Firebase
+async function checkUserExists(email, phone) {
+    try {
+        if (!firebaseDB) return null;
+        
+        // Check by email first
+        const emailQuery = await firebaseDB.collection('enquiries')
+            .where('email', '==', email)
+            .limit(1)
+            .get();
+            
+        if (!emailQuery.empty) {
+            return emailQuery.docs[0];
+        }
+        
+        // Check by phone
+        const phoneQuery = await firebaseDB.collection('enquiries')
+            .where('phone', '==', phone)
+            .limit(1)
+            .get();
+            
+        if (!phoneQuery.empty) {
+            return phoneQuery.docs[0];
+        }
+        
+        return null;
+        
+    } catch (error) {
+        console.error('Error checking user:', error);
+        return null;
+    }
+}
+
+// Update existing enquiry in Firebase
+async function updateExistingEnquiry(docRef, newData) {
+    try {
+        const doc = await docRef.get();
+        if (!doc.exists) return false;
+        
+        const existingData = doc.data();
+        
+        // Create enquiry history
+        const enquiryHistory = existingData.enquiryHistory || [];
+        enquiryHistory.push({
+            enquiryId: newData.enquiryId,
+            productName: newData.productName,
+            enquiryType: newData.enquiryType,
+            method: newData.method,
+            quantity: newData.quantity,
+            submittedAt: newData.submittedAt,
+            status: newData.method === 'email' ? 'email_opened' : 'whatsapp_sent'
+        });
+        
+        // Update document
+        await docRef.update({
+            name: newData.name || existingData.name,
+            email: newData.email || existingData.email,
+            phone: newData.phone || existingData.phone,
+            lastEnquiryDate: newData.submittedAt,
+            enquiryCount: (existingData.enquiryCount || 1) + 1,
+            enquiryHistory: enquiryHistory,
+            updatedAt: new Date().toISOString(),
+            lastMethod: newData.method
+        });
+        
+        console.log('✅ Existing enquiry updated');
+        return true;
+        
+    } catch (error) {
+        console.error('Error updating enquiry:', error);
+        return false;
+    }
+}
+
+// Save enquiry to Firebase
+async function saveEnquiryToFirebase(enquiryData) {
+    try {
+        if (!firebaseDB) {
+            console.warn('Firebase not available, skipping database save');
+            return null;
+        }
+        
+        // Check if user exists
+        const existingUserDoc = await checkUserExists(enquiryData.email, enquiryData.phone);
+        
+        if (existingUserDoc) {
+            // Update existing user
+            await updateExistingEnquiry(existingUserDoc.ref, enquiryData);
+            return { id: existingUserDoc.id, action: 'updated' };
+        } else {
+            // Create new enquiry
+            enquiryData.enquiryCount = 1;
+            enquiryData.enquiryHistory = [{
+                enquiryId: enquiryData.enquiryId,
+                productName: enquiryData.productName,
+                enquiryType: enquiryData.enquiryType,
+                method: enquiryData.method,
+                quantity: enquiryData.quantity,
+                submittedAt: enquiryData.submittedAt,
+                status: enquiryData.method === 'email' ? 'email_opened' : 'whatsapp_sent'
+            }];
+            enquiryData.createdAt = enquiryData.submittedAt;
+            enquiryData.updatedAt = enquiryData.submittedAt;
+            
+            const docRef = await firebaseDB.collection('enquiries').add(enquiryData);
+            console.log('✅ New enquiry saved to Firebase:', docRef.id);
+            return { id: docRef.id, action: 'created' };
+        }
+        
+    } catch (error) {
+        console.error('Error saving to Firebase:', error);
+        return null;
+    }
+}
+
+// Main enquiry submission function
+async function submitEnquiry(event) {
+    event.preventDefault();
+    
+    const submitBtn = document.getElementById('submitEnquiryBtn');
+    const originalBtnText = submitBtn.innerHTML;
+    
+    try {
+        // Disable button and show loading
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        
+        // Collect form data
+        const enquiryData = {
+            enquiryId: 'ENQ-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase(),
+            productId: document.getElementById('enquiryProductId').value,
+            productName: document.getElementById('enquiryProductName').value,
+            name: document.getElementById('enquiryName').value.trim(),
+            email: document.getElementById('enquiryEmail').value.trim(),
+            phone: document.getElementById('enquiryPhone').value.trim(),
+            enquiryType: document.getElementById('enquiryType').value,
+            quantity: document.getElementById('enquiryQuantity').value.trim(),
+            requirements: document.getElementById('enquiryRequirements').value.trim(),
+            message: document.getElementById('enquiryMessage').value.trim(),
+            method: currentEnquiryMethod,
+            submittedAt: new Date().toISOString(),
+            status: 'pending',
+            source: 'website_form'
+        };
+        
+        // Validate data
+        if (!enquiryData.name || !enquiryData.email || !enquiryData.phone || !enquiryData.enquiryType) {
+            throw new Error('Please fill all required fields');
+        }
+        
+        // Save to Firebase
+        const firebaseResult = await saveEnquiryToFirebase(enquiryData);
+        
+        // Send enquiry based on method
+        let sendResult;
+        if (currentEnquiryMethod === 'whatsapp') {
+            sendResult = sendWhatsAppEnquiry(enquiryData);
+            showNotification('📱 Opening WhatsApp... Please send the pre-filled message.');
+        } else {
+            sendResult = await sendEmailEnquiry(enquiryData);
+            if (sendResult) {
+                showNotification('📧 Email client opened! Please review and send the email.');
+            }
+        }
+        
+        // Add notification
+        if (notificationSystem) {
+            notificationSystem.addNotification(
+                'Enquiry ' + (currentEnquiryMethod === 'whatsapp' ? 'via WhatsApp' : 'via Email'),
+                `Enquiry #${enquiryData.enquiryId} for ${enquiryData.productName}`,
+                currentEnquiryMethod
+            );
+        }
+        
+        // Close modal after delay
+        setTimeout(() => {
+            closeEnquiryModal();
+            document.getElementById('enquiryForm').reset();
+        }, 2000);
+        
+    } catch (error) {
+        console.error('❌ Error submitting enquiry:', error);
+        showError(error.message || 'Failed to send enquiry. Please try again or call +91 77377 40207');
+        
+    } finally {
+        // Reset button
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnText;
+    }
+}
+
+// Direct WhatsApp enquiry (from button)
+function openDirectWhatsApp() {
+    if (!currentProduct) return;
+    
+    let message = `*New Enquiry - IRYA STONE*%0A%0A`;
+    message += `*Product:* ${currentProduct.stone_name}%0A`;
+    message += `*Type:* ${currentProduct.type || 'Not specified'}%0A`;
+    message += `*Price:* ₹${currentProduct.price.toFixed(2)} per ${currentProduct.price_unit}%0A%0A`;
+    message += `I'm interested in this product. Please provide details about:%0A`;
+    message += `- Pricing and discounts%0A`;
+    message += `- Availability%0A`;
+    message += `- Minimum order quantity%0A`;
+    message += `- Delivery options%0A%0A`;
+    message += `Looking forward to your response!`;
+    
+    window.open(`https://wa.me/917737740207?text=${message}`, '_blank');
+    
+    // Also save to Firebase
+    const enquiryData = {
+        enquiryId: 'ENQ-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase(),
+        productId: currentProduct.id,
+        productName: currentProduct.stone_name,
+        method: 'whatsapp_direct',
+        submittedAt: new Date().toISOString(),
+        status: 'whatsapp_sent'
+    };
+    
+    saveEnquiryToFirebase(enquiryData);
 }
 
 // ============================================
@@ -1815,7 +2274,6 @@ class NotificationSystem {
     
     async loadNotifications() {
         try {
-            // Try to load from Firebase first
             if (firebaseDB) {
                 const snapshot = await firebaseDB.collection('notifications')
                     .orderBy('timestamp', 'desc')
@@ -1835,12 +2293,10 @@ class NotificationSystem {
                     });
                 });
             } else {
-                // Fallback to localStorage
                 const stored = localStorage.getItem(this.localKey);
                 this.notifications = stored ? JSON.parse(stored) : [];
             }
             
-            // Calculate unread count
             this.unreadCount = this.notifications.filter(n => !n.read).length;
             
         } catch (error) {
@@ -1875,27 +2331,21 @@ class NotificationSystem {
                 read: false
             };
             
-            // Add to Firebase if available
             if (firebaseDB) {
                 await firebaseDB.collection('notifications').add(newNotification);
             }
             
-            // Add to local array
             this.notifications.unshift(newNotification);
             
-            // Keep only last 20 notifications
             if (this.notifications.length > 20) {
                 this.notifications = this.notifications.slice(0, 20);
             }
             
-            // Save to localStorage
             localStorage.setItem(this.localKey, JSON.stringify(this.notifications));
             
-            // Update unread count and badge
             this.unreadCount++;
             this.updateNotificationBadge();
             
-            // Show notification
             showNotification(`${title}: ${message}`);
             
         } catch (error) {
@@ -1905,417 +2355,6 @@ class NotificationSystem {
 }
 
 let notificationSystem = null;
-
-// ============================================
-// WHATSAPP FUNCTION
-// ============================================
-
-function openWhatsApp() {
-    let message = "Hello IRYA STONE,\n\n";
-    
-    if (currentProduct) {
-        message += `I'm interested in: ${currentProduct.stone_name}\n`;
-        message += `Type: ${currentProduct.type || 'Not specified'}\n`;
-        message += `Price: ₹${currentProduct.price.toFixed(2)} per ${currentProduct.price_unit}\n\n`;
-    }
-    
-    message += "Please provide more details about:\n- Pricing\n- Availability\n- Minimum order quantity\n- Delivery options\n\n";
-    message += "Looking forward to your response!";
-    
-    const encodedMessage = encodeURIComponent(message);
-    const phoneNumber = "917737740207";
-    
-    window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
-    
-    // Add notification
-    if (notificationSystem) {
-        notificationSystem.addNotification(
-            'WhatsApp Enquiry',
-            `Sent enquiry for ${currentProduct?.stone_name || 'product'}`,
-            'whatsapp'
-        );
-    }
-}
-
-// ============================================
-// ENQUIRY SYSTEM
-// ============================================
-
-function openEnquiryModal(event) {
-    if (event) {
-        event.preventDefault();
-        event.stopPropagation();
-    }
-    
-    if (!currentProduct) return;
-    
-    // Set product details in form
-    document.getElementById('enquiryProductId').value = currentProduct.id;
-    document.getElementById('enquiryProductName').value = currentProduct.stone_name;
-    
-    // Set auto-generated message
-    let message = `I'm interested in: ${currentProduct.stone_name}\n`;
-    message += `Type: ${currentProduct.type || 'Not specified'}\n`;
-    message += `Price: ₹${currentProduct.price.toFixed(2)} per ${currentProduct.price_unit}\n`;
-    message += `Please provide details about pricing, availability, and delivery options.\n\n`;
-    message += `Additional Requirements: `;
-    
-    document.getElementById('enquiryMessage').value = message;
-    
-    // Open modal
-    document.getElementById('enquiryModal').classList.add('active');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeEnquiryModal() {
-    document.getElementById('enquiryModal').classList.remove('active');
-    document.body.style.overflow = 'auto';
-}
-
-async function submitEnquiry(event) {
-    event.preventDefault();
-    
-    try {
-        showLoading(true);
-        
-        const enquiryData = {
-            productId: document.getElementById('enquiryProductId').value,
-            productName: document.getElementById('enquiryProductName').value,
-            name: document.getElementById('enquiryName').value,
-            email: document.getElementById('enquiryEmail').value,
-            phone: document.getElementById('enquiryPhone').value,
-            enquiryType: document.getElementById('enquiryType').value,
-            quantity: document.getElementById('enquiryQuantity').value,
-            requirements: document.getElementById('enquiryRequirements').value,
-            message: document.getElementById('enquiryMessage').value,
-            submittedAt: new Date().toISOString(),
-            status: 'pending'
-        };
-        
-        // Save to Firebase
-        if (firebaseDB) {
-            await firebaseDB.collection('enquiries').add(enquiryData);
-        }
-        
-        // Also send WhatsApp message
-        const whatsappMessage = `*New Enquiry Received*%0A%0A` +
-                               `*Product:* ${enquiryData.productName}%0A` +
-                               `*Name:* ${enquiryData.name}%0A` +
-                               `*Phone:* ${enquiryData.phone}%0A` +
-                               `*Email:* ${enquiryData.email}%0A` +
-                               `*Type:* ${enquiryData.enquiryType}%0A` +
-                               `*Quantity:* ${enquiryData.quantity}%0A` +
-                               `*Message:* ${enquiryData.message.replace(/\n/g, '%0A')}`;
-        
-        // Open WhatsApp with pre-filled message
-        window.open(`https://wa.me/917737740207?text=${whatsappMessage}`, '_blank');
-        
-        // Add notification
-        if (notificationSystem) {
-            notificationSystem.addNotification(
-                'Enquiry Submitted',
-                `Enquiry sent for ${enquiryData.productName}`,
-                'enquiry'
-            );
-        }
-        
-        showNotification('Enquiry submitted! We will contact you within 24 hours.');
-        closeEnquiryModal();
-        document.getElementById('enquiryForm').reset();
-        
-    } catch (error) {
-        console.error('Error submitting enquiry:', error);
-        showError('Failed to send enquiry. Please try WhatsApp or call +91 77377 40207');
-    } finally {
-        showLoading(false);
-    }
-}
-
-// ============================================
-// FILTER SYSTEM - BY DEFAULT SHOW SAME TYPE
-// ============================================
-
-function openFilterModal() {
-    document.getElementById('filterModal').classList.add('active');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeFilterModal() {
-    document.getElementById('filterModal').classList.remove('active');
-    document.body.style.overflow = 'auto';
-}
-
-function populateFilterOptions() {
-    console.log('Populating filter options...');
-    
-    // Collect all unique values from similar products
-    const types = new Map();
-    const colors = new Map();
-    const finishes = new Map();
-    
-    similarProducts.forEach(product => {
-        // Count types
-        if (product.type && product.type.trim() !== '') {
-            const type = product.type.trim();
-            types.set(type, (types.get(type) || 0) + 1);
-        }
-        
-        // Count colors
-        if (product.color && product.color.trim() !== '') {
-            const color = product.color.trim();
-            colors.set(color, (colors.get(color) || 0) + 1);
-        }
-        
-        // Count finishes
-        if (product.finish && product.finish.trim() !== '') {
-            const finish = product.finish.trim();
-            finishes.set(finish, (finishes.get(finish) || 0) + 1);
-        }
-    });
-    
-    // Sort by count (descending)
-    const sortedTypes = Array.from(types.entries()).sort((a, b) => b[1] - a[1]);
-    const sortedColors = Array.from(colors.entries()).sort((a, b) => b[1] - a[1]);
-    const sortedFinishes = Array.from(finishes.entries()).sort((a, b) => b[1] - a[1]);
-    
-    // Populate Type filters
-    const typeFilterOptions = document.getElementById('typeFilterOptions');
-    if (typeFilterOptions) {
-        if (sortedTypes.length > 0) {
-            typeFilterOptions.innerHTML = sortedTypes.map(([type, count]) => {
-                const isChecked = activeFilters.types.includes(type) ? 'checked' : '';
-                return `
-                    <div class="filter-option">
-                        <input type="checkbox" id="type_${type.replace(/\s+/g, '_')}" 
-                               value="${type}" ${isChecked}
-                               onchange="updateFilter('types', '${type.replace(/'/g, "\\'")}', this.checked)">
-                        <label for="type_${type.replace(/\s+/g, '_')}">${type}</label>
-                        <span class="filter-count">${count}</span>
-                    </div>
-                `;
-            }).join('');
-        } else {
-            typeFilterOptions.innerHTML = '<div style="padding: 10px; color: var(--text-light); font-size: 12px;">No types available</div>';
-        }
-    }
-    
-    // Populate Color filters
-    const colorFilterOptions = document.getElementById('colorFilterOptions');
-    if (colorFilterOptions) {
-        if (sortedColors.length > 0) {
-            colorFilterOptions.innerHTML = sortedColors.map(([color, count]) => {
-                const isChecked = activeFilters.colors.includes(color) ? 'checked' : '';
-                return `
-                    <div class="filter-option">
-                        <input type="checkbox" id="color_${color.replace(/\s+/g, '_')}" 
-                               value="${color}" ${isChecked}
-                               onchange="updateFilter('colors', '${color.replace(/'/g, "\\'")}', this.checked)">
-                        <label for="color_${color.replace(/\s+/g, '_')}">${color}</label>
-                        <span class="filter-count">${count}</span>
-                    </div>
-                `;
-            }).join('');
-        } else {
-            colorFilterOptions.innerHTML = '<div style="padding: 10px; color: var(--text-light); font-size: 12px;">No colors available</div>';
-        }
-    }
-    
-    // Populate Finish filters
-    const finishFilterOptions = document.getElementById('finishFilterOptions');
-    if (finishFilterOptions) {
-        if (sortedFinishes.length > 0) {
-            finishFilterOptions.innerHTML = sortedFinishes.map(([finish, count]) => {
-                const isChecked = activeFilters.finishes.includes(finish) ? 'checked' : '';
-                return `
-                    <div class="filter-option">
-                        <input type="checkbox" id="finish_${finish.replace(/\s+/g, '_')}" 
-                               value="${finish}" ${isChecked}
-                               onchange="updateFilter('finishes', '${finish.replace(/'/g, "\\'")}', this.checked)">
-                        <label for="finish_${finish.replace(/\s+/g, '_')}">${finish}</label>
-                        <span class="filter-count">${count}</span>
-                    </div>
-                `;
-            }).join('');
-        } else {
-            finishFilterOptions.innerHTML = '<div style="padding: 10px; color: var(--text-light); font-size: 12px;">No finishes available</div>';
-        }
-    }
-    
-    updateFilterTags();
-}
-
-function updateFilter(category, value, isChecked) {
-    console.log('Updating filter:', category, value, isChecked);
-    
-    if (isChecked) {
-        if (!activeFilters[category].includes(value)) {
-            activeFilters[category].push(value);
-        }
-    } else {
-        activeFilters[category] = activeFilters[category].filter(item => item !== value);
-    }
-    
-    console.log('Active filters:', activeFilters);
-    applyFilters();
-}
-
-function updateFilterTags() {
-    const filterTags = document.getElementById('filterTags');
-    if (!filterTags) return;
-    
-    const allFilters = [];
-    
-    // Add type filters
-    activeFilters.types.forEach(type => {
-        allFilters.push({
-            category: 'types',
-            value: type,
-            label: `Type: ${type}`
-        });
-    });
-    
-    // Add color filters
-    activeFilters.colors.forEach(color => {
-        allFilters.push({
-            category: 'colors',
-            value: color,
-            label: `Color: ${color}`
-        });
-    });
-    
-    // Add finish filters
-    activeFilters.finishes.forEach(finish => {
-        allFilters.push({
-            category: 'finishes',
-            value: finish,
-            label: `Finish: ${finish}`
-        });
-    });
-    
-    if (allFilters.length === 0) {
-        filterTags.innerHTML = '<span style="font-size: 12px; color: var(--text-light);">Showing products of same type</span>';
-        return;
-    }
-    
-    const tagsHTML = allFilters.map(filter => `
-        <div class="filter-tag">
-            ${filter.label}
-            <button class="remove-filter" onclick="removeFilter('${filter.category}', '${filter.value.replace(/'/g, "\\'")}')">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    `).join('');
-    
-    filterTags.innerHTML = tagsHTML + 
-        `<button class="clear-all-filters" onclick="clearAllFilters()">
-            Clear All
-        </button>`;
-}
-
-function removeFilter(category, value) {
-    console.log('Removing filter:', category, value);
-    
-    // Remove from active filters
-    activeFilters[category] = activeFilters[category].filter(item => item !== value);
-    
-    // Update checkbox in modal
-    const checkboxId = `${category}_${value.replace(/\s+/g, '_')}`;
-    const checkbox = document.getElementById(checkboxId);
-    if (checkbox) {
-        checkbox.checked = false;
-    }
-    
-    applyFilters();
-}
-
-function clearAllFilters() {
-    console.log('Clearing all filters');
-    
-    // Clear active filters
-    activeFilters = {
-        types: [],
-        colors: [],
-        finishes: []
-    };
-    
-    // Uncheck all checkboxes
-    document.querySelectorAll('#typeFilterOptions input[type="checkbox"]').forEach(cb => cb.checked = false);
-    document.querySelectorAll('#colorFilterOptions input[type="checkbox"]').forEach(cb => cb.checked = false);
-    document.querySelectorAll('#finishFilterOptions input[type="checkbox"]').forEach(cb => cb.checked = false);
-    
-    // Reset sort to default
-    document.getElementById('sortPriceAsc').checked = true;
-    
-    applyFilters();
-}
-
-function applyFilters() {
-    console.log('Applying filters:', activeFilters);
-    
-    const sortBy = document.querySelector('input[name="sortBy"]:checked').value;
-    
-    // Start with all similar products
-    filteredSimilarProducts = [...similarProducts];
-    
-    // 🔥 BY DEFAULT: Show products of SAME TYPE
-    // If no filters are applied, show products of same type
-    if (activeFilters.types.length === 0 && 
-        activeFilters.colors.length === 0 && 
-        activeFilters.finishes.length === 0) {
-        
-        if (currentProduct && currentProduct.type) {
-            // Show products with same type as current product
-            filteredSimilarProducts = similarProducts.filter(product => 
-                product.type && product.type === currentProduct.type
-            );
-        }
-    } else {
-        // Apply user's filters if they have selected any
-        
-        // Apply type filters
-        if (activeFilters.types.length > 0) {
-            filteredSimilarProducts = filteredSimilarProducts.filter(product => 
-                product.type && activeFilters.types.includes(product.type)
-            );
-        }
-        
-        // Apply color filters
-        if (activeFilters.colors.length > 0) {
-            filteredSimilarProducts = filteredSimilarProducts.filter(product => 
-                product.color && activeFilters.colors.includes(product.color)
-            );
-        }
-        
-        // Apply finish filters
-        if (activeFilters.finishes.length > 0) {
-            filteredSimilarProducts = filteredSimilarProducts.filter(product => 
-                product.finish && activeFilters.finishes.includes(product.finish)
-            );
-        }
-    }
-    
-    console.log('After filtering:', filteredSimilarProducts.length, 'products');
-    
-    // Sort products
-    filteredSimilarProducts.sort((a, b) => {
-        switch(sortBy) {
-            case 'price_asc':
-                return a.price - b.price;
-            case 'price_desc':
-                return b.price - a.price;
-            case 'name_asc':
-                return a.stone_name.localeCompare(b.stone_name);
-            default:
-                return 0;
-        }
-    });
-    
-    // Update filter tags
-    updateFilterTags();
-    
-    // Display results
-    displaySimilarProducts();
-}
 
 // ============================================
 // UTILITY FUNCTIONS
@@ -2383,11 +2422,12 @@ function showNotification(message) {
     if (!notification) return;
     
     notification.textContent = message;
+    notification.style.background = 'var(--primary-gold)';
     notification.style.display = 'block';
     
     setTimeout(() => {
         notification.style.display = 'none';
-    }, 3000);
+    }, 5000);
 }
 
 function showError(message) {
@@ -2401,7 +2441,7 @@ function showError(message) {
     setTimeout(() => {
         notification.style.display = 'none';
         notification.style.background = 'var(--primary-gold)';
-    }, 3000);
+    }, 5000);
 }
 
 // ============================================
@@ -2468,10 +2508,8 @@ async function loadProductDetails(productId) {
         displayProductDetails();
         await loadSimilarProducts();
         
-        // Initialize zoom system after image loads
-        setTimeout(() => {
-            initZoomSystem();
-        }, 1000);
+        // Initialize image gallery
+        initImageGallery();
         
         if (notificationSystem) {
             notificationSystem.addNotification(
@@ -2491,11 +2529,13 @@ async function loadProductDetails(productId) {
 
 function displayProductDetails() {
     const mainImage = document.getElementById('mainProductImage');
+    const mainImageLink = document.getElementById('mainImageLink');
     const thumbnailContainer = document.getElementById('thumbnailContainer');
     const productInfo = document.getElementById('productInfo');
     const productDescriptionBox = document.getElementById('productDescriptionBox');
     const multipleImagesIndicator = document.getElementById('multipleImagesIndicator');
     const imageCount = document.getElementById('imageCount');
+    const viewAllImages = document.getElementById('viewAllImages');
     
     if (!currentProduct) return;
     
@@ -2505,14 +2545,8 @@ function displayProductDetails() {
         mainImage.src = imgSrc;
         mainImage.alt = currentProduct.stone_name;
         
-        // Set zoom image source
-        const zoomImage = document.getElementById('zoomImage');
-        if (zoomImage) {
-            zoomImage.src = imgSrc;
-        }
-        
         mainImage.onload = function() {
-            console.log('✅ Main image loaded successfully');
+            console.log('✅ Main image loaded');
         };
         
         mainImage.onerror = function() {
@@ -2525,20 +2559,23 @@ function displayProductDetails() {
     if (multipleImagesIndicator && imageCount && currentProduct.images.length > 1) {
         imageCount.textContent = currentProduct.images.length;
         multipleImagesIndicator.style.display = 'flex';
+        viewAllImages.style.display = 'flex';
     }
     
     // Create thumbnails
-    if (thumbnailContainer) {
+    if (thumbnailContainer && currentProduct.images.length > 0) {
         thumbnailContainer.innerHTML = currentProduct.images.map((img, index) => `
             <div class="thumbnail ${index === 0 ? 'active' : ''}" 
                  onclick="changeMainImage('${img}', this, ${index})">
-                <img src="${img}" alt="Thumbnail ${index + 1}" loading="lazy"
-                     onerror="this.src='${getDefaultImage(currentProduct.category)}'">
+                <a href="${img}" data-lightbox="product-images" data-title="${currentProduct.stone_name} - Image ${index + 1}">
+                    <img src="${img}" alt="Thumbnail ${index + 1}" loading="lazy"
+                         onerror="this.src='${getDefaultImage(currentProduct.category)}'">
+                </a>
             </div>
         `).join('');
     }
     
-    // Display product description BELOW image
+    // Display product description
     if (productDescriptionBox) {
         productDescriptionBox.innerHTML = `
             <h3><i class="fas fa-info-circle"></i> Product Description</h3>
@@ -2548,7 +2585,7 @@ function displayProductDetails() {
         `;
     }
     
-    // Display product info on RIGHT side
+    // Display product info
     if (productInfo) {
         productInfo.innerHTML = `
             <h1>${currentProduct.stone_name}</h1>
@@ -2617,14 +2654,9 @@ function displayProductDetails() {
 
 function changeMainImage(imageUrl, thumbnailElement, index = 0) {
     const mainImage = document.getElementById('mainProductImage');
-    const zoomImage = document.getElementById('zoomImage');
     
     if (mainImage) {
         mainImage.src = imageUrl;
-    }
-    
-    if (zoomImage) {
-        zoomImage.src = imageUrl;
     }
     
     // Update active thumbnail
@@ -2635,15 +2667,10 @@ function changeMainImage(imageUrl, thumbnailElement, index = 0) {
     if (thumbnailElement) {
         thumbnailElement.classList.add('active');
     }
-    
-    // Re-initialize zoom with new image
-    setTimeout(() => {
-        initZoomSystem();
-    }, 100);
 }
 
 // ============================================
-// SIMILAR PRODUCTS - BY DEFAULT SHOW SAME TYPE
+// SIMILAR PRODUCTS
 // ============================================
 
 async function loadSimilarProducts() {
@@ -2655,7 +2682,6 @@ async function loadSimilarProducts() {
         
         console.log('Loading similar products...');
         
-        // Load ALL products
         const querySnapshot = await firebaseDB.collection("products")
             .limit(50)
             .get();
@@ -2695,14 +2721,12 @@ async function loadSimilarProducts() {
         if (similarProducts.length > 0) {
             filteredSimilarProducts = [...similarProducts];
             
-            // 🔥 BY DEFAULT: Show products of SAME TYPE
-            // Only show products with same type as current product
+            // Show products of same type by default
             if (currentProduct.type) {
                 filteredSimilarProducts = similarProducts.filter(product => 
                     product.type && product.type === currentProduct.type
                 );
                 
-                // Set type filter as active
                 activeFilters = {
                     types: [currentProduct.type],
                     colors: [],
@@ -2733,10 +2757,10 @@ function displaySimilarProducts() {
     
     if (filteredSimilarProducts.length === 0) {
         container.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-light);">
-                <i class="fas fa-search" style="font-size: 40px; margin-bottom: 15px; opacity: 0.5;"></i>
+            <div style="grid-column: 1 / -1; text-align: center; padding: 30px; color: var(--text-light);">
+                <i class="fas fa-search" style="font-size: 30px; margin-bottom: 10px; opacity: 0.5;"></i>
                 <p>No products match your filters</p>
-                <button class="btn" onclick="clearAllFilters()" style="margin-top: 15px;">
+                <button class="btn" onclick="clearAllFilters()" style="margin-top: 10px;">
                     Clear All Filters
                 </button>
             </div>
@@ -2747,7 +2771,7 @@ function displaySimilarProducts() {
             
             return `
                 <a href="product-details.html?id=${product.id}" class="similar-product-card">
-                    <div class="card-image-container">
+                    <div class="card-image-container" onclick="event.preventDefault(); openZoomBox('${productImage}', '${product.stone_name}')">
                         <img src="${productImage}" alt="${product.stone_name}" 
                              class="card-image"
                              onerror="this.src='${getDefaultImage(product.category)}'"
@@ -2807,7 +2831,6 @@ function performSearch(query) {
         return;
     }
     
-    // Search in all products
     const results = allProducts.filter(product => {
         const searchText = query.toLowerCase();
         const productName = (product.name || '').toLowerCase();
@@ -2876,6 +2899,7 @@ function handleScroll() {
     const bottomNav = document.getElementById('bottomNav');
     const filterIcon = document.querySelector('.filter-icon');
     const whatsappIcon = document.querySelector('.whatsapp-float');
+    const emailIcon = document.querySelector('.email-float');
     
     if (!header || !bottomNav) return;
     
@@ -2884,8 +2908,9 @@ function handleScroll() {
         if (scrollTop < 50) {
             header.classList.remove('hidden');
             bottomNav.classList.remove('hidden');
-            if (filterIcon) filterIcon.style.bottom = '150px';
-            if (whatsappIcon) whatsappIcon.style.bottom = '80px';
+            if (filterIcon) filterIcon.style.bottom = '130px';
+            if (whatsappIcon) whatsappIcon.style.bottom = '70px';
+            if (emailIcon) emailIcon.style.bottom = '130px';
             isHeaderVisible = true;
             return;
         }
@@ -2894,16 +2919,18 @@ function handleScroll() {
             if (scrollTop > scrollThreshold && isHeaderVisible) {
                 header.classList.add('hidden');
                 bottomNav.classList.add('hidden');
-                if (filterIcon) filterIcon.style.bottom = '20px';
-                if (whatsappIcon) whatsappIcon.style.bottom = '20px';
+                if (filterIcon) filterIcon.style.bottom = '15px';
+                if (whatsappIcon) whatsappIcon.style.bottom = '15px';
+                if (emailIcon) emailIcon.style.bottom = '15px';
                 isHeaderVisible = false;
             }
         } else {
             if (!isHeaderVisible) {
                 header.classList.remove('hidden');
                 bottomNav.classList.remove('hidden');
-                if (filterIcon) filterIcon.style.bottom = '150px';
-                if (whatsappIcon) whatsappIcon.style.bottom = '80px';
+                if (filterIcon) filterIcon.style.bottom = '130px';
+                if (whatsappIcon) whatsappIcon.style.bottom = '70px';
+                if (emailIcon) emailIcon.style.bottom = '130px';
                 isHeaderVisible = true;
             }
         }
@@ -2966,6 +2993,18 @@ $(document).ready(async function() {
         if ($(e.target).hasClass('filter-modal')) {
             closeFilterModal();
         }
+        if ($(e.target).hasClass('image-zoom-box')) {
+            closeZoomBox();
+        }
+    });
+    
+    // Close modal on ESC key
+    $(document).on('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeEnquiryModal();
+            closeFilterModal();
+            closeZoomBox();
+        }
     });
     
     // Initial scroll check
@@ -2982,7 +3021,6 @@ async function initializeSearch() {
             await initializeFirebase();
         }
         
-        // Load ALL products for search
         const querySnapshot = await firebaseDB.collection("products")
             .limit(100)
             .get();
@@ -3007,6 +3045,263 @@ async function initializeSearch() {
     } catch (error) {
         console.error('Error loading products for search:', error);
     }
+}
+
+// ============================================
+// FILTER SYSTEM
+// ============================================
+
+function openFilterModal() {
+    document.getElementById('filterModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeFilterModal() {
+    document.getElementById('filterModal').classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+
+function populateFilterOptions() {
+    console.log('Populating filter options...');
+    
+    const types = new Map();
+    const colors = new Map();
+    const finishes = new Map();
+    
+    similarProducts.forEach(product => {
+        if (product.type && product.type.trim() !== '') {
+            const type = product.type.trim();
+            types.set(type, (types.get(type) || 0) + 1);
+        }
+        
+        if (product.color && product.color.trim() !== '') {
+            const color = product.color.trim();
+            colors.set(color, (colors.get(color) || 0) + 1);
+        }
+        
+        if (product.finish && product.finish.trim() !== '') {
+            const finish = product.finish.trim();
+            finishes.set(finish, (finishes.get(finish) || 0) + 1);
+        }
+    });
+    
+    const sortedTypes = Array.from(types.entries()).sort((a, b) => b[1] - a[1]);
+    const sortedColors = Array.from(colors.entries()).sort((a, b) => b[1] - a[1]);
+    const sortedFinishes = Array.from(finishes.entries()).sort((a, b) => b[1] - a[1]);
+    
+    const typeFilterOptions = document.getElementById('typeFilterOptions');
+    if (typeFilterOptions) {
+        if (sortedTypes.length > 0) {
+            typeFilterOptions.innerHTML = sortedTypes.map(([type, count]) => {
+                const isChecked = activeFilters.types.includes(type) ? 'checked' : '';
+                return `
+                    <div class="filter-option">
+                        <input type="checkbox" id="type_${type.replace(/\s+/g, '_')}" 
+                               value="${type}" ${isChecked}
+                               onchange="updateFilter('types', '${type.replace(/'/g, "\\'")}', this.checked)">
+                        <label for="type_${type.replace(/\s+/g, '_')}">${type}</label>
+                        <span class="filter-count">${count}</span>
+                    </div>
+                `;
+            }).join('');
+        } else {
+            typeFilterOptions.innerHTML = '<div style="padding: 10px; color: var(--text-light); font-size: 12px;">No types available</div>';
+        }
+    }
+    
+    const colorFilterOptions = document.getElementById('colorFilterOptions');
+    if (colorFilterOptions) {
+        if (sortedColors.length > 0) {
+            colorFilterOptions.innerHTML = sortedColors.map(([color, count]) => {
+                const isChecked = activeFilters.colors.includes(color) ? 'checked' : '';
+                return `
+                    <div class="filter-option">
+                        <input type="checkbox" id="color_${color.replace(/\s+/g, '_')}" 
+                               value="${color}" ${isChecked}
+                               onchange="updateFilter('colors', '${color.replace(/'/g, "\\'")}', this.checked)">
+                        <label for="color_${color.replace(/\s+/g, '_')}">${color}</label>
+                        <span class="filter-count">${count}</span>
+                    </div>
+                `;
+            }).join('');
+        } else {
+            colorFilterOptions.innerHTML = '<div style="padding: 10px; color: var(--text-light); font-size: 12px;">No colors available</div>';
+        }
+    }
+    
+    const finishFilterOptions = document.getElementById('finishFilterOptions');
+    if (finishFilterOptions) {
+        if (sortedFinishes.length > 0) {
+            finishFilterOptions.innerHTML = sortedFinishes.map(([finish, count]) => {
+                const isChecked = activeFilters.finishes.includes(finish) ? 'checked' : '';
+                return `
+                    <div class="filter-option">
+                        <input type="checkbox" id="finish_${finish.replace(/\s+/g, '_')}" 
+                               value="${finish}" ${isChecked}
+                               onchange="updateFilter('finishes', '${finish.replace(/'/g, "\\'")}', this.checked)">
+                        <label for="finish_${finish.replace(/\s+/g, '_')}">${finish}</label>
+                        <span class="filter-count">${count}</span>
+                    </div>
+                `;
+            }).join('');
+        } else {
+            finishFilterOptions.innerHTML = '<div style="padding: 10px; color: var(--text-light); font-size: 12px;">No finishes available</div>';
+        }
+    }
+    
+    updateFilterTags();
+}
+
+function updateFilter(category, value, isChecked) {
+    console.log('Updating filter:', category, value, isChecked);
+    
+    if (isChecked) {
+        if (!activeFilters[category].includes(value)) {
+            activeFilters[category].push(value);
+        }
+    } else {
+        activeFilters[category] = activeFilters[category].filter(item => item !== value);
+    }
+    
+    console.log('Active filters:', activeFilters);
+    applyFilters();
+}
+
+function updateFilterTags() {
+    const filterTags = document.getElementById('filterTags');
+    if (!filterTags) return;
+    
+    const allFilters = [];
+    
+    activeFilters.types.forEach(type => {
+        allFilters.push({
+            category: 'types',
+            value: type,
+            label: `Type: ${type}`
+        });
+    });
+    
+    activeFilters.colors.forEach(color => {
+        allFilters.push({
+            category: 'colors',
+            value: color,
+            label: `Color: ${color}`
+        });
+    });
+    
+    activeFilters.finishes.forEach(finish => {
+        allFilters.push({
+            category: 'finishes',
+            value: finish,
+            label: `Finish: ${finish}`
+        });
+    });
+    
+    if (allFilters.length === 0) {
+        filterTags.innerHTML = '<span style="font-size: 11px; color: var(--text-light);">Showing products of same type</span>';
+        return;
+    }
+    
+    const tagsHTML = allFilters.map(filter => `
+        <div class="filter-tag">
+            ${filter.label}
+            <button class="remove-filter" onclick="removeFilter('${filter.category}', '${filter.value.replace(/'/g, "\\'")}')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `).join('');
+    
+    filterTags.innerHTML = tagsHTML + 
+        `<button class="clear-all-filters" onclick="clearAllFilters()">
+            Clear All
+        </button>`;
+}
+
+function removeFilter(category, value) {
+    console.log('Removing filter:', category, value);
+    
+    activeFilters[category] = activeFilters[category].filter(item => item !== value);
+    
+    const checkboxId = `${category}_${value.replace(/\s+/g, '_')}`;
+    const checkbox = document.getElementById(checkboxId);
+    if (checkbox) {
+        checkbox.checked = false;
+    }
+    
+    applyFilters();
+}
+
+function clearAllFilters() {
+    console.log('Clearing all filters');
+    
+    activeFilters = {
+        types: [],
+        colors: [],
+        finishes: []
+    };
+    
+    document.querySelectorAll('#typeFilterOptions input[type="checkbox"]').forEach(cb => cb.checked = false);
+    document.querySelectorAll('#colorFilterOptions input[type="checkbox"]').forEach(cb => cb.checked = false);
+    document.querySelectorAll('#finishFilterOptions input[type="checkbox"]').forEach(cb => cb.checked = false);
+    
+    document.getElementById('sortPriceAsc').checked = true;
+    
+    applyFilters();
+}
+
+function applyFilters() {
+    console.log('Applying filters:', activeFilters);
+    
+    const sortBy = document.querySelector('input[name="sortBy"]:checked').value;
+    
+    filteredSimilarProducts = [...similarProducts];
+    
+    if (activeFilters.types.length === 0 && 
+        activeFilters.colors.length === 0 && 
+        activeFilters.finishes.length === 0) {
+        
+        if (currentProduct && currentProduct.type) {
+            filteredSimilarProducts = similarProducts.filter(product => 
+                product.type && product.type === currentProduct.type
+            );
+        }
+    } else {
+        if (activeFilters.types.length > 0) {
+            filteredSimilarProducts = filteredSimilarProducts.filter(product => 
+                product.type && activeFilters.types.includes(product.type)
+            );
+        }
+        
+        if (activeFilters.colors.length > 0) {
+            filteredSimilarProducts = filteredSimilarProducts.filter(product => 
+                product.color && activeFilters.colors.includes(product.color)
+            );
+        }
+        
+        if (activeFilters.finishes.length > 0) {
+            filteredSimilarProducts = filteredSimilarProducts.filter(product => 
+                product.finish && activeFilters.finishes.includes(product.finish)
+            );
+        }
+    }
+    
+    console.log('After filtering:', filteredSimilarProducts.length, 'products');
+    
+    filteredSimilarProducts.sort((a, b) => {
+        switch(sortBy) {
+            case 'price_asc':
+                return a.price - b.price;
+            case 'price_desc':
+                return b.price - a.price;
+            case 'name_asc':
+                return a.stone_name.localeCompare(b.stone_name);
+            default:
+                return 0;
+        }
+    });
+    
+    updateFilterTags();
+    displaySimilarProducts();
 }
 </script>
 </body>
