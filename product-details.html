@@ -364,6 +364,7 @@ header.show {
     visibility: hidden;
     transition: all 0.3s ease;
     z-index: 100;
+   
 }
 
 .zoom-panel.active {
@@ -1247,9 +1248,8 @@ header.show {
     }
     
     .zoom-panel {
-        display: none !important;
-    }
-    
+    display: block;
+}    
     .thumbnail {
         width: 70px;
         height: 70px;
@@ -1631,213 +1631,112 @@ let activeFilters = {
     finishes: []
 };
 
+<script>
 // ============================================
-// ADVANCED IMAGE ZOOM SYSTEM - IMPROVED LIKE sandstoneindia.in
+// FINAL ADVANCED IMAGE ZOOM SYSTEM
+// LIKE sandstoneindia.in (STABLE VERSION)
 // ============================================
 
 function initZoomSystem() {
-    const mainImage = document.getElementById('mainProductImage');
-    const mainImageWrapper = document.getElementById('mainImageWrapper');
-    const hoverBox = document.getElementById('hoverBox');
-    const zoomPanel = document.getElementById('zoomPanel');
-    const zoomImage = document.getElementById('zoomImage');
-    
-    if (!mainImage || !mainImageWrapper || !hoverBox || !zoomPanel || !zoomImage) {
-        console.log('Zoom system elements not found');
+
+    const mainImage = document.getElementById("mainProductImage");
+    const wrapper   = document.getElementById("mainImageWrapper");
+    const hoverBox  = document.getElementById("hoverBox");
+    const zoomPanel = document.getElementById("zoomPanel");
+    const zoomImage = document.getElementById("zoomImage");
+
+    if (!mainImage || !wrapper || !hoverBox || !zoomPanel || !zoomImage) {
+        console.warn("Zoom elements missing");
         return;
     }
-    
-    // Wait for image to load
-    if (!mainImage.complete) {
-        mainImage.onload = function() {
-            setTimeout(() => setupZoom(), 100);
-        };
-    } else {
-        setTimeout(() => setupZoom(), 100);
-    }
-    
-    function setupZoom() {
-        console.log('Setting up improved zoom system...');
-        
-        // Set zoom image source to main image
+
+    let zoomActive = false;
+
+    const ZOOM_LEVEL = 2.4;     // natural zoom (not too much)
+    const BOX_SIZE  = 150;     // hover box size
+
+    function setup() {
         zoomImage.src = mainImage.src;
-        
-        // Variables
-        const zoomLevel = 2.5; // Reduced zoom level for better performance
-        const hoverBoxSize = 150;
-        
-        // Reset any previous event listeners
-        mainImageWrapper.removeEventListener('mouseenter', handleMouseEnter);
-        mainImageWrapper.removeEventListener('mousemove', handleMouseMove);
-        mainImageWrapper.removeEventListener('mouseleave', handleMouseLeave);
-        
-        // Calculate dimensions
-        const imageDisplayWidth = mainImage.offsetWidth;
-        const imageDisplayHeight = mainImage.offsetHeight;
-        const imageNaturalWidth = mainImage.naturalWidth || mainImage.width;
-        const imageNaturalHeight = mainImage.naturalHeight || mainImage.height;
-        
-        console.log('Image dimensions:', {
-            display: { width: imageDisplayWidth, height: imageDisplayHeight },
-            natural: { width: imageNaturalWidth, height: imageNaturalHeight }
-        });
-        
-        // Set zoom image dimensions (scaled)
-        const zoomImageWidth = imageNaturalWidth * zoomLevel;
-        const zoomImageHeight = imageNaturalHeight * zoomLevel;
-        
-        zoomImage.style.width = zoomImageWidth + 'px';
-        zoomImage.style.height = zoomImageHeight + 'px';
-        
-        // Store dimensions for calculations
-        mainImageWrapper.zoomData = {
-            imageWidth: imageDisplayWidth,
-            imageHeight: imageDisplayHeight,
-            naturalWidth: imageNaturalWidth,
-            naturalHeight: imageNaturalHeight,
-            zoomLevel: zoomLevel,
-            hoverBoxSize: hoverBoxSize,
-            zoomImageWidth: zoomImageWidth,
-            zoomImageHeight: zoomImageHeight,
-            zoomPanelWidth: zoomPanel.offsetWidth,
-            zoomPanelHeight: zoomPanel.offsetHeight
-        };
-        
-        // Event Handlers
-        function handleMouseEnter(e) {
-            if (window.innerWidth <= 768) return;
-            
-            zoomActive = true;
-            
-            // Show hover box and zoom panel
-            hoverBox.classList.add('active');
-            zoomPanel.classList.add('active');
-            
-            // Position hover box at mouse position
-            positionHoverBox(e);
-            updateZoomPosition(e);
-        }
-        
-        function handleMouseMove(e) {
-            if (!zoomActive || window.innerWidth <= 768) return;
-            
-            // Position hover box
-            positionHoverBox(e);
-            
-            // Update zoom image position
-            updateZoomPosition(e);
-        }
-        
-        function handleMouseLeave() {
-            zoomActive = false;
-            
-            // Hide hover box and zoom panel
-            hoverBox.classList.remove('active');
-            zoomPanel.classList.remove('active');
-        }
-        
-        // Function to position hover box
-        function positionHoverBox(e) {
-            const rect = mainImageWrapper.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            const data = mainImageWrapper.zoomData;
-            if (!data) return;
-            
-            // Constrain hover box within image bounds
-            let boxX = x - data.hoverBoxSize / 2;
-            let boxY = y - data.hoverBoxSize / 2;
-            
-            // Boundary checks
-            boxX = Math.max(0, Math.min(boxX, data.imageWidth - data.hoverBoxSize));
-            boxY = Math.max(0, Math.min(boxY, data.imageHeight - data.hoverBoxSize));
-            
-            // Apply position
-            hoverBox.style.width = data.hoverBoxSize + 'px';
-            hoverBox.style.height = data.hoverBoxSize + 'px';
-            hoverBox.style.left = boxX + 'px';
-            hoverBox.style.top = boxY + 'px';
-        }
-        
-        // Function to update zoom position - IMPROVED CALCULATION
-        function updateZoomPosition(e) {
-            if (!zoomActive) return;
-            
-            const data = mainImageWrapper.zoomData;
-            if (!data) return;
-            
-            const rect = mainImageWrapper.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            // Calculate percentage position (0-100%)
-            const percentX = (x / data.imageWidth);
-            const percentY = (y / data.imageHeight);
-            
-            // Calculate the visible area in the zoomed image
-            const visibleWidth = data.zoomPanelWidth;
-            const visibleHeight = data.zoomPanelHeight;
-            
-            // Calculate position to show in zoom panel
-            const zoomX = -(percentX * data.zoomImageWidth - visibleWidth / 2);
-            const zoomY = -(percentY * data.zoomImageHeight - visibleHeight / 2);
-            
-            // Apply transform with smooth movement
-            zoomImage.style.transform = `translate(${zoomX}px, ${zoomY}px)`;
-            
-            // Also update hover box position based on percentage
-            updateHoverBoxPosition(percentX, percentY);
-        }
-        
-        function updateHoverBoxPosition(percentX, percentY) {
-            const data = mainImageWrapper.zoomData;
-            if (!data) return;
-            
-            const boxX = percentX * data.imageWidth - data.hoverBoxSize / 2;
-            const boxY = percentY * data.imageHeight - data.hoverBoxSize / 2;
-            
-            hoverBox.style.left = Math.max(0, Math.min(boxX, data.imageWidth - data.hoverBoxSize)) + 'px';
-            hoverBox.style.top = Math.max(0, Math.min(boxY, data.imageHeight - data.hoverBoxSize)) + 'px';
-        }
-        
-        // Add event listeners
-        mainImageWrapper.addEventListener('mouseenter', handleMouseEnter);
-        mainImageWrapper.addEventListener('mousemove', handleMouseMove);
-        mainImageWrapper.addEventListener('mouseleave', handleMouseLeave);
-        
-        // Add touch events for mobile
-        if ('ontouchstart' in window) {
-            mainImageWrapper.addEventListener('touchstart', handleTouch);
-            mainImageWrapper.addEventListener('touchmove', handleTouch);
-            mainImageWrapper.addEventListener('touchend', handleTouchEnd);
-        }
-        
-        function handleTouch(e) {
-            if (window.innerWidth <= 768) return;
-            
-            e.preventDefault();
-            const touch = e.touches[0];
-            const mouseEvent = new MouseEvent('mousemove', {
-                clientX: touch.clientX,
-                clientY: touch.clientY
-            });
-            
-            if (!zoomActive && e.type === 'touchstart') {
-                handleMouseEnter(mouseEvent);
-            } else if (zoomActive) {
-                handleMouseMove(mouseEvent);
-            }
-        }
-        
-        function handleTouchEnd() {
-            handleMouseLeave();
-        }
-        
-        console.log('✅ Zoom system initialized successfully');
-        isZoomPanelLoaded = true;
+
+        const imgW = mainImage.offsetWidth;
+        const imgH = mainImage.offsetHeight;
+
+        const natW = mainImage.naturalWidth;
+        const natH = mainImage.naturalHeight;
+
+        zoomImage.style.width  = natW * ZOOM_LEVEL + "px";
+        zoomImage.style.height = natH * ZOOM_LEVEL + "px";
+
+        wrapper.addEventListener("mouseenter", onEnter);
+        wrapper.addEventListener("mousemove", onMove);
+        wrapper.addEventListener("mouseleave", onLeave);
+    }
+
+    function onEnter(e) {
+        if (window.innerWidth <= 768) return;
+
+        zoomActive = true;
+        zoomPanel.classList.add("active");
+        hoverBox.classList.add("active");
+        move(e);
+    }
+
+    function onMove(e) {
+        if (!zoomActive) return;
+        move(e);
+    }
+
+    function onLeave() {
+        zoomActive = false;
+        zoomPanel.classList.remove("active");
+        hoverBox.classList.remove("active");
+    }
+
+    function move(e) {
+        const rect = wrapper.getBoundingClientRect();
+
+        let x = e.clientX - rect.left;
+        let y = e.clientY - rect.top;
+
+        const imgW = mainImage.offsetWidth;
+        const imgH = mainImage.offsetHeight;
+
+        x = Math.max(0, Math.min(x, imgW));
+        y = Math.max(0, Math.min(y, imgH));
+
+        // Hover box
+        let boxX = x - BOX_SIZE / 2;
+        let boxY = y - BOX_SIZE / 2;
+
+        boxX = Math.max(0, Math.min(boxX, imgW - BOX_SIZE));
+        boxY = Math.max(0, Math.min(boxY, imgH - BOX_SIZE));
+
+        hoverBox.style.width  = BOX_SIZE + "px";
+        hoverBox.style.height = BOX_SIZE + "px";
+        hoverBox.style.left   = boxX + "px";
+        hoverBox.style.top    = boxY + "px";
+
+        // Zoom panel movement
+        const zoomW = zoomImage.offsetWidth;
+        const zoomH = zoomImage.offsetHeight;
+
+        const percentX = x / imgW;
+        const percentY = y / imgH;
+
+        const zx = -(percentX * zoomW - zoomPanel.offsetWidth / 2);
+        const zy = -(percentY * zoomH - zoomPanel.offsetHeight / 2);
+
+        zoomImage.style.transform = `translate(${zx}px, ${zy}px)`;
+    }
+
+    if (!mainImage.complete) {
+        mainImage.onload = setup;
+    } else {
+        setup();
     }
 }
+</script>
+
 
 // ============================================
 // NOTIFICATION SYSTEM
