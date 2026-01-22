@@ -2351,11 +2351,11 @@ function initAutoHideHeaderFooter() {
 }
 
 // ============================================
-// PROFESSIONAL ZOOM SYSTEM - PERFECT CALCULATIONS
+// PROFESSIONAL ZOOM SYSTEM - MOVING HOVER BOX
 // ============================================
 
 function initZoomSystem() {
-    console.log('🔍 Initializing professional zoom system...');
+    console.log('🔍 Initializing moving hover box zoom system...');
     
     const mainImage = document.getElementById("mainProductImage");
     const wrapper = document.getElementById("mainImageWrapper");
@@ -2368,21 +2368,23 @@ function initZoomSystem() {
         return;
     }
 
-    // Configuration - Professional settings
-    const hoverRatio = 0.25; // Exactly 25% of image
-    const zoomLevel = 2; // 200% zoom (optimal for detail view)
+    // Configuration - DOUBLE SIZE HOVER BOX
+    const hoverRatio = 0.50; // DOUBLE: 50% of image (was 25%)
+    const zoomLevel = 2; // 200% zoom
     const zoomPanelGap = 10; // 10px gap from image
-    const zoomPanelSize = 300; // Fixed panel size
+    const zoomPanelSize = 350; // Slightly larger panel
 
     let isZoomActive = false;
     let isTouchZooming = false;
     let isMobileZoomToggled = false;
     let lastTouchTime = 0;
     let isImageLoaded = false;
+    let lastCursorX = 0;
+    let lastCursorY = 0;
 
     // Initialize when image loads
     function initializeZoom() {
-        console.log('✅ Image loaded, setting up zoom...');
+        console.log('✅ Image loaded, setting up moving hover zoom...');
         
         if (!mainImage.naturalWidth || !mainImage.naturalHeight) {
             console.warn('⚠️ Image dimensions not available');
@@ -2397,13 +2399,13 @@ function initZoomSystem() {
         // Reset states
         resetZoom();
         
-        // Calculate initial positions
-        updateLayout();
+        // Set initial hover box position (center)
+        updateHoverBoxPosition();
         
         // Set up event listeners
         setupEventListeners();
         
-        console.log('✅ Professional zoom system ready');
+        console.log('✅ Moving hover zoom system ready (50% hover box)');
     }
 
     // Reset zoom to initial state
@@ -2415,30 +2417,48 @@ function initZoomSystem() {
         isTouchZooming = false;
     }
 
-    // Calculate and update all positions
-    function updateLayout() {
+    // Update hover box position based on cursor
+    function updateHoverBoxPosition(cursorX = null, cursorY = null) {
         if (!isImageLoaded) return;
         
         const imageRect = wrapper.getBoundingClientRect();
         
-        // Calculate hover box (25% of image, centered)
+        // Calculate hover box size (50% of image)
         const boxWidth = imageRect.width * hoverRatio;
         const boxHeight = imageRect.height * hoverRatio;
-        const boxX = (imageRect.width - boxWidth) / 2;
-        const boxY = (imageRect.height - boxHeight) / 2;
         
-        // Set hover box position (fixed center)
+        // If cursor position provided, use it; otherwise center the box
+        let boxX, boxY;
+        
+        if (cursorX !== null && cursorY !== null) {
+            // Position box so cursor is at its center
+            boxX = cursorX - (boxWidth / 2);
+            boxY = cursorY - (boxHeight / 2);
+            
+            // Constrain box within image boundaries
+            const maxX = imageRect.width - boxWidth;
+            const maxY = imageRect.height - boxHeight;
+            
+            boxX = Math.max(0, Math.min(boxX, maxX));
+            boxY = Math.max(0, Math.min(boxY, maxY));
+            
+            // Store last cursor position
+            lastCursorX = cursorX;
+            lastCursorY = cursorY;
+        } else {
+            // Center the box initially
+            boxX = (imageRect.width - boxWidth) / 2;
+            boxY = (imageRect.height - boxHeight) / 2;
+        }
+        
+        // Apply styles with smooth transition
+        hoverBox.style.transition = 'all 0.15s cubic-bezier(0.4, 0, 0.2, 1)';
         hoverBox.style.width = `${boxWidth}px`;
         hoverBox.style.height = `${boxHeight}px`;
         hoverBox.style.left = `${boxX}px`;
         hoverBox.style.top = `${boxY}px`;
         
-        // Position zoom panel (right side of image)
-        positionZoomPanel(imageRect);
-        
-        // Set zoom image size
-        zoomImage.style.width = `${mainImage.naturalWidth * zoomLevel}px`;
-        zoomImage.style.height = `${mainImage.naturalHeight * zoomLevel}px`;
+        return { boxX, boxY, boxWidth, boxHeight };
     }
 
     // Position zoom panel to the right of image
@@ -2446,7 +2466,7 @@ function initZoomSystem() {
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
         
-        // Calculate panel position
+        // Try to position on right side first
         let panelLeft = imageRect.right + zoomPanelGap;
         let panelTop = imageRect.top + (imageRect.height / 2) - (zoomPanelSize / 2);
         
@@ -2470,23 +2490,20 @@ function initZoomSystem() {
         zoomPanel.style.height = `${zoomPanelSize}px`;
     }
 
-    // Calculate and update zoom view based on cursor
+    // Calculate and update zoom view based on cursor position
     function updateZoomView(cursorX, cursorY, imageRect) {
         if (!isImageLoaded) return;
         
-        // Get hover box bounds relative to image
-        const boxWidth = imageRect.width * hoverRatio;
-        const boxHeight = imageRect.height * hoverRatio;
-        const boxX = (imageRect.width - boxWidth) / 2;
-        const boxY = (imageRect.height - boxHeight) / 2;
+        // Update hover box position to follow cursor
+        const boxInfo = updateHoverBoxPosition(cursorX, cursorY);
         
         // Calculate cursor position relative to hover box
-        const cursorInBoxX = cursorX - boxX;
-        const cursorInBoxY = cursorY - boxY;
+        const cursorInBoxX = cursorX - boxInfo.boxX;
+        const cursorInBoxY = cursorY - boxInfo.boxY;
         
         // Calculate percentage position within hover box (0 to 1)
-        const percentX = cursorInBoxX / boxWidth;
-        const percentY = cursorInBoxY / boxHeight;
+        const percentX = cursorInBoxX / boxInfo.boxWidth;
+        const percentY = cursorInBoxY / boxInfo.boxHeight;
         
         // Clamp percentages to ensure they stay within bounds
         const clampedPercentX = Math.max(0, Math.min(1, percentX));
@@ -2504,11 +2521,8 @@ function initZoomSystem() {
         // Apply smooth transform
         zoomImage.style.transform = `translate(${translateX}px, ${translateY}px)`;
         
-        // Optional: Add smooth transition for movement
-        zoomImage.style.transition = 'transform 0.1s ease-out';
-        
-        // Debug log (optional)
-        // console.log(`Cursor: (${cursorX}, ${cursorY}) | Percent: (${clampedPercentX.toFixed(2)}, ${clampedPercentY.toFixed(2)}) | Translate: (${translateX.toFixed(0)}, ${translateY.toFixed(0)})`);
+        // Position zoom panel
+        positionZoomPanel(imageRect);
     }
 
     // Handle mouse movement
@@ -2588,6 +2602,12 @@ function initZoomSystem() {
             if (window.innerWidth > 768 && !isMobileZoomToggled) {
                 isZoomActive = true;
                 showZoom();
+                
+                // Center hover box on cursor initially
+                const imageRect = wrapper.getBoundingClientRect();
+                const cursorX = lastCursorX || imageRect.width / 2;
+                const cursorY = lastCursorY || imageRect.height / 2;
+                updateZoomView(cursorX, cursorY, imageRect);
             }
         });
 
@@ -2643,14 +2663,14 @@ function initZoomSystem() {
             clearTimeout(resizeTimer);
             resizeTimer = setTimeout(() => {
                 if (isImageLoaded) {
-                    updateLayout();
+                    // Recalculate hover box position
+                    const imageRect = wrapper.getBoundingClientRect();
                     
-                    // Update zoom view if active
                     if (isZoomActive || isMobileZoomToggled) {
-                        const imageRect = wrapper.getBoundingClientRect();
-                        const centerX = imageRect.width / 2;
-                        const centerY = imageRect.height / 2;
-                        updateZoomView(centerX, centerY, imageRect);
+                        // Use last cursor position or center
+                        const cursorX = lastCursorX || imageRect.width / 2;
+                        const cursorY = lastCursorY || imageRect.height / 2;
+                        updateZoomView(cursorX, cursorY, imageRect);
                     }
                 }
             }, 150);
@@ -2664,13 +2684,13 @@ function initZoomSystem() {
                 // Wait for zoom image to load
                 zoomImage.onload = () => {
                     if (isImageLoaded) {
-                        updateLayout();
+                        // Update layout with current cursor position
+                        const imageRect = wrapper.getBoundingClientRect();
                         
                         if (isZoomActive || isMobileZoomToggled) {
-                            const imageRect = wrapper.getBoundingClientRect();
-                            const centerX = imageRect.width / 2;
-                            const centerY = imageRect.height / 2;
-                            updateZoomView(centerX, centerY, imageRect);
+                            const cursorX = lastCursorX || imageRect.width / 2;
+                            const cursorY = lastCursorY || imageRect.height / 2;
+                            updateZoomView(cursorX, cursorY, imageRect);
                         }
                     }
                 };
@@ -2694,6 +2714,185 @@ function initZoomSystem() {
     window.toggleMobileZoom = toggleMobileZoom;
     window.resetZoom = resetZoom;
 }
+
+// ============================================
+// UPDATED CSS FOR MOVING HOVER BOX
+// ============================================
+
+// Add this CSS to your style section
+const zoomStyles = `
+/* Enhanced Zoom Styles for Moving Hover Box */
+.hover-box {
+    position: absolute;
+    width: 50%; /* DOUBLE SIZE: 50% of image */
+    height: 50%; /* DOUBLE SIZE: 50% of image */
+    background: rgba(201, 162, 39, 0.2);
+    border: 2px solid var(--primary-gold);
+    pointer-events: none;
+    z-index: 1000;
+    display: none;
+    border-radius: 6px;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.8) inset,
+                0 4px 20px rgba(201, 162, 39, 0.3);
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: crosshair;
+}
+
+.hover-box.active {
+    display: block;
+    animation: glowBox 2s infinite alternate;
+}
+
+@keyframes glowBox {
+    0% {
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.8) inset,
+                    0 4px 20px rgba(201, 162, 39, 0.3),
+                    0 0 30px rgba(201, 162, 39, 0.1);
+    }
+    100% {
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9) inset,
+                    0 6px 25px rgba(201, 162, 39, 0.5),
+                    0 0 40px rgba(201, 162, 39, 0.2);
+    }
+}
+
+.zoom-panel {
+    position: fixed;
+    width: 350px;
+    height: 350px;
+    background: var(--white);
+    border: 2px solid var(--primary-gold);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(0, 0, 0, 0.1) inset,
+                0 0 30px rgba(201, 162, 39, 0.2);
+    z-index: 9998;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px) scale(0.98);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+}
+
+.zoom-panel.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+.zoom-image-container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(45deg, #f5f5f5, #e8e8e8);
+    border-radius: 10px;
+}
+
+.zoom-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    max-width: none;
+    transform-origin: 0 0;
+    image-rendering: auto;
+    will-change: transform;
+    transition: transform 0.1s ease-out;
+}
+
+/* Zoom preview label */
+.zoom-panel::after {
+    content: '200% ZOOM';
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: var(--primary-gold);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    z-index: 2;
+    opacity: 0.9;
+}
+
+/* Mobile zoom instructions */
+@media (max-width: 768px) {
+    .hover-box {
+        width: 60%; /* Slightly larger on mobile */
+        height: 60%;
+    }
+    
+    .zoom-panel {
+        width: 280px;
+        height: 280px;
+        right: 10px;
+        left: auto;
+    }
+    
+    .zoom-panel::before {
+        content: '👆 Double tap to toggle zoom';
+        position: absolute;
+        top: -35px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, var(--primary-gold), var(--gold-dark));
+        color: white;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        white-space: nowrap;
+        z-index: 10000;
+        opacity: 0;
+        transition: opacity 0.3s;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .zoom-panel.active::before {
+        opacity: 1;
+    }
+}
+
+/* Desktop hover instructions */
+@media (min-width: 769px) {
+    .main-image-wrapper:hover .hover-box::after {
+        content: 'Hover to zoom';
+        position: absolute;
+        bottom: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        white-space: nowrap;
+        z-index: 1001;
+        opacity: 0.9;
+        pointer-events: none;
+    }
+}
+`;
+
+// Add the CSS to the document
+function addZoomStyles() {
+    if (!document.getElementById('zoom-styles')) {
+        const styleElement = document.createElement('style');
+        styleElement.id = 'zoom-styles';
+        styleElement.textContent = zoomStyles;
+        document.head.appendChild(styleElement);
+    }
+}
+
+// ============================================
+// INITIALIZE EVERYTHING
+// ============================================
+
+// Call this after DOM is loaded
+addZoomStyles();
 
 // ============================================
 // EMAIL ENQUIRY - WORKING ON BOTH MOBILE & DESKTOP
