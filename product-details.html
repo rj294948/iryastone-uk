@@ -2349,239 +2349,238 @@ function initAutoHideHeaderFooter() {
     
     console.log('✅ Auto-hide header/footer initialized (scroll only)');
 }
-(function(){
-    // =========================
-    // CSS Styles (Injected)
-    // =========================
-    const zoomStyles = `
-    #hoverBox {
-        position: absolute;
-        width: 50%;
-        height: 50%;
-        background: rgba(201,162,39,0.2);
-        border: 2px solid #C9A227;
-        pointer-events: none;
-        z-index: 1000;
-        display: none;
-        border-radius: 6px;
-        box-shadow: 0 0 0 1px rgba(255,255,255,0.8) inset,
-                    0 4px 20px rgba(201,162,39,0.3);
-        transition: all 0.15s cubic-bezier(0.4,0,0.2,1);
-        cursor: crosshair;
+/* ===== CSS INJECTION ===== */
+const zoomStyles = `
+#hoverBox {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    background: rgba(201,162,39,0.2);
+    border: 2px solid #C9A227;
+    pointer-events: none;
+    z-index: 1000;
+    display: none;
+    border-radius: 6px;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.8) inset,
+                0 4px 20px rgba(201,162,39,0.3);
+    transition: all 0.15s cubic-bezier(0.4,0,0.2,1);
+    cursor: crosshair;
+}
+#hoverBox.active { display:block; }
+
+#zoomPanel {
+    position: fixed;
+    width: 350px;
+    height: 350px;
+    background: #fff;
+    border: 2px solid #C9A227;
+    border-radius: 12px;
+    overflow: hidden;
+    z-index: 9998;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px) scale(0.98);
+    transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    pointer-events: none;
+}
+#zoomPanel.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+#zoomPanel img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    max-width: none;
+    transform-origin: 0 0;
+    will-change: transform;
+}
+`;
+
+const styleEl = document.createElement('style');
+styleEl.textContent = zoomStyles;
+document.head.appendChild(styleEl);
+
+
+/* ===== ZOOM SYSTEM JS ===== */
+function initZoomSystem() {
+    const mainImage = document.getElementById("mainProductImage");
+    const wrapper = document.getElementById("mainImageWrapper");
+    const hoverBox = document.getElementById("hoverBox");
+    const zoomPanel = document.getElementById("zoomPanel");
+    const zoomImage = document.getElementById("zoomImage");
+
+    if(!mainImage||!wrapper||!hoverBox||!zoomPanel||!zoomImage) return;
+
+    const hoverRatio = 0.5; // 50% hover box
+    const zoomLevel = 2; // 200% zoom
+    const zoomPanelSize = 350;
+    const zoomPanelGap = 10;
+
+    let isZoomActive=false, isTouchZooming=false, isMobileZoomToggled=false;
+    let lastTouchTime=0, isImageLoaded=false, lastCursorX=0, lastCursorY=0;
+
+    function initializeZoom(){
+        isImageLoaded = true;
+        zoomImage.src = mainImage.src;
+        resetZoom();
+        updateHoverBoxPosition();
+        setupEventListeners();
     }
-    #hoverBox.active { display:block; }
 
-    #zoomPanel {
-        position: fixed;
-        width: 350px;
-        height: 350px;
-        background: #fff;
-        border: 2px solid #C9A227;
-        border-radius: 12px;
-        overflow: hidden;
-        z-index: 9998;
-        opacity: 0;
-        visibility: hidden;
-        transform: translateY(10px) scale(0.98);
-        transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
-        pointer-events: none;
+    function resetZoom(){
+        hoverBox.style.display='none';
+        hoverBox.classList.remove('active');
+        zoomPanel.classList.remove('active');
+        isZoomActive=false; isTouchZooming=false;
     }
-    #zoomPanel.active {
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0) scale(1);
-    }
-    #zoomPanel img {
-        position: absolute;
-        top: 0;
-        left: 0;
-        max-width: none;
-        transform-origin: 0 0;
-        will-change: transform;
-    }
-    `;
 
-    const styleEl = document.createElement('style');
-    styleEl.textContent = zoomStyles;
-    document.head.appendChild(styleEl);
+    function updateHoverBoxPosition(cursorX=null, cursorY=null){
+        if(!isImageLoaded) return;
+        const rect=wrapper.getBoundingClientRect();
+        const boxWidth = rect.width*hoverRatio;
+        const boxHeight = rect.height*hoverRatio;
 
-    // =========================
-    // Zoom System JS
-    // =========================
-    function initZoomSystem() {
-        const mainImage = document.getElementById("mainProductImage");
-        const wrapper = document.getElementById("mainImageWrapper");
-        const hoverBox = document.getElementById("hoverBox");
-        const zoomPanel = document.getElementById("zoomPanel");
-        const zoomImage = document.getElementById("zoomImage");
-
-        if (!mainImage || !wrapper || !hoverBox || !zoomPanel || !zoomImage) return;
-
-        const hoverRatio = 0.5;
-        const zoomLevel = 2;
-        const zoomPanelSize = 350;
-        const zoomPanelGap = 10;
-
-        let isZoomActive=false, isTouchZooming=false, isMobileZoomToggled=false;
-        let lastTouchTime=0, isImageLoaded=false, lastCursorX=0, lastCursorY=0;
-
-        function initializeZoom() {
-            isImageLoaded = true;
-            zoomImage.src = mainImage.src;
-            resetZoom();
-            updateHoverBoxPosition();
-            setupEventListeners();
+        let boxX, boxY;
+        if(cursorX!==null && cursorY!==null){
+            boxX=cursorX-boxWidth/2;
+            boxY=cursorY-boxHeight/2;
+            boxX=Math.max(0, Math.min(boxX, rect.width-boxWidth));
+            boxY=Math.max(0, Math.min(boxY, rect.height-boxHeight));
+            lastCursorX=cursorX; lastCursorY=cursorY;
+        } else {
+            boxX=(rect.width-boxWidth)/2;
+            boxY=(rect.height-boxHeight)/2;
         }
 
-        function resetZoom() {
-            hoverBox.style.display='none';
-            hoverBox.classList.remove('active');
-            zoomPanel.classList.remove('active');
-            isZoomActive=false; isTouchZooming=false;
-        }
+        hoverBox.style.width=boxWidth+'px';
+        hoverBox.style.height=boxHeight+'px';
+        hoverBox.style.left=boxX+'px';
+        hoverBox.style.top=boxY+'px';
 
-        function updateHoverBoxPosition(cursorX=null, cursorY=null){
-            if(!isImageLoaded) return;
+        return {boxX,boxY,boxWidth,boxHeight};
+    }
+
+    function positionZoomPanel(rect){
+        const vw=window.innerWidth, vh=window.innerHeight;
+        let left=rect.right+zoomPanelGap;
+        let top=rect.top+(rect.height/2)-zoomPanelSize/2;
+
+        if(left+zoomPanelSize>vw-20) left=rect.left-zoomPanelSize-zoomPanelGap;
+        if(top<20) top=20;
+        if(top+zoomPanelSize>vh-20) top=vh-zoomPanelSize-20;
+
+        zoomPanel.style.left=left+'px';
+        zoomPanel.style.top=top+'px';
+        zoomPanel.style.width=zoomPanelSize+'px';
+        zoomPanel.style.height=zoomPanelSize+'px';
+    }
+
+    function updateZoomView(cursorX,cursorY,rect){
+        if(!isImageLoaded) return;
+        const boxInfo = updateHoverBoxPosition(cursorX,cursorY);
+        const percentX = boxInfo.boxX / (rect.width-boxInfo.boxWidth);
+        const percentY = boxInfo.boxY / (rect.height-boxInfo.boxHeight);
+        const clampedX = Math.max(0, Math.min(1, percentX));
+        const clampedY = Math.max(0, Math.min(1, percentY));
+
+        const zoomWidth = mainImage.naturalWidth*zoomLevel;
+        const zoomHeight = mainImage.naturalHeight*zoomLevel;
+
+        const translateX = -clampedX*(zoomWidth-zoomPanelSize);
+        const translateY = -clampedY*(zoomHeight-zoomPanelSize);
+
+        zoomImage.style.width=zoomWidth+'px';
+        zoomImage.style.height=zoomHeight+'px';
+        zoomImage.style.transform=`translate(${translateX}px,${translateY}px)`;
+
+        positionZoomPanel(rect);
+    }
+
+    function showZoom(){ hoverBox.style.display='block'; hoverBox.classList.add('active'); zoomPanel.classList.add('active'); positionZoomPanel(wrapper.getBoundingClientRect()); }
+    function hideZoom(){ hoverBox.style.display='none'; hoverBox.classList.remove('active'); zoomPanel.classList.remove('active'); }
+
+    function toggleMobileZoom(){
+        isMobileZoomToggled=!isMobileZoomToggled;
+        if(isMobileZoomToggled){
+            showZoom();
             const rect=wrapper.getBoundingClientRect();
-            const boxWidth=rect.width*hoverRatio;
-            const boxHeight=rect.height*hoverRatio;
+            updateZoomView(rect.width/2,rect.height/2,rect);
+        } else hideZoom();
+    }
 
-            let boxX, boxY;
-            if(cursorX!==null && cursorY!==null){
-                boxX=cursorX-boxWidth/2;
-                boxY=cursorY-boxHeight/2;
-                boxX=Math.max(0, Math.min(boxX, rect.width-boxWidth));
-                boxY=Math.max(0, Math.min(boxY, rect.height-boxHeight));
-                lastCursorX=cursorX; lastCursorY=cursorY;
-            } else {
-                boxX=(rect.width-boxWidth)/2;
-                boxY=(rect.height-boxHeight)/2;
+    function handleMouseMove(e){
+        if(!isZoomActive||isMobileZoomToggled) return;
+        const rect=wrapper.getBoundingClientRect();
+        const x=e.clientX-rect.left, y=e.clientY-rect.top;
+        if(x>=0 && x<=rect.width && y>=0 && y<=rect.height) updateZoomView(x,y,rect);
+    }
+
+    function handleTouchMove(e){
+        if(!isTouchZooming||isMobileZoomToggled) return;
+        e.preventDefault();
+        const rect=wrapper.getBoundingClientRect();
+        const touch=e.touches[0];
+        updateZoomView(touch.clientX-rect.left, touch.clientY-rect.top, rect);
+    }
+
+    function setupEventListeners(){
+        wrapper.addEventListener('mouseenter',()=>{
+            if(window.innerWidth>768 && !isMobileZoomToggled){
+                isZoomActive=true; showZoom();
+                const rect=wrapper.getBoundingClientRect();
+                updateZoomView(lastCursorX||rect.width/2,lastCursorY||rect.height/2,rect);
             }
+        });
+        wrapper.addEventListener('mousemove',handleMouseMove);
+        wrapper.addEventListener('mouseleave',()=>{
+            isZoomActive=false; if(!isMobileZoomToggled) hideZoom();
+        });
 
-            hoverBox.style.width=boxWidth+'px';
-            hoverBox.style.height=boxHeight+'px';
-            hoverBox.style.left=boxX+'px';
-            hoverBox.style.top=boxY+'px';
-
-            return {boxX,boxY,boxWidth,boxHeight};
-        }
-
-        function positionZoomPanel(rect){
-            const vw=window.innerWidth, vh=window.innerHeight;
-            let left=rect.right+zoomPanelGap;
-            let top=rect.top+(rect.height/2)-zoomPanelSize/2;
-            if(left+zoomPanelSize>vw-20) left=rect.left-zoomPanelSize-zoomPanelGap;
-            if(top<20) top=20;
-            if(top+zoomPanelSize>vh-20) top=vh-zoomPanelSize-20;
-            zoomPanel.style.left=left+'px';
-            zoomPanel.style.top=top+'px';
-            zoomPanel.style.width=zoomPanelSize+'px';
-            zoomPanel.style.height=zoomPanelSize+'px';
-        }
-
-        function updateZoomView(cursorX, cursorY, rect){
-            if(!isImageLoaded) return;
-            const boxInfo=updateHoverBoxPosition(cursorX,cursorY);
-            const percentX = boxInfo.boxX / (rect.width - boxInfo.boxWidth);
-            const percentY = boxInfo.boxY / (rect.height - boxInfo.boxHeight);
-            const clampedX=Math.max(0, Math.min(1, percentX));
-            const clampedY=Math.max(0, Math.min(1, percentY));
-
-            const zoomWidth = mainImage.naturalWidth*zoomLevel;
-            const zoomHeight = mainImage.naturalHeight*zoomLevel;
-            const translateX = -clampedX*(zoomWidth-zoomPanelSize);
-            const translateY = -clampedY*(zoomHeight-zoomPanelSize);
-
-            zoomImage.style.width=zoomWidth+'px';
-            zoomImage.style.height=zoomHeight+'px';
-            zoomImage.style.transform=`translate(${translateX}px,${translateY}px)`;
-
-            positionZoomPanel(rect);
-        }
-
-        function showZoom(){ hoverBox.style.display='block'; hoverBox.classList.add('active'); zoomPanel.classList.add('active'); positionZoomPanel(wrapper.getBoundingClientRect()); }
-        function hideZoom(){ hoverBox.style.display='none'; hoverBox.classList.remove('active'); zoomPanel.classList.remove('active'); }
-
-        function toggleMobileZoom(){
-            isMobileZoomToggled=!isMobileZoomToggled;
-            if(isMobileZoomToggled){
-                showZoom();
-                const rect=wrapper.getBoundingClientRect();
-                updateZoomView(rect.width/2,rect.height/2,rect);
-            } else hideZoom();
-        }
-
-        function handleMouseMove(e){
-            if(!isZoomActive||isMobileZoomToggled) return;
-            const rect=wrapper.getBoundingClientRect();
-            const x=e.clientX-rect.left, y=e.clientY-rect.top;
-            if(x>=0 && x<=rect.width && y>=0 && y<=rect.height) updateZoomView(x,y,rect);
-        }
-
-        function handleTouchMove(e){
-            if(!isTouchZooming||isMobileZoomToggled) return;
+        wrapper.addEventListener('touchstart',(e)=>{
             e.preventDefault();
+            if(e.touches.length===1){
+                const now=Date.now();
+                if(now-lastTouchTime<300){ toggleMobileZoom(); lastTouchTime=0; }
+                else{ lastTouchTime=now; isTouchZooming=true; showZoom();
+                      const rect=wrapper.getBoundingClientRect();
+                      const touch=e.touches[0];
+                      updateZoomView(touch.clientX-rect.left,touch.clientY-rect.top,rect); }
+            }
+        },{passive:false});
+
+        wrapper.addEventListener('touchmove',handleTouchMove,{passive:false});
+        wrapper.addEventListener('touchend',()=>{
+            isTouchZooming=false; if(!isMobileZoomToggled) hideZoom();
+        });
+
+        window.addEventListener('resize',()=>{
             const rect=wrapper.getBoundingClientRect();
-            const touch=e.touches[0];
-            updateZoomView(touch.clientX-rect.left, touch.clientY-rect.top, rect);
-        }
+            if(isZoomActive||isMobileZoomToggled) updateZoomView(lastCursorX||rect.width/2,lastCursorY||rect.height/2,rect);
+        });
 
-        function setupEventListeners(){
-            wrapper.addEventListener('mouseenter',()=>{
-                if(window.innerWidth>768 && !isMobileZoomToggled){
-                    isZoomActive=true; showZoom();
+        const obs=new MutationObserver(()=>{
+            if(mainImage.src!==zoomImage.src){
+                zoomImage.src=mainImage.src;
+                zoomImage.onload=()=>{
                     const rect=wrapper.getBoundingClientRect();
-                    updateZoomView(lastCursorX||rect.width/2,lastCursorY||rect.height/2,rect);
-                }
-            });
-            wrapper.addEventListener('mousemove',handleMouseMove);
-            wrapper.addEventListener('mouseleave',()=>{
-                isZoomActive=false; if(!isMobileZoomToggled) hideZoom();
-            });
-
-            wrapper.addEventListener('touchstart',(e)=>{
-                e.preventDefault();
-                if(e.touches.length===1){
-                    const now=Date.now();
-                    if(now-lastTouchTime<300){ toggleMobileZoom(); lastTouchTime=0; }
-                    else{ lastTouchTime=now; isTouchZooming=true; showZoom();
-                          const rect=wrapper.getBoundingClientRect();
-                          const touch=e.touches[0];
-                          updateZoomView(touch.clientX-rect.left,touch.clientY-rect.top,rect); }
-                }
-            },{passive:false});
-
-            wrapper.addEventListener('touchmove',handleTouchMove,{passive:false});
-            wrapper.addEventListener('touchend',()=>{
-                isTouchZooming=false; if(!isMobileZoomToggled) hideZoom();
-            });
-
-            window.addEventListener('resize',()=>{
-                const rect=wrapper.getBoundingClientRect();
-                if(isZoomActive||isMobileZoomToggled) updateZoomView(lastCursorX||rect.width/2,lastCursorY||rect.height/2,rect);
-            });
-
-            const obs=new MutationObserver(()=>{
-                if(mainImage.src!==zoomImage.src){
-                    zoomImage.src=mainImage.src;
-                    zoomImage.onload=()=>{
-                        const rect=wrapper.getBoundingClientRect();
-                        if(isZoomActive||isMobileZoomToggled) updateZoomView(lastCursorX||rect.width/2,lastCursorY||rect.height/2,rect);
-                    };
-                }
-            });
-            obs.observe(mainImage,{attributes:true,attributeFilter:['src']});
-        }
-
-        if(mainImage.complete && mainImage.naturalWidth>0) initializeZoom();
-        else mainImage.onload=initializeZoom;
-
-        window.toggleMobileZoom=toggleMobileZoom;
-        window.resetZoom=resetZoom;
+                    if(isZoomActive||isMobileZoomToggled) updateZoomView(lastCursorX||rect.width/2,lastCursorY||rect.height/2,rect);
+                };
+            }
+        });
+        obs.observe(mainImage,{attributes:true,attributeFilter:['src']});
     }
 
-    initZoomSystem();
-})();
+    if(mainImage.complete && mainImage.naturalWidth>0) initializeZoom();
+    else mainImage.onload=initializeZoom;
+
+    window.toggleMobileZoom=toggleMobileZoom;
+    window.resetZoom=resetZoom;
+}
+
+// Initialize globally
+initZoomSystem();
 // ============================================
 // EMAIL ENQUIRY - WORKING ON BOTH MOBILE & DESKTOP
 // ============================================
