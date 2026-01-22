@@ -344,14 +344,12 @@ header.show {
 /* ZOOM BOX - EXACTLY 25% OF MAIN IMAGE */
 .hover-box {
     position: absolute;
-    background: rgba(201, 162, 39, 0.35);
+    width: 0;
+    height: 0;
+    background: rgba(201, 162, 39, 0.3);
     border: 2px solid var(--primary-gold);
-    pointer-events: none;
-    z-index: 1000;
     display: none;
-    top: 0;
-    left: 0;
-    border-radius: 4px;
+    pointer-events: none;
 }
 
 .hover-box.active {
@@ -2628,50 +2626,53 @@ function initZoomSystem() {
     // ===============================
     // CORE ZOOM FUNCTION
     // ===============================
-    function updateZoom(e) {
-        const imgRect = mainImage.getBoundingClientRect();
-        let x, y;
+  function updateZoom(e) {
+    const imgRect = mainImage.getBoundingClientRect(); // use mainImage, not wrapper
+    let x, y;
 
-        if (e.touches) {
-            x = e.touches[0].clientX - imgRect.left;
-            y = e.touches[0].clientY - imgRect.top;
-        } else {
-            x = e.clientX - imgRect.left;
-            y = e.clientY - imgRect.top;
-        }
-
-        const boxWidth = imgRect.width * hoverBoxRatio;
-        const boxHeight = imgRect.height * hoverBoxRatio;
-
-        let boxX = x - boxWidth / 2;
-        let boxY = y - boxHeight / 2;
-
-        boxX = Math.max(0, Math.min(boxX, imgRect.width - boxWidth));
-        boxY = Math.max(0, Math.min(boxY, imgRect.height - boxHeight));
-
-        hoverBox.style.display = 'block';
-        hoverBox.style.width = boxWidth + 'px';
-        hoverBox.style.height = boxHeight + 'px';
-        hoverBox.style.left = boxX + 'px';
-        hoverBox.style.top = boxY + 'px';
-
-        zoomPanel.classList.add('active');
-
-        if (mainImage.naturalWidth && mainImage.naturalHeight) {
-            const zoomImgWidth = mainImage.naturalWidth * zoomLevel;
-            const zoomImgHeight = mainImage.naturalHeight * zoomLevel;
-
-            const percentX = boxX / imgRect.width;
-            const percentY = boxY / imgRect.height;
-
-            const moveX = -(percentX * zoomImgWidth - zoomPanel.offsetWidth / 2);
-            const moveY = -(percentY * zoomImgHeight - zoomPanel.offsetHeight / 2);
-
-            zoomImage.style.width = zoomImgWidth + 'px';
-            zoomImage.style.height = zoomImgHeight + 'px';
-            zoomImage.style.transform = `translate(${moveX}px, ${moveY}px)`;
-        }
+    if (e.touches) {
+        x = e.touches[0].clientX - imgRect.left;
+        y = e.touches[0].clientY - imgRect.top;
+    } else {
+        x = e.clientX - imgRect.left;
+        y = e.clientY - imgRect.top;
     }
+
+    // Hover box size = 25% of visible image
+    const boxWidth = imgRect.width * 0.25;
+    const boxHeight = imgRect.height * 0.25;
+
+    let boxX = x - boxWidth / 2;
+    let boxY = y - boxHeight / 2;
+
+    boxX = Math.max(0, Math.min(boxX, imgRect.width - boxWidth));
+    boxY = Math.max(0, Math.min(boxY, imgRect.height - boxHeight));
+
+    hoverBox.style.display = 'block';
+    hoverBox.style.width = boxWidth + 'px';
+    hoverBox.style.height = boxHeight + 'px';
+    hoverBox.style.left = boxX + 'px';
+    hoverBox.style.top = boxY + 'px';
+
+    zoomPanel.classList.add('active');
+
+    // Zoom image logic
+    if (mainImage.naturalWidth && mainImage.naturalHeight) {
+        const zoomLevel = 3;
+        const zoomImgWidth = mainImage.naturalWidth * zoomLevel;
+        const zoomImgHeight = mainImage.naturalHeight * zoomLevel;
+
+        const percentX = boxX / imgRect.width;
+        const percentY = boxY / imgRect.height;
+
+        const moveX = -(percentX * zoomImgWidth - zoomPanel.offsetWidth / 2);
+        const moveY = -(percentY * zoomImgHeight - zoomPanel.offsetHeight / 2);
+
+        zoomImage.style.width = zoomImgWidth + 'px';
+        zoomImage.style.height = zoomImgHeight + 'px';
+        zoomImage.style.transform = `translate(${moveX}px, ${moveY}px)`;
+    }
+}
 
     // ===============================
     // MOBILE DOUBLE TAP TOGGLE
