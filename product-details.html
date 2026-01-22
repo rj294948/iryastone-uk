@@ -2839,7 +2839,7 @@ document.getElementById('whatsappEnquiryForm').addEventListener('submit', functi
 });
 
 // ============================================
-// PROFESSIONAL FILTER SYSTEM - COMPLETE
+// FILTER SYSTEM - SMART FILTERING
 // ============================================
 
 let activeFilters = {
@@ -2850,350 +2850,161 @@ let activeFilters = {
     sortBy: 'price_asc'
 };
 
-let filterCounts = {
-    types: {},
-    colors: {},
-    finishes: {}
-};
+// Filter modal functions
+function openFilterModal() {
+    document.getElementById('filterModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
 
-// Initialize filter system
-function initializeFilterSystem() {
+function closeFilterModal() {
+    document.getElementById('filterModal').classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+
+// Initialize filter options from Firebase data
+async function initializeFilterOptions() {
     try {
-        if (!currentProduct) return;
+        if (!firebaseDB) return;
         
-        // Always include current product type by default
-        if (currentProduct.type && !activeFilters.types.includes(currentProduct.type)) {
-            activeFilters.types.push(currentProduct.type);
+        // Show current product type section
+        const currentTypeSection = document.getElementById('currentTypeSection');
+        const currentTypeName = document.getElementById('currentTypeName');
+        
+        if (currentProduct && currentProduct.type) {
+            currentTypeSection.style.display = 'block';
+            currentTypeName.textContent = currentProduct.type;
+            
+            // Auto-select current product type
+            if (!activeFilters.types.includes(currentProduct.type)) {
+                activeFilters.types.push(currentProduct.type);
+            }
         }
         
-        // Calculate filter counts
-        calculateFilterCounts();
+        // Populate type filters
+        const typeContainer = document.getElementById('typeFilterOptions');
+        if (typeContainer) {
+            const typeOptions = Array.from(filterOptions.types).sort();
+            typeContainer.innerHTML = typeOptions.map(type => {
+                const isChecked = activeFilters.types.includes(type) ? 'checked' : '';
+                const isCurrentType = currentProduct && type === currentProduct.type;
+                const productCount = allProductsInDB.filter(p => p.type === type).length;
+                
+                return `
+                    <label class="filter-option" style="${isCurrentType ? 'background: linear-gradient(135deg, #fff8e1, #fff3cd);' : ''}">
+                        <input type="checkbox" value="${type}" ${isChecked} onchange="toggleFilter('types', '${type}')">
+                        <span>${type} ${isCurrentType ? '(Current)' : ''}</span>
+                        <span class="filter-count">(${productCount})</span>
+                    </label>
+                `;
+            }).join('');
+        }
         
-        // Populate filter options
-        populateFilterOptions();
+        // Populate color filters
+        const colorContainer = document.getElementById('colorFilterOptions');
+        if (colorContainer) {
+            const colorOptions = Array.from(filterOptions.colors).sort();
+            colorContainer.innerHTML = colorOptions.map(color => {
+                const isChecked = activeFilters.colors.includes(color) ? 'checked' : '';
+                const productCount = allProductsInDB.filter(p => p.color === color).length;
+                return `
+                    <label class="filter-option">
+                        <input type="checkbox" value="${color}" ${isChecked} onchange="toggleFilter('colors', '${color}')">
+                        <span>${color}</span>
+                        <span class="filter-count">(${productCount})</span>
+                    </label>
+                `;
+            }).join('');
+        }
+        
+        // Populate finish filters
+        const finishContainer = document.getElementById('finishFilterOptions');
+        if (finishContainer) {
+            const finishOptions = Array.from(filterOptions.finishes).sort();
+            finishContainer.innerHTML = finishOptions.map(finish => {
+                const isChecked = activeFilters.finishes.includes(finish) ? 'checked' : '';
+                const productCount = allProductsInDB.filter(p => p.finish === finish).length;
+                return `
+                    <label class="filter-option">
+                        <input type="checkbox" value="${finish}" ${isChecked} onchange="toggleFilter('finishes', '${finish}')">
+                        <span>${finish}</span>
+                        <span class="filter-count">(${productCount})</span>
+                    </label>
+                `;
+            }).join('');
+        }
+        
+        // Set sort radio buttons
+        document.querySelectorAll('input[name="sortBy"]').forEach(radio => {
+            if (radio.value === activeFilters.sortBy) {
+                radio.checked = true;
+            }
+            radio.onchange = (e) => {
+                activeFilters.sortBy = e.target.value;
+            };
+        });
+        
+        // Set price range checkboxes
+        document.querySelectorAll('input[type="checkbox"][value^="price_"]').forEach(checkbox => {
+            checkbox.checked = activeFilters.priceRanges.includes(checkbox.value);
+            checkbox.onchange = (e) => {
+                toggleFilter('priceRanges', e.target.value);
+            };
+        });
         
         // Apply initial filters
         applyFilters();
         
     } catch (error) {
-        console.error('Error initializing filter system:', error);
+        console.error('Error loading filter options:', error);
     }
 }
 
-// Calculate counts for each filter option
-function calculateFilterCounts() {
-    // Reset counts
-    filterCounts = {
-        types: {},
-        colors: {},
-        finishes: {}
-    };
+// Toggle filter on/off
+function toggleFilter(category, value) {
+    const checkbox = document.querySelector(`input[value="${value}"]`);
     
-    // Calculate counts for similar products
-    similarProducts.forEach(product => {
-        // Type counts
-        if (product.type) {
-            filterCounts.types[product.type] = (filterCounts.types[product.type] || 0) + 1;
+    if (checkbox.checked) {
+        if (!activeFilters[category].includes(value)) {
+            activeFilters[category].push(value);
         }
-        
-        // Color counts
-        if (product.color) {
-            filterCounts.colors[product.color] = (filterCounts.colors[product.color] || 0) + 1;
-        }
-        
-        // Finish counts
-        if (product.finish) {
-            filterCounts.finishes[product.finish] = (filterCounts.finishes[product.finish] || 0) + 1;
-        }
-    });
-}
-
-// Populate filter options in modal
-function populateFilterOptions() {
-    // Current product type section
-    const currentTypeSection = document.getElementById('currentTypeSection');
-    const currentTypeName = document.getElementById('currentTypeName');
-    
-    if (currentProduct && currentProduct.type) {
-        currentTypeSection.style.display = 'block';
-        currentTypeName.textContent = currentProduct.type;
-    }
-    
-    // Sort options
-    document.querySelectorAll('input[name="sortBy"]').forEach(radio => {
-        radio.checked = radio.value === activeFilters.sortBy;
-        radio.onchange = (e) => {
-            activeFilters.sortBy = e.target.value;
-            applyFilters();
-        };
-    });
-    
-    // Type filters
-    const typeContainer = document.getElementById('typeFilterOptions');
-    if (typeContainer) {
-        const sortedTypes = Object.keys(filterCounts.types).sort();
-        typeContainer.innerHTML = sortedTypes.map(type => {
-            const count = filterCounts.types[type] || 0;
-            const isCurrentType = type === currentProduct?.type;
-            const isChecked = activeFilters.types.includes(type);
-            
-            return `
-                <label class="filter-option ${isCurrentType ? 'current-type' : ''}">
-                    <input type="checkbox" value="${type}" 
-                           ${isChecked ? 'checked' : ''}
-                           ${isCurrentType ? 'disabled' : ''}
-                           onchange="toggleTypeFilter('${type}')">
-                    <span>${type}${isCurrentType ? ' (Current)' : ''}</span>
-                    <span class="filter-count">${count}</span>
-                </label>
-            `;
-        }).join('');
-    }
-    
-    // Color filters
-    const colorContainer = document.getElementById('colorFilterOptions');
-    if (colorContainer) {
-        const sortedColors = Object.keys(filterCounts.colors).sort();
-        colorContainer.innerHTML = sortedColors.map(color => {
-            const count = filterCounts.colors[color] || 0;
-            const isChecked = activeFilters.colors.includes(color);
-            
-            return `
-                <label class="filter-option">
-                    <input type="checkbox" value="${color}" 
-                           ${isChecked ? 'checked' : ''}
-                           onchange="toggleColorFilter('${color}')">
-                    <span>${color}</span>
-                    <span class="filter-count">${count}</span>
-                </label>
-            `;
-        }).join('');
-    }
-    
-    // Finish filters
-    const finishContainer = document.getElementById('finishFilterOptions');
-    if (finishContainer) {
-        const sortedFinishes = Object.keys(filterCounts.finishes).sort();
-        finishContainer.innerHTML = sortedFinishes.map(finish => {
-            const count = filterCounts.finishes[finish] || 0;
-            const isChecked = activeFilters.finishes.includes(finish);
-            
-            return `
-                <label class="filter-option">
-                    <input type="checkbox" value="${finish}" 
-                           ${isChecked ? 'checked' : ''}
-                           onchange="toggleFinishFilter('${finish}')">
-                    <span>${finish}</span>
-                    <span class="filter-count">${count}</span>
-                </label>
-            `;
-        }).join('');
-    }
-    
-    // Price range filters
-    document.querySelectorAll('input[type="checkbox"][value^="price_"]').forEach(checkbox => {
-        checkbox.checked = activeFilters.priceRanges.includes(checkbox.value);
-        checkbox.onchange = (e) => {
-            togglePriceRangeFilter(e.target.value);
-        };
-    });
-}
-
-// Filter toggle functions
-function toggleTypeFilter(type) {
-    // Don't allow toggling current product type
-    if (type === currentProduct?.type) return;
-    
-    const index = activeFilters.types.indexOf(type);
-    if (index === -1) {
-        activeFilters.types.push(type);
     } else {
-        activeFilters.types.splice(index, 1);
+        activeFilters[category] = activeFilters[category].filter(item => item !== value);
     }
+    
     updateFilterTags();
-}
-
-function toggleColorFilter(color) {
-    const index = activeFilters.colors.indexOf(color);
-    if (index === -1) {
-        activeFilters.colors.push(color);
-    } else {
-        activeFilters.colors.splice(index, 1);
-    }
-    updateFilterTags();
-}
-
-function toggleFinishFilter(finish) {
-    const index = activeFilters.finishes.indexOf(finish);
-    if (index === -1) {
-        activeFilters.finishes.push(finish);
-    } else {
-        activeFilters.finishes.splice(index, 1);
-    }
-    updateFilterTags();
-}
-
-function togglePriceRangeFilter(range) {
-    const index = activeFilters.priceRanges.indexOf(range);
-    if (index === -1) {
-        activeFilters.priceRanges.push(range);
-    } else {
-        activeFilters.priceRanges.splice(index, 1);
-    }
-    updateFilterTags();
-}
-
-// Update filter tags display
-function updateFilterTags() {
-    const tagsContainer = document.getElementById('filterTags');
-    if (!tagsContainer) return;
-    
-    // Collect all active filters (excluding current product type)
-    const filterTags = [];
-    
-    // Type filters (exclude current product type)
-    activeFilters.types.forEach(type => {
-        if (type !== currentProduct?.type) {
-            filterTags.push({
-                category: 'types',
-                value: type,
-                display: type
-            });
-        }
-    });
-    
-    // Color filters
-    activeFilters.colors.forEach(color => {
-        filterTags.push({
-            category: 'colors',
-            value: color,
-            display: `Color: ${color}`
-        });
-    });
-    
-    // Finish filters
-    activeFilters.finishes.forEach(finish => {
-        filterTags.push({
-            category: 'finishes',
-            value: finish,
-            display: `Finish: ${finish}`
-        });
-    });
-    
-    // Price range filters
-    activeFilters.priceRanges.forEach(range => {
-        filterTags.push({
-            category: 'priceRanges',
-            value: range,
-            display: getPriceRangeLabel(range)
-        });
-    });
-    
-    // Sort filter (if not default)
-    if (activeFilters.sortBy !== 'price_asc') {
-        filterTags.push({
-            category: 'sort',
-            value: activeFilters.sortBy,
-            display: `Sort: ${getSortLabel(activeFilters.sortBy)}`
-        });
-    }
-    
-    // Update display
-    if (filterTags.length === 0) {
-        tagsContainer.style.display = 'none';
-        tagsContainer.innerHTML = '';
-    } else {
-        tagsContainer.style.display = 'flex';
-        tagsContainer.innerHTML = filterTags.map(tag => `
-            <div class="filter-tag">
-                ${tag.display}
-                <button class="remove-filter" onclick="removeFilterTag('${tag.category}', '${tag.value}')">
-                    &times;
-                </button>
-            </div>
-        `).join('');
-    }
-}
-
-// Remove filter tag
-function removeFilterTag(category, value) {
-    switch(category) {
-        case 'types':
-            activeFilters.types = activeFilters.types.filter(item => item !== value);
-            break;
-        case 'colors':
-            activeFilters.colors = activeFilters.colors.filter(item => item !== value);
-            break;
-        case 'finishes':
-            activeFilters.finishes = activeFilters.finishes.filter(item => item !== value);
-            break;
-        case 'priceRanges':
-            activeFilters.priceRanges = activeFilters.priceRanges.filter(item => item !== value);
-            break;
-        case 'sort':
-            activeFilters.sortBy = 'price_asc';
-            break;
-    }
-    
-    // Update UI
-    populateFilterOptions();
-    applyFilters();
-}
-
-// Get price range label
-function getPriceRangeLabel(range) {
-    const labels = {
-        'price_0_50': 'Price: Under ₹50',
-        'price_50_100': 'Price: ₹50-100',
-        'price_100_200': 'Price: ₹100-200',
-        'price_200_500': 'Price: ₹200-500',
-        'price_500_1000': 'Price: ₹500-1000'
-    };
-    return labels[range] || range;
-}
-
-// Get sort label
-function getSortLabel(sortValue) {
-    const labels = {
-        'price_asc': 'Low to High',
-        'price_desc': 'High to Low',
-        'name_asc': 'A to Z'
-    };
-    return labels[sortValue] || sortValue;
 }
 
 // Apply filters
 function applyFilters() {
-    // Close modal if open
     closeFilterModal();
     
-    // Start with all similar products
-    let results = [...similarProducts];
+    // Apply filters to similar products
+    filteredSimilarProducts = [...similarProducts];
     
-    // Apply type filters (current type is always included)
+    // Apply type filters
     if (activeFilters.types.length > 0) {
-        results = results.filter(product => 
+        filteredSimilarProducts = filteredSimilarProducts.filter(product => 
             product.type && activeFilters.types.includes(product.type)
         );
     }
     
     // Apply color filters
     if (activeFilters.colors.length > 0) {
-        results = results.filter(product => 
+        filteredSimilarProducts = filteredSimilarProducts.filter(product => 
             product.color && activeFilters.colors.includes(product.color)
         );
     }
     
     // Apply finish filters
     if (activeFilters.finishes.length > 0) {
-        results = results.filter(product => 
+        filteredSimilarProducts = filteredSimilarProducts.filter(product => 
             product.finish && activeFilters.finishes.includes(product.finish)
         );
     }
     
     // Apply price range filters
     if (activeFilters.priceRanges.length > 0) {
-        results = results.filter(product => {
+        filteredSimilarProducts = filteredSimilarProducts.filter(product => {
             const price = product.price || 0;
             return activeFilters.priceRanges.some(range => {
                 if (range === 'price_0_50') return price <= 50;
@@ -3207,7 +3018,7 @@ function applyFilters() {
     }
     
     // Apply sorting
-    results.sort((a, b) => {
+    filteredSimilarProducts.sort((a, b) => {
         switch (activeFilters.sortBy) {
             case 'price_asc':
                 return (a.price || 0) - (b.price || 0);
@@ -3220,324 +3031,129 @@ function applyFilters() {
         }
     });
     
-    // Update filtered products
-    filteredSimilarProducts = results;
-    
     // Update display
     displaySimilarProducts();
     updateFilterTags();
-    updateProductCounts();
-    
-    // Show notification if no results
-    if (results.length === 0 && similarProducts.length > 0) {
-        showNotification('No products match your filters. Try different criteria.');
-    }
 }
 
-// Clear all filters
+// Clear all filters - FIXED
 function clearAllFilters() {
-    // Reset to defaults
+    console.log('🔄 Clearing all filters...');
+    
+    // Reset active filters
     activeFilters = {
-        types: currentProduct?.type ? [currentProduct.type] : [],
+        types: [], // EMPTY - no types selected
         colors: [],
         finishes: [],
         priceRanges: [],
         sortBy: 'price_asc'
     };
     
-    // Update UI
-    populateFilterOptions();
-    applyFilters();
-    showNotification('All filters cleared');
-}
-
-// Filter modal functions
-function openFilterModal() {
-    document.getElementById('filterModal').classList.add('active');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeFilterModal() {
-    document.getElementById('filterModal').classList.remove('active');
-    document.body.style.overflow = 'auto';
-}
-
-// Update loadSimilarProducts function
-async function loadSimilarProducts() {
-    try {
-        if (!currentProduct) {
-            document.getElementById('similarProductsSection').style.display = 'none';
-            return;
-        }
-        
-        console.log('Loading similar products...');
-        
-        // Get current product type
-        const currentProductType = currentProduct.type || '';
-        
-        if (!currentProductType) {
-            console.log('No product type specified');
-            document.getElementById('similarProductsSection').style.display = 'none';
-            return;
-        }
-        
-        // Filter products with same type (excluding current product)
-        similarProducts = allProductsInDB.filter(product => 
-            product.id !== currentProduct.id && 
-            product.type === currentProductType
+    // Uncheck ALL filter checkboxes
+    document.querySelectorAll('#typeFilterOptions input[type="checkbox"]').forEach(cb => {
+        cb.checked = false;
+    });
+    
+    document.querySelectorAll('#colorFilterOptions input[type="checkbox"]').forEach(cb => {
+        cb.checked = false;
+    });
+    
+    document.querySelectorAll('#finishFilterOptions input[type="checkbox"]').forEach(cb => {
+        cb.checked = false;
+    });
+    
+    document.querySelectorAll('input[type="checkbox"][value^="price_"]').forEach(cb => {
+        cb.checked = false;
+    });
+    
+    // Reset sort radio
+    document.querySelector('input[value="price_asc"]').checked = true;
+    
+    // IMPORTANT: Reset product displays
+    // 1. Similar Products: Show ONLY same type as current product
+    if (currentProduct && currentProduct.type) {
+        filteredSimilarProducts = similarProducts.filter(product => 
+            product.type === currentProduct.type
         );
-        
-        console.log(`Found ${similarProducts.length} similar products of type: ${currentProductType}`);
-        
-        if (similarProducts.length > 0) {
-            // Initialize filter system
-            initializeFilterSystem();
-            
-            // Show section
-            document.getElementById('similarProductsSection').style.display = 'block';
-        } else {
-            console.log('No similar products found');
-            document.getElementById('similarProductsSection').innerHTML = `
-                <div style="text-align: center; padding: 40px; color: var(--text-light);">
-                    <i class="fas fa-search" style="font-size: 40px; margin-bottom: 15px; opacity: 0.5;"></i>
-                    <p>No similar products found for this type</p>
-                </div>
-            `;
-        }
-        
-    } catch (error) {
-        console.error('Error loading similar products:', error);
-        document.getElementById('similarProductsSection').style.display = 'none';
-    }
-}
-
-// Update displaySimilarProducts function
-function displaySimilarProducts() {
-    const container = document.getElementById('similarProductsGrid');
-    const section = document.getElementById('similarProductsSection');
-    
-    if (!container) return;
-    
-    if (filteredSimilarProducts.length === 0) {
-        container.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-light);">
-                <i class="fas fa-search" style="font-size: 40px; margin-bottom: 15px; opacity: 0.5;"></i>
-                <p>No products found with current filters</p>
-                <button class="btn btn-primary" onclick="clearAllFilters()" style="margin-top: 15px;">
-                    <i class="fas fa-times"></i> Clear Filters
-                </button>
-            </div>
-        `;
     } else {
-        const productsHTML = filteredSimilarProducts.map((product) => {
-            const productImage = product.image || getDefaultImage(product.category);
-            
-            return `
-                <a href="product-details.html?id=${product.id}" class="similar-product-card">
-                    <img src="${productImage}" alt="${product.stone_name}" 
-                         class="card-image"
-                         onerror="this.src='${getDefaultImage(product.category)}'"
-                         loading="lazy">
-                    <div class="product-info-overlay">
-                        <div class="product-name">${product.stone_name}</div>
-                        <div class="product-price">₹${product.price.toFixed(2)} 
-                            <span class="price-unit">/ ${product.price_unit}</span>
-                        </div>
-                        
-                        <div class="product-details">
-                            ${product.type ? `
-                                <div class="detail-item">
-                                    <i class="fas fa-tag"></i>
-                                    <span class="detail-text">${product.type}</span>
-                                </div>
-                            ` : ''}
-                            
-                            ${product.color ? `
-                                <div class="detail-item">
-                                    <i class="fas fa-palette"></i>
-                                    <span class="detail-text">${product.color}</span>
-                                </div>
-                            ` : ''}
-                            
-                            ${product.size ? `
-                                <div class="detail-item">
-                                    <i class="fas fa-ruler"></i>
-                                    <span class="detail-text">${product.size}</span>
-                                </div>
-                            ` : ''}
-                        </div>
-                    </div>
-                </a>
-            `;
-        }).join('');
-        
-        container.innerHTML = productsHTML;
+        filteredSimilarProducts = [...similarProducts];
     }
     
-    // Update product counts
+    // 2. Other Products: Show ALL remaining products
+    if (currentProduct && currentProduct.type) {
+        filteredOtherProducts = otherProducts.filter(product => 
+            product.type !== currentProduct.type
+        );
+    } else {
+        filteredOtherProducts = [...otherProducts];
+    }
+    
+    // Apply sorting
+    filteredSimilarProducts.sort((a, b) => (a.price || 0) - (b.price || 0));
+    filteredOtherProducts.sort((a, b) => (a.price || 0) - (b.price || 0));
+    
+    // Update displays
+    displaySimilarProducts();
+    displayOtherProducts();
+    updateFilterTags();
     updateProductCounts();
+    
+    showNotification('✅ All filters cleared. Showing default product grouping.');
 }
 
-// Update product counts
-function updateProductCounts() {
-    // Similar products counts
-    const similarCount = document.getElementById('similarProductsCount');
-    const similarTotal = document.getElementById('similarProductsTotal');
+// Update filter tags display
+function updateFilterTags() {
+    const tagsContainer = document.getElementById('filterTags');
+    if (!tagsContainer) return;
     
-    if (similarCount) {
-        similarCount.textContent = filteredSimilarProducts.length;
+    const allFilters = [
+        ...activeFilters.types.map(type => ({ category: 'types', value: type, isCurrent: type === (currentProduct?.type || '') })),
+        ...activeFilters.colors.map(color => ({ category: 'colors', value: color })),
+        ...activeFilters.finishes.map(finish => ({ category: 'finishes', value: finish })),
+        ...activeFilters.priceRanges.map(range => ({ category: 'priceRanges', value: getPriceRangeLabel(range) }))
+    ];
+    
+    if (allFilters.length === 0) {
+        tagsContainer.style.display = 'none';
+        tagsContainer.innerHTML = '';
+        return;
     }
     
-    if (similarTotal) {
-        similarTotal.textContent = similarProducts.length;
-    }
+    tagsContainer.style.display = 'flex';
+    tagsContainer.innerHTML = allFilters.map(filter => `
+        <div class="filter-tag" style="${filter.isCurrent ? 'background: linear-gradient(135deg, var(--primary-gold), var(--gold-dark));' : ''}">
+            ${filter.value}
+            ${!filter.isCurrent ? `
+                <button class="remove-filter" onclick="removeFilter('${filter.category}', '${filter.value}')">
+                    &times;
+                </button>
+            ` : ''}
+        </div>
+    `).join('');
 }
 
-// Add CSS for filter system
-function addFilterCSS() {
-    const filterCSS = `
-    /* Filter Tags */
-    .filter-tags {
-        display: none;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin: 0 0 20px 0;
-        padding: 0;
-    }
-    
-    .filter-tags:not(:empty) {
-        display: flex;
-        padding: 12px;
-        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-        border-radius: 8px;
-        border: 1px solid var(--border-color);
-    }
-    
-    .filter-tag {
-        background: var(--primary-gold);
-        color: white;
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-size: 13px;
-        font-weight: 500;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        box-shadow: 0 2px 8px rgba(201, 162, 39, 0.2);
-        transition: all 0.2s ease;
-    }
-    
-    .filter-tag:hover {
-        background: var(--gold-dark);
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(201, 162, 39, 0.3);
-    }
-    
-    .remove-filter {
-        background: none;
-        border: none;
-        color: white;
-        cursor: pointer;
-        font-size: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 18px;
-        height: 18px;
-        border-radius: 50%;
-        padding: 0;
-        margin: 0;
-        line-height: 1;
-    }
-    
-    .remove-filter:hover {
-        background: rgba(255, 255, 255, 0.2);
-    }
-    
-    /* Filter Modal Improvements */
-    .filter-option.current-type {
-        background: linear-gradient(135deg, #fff8e1, #fff3cd) !important;
-        border: 2px solid var(--primary-gold) !important;
-        cursor: default;
-    }
-    
-    .filter-option.current-type input {
-        cursor: not-allowed;
-        opacity: 0.7;
-    }
-    
-    .filter-count {
-        color: var(--text-light);
-        font-size: 12px;
-        background: var(--white);
-        padding: 2px 8px;
-        border-radius: 10px;
-        border: 1px solid var(--border-color);
-        min-width: 30px;
-        text-align: center;
-    }
-    
-    /* Filter Results Count */
-    .filter-results-count {
-        font-size: 14px;
-        color: var(--text-light);
-        background: var(--bg-light);
-        padding: 6px 12px;
-        border-radius: 6px;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-    }
-    
-    .filter-results-count strong {
-        color: var(--primary-gold);
-        font-size: 16px;
-    }
-    
-    /* Responsive */
-    @media (max-width: 768px) {
-        .filter-tags {
-            padding: 10px;
-            gap: 6px;
-        }
-        
-        .filter-tag {
-            font-size: 12px;
-            padding: 5px 10px;
-        }
-        
-        .filter-count {
-            font-size: 11px;
-            padding: 1px 6px;
-        }
-    }
-    `;
-    
-    if (!document.getElementById('filter-css')) {
-        const styleElement = document.createElement('style');
-        styleElement.id = 'filter-css';
-        styleElement.textContent = filterCSS;
-        document.head.appendChild(styleElement);
-    }
+// Get price range label
+function getPriceRangeLabel(range) {
+    const labels = {
+        'price_0_50': 'Under ₹50',
+        'price_50_100': '₹50-100',
+        'price_100_200': '₹100-200',
+        'price_200_500': '₹200-500',
+        'price_500_1000': '₹500-1000'
+    };
+    return labels[range] || range;
 }
 
-// Initialize filter CSS
-document.addEventListener('DOMContentLoaded', function() {
-    addFilterCSS();
-});
-
-// ============================================
-// UPDATE INITIALIZATION
-// ============================================
-
-// Update the $(document).ready function to remove old filter initialization
-// Remove these lines from your existing code:
-// - initializeFilterOptions()
-// - Old filter-related functions
-
-// Add this to your loadProductDetails function after loading similar products:
-// Inside loadProductDetails(), after await loadSimilarProducts();
-// Add: initializeFilterSystem();
+// Remove specific filter
+function removeFilter(category, value) {
+    activeFilters[category] = activeFilters[category].filter(item => item !== value);
+    
+    const checkbox = document.querySelector(`input[value="${value}"]`);
+    if (checkbox) checkbox.checked = false;
+    
+    applyFilters();
+    updateFilterTags();
+}
 
 // ============================================
 // PRODUCT DATA LOADING
