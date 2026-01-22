@@ -374,10 +374,10 @@ header.show {
     display: block;
 }
 
-/* ZOOM PANEL - BOTTOM RIGHT POSITION */
+/* ZOOM PANEL - TOP RIGHT POSITION */
 .zoom-panel {
     position: absolute;
-    bottom: 10px;
+    top: 10px;
     right: 10px;
     width: 300px;
     height: 300px;
@@ -416,10 +416,12 @@ header.show {
 
 /* Zoom container for positioning */
 .zoom-container {
-    position: relative;
-    width: 0;
-    height: 0;
-    display: inline-block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 300px;
+    height: 300px;
+    z-index: 9998;
 }
 
 /* Multiple Images Indicator */
@@ -1639,10 +1641,18 @@ header.show {
         min-height: auto;
     }
     
+    .zoom-container {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 200px;
+        height: 200px;
+    }
+    
     .zoom-panel {
-        width: 250px;
-        height: 250px;
-        bottom: 10px;
+        width: 200px;
+        height: 200px;
+        top: 10px;
         right: 10px;
     }
     
@@ -1735,10 +1745,15 @@ header.show {
         min-height: auto;
     }
     
+    .zoom-container {
+        width: 180px;
+        height: 180px;
+    }
+    
     .zoom-panel {
-        width: 200px;
-        height: 200px;
-        bottom: 5px;
+        width: 180px;
+        height: 180px;
+        top: 5px;
         right: 5px;
     }
     
@@ -1801,6 +1816,14 @@ header.show {
     
     .filter-icon {
         display: flex;
+    }
+    
+    .zoom-container {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 300px;
+        height: 300px;
     }
 }
 </style>
@@ -2404,7 +2427,7 @@ function applyFilters() {
     // Start with all similar products
     filteredSimilarProducts = [...similarProducts];
     
-    // Apply type filters
+    // Apply type filters - SHOW PRODUCTS WITH CURRENT PRODUCT TYPE
     if (activeFilters.types.length > 0) {
         filteredSimilarProducts = filteredSimilarProducts.filter(product => 
             product.type && activeFilters.types.includes(product.type)
@@ -2488,7 +2511,7 @@ function applyAspectRatioClass(img) {
 }
 
 // ============================================
-// ZOOM SYSTEM - DESKTOP & MOBILE
+// ZOOM SYSTEM - FIXED POSITION TOP RIGHT
 // ============================================
 
 function initZoomSystem() {
@@ -2499,8 +2522,9 @@ function initZoomSystem() {
     const hoverBox = document.getElementById("hoverBox");
     const zoomPanel = document.getElementById("zoomPanel");
     const zoomImage = document.getElementById("zoomImage");
+    const zoomContainer = document.getElementById("zoomContainer");
 
-    if (!mainImage || !wrapper || !hoverBox || !zoomPanel || !zoomImage) {
+    if (!mainImage || !wrapper || !hoverBox || !zoomPanel || !zoomImage || !zoomContainer) {
         console.error("❌ Zoom elements missing!");
         return;
     }
@@ -2521,10 +2545,24 @@ function initZoomSystem() {
     let touchStartX = 0;
     let touchStartY = 0;
 
+    // Position zoom container at top right
+    const positionZoomContainer = () => {
+        const mainImageRect = mainImage.getBoundingClientRect();
+        const containerRect = document.querySelector('.main-image-container').getBoundingClientRect();
+        
+        // Always position at top right
+        zoomContainer.style.position = 'absolute';
+        zoomContainer.style.top = '10px';
+        zoomContainer.style.right = '10px';
+        zoomContainer.style.zIndex = '1000';
+        zoomContainer.style.display = 'block';
+    };
+
     // Desktop hover zoom
     wrapper.addEventListener('mouseenter', function(e) {
         console.log('🖱️ Mouse entered image');
         isZoomActive = true;
+        positionZoomContainer();
         updateZoom(e);
     });
 
@@ -2540,7 +2578,7 @@ function initZoomSystem() {
         zoomPanel.classList.remove('active');
     });
 
-    // Touch events for mobile - WORK SAME ON DESKTOP TOO
+    // Touch events for mobile and desktop touchscreens
     let lastTouchTime = 0;
     let touchStartTime = 0;
     
@@ -2553,13 +2591,8 @@ function initZoomSystem() {
             touchStartY = touch.clientY;
             touchStartTime = Date.now();
             
-            // Position zoom panel at bottom right
-            const rect = wrapper.getBoundingClientRect();
-            zoomPanel.style.position = 'absolute';
-            zoomPanel.style.bottom = '10px';
-            zoomPanel.style.right = '10px';
-            zoomPanel.style.top = 'auto';
-            zoomPanel.style.left = 'auto';
+            // Position zoom container
+            positionZoomContainer();
             
             // Show zoom panel
             zoomPanel.classList.add('active');
@@ -2674,7 +2707,12 @@ function initZoomSystem() {
         if (zoomImage) {
             zoomImage.src = mainImage.src;
         }
+        // Position zoom container after image loads
+        setTimeout(positionZoomContainer, 100);
     };
+
+    // Reposition on resize
+    window.addEventListener('resize', positionZoomContainer);
 
     console.log('✅ Zoom system initialized successfully');
 }
@@ -2697,7 +2735,7 @@ function toggleMobileZoom() {
 }
 
 // ============================================
-// EMAIL ENQUIRY FORM - FIXED FOR PC
+// EMAIL ENQUIRY FORM - FIXED FOR PC WITH IMAGE URL
 // ============================================
 
 function openEmailEnquiryModal() {
@@ -2733,7 +2771,7 @@ function getEnquiryTypeLabel(type) {
     return labels[type] || type;
 }
 
-// Handle form submission - FIXED FOR PC GMAIL
+// Handle form submission - FIXED WITH IMAGE URL
 document.getElementById('emailEnquiryForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -2755,7 +2793,7 @@ document.getElementById('emailEnquiryForm').addEventListener('submit', function(
         return;
     }
     
-    // Create email content
+    // Create email content WITH IMAGE URL
     const productName = currentProduct.stone_name || currentProduct.name || 'Stone Product';
     const productType = currentProduct.type || 'Natural Stone';
     const productColor = currentProduct.color || 'Various';
@@ -2763,6 +2801,8 @@ document.getElementById('emailEnquiryForm').addEventListener('submit', function(
     const priceUnit = currentProduct.price_unit || 'square foot';
     const productSize = currentProduct.size || 'Standard sizes available';
     const productThickness = currentProduct.thickness || 'Standard thickness';
+    const productImageUrl = currentProduct.images && currentProduct.images.length > 0 ? currentProduct.images[0] : '';
+    const productDescription = currentProduct.description || 'Premium quality sandstone';
     
     const subject = `Enquiry for ${productName} - Sandstone from IRYA STONE`;
     
@@ -2776,7 +2816,11 @@ document.getElementById('emailEnquiryForm').addEventListener('submit', function(
     body += `• Color: ${productColor}\n`;
     body += `• Size: ${productSize}\n`;
     body += `• Thickness: ${productThickness}\n`;
-    body += `• Price: ₹${productPrice} per ${priceUnit}\n\n`;
+    body += `• Price: ₹${productPrice} per ${priceUnit}\n`;
+    if (productImageUrl) {
+        body += `• Product Image: ${productImageUrl}\n`;
+    }
+    body += `• Description: ${productDescription}\n\n`;
     
     body += `MY DETAILS:\n`;
     body += `────────────────────\n`;
@@ -2806,11 +2850,11 @@ document.getElementById('emailEnquiryForm').addEventListener('submit', function(
     body += `${email}`;
     
     // Create mailto link with proper encoding
-    const mailtoLink = `mailto:ravi.jain236129@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const mailtoLink = `mailto:ravijain236129@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     
-    // For PC - open in new tab/window to avoid Gmail blank screen issue
+    // For PC - Use Gmail compose URL with form submission
     if (window.innerWidth > 768) {
-        // Create a form to submit (works better for desktop Gmail)
+        // Create hidden form to submit to Gmail
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = 'https://mail.google.com/mail/?view=cm&fs=1&tf=1';
@@ -2819,7 +2863,7 @@ document.getElementById('emailEnquiryForm').addEventListener('submit', function(
         const toInput = document.createElement('input');
         toInput.type = 'hidden';
         toInput.name = 'to';
-        toInput.value = 'ravi.jain236129@gmail.com';
+        toInput.value = 'ravijain236129@gmail.com';
         form.appendChild(toInput);
         
         const subjectInput = document.createElement('input');
@@ -2828,15 +2872,19 @@ document.getElementById('emailEnquiryForm').addEventListener('submit', function(
         subjectInput.value = subject;
         form.appendChild(subjectInput);
         
-        const bodyInput = document.createElement('input');
-        bodyInput.type = 'hidden';
+        const bodyInput = document.createElement('textarea');
+        bodyInput.style.display = 'none';
         bodyInput.name = 'body';
         bodyInput.value = body;
         form.appendChild(bodyInput);
         
         document.body.appendChild(form);
         form.submit();
-        document.body.removeChild(form);
+        
+        // Remove form after submission
+        setTimeout(() => {
+            document.body.removeChild(form);
+        }, 1000);
     } else {
         // For mobile - use standard mailto
         window.location.href = mailtoLink;
@@ -2863,12 +2911,16 @@ function openDirectWhatsApp() {
     const productType = currentProduct.type || 'Natural Stone';
     const productPrice = currentProduct.price ? currentProduct.price.toFixed(2) : '0.00';
     const priceUnit = currentProduct.price_unit || 'square foot';
+    const productImageUrl = currentProduct.images && currentProduct.images.length > 0 ? currentProduct.images[0] : '';
     
     let message = `*New Enquiry - IRYA STONE*%0A%0A`;
     message += `*Product:* ${productName}%0A`;
     message += `*Type:* ${productType}%0A`;
-    message += `*Price:* ₹${productPrice} per ${priceUnit}%0A%0A`;
-    message += `I'm interested in this sandstone product. Please provide details about:%0A`;
+    message += `*Price:* ₹${productPrice} per ${priceUnit}%0A`;
+    if (productImageUrl) {
+        message += `*Image:* ${productImageUrl}%0A`;
+    }
+    message += `%0AI'm interested in this sandstone product. Please provide details about:%0A`;
     message += `1. Sample availability%0A`;
     message += `2. Minimum order quantity%0A`;
     message += `3. Available sizes%0A`;
@@ -3257,7 +3309,7 @@ function changeMainImage(imageUrl, thumbnailElement, index = 0) {
 }
 
 // ============================================
-// SIMILAR PRODUCTS - FILTER BY TYPE
+// SIMILAR PRODUCTS - SHOW PRODUCTS WITH SAME TYPE
 // ============================================
 
 async function loadSimilarProducts() {
@@ -3269,73 +3321,148 @@ async function loadSimilarProducts() {
         
         console.log('Loading similar products...');
         
-        // Load ALL products
-        const querySnapshot = await firebaseDB.collection("products")
-            .limit(50)
-            .get();
+        // Get current product type
+        const currentProductType = currentProduct.type || '';
         
-        if (querySnapshot.empty) {
-            console.log('No products found');
-            document.getElementById('similarProductsSection').style.display = 'none';
-            return;
+        // Load products from Firebase
+        let query;
+        if (currentProductType) {
+            // Query for products with same type
+            query = firebaseDB.collection("products")
+                .where("type", "==", currentProductType)
+                .limit(20);
+        } else {
+            // If no type, load all sandstone products
+            query = firebaseDB.collection("products")
+                .limit(20);
         }
         
-        similarProducts = [];
+        const querySnapshot = await query.get();
         
-        querySnapshot.forEach((doc) => {
-            if (doc.id === currentProduct.id) return;
+        if (querySnapshot.empty) {
+            console.log('No similar products found');
+            // Try to load any sandstone products
+            const allQuery = await firebaseDB.collection("products")
+                .limit(10)
+                .get();
             
-            const data = doc.data();
-            const product = {
-                id: doc.id,
-                stone_name: data.stone_name || data.name || 'Stone Product',
-                category: data.category || 'Sandstone',
-                type: data.type || '',
-                color: data.color || '',
-                finish: data.finish || '',
-                price: parseFloat(data.price) || 0,
-                price_unit: data.price_unit || 'square foot',
-                image: getProductImage(data),
-                description: data.description || '',
-                size: data.size || '',
-                thickness: data.thickness || '',
-                usage: data.usage || ''
-            };
+            if (allQuery.empty) {
+                document.getElementById('similarProductsSection').style.display = 'none';
+                return;
+            }
             
-            similarProducts.push(product);
-        });
+            similarProducts = [];
+            allQuery.forEach((doc) => {
+                if (doc.id === currentProduct.id) return;
+                
+                const data = doc.data();
+                const product = {
+                    id: doc.id,
+                    stone_name: data.stone_name || data.name || 'Stone Product',
+                    category: data.category || 'Sandstone',
+                    type: data.type || '',
+                    color: data.color || '',
+                    finish: data.finish || '',
+                    price: parseFloat(data.price) || 0,
+                    price_unit: data.price_unit || 'square foot',
+                    image: getProductImage(data),
+                    description: data.description || '',
+                    size: data.size || '',
+                    thickness: data.thickness || '',
+                    usage: data.usage || ''
+                };
+                
+                similarProducts.push(product);
+            });
+        } else {
+            similarProducts = [];
+            
+            querySnapshot.forEach((doc) => {
+                if (doc.id === currentProduct.id) return;
+                
+                const data = doc.data();
+                const product = {
+                    id: doc.id,
+                    stone_name: data.stone_name || data.name || 'Stone Product',
+                    category: data.category || 'Sandstone',
+                    type: data.type || '',
+                    color: data.color || '',
+                    finish: data.finish || '',
+                    price: parseFloat(data.price) || 0,
+                    price_unit: data.price_unit || 'square foot',
+                    image: getProductImage(data),
+                    description: data.description || '',
+                    size: data.size || '',
+                    thickness: data.thickness || '',
+                    usage: data.usage || ''
+                };
+                
+                similarProducts.push(product);
+            });
+            
+            // If not enough products with same type, load more
+            if (similarProducts.length < 4 && currentProductType) {
+                const moreQuery = await firebaseDB.collection("products")
+                    .where("category", "==", "Sandstone")
+                    .limit(10)
+                    .get();
+                    
+                moreQuery.forEach((doc) => {
+                    if (doc.id === currentProduct.id) return;
+                    
+                    const data = doc.data();
+                    const product = {
+                        id: doc.id,
+                        stone_name: data.stone_name || data.name || 'Stone Product',
+                        category: data.category || 'Sandstone',
+                        type: data.type || '',
+                        color: data.color || '',
+                        finish: data.finish || '',
+                        price: parseFloat(data.price) || 0,
+                        price_unit: data.price_unit || 'square foot',
+                        image: getProductImage(data),
+                        description: data.description || '',
+                        size: data.size || '',
+                        thickness: data.thickness || '',
+                        usage: data.usage || ''
+                    };
+                    
+                    // Only add if not already in the list
+                    if (!similarProducts.find(p => p.id === product.id)) {
+                        similarProducts.push(product);
+                    }
+                });
+            }
+        }
         
         console.log(`Found ${similarProducts.length} similar products`);
         
         if (similarProducts.length > 0) {
-            // Filter similar products by CURRENT PRODUCT TYPE
-            const currentType = currentProduct.type || '';
-            if (currentType) {
+            // Always show products with same type first
+            if (currentProductType) {
                 filteredSimilarProducts = similarProducts.filter(product => 
-                    product.type === currentType
+                    product.type === currentProductType
                 );
                 
-                // If not enough products with same type, show all sandstone products
-                if (filteredSimilarProducts.length < 4) {
-                    filteredSimilarProducts = similarProducts.filter(product => 
-                        product.category.toLowerCase().includes('sand') || 
-                        product.category.toLowerCase().includes('stone')
+                // Add other sandstone products if needed
+                if (filteredSimilarProducts.length < 10) {
+                    const otherProducts = similarProducts.filter(product => 
+                        product.type !== currentProductType && 
+                        (product.category.toLowerCase().includes('sand') || 
+                         product.category.toLowerCase().includes('stone'))
                     );
+                    filteredSimilarProducts = [...filteredSimilarProducts, ...otherProducts];
                 }
             } else {
-                // If no type specified, show all sandstone products
+                // If no type, show sandstone products
                 filteredSimilarProducts = similarProducts.filter(product => 
                     product.category.toLowerCase().includes('sand') || 
                     product.category.toLowerCase().includes('stone')
                 );
             }
             
-            // If still not enough products, show all
-            if (filteredSimilarProducts.length < 4) {
-                filteredSimilarProducts = similarProducts.slice(0, 10);
-            } else {
-                filteredSimilarProducts = filteredSimilarProducts.slice(0, 10);
-            }
+            // Limit to 10 products
+            filteredSimilarProducts = filteredSimilarProducts.slice(0, 10);
             
             // Initialize filter options
             initializeFilterOptions();
@@ -3372,9 +3499,11 @@ function displaySimilarProducts() {
     } else {
         const productsHTML = filteredSimilarProducts.map((product, index) => {
             const productImage = product.image || getDefaultImage(product.category);
+            const isSameType = product.type === currentProduct?.type;
             
             return `
-                <a href="product-details.html?id=${product.id}" class="similar-product-card">
+                <a href="product-details.html?id=${product.id}" class="similar-product-card" style="${isSameType ? 'border: 2px solid var(--primary-gold);' : ''}">
+                    ${isSameType ? `<div style="position: absolute; top: 10px; right: 10px; background: var(--primary-gold); color: white; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold;">Same Type</div>` : ''}
                     <div class="card-image-container">
                         <img src="${productImage}" alt="${product.stone_name}" 
                              class="card-image"
@@ -3407,13 +3536,6 @@ function displaySimilarProducts() {
                                 <div class="detail-item">
                                     <i class="fas fa-ruler"></i>
                                     <span class="detail-text">${product.size}</span>
-                                </div>
-                            ` : ''}
-                            
-                            ${product.usage ? `
-                                <div class="detail-item">
-                                    <i class="fas fa-hammer"></i>
-                                    <span class="detail-text">${product.usage}</span>
                                 </div>
                             ` : ''}
                         </div>
