@@ -2554,12 +2554,12 @@ document.getElementById('whatsappEnquiryForm').addEventListener('submit', functi
 });
 
 // ============================================
-// ZOOM SYSTEM - EXACTLY 25% LOGIC
+// FIXED ZOOM SYSTEM (25% / 50% WORKING PROPERLY)
 // ============================================
 
 function initZoomSystem() {
-    console.log('🚀 Initializing zoom system with 25% logic...');
-    
+    console.log('🚀 Zoom system initialized');
+
     const mainImage = document.getElementById("mainProductImage");
     const wrapper = document.getElementById("mainImageWrapper");
     const hoverBox = document.getElementById("hoverBox");
@@ -2571,81 +2571,61 @@ function initZoomSystem() {
         return;
     }
 
-    // Reset elements
+    // ===============================
+    // CONFIG
+    // ===============================
+    let hoverBoxRatio = 0.25; // 🔥 change to 0.5 for 50%
+    let zoomLevel = 3;
+    let isZoomActive = false;
+    let isMobileZoomToggled = false;
+    let isTouchZooming = false;
+
     hoverBox.style.display = 'none';
     zoomPanel.classList.remove('active');
-    
-    // Set zoom image source
-    if (mainImage.src) {
-        zoomImage.src = mainImage.src;
-    }
 
-    let isZoomActive = false;
-    let zoomLevel = 3;
-    let isTouchZooming = false;
-    let isMobileZoomToggled = false;
+    if (mainImage.src) zoomImage.src = mainImage.src;
 
-    // Position zoom panel
-    zoomPanel.style.position = 'absolute';
-    zoomPanel.style.top = '10px';
-    zoomPanel.style.right = '10px';
-    zoomPanel.style.width = '300px';
-    zoomPanel.style.height = '300px';
-
-    // Desktop hover zoom
-    wrapper.addEventListener('mouseenter', function(e) {
+    // ===============================
+    // DESKTOP EVENTS
+    // ===============================
+    wrapper.addEventListener('mouseenter', e => {
         if (window.innerWidth > 768 && !isMobileZoomToggled) {
             isZoomActive = true;
             updateZoom(e);
         }
     });
 
-    wrapper.addEventListener('mousemove', function(e) {
+    wrapper.addEventListener('mousemove', e => {
         if (isZoomActive && window.innerWidth > 768 && !isMobileZoomToggled) {
             updateZoom(e);
         }
     });
 
-    wrapper.addEventListener('mouseleave', function() {
+    wrapper.addEventListener('mouseleave', () => {
         isZoomActive = false;
         hoverBox.style.display = 'none';
         zoomPanel.classList.remove('active');
     });
 
-    // Touch events for mobile
-    let tapCount = 0;
-    let tapTimer;
-    
-    wrapper.addEventListener('touchstart', function(e) {
+    // ===============================
+    // MOBILE EVENTS
+    // ===============================
+    wrapper.addEventListener('touchstart', e => {
         if (e.touches.length === 1) {
             e.preventDefault();
-            
-            // Handle tap to toggle zoom
-            tapCount++;
-            if (tapCount === 1) {
-                tapTimer = setTimeout(() => {
-                    tapCount = 0;
-                    // Single tap - start zoom
-                    isTouchZooming = true;
-                    updateZoom(e);
-                }, 300);
-            } else if (tapCount === 2) {
-                clearTimeout(tapTimer);
-                tapCount = 0;
-                // Double tap - toggle zoom on/off
-                toggleMobileZoom();
-            }
+            isTouchZooming = true;
+            updateZoom(e);
         }
     }, { passive: false });
 
-    wrapper.addEventListener('touchmove', function(e) {
-        if (isTouchZooming && e.touches.length === 1) {
+    wrapper.addEventListener('touchmove', e => {
+        if (isTouchZooming) {
             e.preventDefault();
             updateZoom(e);
         }
     }, { passive: false });
 
-    wrapper.addEventListener('touchend', function() {
+    wrapper.addEventListener('touchend', () => {
         isTouchZooming = false;
         if (!isMobileZoomToggled) {
             hoverBox.style.display = 'none';
@@ -2653,105 +2633,81 @@ function initZoomSystem() {
         }
     });
 
+    // ===============================
+    // CORE ZOOM FUNCTION
+    // ===============================
     function updateZoom(e) {
         const rect = wrapper.getBoundingClientRect();
         let x, y;
-        
-        if (e.type.includes('touch')) {
-            const touch = e.touches[0];
-            x = touch.clientX - rect.left;
-            y = touch.clientY - rect.top;
+
+        if (e.touches) {
+            x = e.touches[0].clientX - rect.left;
+            y = e.touches[0].clientY - rect.top;
         } else {
             x = e.clientX - rect.left;
             y = e.clientY - rect.top;
         }
-        
-        // Hover box is EXACTLY 25% of main image
-        const boxWidth = rect.width * 0.25;
-        const boxHeight = rect.height * 0.25;
-        
-        // Calculate hover box position
+
+        const boxWidth = rect.width * hoverBoxRatio;
+        const boxHeight = rect.height * hoverBoxRatio;
+
         let boxX = x - boxWidth / 2;
         let boxY = y - boxHeight / 2;
-        
-        // Constrain to image boundaries - NEVER OVERFLOW
-        const maxX = rect.width - boxWidth;
-        const maxY = rect.height - boxHeight;
-        
-        boxX = Math.max(0, Math.min(boxX, maxX));
-        boxY = Math.max(0, Math.min(boxY, maxY));
-        
-        // Update hover box
+
+        boxX = Math.max(0, Math.min(boxX, rect.width - boxWidth));
+        boxY = Math.max(0, Math.min(boxY, rect.height - boxHeight));
+
         hoverBox.style.display = 'block';
-        hoverBox.style.left = boxX + 'px';
-        hoverBox.style.top = boxY + 'px';
         hoverBox.style.width = boxWidth + 'px';
         hoverBox.style.height = boxHeight + 'px';
-        
-        // Update zoom panel
+        hoverBox.style.left = boxX + 'px';
+        hoverBox.style.top = boxY + 'px';
+
         zoomPanel.classList.add('active');
-        
-        // Calculate zoom position
-        const percentX = x / rect.width;
-        const percentY = y / rect.height;
-        
-        // Update zoom image position
+
         if (mainImage.naturalWidth && mainImage.naturalHeight) {
             const zoomImgWidth = mainImage.naturalWidth * zoomLevel;
             const zoomImgHeight = mainImage.naturalHeight * zoomLevel;
-            
+
+            const percentX = x / rect.width;
+            const percentY = y / rect.height;
+
             const moveX = -(percentX * zoomImgWidth - zoomPanel.offsetWidth / 2);
             const moveY = -(percentY * zoomImgHeight - zoomPanel.offsetHeight / 2);
-            
+
             zoomImage.style.width = zoomImgWidth + 'px';
             zoomImage.style.height = zoomImgHeight + 'px';
             zoomImage.style.transform = `translate(${moveX}px, ${moveY}px)`;
         }
     }
 
-    function toggleMobileZoom() {
-        const mainImage = document.getElementById('mainProductImage');
-        const zoomPanel = document.getElementById('zoomPanel');
-        
+    // ===============================
+    // MOBILE DOUBLE TAP TOGGLE
+    // ===============================
+    window.toggleMobileZoom = function () {
+        isMobileZoomToggled = !isMobileZoomToggled;
+
         if (isMobileZoomToggled) {
-            // Zoom OFF
-            isMobileZoomToggled = false;
+            hoverBoxRatio = 0.5; // 🔥 50% ON
+            hoverBox.style.background = 'rgba(255,0,0,0.3)';
+            zoomPanel.classList.add('active');
+        } else {
+            hoverBoxRatio = 0.25; // 🔁 back to 25%
             hoverBox.style.display = 'none';
             zoomPanel.classList.remove('active');
-        } else {
-            // Zoom ON
-            isMobileZoomToggled = true;
-            zoomPanel.classList.add('active');
-            
-            // Center the zoom box
-       const imgRect = img.getBoundingClientRect();
-const wrapRect = wrapper.getBoundingClientRect();
-
-// 50% size
-hoverBox.style.width  = '50%';
-hoverBox.style.height = '50%';
-hoverBox.style.background = 'rgba(255,0,0,0.3)';
-hoverBox.style.display = 'block';
-
         }
-    }
-
-    // Handle image load
-    mainImage.onload = function() {
-        console.log('✅ Main image loaded');
-        if (zoomImage) {
-            zoomImage.src = mainImage.src;
-        }
-        // Reset zoom box size when image changes
-        hoverBox.style.width = '25%';
-        hoverBox.style.height = '25%';
     };
 
-    // Make toggleMobileZoom available globally
-    window.toggleMobileZoom = toggleMobileZoom;
+    // ===============================
+    // IMAGE LOAD FIX
+    // ===============================
+    mainImage.onload = function () {
+        zoomImage.src = mainImage.src;
+    };
 
-    console.log('✅ Zoom system initialized with 25% logic');
+    console.log('✅ Zoom system ready (no overwrite bug)');
 }
+
 
 // ============================================
 // FILTER SYSTEM - SMART FILTERING
