@@ -335,24 +335,17 @@ header.show {
 .main-image {
     width: 100%;
     height: auto;
-    max-width: 100%;
-    object-fit: cover;
     display: block;
     background: transparent;
     border: none;
     outline: none;
     box-shadow: none;
-    image-rendering: auto;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
 }
 
 /* ZOOM BOX - EXACTLY 25% OF MAIN IMAGE */
 .hover-box {
     position: absolute;
-    width: auto;
-    height: auto;
-    background: rgba(201, 162, 39, 0.3);
+    background: rgba(201, 162, 39, 0.35);
     border: 2px solid var(--primary-gold);
     pointer-events: none;
     z-index: 1000;
@@ -2554,7 +2547,7 @@ document.getElementById('whatsappEnquiryForm').addEventListener('submit', functi
 });
 
 // ============================================
-// FIXED ZOOM SYSTEM (25% / 50% WORKING PROPERLY)
+// ZOOM SYSTEM - 25% / 50% (WORKING PROPERLY)
 // ============================================
 
 function initZoomSystem() {
@@ -2574,8 +2567,8 @@ function initZoomSystem() {
     // ===============================
     // CONFIG
     // ===============================
-    let hoverBoxRatio = 0.25; // 🔥 change to 0.5 for 50%
-    let zoomLevel = 3;
+    let hoverBoxRatio = 0.25; // 25% default
+    const zoomLevel = 3;
     let isZoomActive = false;
     let isMobileZoomToggled = false;
     let isTouchZooming = false;
@@ -2637,25 +2630,28 @@ function initZoomSystem() {
     // CORE ZOOM FUNCTION
     // ===============================
     function updateZoom(e) {
-        const rect = wrapper.getBoundingClientRect();
+        const imgRect = mainImage.getBoundingClientRect();
         let x, y;
 
         if (e.touches) {
-            x = e.touches[0].clientX - rect.left;
-            y = e.touches[0].clientY - rect.top;
+            x = e.touches[0].clientX - imgRect.left;
+            y = e.touches[0].clientY - imgRect.top;
         } else {
-            x = e.clientX - rect.left;
-            y = e.clientY - rect.top;
+            x = e.clientX - imgRect.left;
+            y = e.clientY - imgRect.top;
         }
 
-        const boxWidth = rect.width * hoverBoxRatio;
-        const boxHeight = rect.height * hoverBoxRatio;
+        // Hover box size = hoverBoxRatio of image
+        const boxWidth = imgRect.width * hoverBoxRatio;
+        const boxHeight = imgRect.height * hoverBoxRatio;
 
+        // Hover box position centered on cursor
         let boxX = x - boxWidth / 2;
         let boxY = y - boxHeight / 2;
 
-        boxX = Math.max(0, Math.min(boxX, rect.width - boxWidth));
-        boxY = Math.max(0, Math.min(boxY, rect.height - boxHeight));
+        // Keep inside image
+        boxX = Math.max(0, Math.min(boxX, imgRect.width - boxWidth));
+        boxY = Math.max(0, Math.min(boxY, imgRect.height - boxHeight));
 
         hoverBox.style.display = 'block';
         hoverBox.style.width = boxWidth + 'px';
@@ -2669,8 +2665,8 @@ function initZoomSystem() {
             const zoomImgWidth = mainImage.naturalWidth * zoomLevel;
             const zoomImgHeight = mainImage.naturalHeight * zoomLevel;
 
-            const percentX = x / rect.width;
-            const percentY = y / rect.height;
+            const percentX = boxX / imgRect.width;
+            const percentY = boxY / imgRect.height;
 
             const moveX = -(percentX * zoomImgWidth - zoomPanel.offsetWidth / 2);
             const moveY = -(percentY * zoomImgHeight - zoomPanel.offsetHeight / 2);
@@ -2688,15 +2684,24 @@ function initZoomSystem() {
         isMobileZoomToggled = !isMobileZoomToggled;
 
         if (isMobileZoomToggled) {
-            hoverBoxRatio = 0.5; // 🔥 50% ON
+            hoverBoxRatio = 0.5; // 50% ON
             hoverBox.style.background = 'rgba(255,0,0,0.3)';
             zoomPanel.classList.add('active');
         } else {
-            hoverBoxRatio = 0.25; // 🔁 back to 25%
+            hoverBoxRatio = 0.25; // back to 25%
             hoverBox.style.display = 'none';
             zoomPanel.classList.remove('active');
         }
     };
+
+    // ===============================
+    // IMAGE LOAD HANDLER
+    // ===============================
+    mainImage.onload = function () {
+        if (zoomImage) zoomImage.src = mainImage.src;
+    };
+}
+
 
     // ===============================
     // IMAGE LOAD FIX
