@@ -333,14 +333,13 @@ header.show {
 
 /* MAIN PRODUCT IMAGE - NATURAL ASPECT RATIO LIKE AAJJO */
 .main-image {
-    width: 100%;
-    height: auto;
+    width: auto;          /* Don't stretch */
+    height: auto;         
+    max-width: 100%;      
+    object-fit: contain;   /* ensures the whole image is visible */
     display: block;
-    background: transparent;
-    border: none;
-    outline: none;
-    box-shadow: none;
 }
+
 
 /* ZOOM BOX - EXACTLY 25% OF MAIN IMAGE */
 .hover-box {
