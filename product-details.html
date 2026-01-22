@@ -42,6 +42,7 @@ body {
     color: var(--text-dark);
     font-size: 14px;
     padding-bottom: 60px;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* HEADER */
@@ -294,7 +295,7 @@ header.show {
 .product-gallery {
     background: var(--white);
     border-radius: 12px;
-    padding: 0; /* Remove padding for frameless look */
+    padding: 0;
     position: relative;
     overflow: visible;
     height: fit-content;
@@ -304,21 +305,20 @@ header.show {
 .main-image-container {
     width: 100%;
     position: relative;
-    border-radius: 0; /* Remove border radius */
-    background: transparent; /* Remove background */
-    margin-bottom: 0; /* Remove margin */
-    overflow: visible; /* Change to visible */
+    border-radius: 0;
+    background: transparent;
+    margin-bottom: 0;
+    overflow: visible;
     display: flex;
-    align-items: flex-start; /* Align to top for natural height */
+    align-items: flex-start;
     justify-content: center;
-    min-height: auto; /* Remove fixed height */
-    max-height: none; /* Remove max height */
-    
-    /* Remove all borders and shadows */
+    min-height: auto;
+    max-height: none;
     border: none;
     outline: none;
     stroke: none;
     box-shadow: none;
+    touch-action: pan-y pinch-zoom;
 }
 
 .main-image-wrapper {
@@ -326,39 +326,35 @@ header.show {
     position: relative;
     overflow: visible;
     cursor: crosshair;
-    display: block; /* Change to block for natural flow */
-    
-    /* Remove all borders and backgrounds */
+    display: block;
     border: none;
     background: transparent;
     outline: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 /* MAIN PRODUCT IMAGE - FRAMELESS & ADAPTIVE */
 .main-image {
     width: 100%;
-    height: auto; /* Let height adjust naturally */
-    object-fit: contain; /* Preserve aspect ratio without cropping */
+    height: auto;
+    object-fit: contain;
     display: block;
-    
-    /* Remove all backgrounds and borders */
     background: transparent;
-    padding: 0; /* Remove padding */
+    padding: 0;
     border: none;
     outline: none;
     box-shadow: none;
-    
-    /* Ensure no forced dimensions */
     max-width: 100%;
     min-height: 0;
-    
-    /* Natural image rendering */
     image-rendering: auto;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
-/* HOVER BOX - FIXED POSITION (NO SCROLL EFFECT) */
+/* HOVER BOX - RELATIVE TO IMAGE */
 .hover-box {
     position: absolute;
     width: 150px;
@@ -372,19 +368,17 @@ header.show {
     display: none;
     top: 0;
     left: 0;
-    position: fixed !important;
 }
 
 .hover-box.active {
     display: block;
 }
 
-/* ZOOM PANEL - FIXED POSITION (NO SCROLL EFFECT) */
+/* ZOOM PANEL - ABSOLUTE POSITION */
 .zoom-panel {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    position: absolute;
+    top: 0;
+    left: 105%;
     width: 400px;
     height: 400px;
     background: var(--white);
@@ -420,6 +414,14 @@ header.show {
     transform-origin: 0 0;
 }
 
+/* Zoom container for positioning */
+.zoom-container {
+    position: relative;
+    width: 0;
+    height: 0;
+    display: inline-block;
+}
+
 /* Multiple Images Indicator */
 .multiple-images-indicator {
     position: absolute;
@@ -443,18 +445,19 @@ header.show {
     gap: 10px;
     margin-top: 15px;
     overflow-x: auto;
-    padding: 10px 0; /* Reduced padding */
+    padding: 10px 0;
     scroll-behavior: smooth;
-    background: transparent; /* Remove background */
-    border-radius: 0; /* Remove border radius */
+    background: transparent;
+    border-radius: 0;
+    -webkit-overflow-scrolling: touch;
 }
 
 .thumbnails-container::-webkit-scrollbar {
-    height: 4px; /* Thinner scrollbar */
+    height: 4px;
 }
 
 .thumbnails-container::-webkit-scrollbar-track {
-    background: transparent; /* Transparent track */
+    background: transparent;
 }
 
 .thumbnails-container::-webkit-scrollbar-thumb {
@@ -467,37 +470,35 @@ header.show {
     flex: 0 0 auto;
     width: 80px;
     height: 80px;
-    border-radius: 0; /* Remove border radius */
-    overflow: visible; /* Change to visible */
-    border: none; /* Remove border */
+    border-radius: 0;
+    overflow: visible;
+    border: none;
     cursor: pointer;
-    background: transparent; /* Remove background */
+    background: transparent;
     position: relative;
     transition: var(--transition);
-    
-    /* Remove all decorative styles */
     outline: none;
     stroke: none;
     box-shadow: none;
 }
 
 .thumbnail.active {
-    border-color: transparent; /* Remove border */
+    border-color: transparent;
     transform: scale(1.05);
-    box-shadow: none; /* Remove shadow */
+    box-shadow: none;
 }
 
 .thumbnail:hover {
-    border-color: transparent; /* Remove border */
+    border-color: transparent;
     transform: scale(1.03);
 }
 
 .thumbnail img {
     width: 100%;
     height: 100%;
-    object-fit: contain; /* Change to contain */
+    object-fit: contain;
     transition: transform 0.3s ease;
-    background: transparent; /* Remove background */
+    background: transparent;
 }
 
 .thumbnail:hover img {
@@ -1014,6 +1015,230 @@ header.show {
     font-size: 25px;
 }
 
+/* Filter Icon */
+.filter-icon {
+    background: var(--primary-gold);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+    font-weight: 500;
+}
+
+.filter-icon:hover {
+    background: var(--gold-dark);
+    transform: translateY(-2px);
+}
+
+/* Filter Modal */
+.filter-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(5px);
+}
+
+.filter-modal.active {
+    display: flex;
+}
+
+.filter-content {
+    background: var(--white);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    animation: slideUp 0.3s ease;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+.filter-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, var(--primary-gold), var(--gold-dark));
+    color: white;
+    border-radius: 10px 10px 0 0;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.filter-header h3 {
+    font-size: 18px;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.close-filter {
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: var(--white);
+    opacity: 0.8;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.close-filter:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.filter-body {
+    padding: 20px;
+}
+
+.filter-section {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.filter-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.filter-section h4 {
+    font-size: 16px;
+    margin-bottom: 15px;
+    color: var(--stone-dark);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.filter-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.filter-option:hover {
+    background: var(--bg-light);
+}
+
+.filter-option input[type="checkbox"],
+.filter-option input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.filter-option span:not(.filter-count) {
+    flex: 1;
+    cursor: pointer;
+}
+
+.filter-count {
+    color: var(--text-light);
+    font-size: 12px;
+    margin-left: auto;
+}
+
+.filter-actions {
+    display: flex;
+    gap: 10px;
+    padding: 20px;
+    border-top: 1px solid var(--border-color);
+    position: sticky;
+    bottom: 0;
+    background: var(--white);
+}
+
+.filter-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: var(--bg-light);
+    border-radius: 8px;
+}
+
+.filter-tag {
+    background: var(--primary-gold);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.remove-filter {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+}
+
+.remove-filter:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.clear-all-filters {
+    background: #f1f1f1;
+    color: var(--text-dark);
+    border: 1px solid var(--border-color);
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.clear-all-filters:hover {
+    background: #e0e0e0;
+}
+
 /* SIMILAR PRODUCTS - FRAMELESS IMAGES */
 .similar-products {
     margin-top: 40px;
@@ -1115,43 +1340,35 @@ header.show {
 /* CARD IMAGE CONTAINER - COMPLETELY FRAMELESS */
 .card-image-container {
     width: 100%;
-    height: auto; /* Let height adjust naturally */
-    overflow: visible; /* Change to visible */
+    height: auto;
+    overflow: visible;
     position: relative;
     flex-shrink: 0;
-    background: transparent; /* Remove background */
+    background: transparent;
     display: flex;
-    align-items: flex-start; /* Align to top */
+    align-items: flex-start;
     justify-content: center;
-    padding: 0; /* Remove padding */
-    
-    /* Remove all borders and decorative styles */
+    padding: 0;
     border: none;
     outline: none;
     stroke: none;
     box-shadow: none;
-    border-bottom: none; /* Remove border bottom */
+    border-bottom: none;
 }
 
 /* CARD IMAGE - FRAMELESS & ADAPTIVE */
 .card-image {
     width: 100%;
-    height: auto; /* Let height adjust naturally */
-    object-fit: contain; /* Preserve aspect ratio without cropping */
+    height: auto;
+    object-fit: contain;
     transition: transform 0.5s ease;
     max-width: 100%;
-    
-    /* Remove all backgrounds and borders */
     background: transparent;
     border: none;
     outline: none;
     box-shadow: none;
-    
-    /* Ensure no forced dimensions */
     min-height: 0;
     max-height: none;
-    
-    /* Natural image rendering */
     image-rendering: auto;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -1301,121 +1518,30 @@ header.show {
     }
 }
 
-/* RESPONSIVE IMPROVEMENTS */
-@media (max-width: 767px) {
-    .product-container {
-        grid-template-columns: 1fr;
-        padding: 15px;
-    }
-    
-    .main-image-container {
-        min-height: auto; /* Remove fixed height */
-    }
-    
-    .zoom-panel {
-        width: 300px;
-        height: 300px;
-    }
-    
-    .thumbnail {
-        width: 65px;
-        height: 65px;
-    }
-    
-    .specs-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .similar-products-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
-    }
-    
-    .card-image-container {
-        height: auto; /* Remove fixed height */
-    }
-    
-    .similar-product-card {
-        min-height: auto; /* Let cards adjust naturally */
-    }
-    
-    .product-info-section {
-        position: static;
-    }
-    
-    .similar-products {
-        margin-left: 15px;
-        margin-right: 15px;
-        padding: 20px;
-    }
-    
-    .product-info h1 {
-        font-size: 20px;
-    }
-    
-    .price-value {
-        font-size: 24px;
-    }
-    
-    .email-enquiry-content {
-        max-width: 90%;
-    }
+/* Mobile zoom button */
+.mobile-zoom-btn {
+    display: none;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: var(--primary-gold);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 5;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    font-size: 14px;
+    transition: var(--transition);
 }
 
-@media (max-width: 480px) {
-    .main-image-container {
-        min-height: auto; /* Remove fixed height */
-    }
-    
-    .zoom-panel {
-        width: 280px;
-        height: 280px;
-    }
-    
-    .thumbnail {
-        width: 55px;
-        height: 55px;
-    }
-    
-    .similar-products-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-    }
-    
-    .card-image-container {
-        height: auto; /* Remove fixed height */
-    }
-    
-    .similar-product-card {
-        min-height: auto; /* Let cards adjust naturally */
-    }
-    
-    .product-info h1 {
-        font-size: 18px;
-    }
-    
-    .price-value {
-        font-size: 22px;
-    }
-    
-    .mobile-zoom-btn {
-        display: flex;
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
-        background: var(--primary-gold);
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 36px;
-        height: 36px;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        z-index: 5;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-        font-size: 14px;
-    }
+.mobile-zoom-btn:hover {
+    background: var(--gold-dark);
+    transform: scale(1.1);
 }
 
 /* Product not found message */
@@ -1445,17 +1571,6 @@ header.show {
     font-size: 15px;
 }
 
-/* Mobile zoom button */
-.mobile-zoom-btn {
-    display: none;
-}
-
-@media (max-width: 768px) {
-    .mobile-zoom-btn {
-        display: flex;
-    }
-}
-
 /* TOUCH SUPPORT FOR MOBILE */
 .touch-active {
     cursor: pointer !important;
@@ -1482,6 +1597,145 @@ header.show {
     .aspect-ratio-16-9 { padding-bottom: 56.25%; }
     .aspect-ratio-9-16 { padding-bottom: 177.78%; }
 }
+
+/* RESPONSIVE IMPROVEMENTS */
+@media (max-width: 767px) {
+    .product-container {
+        grid-template-columns: 1fr;
+        padding: 15px;
+    }
+    
+    .main-image-container {
+        min-height: auto;
+    }
+    
+    .zoom-panel {
+        width: 300px;
+        height: 300px;
+        left: 100%;
+        top: 0;
+    }
+    
+    .thumbnail {
+        width: 65px;
+        height: 65px;
+    }
+    
+    .specs-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .similar-products-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .card-image-container {
+        height: auto;
+    }
+    
+    .similar-product-card {
+        min-height: auto;
+    }
+    
+    .product-info-section {
+        position: static;
+    }
+    
+    .similar-products {
+        margin-left: 15px;
+        margin-right: 15px;
+        padding: 20px;
+    }
+    
+    .product-info h1 {
+        font-size: 20px;
+    }
+    
+    .price-value {
+        font-size: 24px;
+    }
+    
+    .email-enquiry-content {
+        max-width: 90%;
+    }
+    
+    .mobile-zoom-btn {
+        display: flex;
+    }
+    
+    .filter-content {
+        max-width: 90%;
+    }
+    
+    .whatsapp-float,
+    .email-float {
+        width: 50px;
+        height: 50px;
+        bottom: 70px;
+        right: 15px;
+    }
+    
+    .whatsapp-float i,
+    .email-float i {
+        font-size: 20px;
+    }
+    
+    .email-float {
+        bottom: 130px;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-image-container {
+        min-height: auto;
+    }
+    
+    .zoom-panel {
+        width: 250px;
+        height: 250px;
+        left: 100%;
+        top: 0;
+    }
+    
+    .thumbnail {
+        width: 55px;
+        height: 55px;
+    }
+    
+    .similar-products-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .card-image-container {
+        height: auto;
+    }
+    
+    .similar-product-card {
+        min-height: auto;
+    }
+    
+    .product-info h1 {
+        font-size: 18px;
+    }
+    
+    .price-value {
+        font-size: 22px;
+    }
+    
+    .mobile-zoom-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 12px;
+    }
+    
+    .similar-products {
+        margin-left: 10px;
+        margin-right: 10px;
+        padding: 15px;
+    }
+}
 </style>
 </head>
 
@@ -1503,10 +1757,12 @@ header.show {
     <i class="fas fa-envelope"></i>
 </div>
 
-<!-- Zoom Panel - FIXED POSITION -->
-<div class="zoom-panel" id="zoomPanel">
-    <div class="zoom-image-container">
-        <img src="" alt="" class="zoom-image" id="zoomImage">
+<!-- Zoom Panel Container -->
+<div class="zoom-container" id="zoomContainer">
+    <div class="zoom-panel" id="zoomPanel">
+        <div class="zoom-image-container">
+            <img src="" alt="" class="zoom-image" id="zoomImage">
+        </div>
     </div>
 </div>
 
@@ -1541,6 +1797,18 @@ header.show {
                 <div class="form-group">
                     <label for="enquiryCompany"><i class="fas fa-building"></i> Company/Organization</label>
                     <input type="text" id="enquiryCompany" name="company" placeholder="Your company name (optional)">
+                </div>
+                
+                <div class="form-group">
+                    <label for="enquiryType"><i class="fas fa-question-circle"></i> Enquiry Type <span class="required">*</span></label>
+                    <select id="enquiryType" name="enquiryType" required>
+                        <option value="">Select type</option>
+                        <option value="price">Price Inquiry</option>
+                        <option value="sample">Sample Request</option>
+                        <option value="bulk">Bulk Order</option>
+                        <option value="custom">Custom Requirements</option>
+                        <option value="other">Other</option>
+                    </select>
                 </div>
                 
                 <div class="form-group">
@@ -1662,11 +1930,82 @@ header.show {
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h2><i class="fas fa-gem"></i> Similar Products</h2>
         <div style="display: flex; align-items: center; gap: 15px;">
+            <div class="filter-icon" onclick="openFilterModal()" title="Filter Products">
+                <i class="fas fa-filter"></i> Filter
+            </div>
             <span style="font-size: 14px; color: var(--text-light);">
                 Showing <span id="similarProductsCount">0</span> of <span id="totalProductsCount">0</span> products
             </span>
         </div>
     </div>
+    
+    <!-- Filter Tags -->
+    <div class="filter-tags" id="filterTags" style="display: none;">
+        <!-- Active filter tags will appear here -->
+    </div>
+    
+    <!-- Filter Modal -->
+    <div class="filter-modal" id="filterModal">
+        <div class="filter-content">
+            <div class="filter-header">
+                <h3><i class="fas fa-filter"></i> Filter Products</h3>
+                <button class="close-filter" onclick="closeFilterModal()">&times;</button>
+            </div>
+            <div class="filter-body">
+                <!-- Sort Options -->
+                <div class="filter-section">
+                    <h4><i class="fas fa-sort"></i> Sort By</h4>
+                    <div class="filter-options">
+                        <label class="filter-option">
+                            <input type="radio" name="sortBy" value="price_asc" checked>
+                            <span>Price: Low to High</span>
+                        </label>
+                        <label class="filter-option">
+                            <input type="radio" name="sortBy" value="price_desc">
+                            <span>Price: High to Low</span>
+                        </label>
+                        <label class="filter-option">
+                            <input type="radio" name="sortBy" value="name_asc">
+                            <span>Name: A to Z</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Type Filter -->
+                <div class="filter-section">
+                    <h4><i class="fas fa-tag"></i> Stone Type</h4>
+                    <div class="filter-options" id="typeFilterOptions">
+                        <!-- Type options will be populated dynamically -->
+                    </div>
+                </div>
+                
+                <!-- Color Filter -->
+                <div class="filter-section">
+                    <h4><i class="fas fa-palette"></i> Color</h4>
+                    <div class="filter-options" id="colorFilterOptions">
+                        <!-- Color options will be populated dynamically -->
+                    </div>
+                </div>
+                
+                <!-- Finish Filter -->
+                <div class="filter-section">
+                    <h4><i class="fas fa-brush"></i> Finish</h4>
+                    <div class="filter-options" id="finishFilterOptions">
+                        <!-- Finish options will be populated dynamically -->
+                    </div>
+                </div>
+            </div>
+            <div class="filter-actions">
+                <button class="clear-all-filters" onclick="clearAllFilters()">
+                    <i class="fas fa-trash"></i> Clear All
+                </button>
+                <button class="btn-submit" onclick="closeFilterModal()">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+    
     <div class="similar-products-grid" id="similarProductsGrid">
         <!-- Similar products will be loaded here with frameless images -->
     </div>
@@ -1724,13 +2063,316 @@ let similarProducts = [];
 let filteredSimilarProducts = [];
 
 // ============================================
+// SCROLL HIDE/SHOW HEADER & FOOTER
+// ============================================
+
+let lastScrollTop = 0;
+let scrollTimeout;
+const header = document.getElementById('mainHeader');
+const bottomNav = document.getElementById('bottomNav');
+const scrollThreshold = 60; // Minimum scroll before hiding
+const hideDelay = 200; // Delay before hiding
+
+function handleScroll() {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollDirection = scrollTop > lastScrollTop ? 'down' : 'up';
+    const scrollDistance = Math.abs(scrollTop - lastScrollTop);
+    
+    // Clear any existing timeout
+    clearTimeout(scrollTimeout);
+    
+    // Show header and bottom nav when scrolling up
+    if (scrollDirection === 'up') {
+        header.classList.remove('hidden');
+        bottomNav.classList.remove('hidden');
+        header.classList.add('show');
+        bottomNav.classList.add('show');
+    } 
+    // Hide header and bottom nav when scrolling down beyond threshold
+    else if (scrollDirection === 'down' && scrollDistance > scrollThreshold) {
+        // Delay hiding to prevent flickering during quick scrolls
+        scrollTimeout = setTimeout(() => {
+            header.classList.add('hidden');
+            bottomNav.classList.add('hidden');
+            header.classList.remove('show');
+            bottomNav.classList.remove('show');
+        }, hideDelay);
+    }
+    
+    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+}
+
+// Add scroll event listener with throttling
+let scrollThrottleTimeout;
+window.addEventListener('scroll', () => {
+    if (!scrollThrottleTimeout) {
+        scrollThrottleTimeout = setTimeout(() => {
+            handleScroll();
+            scrollThrottleTimeout = null;
+        }, 100); // Throttle to 100ms
+    }
+});
+
+// Show header and bottom nav when mouse moves (desktop only)
+let mouseMoveTimeout;
+if (window.innerWidth > 768) {
+    document.addEventListener('mousemove', (e) => {
+        // Only show if mouse is near top or bottom of screen
+        const isNearTop = e.clientY < 100;
+        const isNearBottom = window.innerHeight - e.clientY < 100;
+        
+        if (isNearTop || isNearBottom) {
+            clearTimeout(mouseMoveTimeout);
+            header.classList.remove('hidden');
+            bottomNav.classList.remove('hidden');
+            header.classList.add('show');
+            bottomNav.classList.add('show');
+            
+            // Hide again after 3 seconds if not near edges
+            mouseMoveTimeout = setTimeout(() => {
+                if (!isNearTop && !isNearBottom && lastScrollTop > scrollThreshold) {
+                    header.classList.add('hidden');
+                    bottomNav.classList.add('hidden');
+                }
+            }, 3000);
+        }
+    });
+}
+
+// ============================================
+// FILTER SYSTEM
+// ============================================
+
+let activeFilters = {
+    types: [],
+    colors: [],
+    finishes: [],
+    sortBy: 'price_asc'
+};
+
+// Filter modal functions
+function openFilterModal() {
+    document.getElementById('filterModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeFilterModal() {
+    document.getElementById('filterModal').classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+
+// Initialize filter options
+function initializeFilterOptions() {
+    if (similarProducts.length === 0) return;
+    
+    // Collect unique types
+    const types = new Set();
+    const colors = new Set();
+    const finishes = new Set();
+    
+    similarProducts.forEach(product => {
+        if (product.type) types.add(product.type);
+        if (product.color) colors.add(product.color);
+        if (product.finish) finishes.add(product.finish);
+    });
+    
+    // Populate type filters
+    const typeContainer = document.getElementById('typeFilterOptions');
+    if (typeContainer) {
+        typeContainer.innerHTML = Array.from(types).sort().map(type => {
+            const isChecked = activeFilters.types.includes(type) ? 'checked' : '';
+            return `
+                <label class="filter-option">
+                    <input type="checkbox" value="${type}" ${isChecked} onchange="toggleFilter('types', '${type}')">
+                    <span>${type}</span>
+                    <span class="filter-count">
+                        (${similarProducts.filter(p => p.type === type).length})
+                    </span>
+                </label>
+            `;
+        }).join('');
+    }
+    
+    // Populate color filters
+    const colorContainer = document.getElementById('colorFilterOptions');
+    if (colorContainer) {
+        colorContainer.innerHTML = Array.from(colors).sort().map(color => {
+            const isChecked = activeFilters.colors.includes(color) ? 'checked' : '';
+            return `
+                <label class="filter-option">
+                    <input type="checkbox" value="${color}" ${isChecked} onchange="toggleFilter('colors', '${color}')">
+                    <span>${color}</span>
+                    <span class="filter-count">
+                        (${similarProducts.filter(p => p.color === color).length})
+                    </span>
+                </label>
+            `;
+        }).join('');
+    }
+    
+    // Populate finish filters
+    const finishContainer = document.getElementById('finishFilterOptions');
+    if (finishContainer) {
+        finishContainer.innerHTML = Array.from(finishes).sort().map(finish => {
+            const isChecked = activeFilters.finishes.includes(finish) ? 'checked' : '';
+            return `
+                <label class="filter-option">
+                    <input type="checkbox" value="${finish}" ${isChecked} onchange="toggleFilter('finishes', '${finish}')">
+                    <span>${finish}</span>
+                    <span class="filter-count">
+                        (${similarProducts.filter(p => p.finish === finish).length})
+                    </span>
+                </label>
+            `;
+        }).join('');
+    }
+    
+    // Set sort radio buttons
+    document.querySelectorAll('input[name="sortBy"]').forEach(radio => {
+        if (radio.value === activeFilters.sortBy) {
+            radio.checked = true;
+        }
+        radio.onchange = (e) => {
+            activeFilters.sortBy = e.target.value;
+            applyFilters();
+        };
+    });
+}
+
+// Toggle filter on/off
+function toggleFilter(category, value) {
+    const checkbox = document.querySelector(`input[value="${value}"]`);
+    
+    if (checkbox.checked) {
+        if (!activeFilters[category].includes(value)) {
+            activeFilters[category].push(value);
+        }
+    } else {
+        activeFilters[category] = activeFilters[category].filter(item => item !== value);
+    }
+    
+    applyFilters();
+    updateFilterTags();
+}
+
+// Clear all filters
+function clearAllFilters() {
+    activeFilters = {
+        types: [],
+        colors: [],
+        finishes: [],
+        sortBy: 'price_asc'
+    };
+    
+    // Uncheck all checkboxes
+    document.querySelectorAll('#typeFilterOptions input[type="checkbox"]').forEach(cb => cb.checked = false);
+    document.querySelectorAll('#colorFilterOptions input[type="checkbox"]').forEach(cb => cb.checked = false);
+    document.querySelectorAll('#finishFilterOptions input[type="checkbox"]').forEach(cb => cb.checked = false);
+    
+    // Reset sort
+    document.querySelector('input[value="price_asc"]').checked = true;
+    
+    applyFilters();
+    updateFilterTags();
+}
+
+// Update filter tags display
+function updateFilterTags() {
+    const tagsContainer = document.getElementById('filterTags');
+    if (!tagsContainer) return;
+    
+    const allFilters = [
+        ...activeFilters.types.map(type => ({ category: 'type', value: type })),
+        ...activeFilters.colors.map(color => ({ category: 'color', value: color })),
+        ...activeFilters.finishes.map(finish => ({ category: 'finish', value: finish }))
+    ];
+    
+    if (allFilters.length === 0) {
+        tagsContainer.style.display = 'none';
+        tagsContainer.innerHTML = '';
+        return;
+    }
+    
+    tagsContainer.style.display = 'flex';
+    tagsContainer.innerHTML = allFilters.map(filter => `
+        <div class="filter-tag">
+            ${filter.value}
+            <button class="remove-filter" onclick="removeFilter('${filter.category}s', '${filter.value}')">
+                &times;
+            </button>
+        </div>
+    `).join('');
+}
+
+// Remove specific filter
+function removeFilter(category, value) {
+    activeFilters[category] = activeFilters[category].filter(item => item !== value);
+    
+    // Uncheck corresponding checkbox
+    const checkbox = document.querySelector(`input[value="${value}"]`);
+    if (checkbox) checkbox.checked = false;
+    
+    applyFilters();
+    updateFilterTags();
+}
+
+// Apply filters to similar products
+function applyFilters() {
+    if (similarProducts.length === 0) return;
+    
+    // Start with all similar products
+    filteredSimilarProducts = [...similarProducts];
+    
+    // Apply type filters
+    if (activeFilters.types.length > 0) {
+        filteredSimilarProducts = filteredSimilarProducts.filter(product => 
+            product.type && activeFilters.types.includes(product.type)
+        );
+    }
+    
+    // Apply color filters
+    if (activeFilters.colors.length > 0) {
+        filteredSimilarProducts = filteredSimilarProducts.filter(product => 
+            product.color && activeFilters.colors.includes(product.color)
+        );
+    }
+    
+    // Apply finish filters
+    if (activeFilters.finishes.length > 0) {
+        filteredSimilarProducts = filteredSimilarProducts.filter(product => 
+            product.finish && activeFilters.finishes.includes(product.finish)
+        );
+    }
+    
+    // Apply sorting
+    filteredSimilarProducts.sort((a, b) => {
+        switch (activeFilters.sortBy) {
+            case 'price_asc':
+                return (a.price || 0) - (b.price || 0);
+            case 'price_desc':
+                return (b.price || 0) - (a.price || 0);
+            case 'name_asc':
+                return (a.stone_name || '').localeCompare(b.stone_name || '');
+            default:
+                return 0;
+        }
+    });
+    
+    // Limit to 10 products
+    filteredSimilarProducts = filteredSimilarProducts.slice(0, 10);
+    
+    // Update display
+    displaySimilarProducts();
+    updateFilterTags();
+}
+
+// ============================================
 // IMAGE MANAGEMENT SYSTEM
 // ============================================
 
 // Function to detect image aspect ratio and apply appropriate class
 function detectAndApplyAspectRatio(imageElement) {
     if (!imageElement.complete) {
-        // Wait for image to load
         imageElement.onload = function() {
             applyAspectRatioClass(this);
         };
@@ -1752,25 +2394,23 @@ function applyAspectRatioClass(img) {
     );
     
     // Apply appropriate aspect ratio class
-    if (Math.abs(aspectRatio - 0.5) < 0.1) { // 2:4 (Portrait)
+    if (Math.abs(aspectRatio - 0.5) < 0.1) {
         img.classList.add('aspect-ratio-2-4');
-    } else if (Math.abs(aspectRatio - 1.333) < 0.1) { // 4:3 (Standard)
+    } else if (Math.abs(aspectRatio - 1.333) < 0.1) {
         img.classList.add('aspect-ratio-4-3');
-    } else if (Math.abs(aspectRatio - 1.5) < 0.1) { // 3:2 (Classic)
+    } else if (Math.abs(aspectRatio - 1.5) < 0.1) {
         img.classList.add('aspect-ratio-3-2');
-    } else if (Math.abs(aspectRatio - 1) < 0.1) { // 1:1 (Square)
+    } else if (Math.abs(aspectRatio - 1) < 0.1) {
         img.classList.add('aspect-ratio-1-1');
-    } else if (Math.abs(aspectRatio - 1.777) < 0.1) { // 16:9 (Widescreen)
+    } else if (Math.abs(aspectRatio - 1.777) < 0.1) {
         img.classList.add('aspect-ratio-16-9');
-    } else if (Math.abs(aspectRatio - 0.5625) < 0.1) { // 9:16 (Vertical)
+    } else if (Math.abs(aspectRatio - 0.5625) < 0.1) {
         img.classList.add('aspect-ratio-9-16');
     }
-    
-    console.log(`Image aspect ratio detected: ${naturalWidth}x${naturalHeight} (${aspectRatio.toFixed(2)})`);
 }
 
 // ============================================
-// ZOOM SYSTEM - FIXED POSITION (NO SCROLL EFFECT)
+// ZOOM SYSTEM - TOUCH SUPPORT FOR MOBILE
 // ============================================
 
 function initZoomSystem() {
@@ -1781,8 +2421,9 @@ function initZoomSystem() {
     const hoverBox = document.getElementById("hoverBox");
     const zoomPanel = document.getElementById("zoomPanel");
     const zoomImage = document.getElementById("zoomImage");
+    const zoomContainer = document.getElementById("zoomContainer");
 
-    if (!mainImage || !wrapper || !hoverBox || !zoomPanel || !zoomImage) {
+    if (!mainImage || !wrapper || !hoverBox || !zoomPanel || !zoomImage || !zoomContainer) {
         console.error("❌ Zoom elements missing!");
         return;
     }
@@ -1796,15 +2437,33 @@ function initZoomSystem() {
         zoomImage.src = mainImage.src;
     }
 
-    // Variables to track mouse position
+    // Variables to track position
     let isZoomActive = false;
+    let isTouchZooming = false;
     let zoomLevel = 3;
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let lastTouchX = 0;
+    let lastTouchY = 0;
+
+    // Position zoom container near the image
+    const positionZoomContainer = () => {
+        const mainImageRect = mainImage.getBoundingClientRect();
+        const containerRect = wrapper.getBoundingClientRect();
+        
+        // Position zoom container to the right of the image
+        zoomContainer.style.position = 'absolute';
+        zoomContainer.style.left = (mainImageRect.width + 20) + 'px';
+        zoomContainer.style.top = '0';
+        zoomContainer.style.zIndex = '1000';
+    };
 
     // Mouse event handlers for desktop
     if (window.innerWidth > 768) {
         wrapper.addEventListener('mouseenter', function(e) {
             console.log('🖱️ Mouse entered image');
             isZoomActive = true;
+            positionZoomContainer();
             updateZoom(e);
         });
 
@@ -1820,24 +2479,60 @@ function initZoomSystem() {
             zoomPanel.classList.remove('active');
         });
     } else {
-        // Touch events for mobile
-        let isZooming = false;
-        
+        // Touch events for mobile - Enhanced for continuous touch movement
         wrapper.addEventListener('touchstart', function(e) {
             e.preventDefault();
-            wrapper.classList.add('touch-zoom-active');
-        });
-        
-        wrapper.addEventListener('touchend', function() {
-            wrapper.classList.remove('touch-zoom-active');
-        });
-        
-        wrapper.addEventListener('click', function(e) {
-            if (!isZooming) {
-                toggleMobileZoom();
-                isZooming = true;
-                setTimeout(() => { isZooming = false; }, 300);
+            if (e.touches.length === 1) {
+                isTouchZooming = true;
+                const touch = e.touches[0];
+                touchStartX = touch.clientX;
+                touchStartY = touch.clientY;
+                lastTouchX = touch.clientX;
+                lastTouchY = touch.clientY;
+                
+                // Position zoom container
+                positionZoomContainer();
+                
+                // Show zoom panel
+                zoomPanel.classList.add('active');
+                updateZoom(e);
             }
+        }, { passive: false });
+
+        wrapper.addEventListener('touchmove', function(e) {
+            if (isTouchZooming && e.touches.length === 1) {
+                e.preventDefault();
+                updateZoom(e);
+                lastTouchX = e.touches[0].clientX;
+                lastTouchY = e.touches[0].clientY;
+            }
+        }, { passive: false });
+
+        wrapper.addEventListener('touchend', function(e) {
+            if (isTouchZooming) {
+                isTouchZooming = false;
+                hoverBox.style.display = 'none';
+                zoomPanel.classList.remove('active');
+            }
+        });
+
+        wrapper.addEventListener('touchcancel', function(e) {
+            isTouchZooming = false;
+            hoverBox.style.display = 'none';
+            zoomPanel.classList.remove('active');
+        });
+
+        // Double tap to toggle zoom on mobile
+        let lastTap = 0;
+        wrapper.addEventListener('touchend', function(e) {
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTap;
+            if (tapLength < 300 && tapLength > 0) {
+                // Double tap detected
+                toggleMobileZoom();
+                e.preventDefault();
+            }
+            lastTap = currentTime;
         });
     }
 
@@ -1846,8 +2541,9 @@ function initZoomSystem() {
         let x, y;
         
         if (e.type.includes('touch')) {
-            x = e.touches[0].clientX - rect.left;
-            y = e.touches[0].clientY - rect.top;
+            const touch = e.touches[0];
+            x = touch.clientX - rect.left;
+            y = touch.clientY - rect.top;
         } else {
             x = e.clientX - rect.left;
             y = e.clientY - rect.top;
@@ -1866,10 +2562,10 @@ function initZoomSystem() {
         boxX = Math.max(0, Math.min(boxX, maxX));
         boxY = Math.max(0, Math.min(boxY, maxY));
         
-        // Update hover box - FIXED POSITION
+        // Update hover box
         hoverBox.style.display = 'block';
-        hoverBox.style.left = (e.clientX - boxSize/2) + 'px';
-        hoverBox.style.top = (e.clientY - boxSize/2) + 'px';
+        hoverBox.style.left = boxX + 'px';
+        hoverBox.style.top = boxY + 'px';
         hoverBox.style.width = boxSize + 'px';
         hoverBox.style.height = boxSize + 'px';
         
@@ -1890,7 +2586,7 @@ function initZoomSystem() {
             
             zoomImage.style.width = zoomImgWidth + 'px';
             zoomImage.style.height = zoomImgHeight + 'px';
-            zoomImage.style.transform = `translate(${moveX}px, ${moveY}px) scale(${zoomLevel})`;
+            zoomImage.style.transform = `translate(${moveX}px, ${moveY}px)`;
         }
     }
 
@@ -1901,7 +2597,12 @@ function initZoomSystem() {
         if (zoomImage) {
             zoomImage.src = mainImage.src;
         }
+        // Position zoom container after image loads
+        setTimeout(positionZoomContainer, 100);
     };
+
+    // Reposition on resize
+    window.addEventListener('resize', positionZoomContainer);
 
     console.log('✅ Zoom system initialized successfully');
 }
@@ -1950,6 +2651,18 @@ function closeEmailEnquiryModal() {
     }
 }
 
+// Helper function to get enquiry type label
+function getEnquiryTypeLabel(type) {
+    const labels = {
+        'price': 'Price Inquiry',
+        'sample': 'Sample Request',
+        'bulk': 'Bulk Order',
+        'custom': 'Custom Requirements',
+        'other': 'Other'
+    };
+    return labels[type] || type;
+}
+
 // Handle form submission
 document.getElementById('emailEnquiryForm').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -1961,13 +2674,14 @@ document.getElementById('emailEnquiryForm').addEventListener('submit', function(
     const email = document.getElementById('enquiryEmail').value.trim();
     const phone = document.getElementById('enquiryPhone').value.trim();
     const company = document.getElementById('enquiryCompany').value.trim();
+    const enquiryType = document.getElementById('enquiryType').value;
     const quantity = document.getElementById('enquiryQuantity').value;
     const project = document.getElementById('enquiryProject').value;
     const message = document.getElementById('enquiryMessage').value.trim();
     
     // Validate required fields
-    if (!name || !email || !phone) {
-        showError('Please fill all required fields (Name, Email, Phone)');
+    if (!name || !email || !phone || !enquiryType) {
+        showError('Please fill all required fields (Name, Email, Phone, Enquiry Type)');
         return;
     }
     
@@ -1984,6 +2698,7 @@ document.getElementById('emailEnquiryForm').addEventListener('submit', function(
     
     let body = `Dear IRYA STONE Team,\n\n`;
     body += `I am interested in the following sandstone product:\n\n`;
+    body += `ENQUIRY TYPE: ${getEnquiryTypeLabel(enquiryType)}\n\n`;
     body += `PRODUCT DETAILS:\n`;
     body += `────────────────────\n`;
     body += `• Product Name: ${productName}\n`;
@@ -2109,6 +2824,8 @@ function getDefaultImage(category) {
         return 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=400&h=300&q=80';
     } else if (categoryLower.includes('marble')) {
         return 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=400&h=300&q=80';
+    } else if (categoryLower.includes('granite')) {
+        return 'https://images.unsplash.com/photo-1541140532154-b024d705b90a?auto=format&fit=crop&w=400&h=300&q=80';
     }
     
     return 'https://images.unsplash.com/photo-1544931170-3ca1337cce88?auto=format&fit=crop&w=400&h=300&q=80';
@@ -2463,7 +3180,11 @@ async function loadSimilarProducts() {
                 filteredSimilarProducts = filteredSimilarProducts.slice(0, 10);
             }
             
-            displaySimilarProducts();
+            // Initialize filter options
+            initializeFilterOptions();
+            
+            // Apply initial filters and display
+            applyFilters();
         } else {
             console.log('No similar products to display');
             document.getElementById('similarProductsSection').style.display = 'none';
@@ -2595,12 +3316,24 @@ $(document).ready(async function() {
         if ($(e.target).hasClass('email-enquiry-modal')) {
             closeEmailEnquiryModal();
         }
+        // Filter modal
+        if ($(e.target).hasClass('filter-modal')) {
+            closeFilterModal();
+        }
     });
     
     // Prevent form submission on enter key in inputs
     $('.email-enquiry-form input').on('keypress', function(e) {
         if (e.key === 'Enter') {
             e.preventDefault();
+        }
+    });
+    
+    // Close modals with Escape key
+    $(document).on('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeEmailEnquiryModal();
+            closeFilterModal();
         }
     });
 });
