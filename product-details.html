@@ -2223,9 +2223,9 @@ header.show {
         </div>
     </div>
     
-    <!-- Filter Tags -->
+    <!-- Filter Tags - HIDDEN SECTION (No space occupied) -->
     <div class="filter-tags" id="filterTags" style="display: none;">
-        <!-- Active filter tags will appear here -->
+        <!-- Active filter tags will appear here but hidden -->
     </div>
     
     <div class="similar-products-grid" id="similarProductsGrid">
@@ -2349,22 +2349,23 @@ function initAutoHideHeaderFooter() {
     
     console.log('✅ Auto-hide header/footer initialized (scroll only)');
 }
-/* =======================
-   CSS INJECTION
-======================= */
+/* ===== CSS INJECTION ===== */
 const zoomStyles = `
 #hoverBox {
     position: absolute;
-    background: rgba(201,162,39,0.22);
+    width: 50%;
+    height: 50%;
+    background: rgba(201,162,39,0.2);
     border: 2px solid #C9A227;
     pointer-events: none;
     z-index: 1000;
     display: none;
     border-radius: 6px;
-    box-shadow: 0 0 0 1px rgba(255,255,255,0.9) inset,
-                0 4px 18px rgba(201,162,39,0.35);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.8) inset,
+                0 4px 20px rgba(201,162,39,0.3);
+    transition: all 0.05s linear;
+    cursor: crosshair;
 }
-
 #hoverBox.active { display:block; }
 
 #zoomPanel {
@@ -2378,17 +2379,15 @@ const zoomStyles = `
     z-index: 9998;
     opacity: 0;
     visibility: hidden;
-    transform: scale(0.98);
-    transition: opacity .15s ease, transform .15s ease;
+    transform: translateY(10px) scale(0.98);
+    transition: all 0.2s ease-out;
     pointer-events: none;
 }
-
 #zoomPanel.active {
     opacity: 1;
     visibility: visible;
-    transform: scale(1);
+    transform: translateY(0) scale(1);
 }
-
 #zoomPanel img {
     position: absolute;
     top: 0;
@@ -2398,135 +2397,201 @@ const zoomStyles = `
     will-change: transform;
 }
 `;
-document.head.appendChild(Object.assign(document.createElement("style"), {textContent: zoomStyles}));
+const styleEl = document.createElement('style');
+styleEl.textContent = zoomStyles;
+document.head.appendChild(styleEl);
 
 
-/* =======================
-   ZOOM SYSTEM JS
-======================= */
+/* ===== ZOOM SYSTEM JS ===== */
 function initZoomSystem() {
-
     const mainImage = document.getElementById("mainProductImage");
-    const wrapper   = document.getElementById("mainImageWrapper");
-    const hoverBox  = document.getElementById("hoverBox");
+    const wrapper = document.getElementById("mainImageWrapper");
+    const hoverBox = document.getElementById("hoverBox");
     const zoomPanel = document.getElementById("zoomPanel");
     const zoomImage = document.getElementById("zoomImage");
 
-    if (!mainImage || !wrapper || !hoverBox || !zoomPanel || !zoomImage) return;
+    if(!mainImage||!wrapper||!hoverBox||!zoomPanel||!zoomImage) return;
 
-    /* ===== TUNING CONTROLS ===== */
-    const hoverRatio    = 0.4;  // hover size (40%)
-    const zoomLevel     = 1;    // exact mapping (no overzoom)
+    const hoverRatio = 0.4; // hover box size relative to image
+    const zoomLevel = 1; // zoom multiplier
     const zoomPanelSize = 350;
-    const zoomPanelGap  = 10;
-    const smoothFactor  = 0.25; // ONLY for zoom image (not hover)
+    const zoomPanelGap = 10;
+    const smoothFactor = 0.2; // smaller = slower, bigger = faster
 
-    let isZoomActive = false;
-    let isImageLoaded = false;
+    let isZoomActive=false, isTouchZooming=false, isMobileZoomToggled=false;
+    let lastTouchTime=0, isImageLoaded=false;
+    let targetX=0,targetY=0,currentX=0,currentY=0;
 
-    let boxX = 0, boxY = 0;
-    let smoothX = 0, smoothY = 0;
-
-    /* ======================= */
-
-    function initialize() {
-        isImageLoaded = true;
+    function initializeZoom(){
+        isImageLoaded=true;
         zoomImage.src = mainImage.src;
-        setupEvents();
+        resetZoom();
+        setupEventListeners();
+        animateHoverBox();
     }
 
-    function updateHover(cursorX, cursorY) {
-        const rect = wrapper.getBoundingClientRect();
-        const boxW = rect.width * hoverRatio;
-        const boxH = rect.height * hoverRatio;
-
-        boxX = Math.max(0, Math.min(cursorX - boxW / 2, rect.width - boxW));
-        boxY = Math.max(0, Math.min(cursorY - boxH / 2, rect.height - boxH));
-
-        hoverBox.style.width  = boxW + "px";
-        hoverBox.style.height = boxH + "px";
-        hoverBox.style.left   = boxX + "px";
-        hoverBox.style.top    = boxY + "px";
+    function resetZoom(){
+        hoverBox.style.display='none';
+        hoverBox.classList.remove('active');
+        zoomPanel.classList.remove('active');
+        isZoomActive=false; isTouchZooming=false;
     }
 
-    function updateZoom() {
-        if (!isZoomActive) return requestAnimationFrame(updateZoom);
-
+    function updateHoverBox(cursorX=null,cursorY=null){
+        if(!isImageLoaded) return;
         const rect = wrapper.getBoundingClientRect();
+        const boxWidth = rect.width * hoverRatio;
+        const boxHeight = rect.height * hoverRatio;
+
+        if(cursorX!==null && cursorY!==null){
+            targetX = Math.max(0, Math.min(cursorX - boxWidth/2, rect.width - boxWidth));
+            targetY = Math.max(0, Math.min(cursorY - boxHeight/2, rect.height - boxHeight));
+        } else {
+            targetX = (rect.width-boxWidth)/2;
+            targetY = (rect.height-boxHeight)/2;
+        }
+
+        hoverBox.style.width = boxWidth+'px';
+        hoverBox.style.height = boxHeight+'px';
+    }
+
+    function positionZoomPanel(rect){
+        const vw = window.innerWidth, vh = window.innerHeight;
+        let left = rect.right + zoomPanelGap;
+        let top = rect.top + rect.height/2 - zoomPanelSize/2;
+
+        if(left + zoomPanelSize > vw - 20) left = rect.left - zoomPanelSize - zoomPanelGap;
+        if(top < 20) top = 20;
+        if(top + zoomPanelSize > vh - 20) top = vh - zoomPanelSize - 20;
+
+        zoomPanel.style.left = left+'px';
+        zoomPanel.style.top = top+'px';
+    }
+
+    function updateZoomImage(){
+        if(!isImageLoaded) return;
+        const rect = wrapper.getBoundingClientRect();
+        const boxWidth = rect.width * hoverRatio;
+        const boxHeight = rect.height * hoverRatio;
+
+        // smooth movement
+        currentX += (targetX - currentX) * smoothFactor;
+        currentY += (targetY - currentY) * smoothFactor;
+
+        hoverBox.style.left = currentX + 'px';
+        hoverBox.style.top = currentY + 'px';
+
+        // exact mapping
         const scaleX = mainImage.naturalWidth / rect.width;
         const scaleY = mainImage.naturalHeight / rect.height;
 
-        const targetX = -boxX * scaleX * zoomLevel;
-        const targetY = -boxY * scaleY * zoomLevel;
+        zoomImage.style.width = mainImage.naturalWidth*zoomLevel+'px';
+        zoomImage.style.height = mainImage.naturalHeight*zoomLevel+'px';
 
-        // smooth ONLY zoom image
-        smoothX += (targetX - smoothX) * smoothFactor;
-        smoothY += (targetY - smoothY) * smoothFactor;
+        const translateX = -currentX*scaleX*zoomLevel;
+        const translateY = -currentY*scaleY*zoomLevel;
 
-        zoomImage.style.width  = mainImage.naturalWidth * zoomLevel + "px";
-        zoomImage.style.height = mainImage.naturalHeight * zoomLevel + "px";
-        zoomImage.style.transform = `translate(${smoothX}px, ${smoothY}px)`;
+        zoomImage.style.transform = `translate(${translateX}px, ${translateY}px)`;
 
-        requestAnimationFrame(updateZoom);
+        positionZoomPanel(rect);
+
+        requestAnimationFrame(updateZoomImage);
     }
 
-    function positionZoomPanel() {
+    function showZoom(){
+        hoverBox.style.display='block'; hoverBox.classList.add('active');
+        zoomPanel.classList.add('active');
         const rect = wrapper.getBoundingClientRect();
-        const vw = window.innerWidth;
-        const vh = window.innerHeight;
-
-        let left = rect.right + zoomPanelGap;
-        let top  = rect.top + rect.height / 2 - zoomPanelSize / 2;
-
-        if (left + zoomPanelSize > vw - 20) {
-            left = rect.left - zoomPanelSize - zoomPanelGap;
-        }
-        if (top < 20) top = 20;
-        if (top + zoomPanelSize > vh - 20) top = vh - zoomPanelSize - 20;
-
-        zoomPanel.style.left = left + "px";
-        zoomPanel.style.top  = top + "px";
+        positionZoomPanel(rect);
     }
+    function hideZoom(){ hoverBox.style.display='none'; hoverBox.classList.remove('active'); zoomPanel.classList.remove('active'); }
 
-    function showZoom() {
-        hoverBox.classList.add("active");
-        zoomPanel.classList.add("active");
-        isZoomActive = true;
-        positionZoomPanel();
-        requestAnimationFrame(updateZoom);
-    }
-
-    function hideZoom() {
-        hoverBox.classList.remove("active");
-        zoomPanel.classList.remove("active");
-        isZoomActive = false;
-    }
-
-    function setupEvents() {
-
-        wrapper.addEventListener("mouseenter", () => {
-            if (window.innerWidth > 768) showZoom();
-        });
-
-        wrapper.addEventListener("mousemove", e => {
-            if (!isZoomActive) return;
+    function toggleMobileZoom(){
+        isMobileZoomToggled = !isMobileZoomToggled;
+        if(isMobileZoomToggled){
+            showZoom();
             const rect = wrapper.getBoundingClientRect();
-            updateHover(e.clientX - rect.left, e.clientY - rect.top);
-        });
-
-        wrapper.addEventListener("mouseleave", hideZoom);
-
-        window.addEventListener("resize", positionZoomPanel);
-
-        new MutationObserver(() => {
-            zoomImage.src = mainImage.src;
-        }).observe(mainImage, { attributes: true, attributeFilter: ["src"] });
+            updateHoverBox(rect.width/2, rect.height/2);
+        } else hideZoom();
     }
 
-    if (mainImage.complete && mainImage.naturalWidth) initialize();
-    else mainImage.onload = initialize;
+    function handleMouseMove(e){
+        if(!isZoomActive || isMobileZoomToggled) return;
+        const rect = wrapper.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        updateHoverBox(x,y);
+    }
+
+    function handleTouchMove(e){
+        if(!isTouchZooming || isMobileZoomToggled) return;
+        e.preventDefault();
+        const rect = wrapper.getBoundingClientRect();
+        const touch = e.touches[0];
+        updateHoverBox(touch.clientX-rect.left, touch.clientY-rect.top);
+    }
+
+    function setupEventListeners(){
+        wrapper.addEventListener('mouseenter',()=>{
+            if(window.innerWidth>768 && !isMobileZoomToggled){
+                isZoomActive = true;
+                showZoom();
+            }
+        });
+        wrapper.addEventListener('mousemove', handleMouseMove);
+        wrapper.addEventListener('mouseleave', ()=>{
+            isZoomActive = false;
+            if(!isMobileZoomToggled) hideZoom();
+        });
+
+        wrapper.addEventListener('touchstart', (e)=>{
+            e.preventDefault();
+            if(e.touches.length===1){
+                const now = Date.now();
+                if(now - lastTouchTime < 300){
+                    toggleMobileZoom();
+                    lastTouchTime = 0;
+                } else {
+                    lastTouchTime = now;
+                    isTouchZooming = true;
+                    showZoom();
+                }
+            }
+        }, {passive:false});
+
+        wrapper.addEventListener('touchmove', handleTouchMove, {passive:false});
+        wrapper.addEventListener('touchend', ()=>{
+            isTouchZooming = false;
+            if(!isMobileZoomToggled) hideZoom();
+        });
+
+        window.addEventListener('resize', ()=>{
+            const rect = wrapper.getBoundingClientRect();
+            positionZoomPanel(rect);
+        });
+
+        // observe image changes
+        const obs = new MutationObserver(()=>{
+            if(mainImage.src!==zoomImage.src){
+                zoomImage.src=mainImage.src;
+            }
+        });
+        obs.observe(mainImage,{attributes:true,attributeFilter:['src']});
+    }
+
+    function animateHoverBox(){
+        requestAnimationFrame(animateHoverBox);
+        updateZoomImage();
+    }
+
+    if(mainImage.complete && mainImage.naturalWidth>0) initializeZoom();
+    else mainImage.onload = initializeZoom;
+
+    window.toggleMobileZoom = toggleMobileZoom;
+    window.resetZoom = resetZoom;
 }
 
+// Initialize globally
 initZoomSystem();
 // ============================================
 // EMAIL ENQUIRY - WORKING ON BOTH MOBILE & DESKTOP
@@ -3036,35 +3101,13 @@ function clearAllFilters() {
     showNotification('✅ All filters cleared. Showing default product grouping.');
 }
 
-// Update filter tags display
+// Update filter tags display - ALWAYS HIDDEN
 function updateFilterTags() {
     const tagsContainer = document.getElementById('filterTags');
     if (!tagsContainer) return;
     
-    const allFilters = [
-        ...activeFilters.types.map(type => ({ category: 'types', value: type, isCurrent: type === (currentProduct?.type || '') })),
-        ...activeFilters.colors.map(color => ({ category: 'colors', value: color })),
-        ...activeFilters.finishes.map(finish => ({ category: 'finishes', value: finish })),
-        ...activeFilters.priceRanges.map(range => ({ category: 'priceRanges', value: getPriceRangeLabel(range) }))
-    ];
-    
-    if (allFilters.length === 0) {
-        tagsContainer.style.display = 'none';
-        tagsContainer.innerHTML = '';
-        return;
-    }
-    
-    tagsContainer.style.display = 'flex';
-    tagsContainer.innerHTML = allFilters.map(filter => `
-        <div class="filter-tag" style="${filter.isCurrent ? 'background: linear-gradient(135deg, var(--primary-gold), var(--gold-dark));' : ''}">
-            ${filter.value}
-            ${!filter.isCurrent ? `
-                <button class="remove-filter" onclick="removeFilter('${filter.category}', '${filter.value}')">
-                    &times;
-                </button>
-            ` : ''}
-        </div>
-    `).join('');
+    // Always hide the filter tags section
+    tagsContainer.style.display = 'none';
 }
 
 // Get price range label
