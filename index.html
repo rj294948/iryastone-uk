@@ -258,43 +258,43 @@ body {
 
 /* Apply animation classes */
 .image-slideshow.appear .slide-image.active {
-    animation: pptAppear 1.2s ease-out;
+    animation: pptAppear 1.8s ease-out; /* Slower */
 }
 
 .image-slideshow.blinds .slide-image.active {
-    animation: pptBlinds 1.2s ease-out;
+    animation: pptBlinds 1.8s ease-out; /* Slower */
 }
 
 .image-slideshow.random .slide-image.active {
-    animation: pptRandom 1.2s ease-out;
+    animation: pptRandom 1.8s ease-out; /* Slower */
 }
 
 .image-slideshow.window .slide-image.active {
-    animation: pptWindow 1.2s ease-out;
+    animation: pptWindow 1.8s ease-out; /* Slower */
 }
 
 .image-slideshow.boxes .slide-image.active {
-    animation: pptBoxes 1.5s ease-out;
+    animation: pptBoxes 2s ease-out; /* Slower */
 }
 
 .image-slideshow.dust .slide-image.active {
-    animation: pptDust 1.5s ease-out;
+    animation: pptDust 2s ease-out; /* Slower */
 }
 
 .image-slideshow.fade .slide-image.active {
-    animation: pptFade 1s ease-out;
+    animation: pptFade 1.5s ease-out; /* Slower */
 }
 
 .image-slideshow.slide-up .slide-image.active {
-    animation: pptSlideUp 1.2s ease-out;
+    animation: pptSlideUp 1.8s ease-out; /* Slower */
 }
 
 .image-slideshow.slide-down .slide-image.active {
-    animation: pptSlideDown 1.2s ease-out;
+    animation: pptSlideDown 1.8s ease-out; /* Slower */
 }
 
 .image-slideshow.zoom-in .slide-image.active {
-    animation: pptZoomIn 1.2s ease-out;
+    animation: pptZoomIn 1.8s ease-out; /* Slower */
 }
 
 /* Animation for product images */
@@ -321,6 +321,7 @@ header {
     z-index: 1000;
     box-shadow: 0 4px 20px rgba(0,0,0,0.25);
     height: 60px;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Slower */
 }
 
 header.scrolled {
@@ -334,7 +335,7 @@ header.hidden {
 
 header.show {
     transform: translateY(0);
-    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Slower */
 }
 
 .logo {
@@ -1038,7 +1039,7 @@ header.show {
 }
 
 /* ============================================
-   FOOTER SECTION - PROFESSIONAL
+   FOOTER SECTION - SIMPLIFIED AS REQUESTED
 ============================================ */
 .footer-section {
     background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
@@ -1053,8 +1054,8 @@ header.show {
     max-width: 1200px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 35px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
 }
 
 .footer-column {
@@ -1190,7 +1191,7 @@ header.show {
     z-index: 999;
     box-shadow: 0 -5px 25px rgba(0,0,0,0.35);
     transform: translateY(0);
-    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), background 0.3s ease;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), background 0.3s ease; /* Slower */
     height: 70px;
 }
 
@@ -1205,7 +1206,7 @@ header.show {
 
 .bottom-nav.show {
     transform: translateY(0);
-    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Slower */
 }
 
 .nav-btn {
@@ -1546,7 +1547,7 @@ header.show {
     }
     
     .footer-content {
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         max-width: 1400px;
     }
     
@@ -1767,7 +1768,7 @@ header.show {
     <!-- Header Actions -->
     <div style="display: flex; gap: 8px; align-items: center;">
         <!-- Notification Icon Only (Cart removed) -->
-        <a href="#" class="action-btn" id="notificationBtn" style="position: relative;">
+        <a href="notification.html" class="action-btn" id="notificationBtn" style="position: relative;">
             <i class="fas fa-bell"></i>
         </a>
         
@@ -1829,7 +1830,7 @@ header.show {
     </div>
 </section>
 
-<!-- Professional Footer -->
+<!-- Professional Footer - SIMPLIFIED -->
 <footer class="footer-section" id="mainFooter">
     <!-- Footer will be populated by JavaScript -->
 </footer>
@@ -1892,7 +1893,7 @@ class FixedAnimationSystem {
         
         this.isAnimating = true;
         this.pausedByHover = false;
-        this.intervalDuration = 2000; // 2 seconds
+        this.intervalDuration = 3000; // 3 seconds (INCREASED FROM 2 SECONDS)
         this.animationInterval = null;
         this.currentSetIndex = 0;
         this.productSets = [];
@@ -1950,7 +1951,7 @@ class FixedAnimationSystem {
         
         // Apply slide-out animation to current set
         currentSet.forEach((slide, index) => {
-            slide.style.animation = `slideOutFade 0.8s ease forwards`;
+            slide.style.animation = `slideOutFade 1s ease forwards`; /* Slower */
         });
         
         // After slide out, switch to next set
@@ -1970,7 +1971,7 @@ class FixedAnimationSystem {
             
             this.currentSetIndex = nextSetIndex;
             
-        }, 800);
+        }, 1000); /* Increased from 800ms */
     }
     
     startSlideImageRotation(slideshow) {
@@ -2307,6 +2308,10 @@ class AuthSystem {
     
     getUserEmail() {
         return this.currentUser ? this.currentUser.email : '';
+    }
+    
+    getUserId() {
+        return this.currentUser ? this.currentUser.uid : null;
     }
     
     async logout() {
@@ -2841,7 +2846,7 @@ async function loadAllProducts() {
             } else {
                 displayProducts(allProducts.slice(0, 8));
                 loadTrendingProducts();
-                createProfessionalFooter();
+                createSimplifiedFooter();
                 
                 // Initialize animations after products are displayed
                 setTimeout(() => {
@@ -3020,10 +3025,10 @@ function showDefaultProducts() {
 }
 
 // ============================================
-// PROFESSIONAL FOOTER CREATION
+// SIMPLIFIED FOOTER CREATION AS REQUESTED
 // ============================================
 
-function createProfessionalFooter() {
+function createSimplifiedFooter() {
     const footerSection = document.getElementById('mainFooter');
     if (!footerSection) return;
     
@@ -3036,11 +3041,9 @@ function createProfessionalFooter() {
                 <h3><i class="fas fa-building"></i> Company</h3>
                 <ul class="footer-links">
                     <li><a href="about-us.html"><i class="fas fa-info-circle"></i> About Us</a></li>
-                    <li><a href="our-mission.html"><i class="fas fa-bullseye"></i> Our Mission</a></li>
-                    <li><a href="our-vision.html"><i class="fas fa-eye"></i> Our Vision</a></li>
-                    <li><a href="our-team.html"><i class="fas fa-users"></i> Our Team</a></li>
-                    <li><a href="careers.html"><i class="fas fa-briefcase"></i> Careers</a></li>
-                    <li><a href="testimonials.html"><i class="fas fa-star"></i> Testimonials</a></li>
+                    <li><a href="about-us.html#mission"><i class="fas fa-bullseye"></i> Our Mission</a></li>
+                    <li><a href="about-us.html#vision"><i class="fas fa-eye"></i> Our Vision</a></li>
+                    <li><a href="about-us.html#experience"><i class="fas fa-chart-line"></i> Experience</a></li>
                 </ul>
             </div>
             
@@ -3048,12 +3051,10 @@ function createProfessionalFooter() {
             <div class="footer-column">
                 <h3><i class="fas fa-gem"></i> Products</h3>
                 <ul class="footer-links">
-                    <li><a href="sandstone-products.html"><i class="fas fa-cube"></i> Sandstone Collection</a></li>
-                    <li><a href="premium-range.html"><i class="fas fa-crown"></i> Premium Range</a></li>
-                    <li><a href="export-quality.html"><i class="fas fa-globe"></i> Export Quality</a></li>
-                    <li><a href="custom-solutions.html"><i class="fas fa-tools"></i> Custom Solutions</a></li>
-                    <li><a href="samples.html"><i class="fas fa-box-open"></i> Request Samples</a></li>
-                    <li><a href="catalog.html"><i class="fas fa-book"></i> Download Catalog</a></li>
+                    <li><a href="products.html"><i class="fas fa-cube"></i> Sandstone Collection</a></li>
+                    <li><a href="products.html?category=premium"><i class="fas fa-crown"></i> Premium Range</a></li>
+                    <li><a href="products.html?type=wall-cladding"><i class="fas fa-wall"></i> Wall Cladding</a></li>
+                    <li><a href="products.html?type=flooring"><i class="fas fa-th-large"></i> Flooring</a></li>
                 </ul>
             </div>
             
@@ -3062,11 +3063,9 @@ function createProfessionalFooter() {
                 <h3><i class="fas fa-headset"></i> Support</h3>
                 <ul class="footer-links">
                     <li><a href="contact-us.html"><i class="fas fa-phone-alt"></i> Contact Us</a></li>
+                    <li><a href="contact-us.html#whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a></li>
+                    <li><a href="mailto:info@iryastone.co.uk"><i class="fas fa-envelope"></i> Email Us</a></li>
                     <li><a href="help-center.html"><i class="fas fa-question-circle"></i> Help Center</a></li>
-                    <li><a href="faq.html"><i class="fas fa-comments"></i> FAQ</a></li>
-                    <li><a href="shipping-info.html"><i class="fas fa-shipping-fast"></i> Shipping Info</a></li>
-                    <li><a href="returns-policy.html"><i class="fas fa-exchange-alt"></i> Returns Policy</a></li>
-                    <li><a href="warranty.html"><i class="fas fa-shield-alt"></i> Warranty</a></li>
                 </ul>
             </div>
             
@@ -3076,41 +3075,21 @@ function createProfessionalFooter() {
                 <ul class="footer-links">
                     <li><a href="privacy-policy.html"><i class="fas fa-user-shield"></i> Privacy Policy</a></li>
                     <li><a href="terms-conditions.html"><i class="fas fa-file-contract"></i> Terms & Conditions</a></li>
-                    <li><a href="cookie-policy.html"><i class="fas fa-cookie-bite"></i> Cookie Policy</a></li>
-                    <li><a href="disclaimer.html"><i class="fas fa-exclamation-triangle"></i> Disclaimer</a></li>
-                    <li><a href="gdpr-compliance.html"><i class="fas fa-lock"></i> GDPR Compliance</a></li>
-                    <li><a href="legal-notices.html"><i class="fas fa-gavel"></i> Legal Notices</a></li>
-                </ul>
-            </div>
-            
-            <!-- Resources & More -->
-            <div class="footer-column">
-                <h3><i class="fas fa-external-link-alt"></i> Resources</h3>
-                <ul class="footer-links">
-                    <li><a href="blog.html"><i class="fas fa-blog"></i> Blog & Articles</a></li>
-                    <li><a href="gallery.html"><i class="fas fa-images"></i> Project Gallery</a></li>
-                    <li><a href="case-studies.html"><i class="fas fa-chart-line"></i> Case Studies</a></li>
-                    <li><a href="installation-guide.html"><i class="fas fa-book-open"></i> Installation Guide</a></li>
-                    <li><a href="maintenance-tips.html"><i class="fas fa-toolbox"></i> Maintenance Tips</a></li>
-                    <li><a href="site-map.html"><i class="fas fa-sitemap"></i> Site Map</a></li>
                 </ul>
             </div>
         </div>
         
         <div class="footer-bottom">
             <p>&copy; ${currentYear} IRYA STONE | Premium Sandstone UK. All rights reserved.</p>
-            <p>Registered in England & Wales | Company No: 12345678 | VAT No: GB123456789</p>
             <div class="footer-social">
                 <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
                 <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
                 <a href="https://linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-                <a href="https://pinterest.com" target="_blank"><i class="fab fa-pinterest-p"></i></a>
                 <a href="https://youtube.com" target="_blank"><i class="fab fa-youtube"></i></a>
             </div>
             <div class="footer-contact">
-                <p><i class="fas fa-map-marker-alt"></i> Registered Office: 123 Stone Street, London, UK</p>
-                <p><i class="fas fa-phone"></i> +44 20 7123 4567 | <i class="fas fa-envelope"></i> info@iryastone.co.uk</p>
+                <p><i class="fas fa-phone"></i> +44 20 7123 4567 | <i class="fab fa-whatsapp"></i> +44 7123 456789</p>
+                <p><i class="fas fa-envelope"></i> info@iryastone.co.uk</p>
             </div>
         </div>
     `;
@@ -3175,13 +3154,16 @@ function hideSearchResults() {
 }
 
 // ============================================
-// SCROLL HANDLING
+// SCROLL HANDLING - UPDATED AS REQUESTED
 // ============================================
 
 let lastScrollTop = 0;
 let isHeaderVisible = true;
-let scrollThreshold = 100;
+let isBottomNavVisible = true;
+let scrollThreshold = 50; /* Reduced from 100 to hide header/footer sooner */
 let debounceTimeout;
+let hideTimeout;
+let showTimeout;
 
 function handleScroll() {
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
@@ -3190,48 +3172,61 @@ function handleScroll() {
     
     if (!header || !bottomNav) return;
     
-    if (debounceTimeout) {
-        clearTimeout(debounceTimeout);
-    }
+    // Clear any existing timeouts
+    if (debounceTimeout) clearTimeout(debounceTimeout);
+    if (hideTimeout) clearTimeout(hideTimeout);
+    if (showTimeout) clearTimeout(showTimeout);
     
     debounceTimeout = setTimeout(() => {
-        if (scrollTop < 50) {
+        // Show header and nav at the very top
+        if (scrollTop < 20) {
             header.classList.remove('hidden');
             bottomNav.classList.remove('hidden');
             header.classList.add('show');
             bottomNav.classList.add('show');
             isHeaderVisible = true;
+            isBottomNavVisible = true;
+            
+            // Remove scrolled class at top
+            header.classList.remove('scrolled');
+            bottomNav.classList.remove('scrolled');
             return;
         }
         
+        // Add scrolled class when not at top
+        if (scrollTop > 20) {
+            header.classList.add('scrolled');
+            bottomNav.classList.add('scrolled');
+        }
+        
+        // Handle hiding/showing on scroll
         if (scrollTop > lastScrollTop) {
-            if (scrollTop > scrollThreshold && isHeaderVisible) {
-                header.classList.add('hidden');
-                bottomNav.classList.add('hidden');
-                header.classList.remove('show');
-                bottomNav.classList.remove('show');
-                isHeaderVisible = false;
+            // Scrolling DOWN
+            if (isHeaderVisible || isBottomNavVisible) {
+                // Hide with delay
+                hideTimeout = setTimeout(() => {
+                    header.classList.add('hidden');
+                    bottomNav.classList.add('hidden');
+                    header.classList.remove('show');
+                    bottomNav.classList.remove('show');
+                    isHeaderVisible = false;
+                    isBottomNavVisible = false;
+                }, 50); /* Immediate hide when scrolling down */
             }
         } else {
-            if (!isHeaderVisible) {
+            // Scrolling UP
+            if (!isHeaderVisible || !isBottomNavVisible) {
+                // Show immediately
                 header.classList.remove('hidden');
                 bottomNav.classList.remove('hidden');
                 header.classList.add('show');
                 bottomNav.classList.add('show');
                 isHeaderVisible = true;
+                isBottomNavVisible = true;
             }
         }
         
-        if (scrollTop > 100) {
-            header.classList.add('scrolled');
-            bottomNav.classList.add('scrolled');
-        } else {
-            header.classList.remove('scrolled');
-            bottomNav.classList.remove('scrolled');
-        }
-        
-        lastScrollTop = scrollTop;
-        
+        // Handle scroll to top button visibility
         const scrollTopBtn = document.getElementById('scrollTopBtn');
         if (scrollTopBtn) {
             if (scrollTop > 300) {
@@ -3240,7 +3235,9 @@ function handleScroll() {
                 scrollTopBtn.classList.remove('visible');
             }
         }
-    }, 100);
+        
+        lastScrollTop = scrollTop;
+    }, 10); /* Reduced from 100ms for more responsive scroll */
 }
 
 // ============================================
@@ -3299,7 +3296,7 @@ function setupEventListeners() {
     
     const notificationBtn = document.getElementById('notificationBtn');
     if (notificationBtn) {
-        notificationBtn.addEventListener('click', handleNotificationClick);
+        // Link already set in HTML
     }
     
     document.addEventListener('click', (e) => {
@@ -3321,18 +3318,8 @@ function setupEventListeners() {
     
     window.addEventListener('scroll', handleScroll, { passive: true });
     
+    // Initial call to set initial state
     handleScroll();
-}
-
-function handleNotificationClick(e) {
-    e.preventDefault();
-    
-    if (authSystem && authSystem.isLoggedIn()) {
-        const userId = authSystem.getUserId();
-        window.location.href = `notification.html?userId=${userId}`;
-    } else {
-        window.location.href = 'sign.html';
-    }
 }
 
 // ============================================
