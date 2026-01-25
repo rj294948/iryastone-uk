@@ -710,11 +710,14 @@ header.show {
 
 /* ============================================
    TRENDING SECTION - ENHANCED 2-COLUMN LAYOUT
+   UPDATED: NO MARGIN/PADDING, FULL WIDTH IMAGES
 ============================================ */
 .trending-section {
     background: var(--white);
     padding: 0;
     margin: 0;
+    width: 100%;
+    overflow: hidden;
 }
 
 .trending-section .section-title-wrapper {
@@ -755,51 +758,60 @@ header.show {
 }
 
 .trending-container {
-    padding: 30px 10px;
+    padding: 0; /* REMOVED PADDING */
     background: linear-gradient(135deg, #f8f8f8 0%, #ffffff 100%);
     position: relative;
     overflow: hidden;
+    width: 100%;
 }
 
 .trending-slider {
     position: relative;
     width: 100%;
-    margin: 0 auto;
+    margin: 0;
+    padding: 0;
 }
 
-/* Two column layout for trending products - NO MARGIN */
+/* Two column layout for trending products - NO MARGIN OR GAP */
 .trending-two-column {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 0; /* NO GAP between images */
     width: 100%;
     position: relative;
+    margin: 0;
+    padding: 0;
 }
 
 .trending-slide {
     width: 100%;
     position: relative;
     aspect-ratio: 1/1; /* Square aspect ratio for trending */
+    margin: 0;
+    padding: 0;
 }
 
 .trending-card {
     width: 100%;
     height: 100%;
     background: var(--white);
-    border-radius: 0;
+    border-radius: 0; /* REMOVED BORDER RADIUS */
     overflow: hidden;
     position: relative;
     cursor: pointer;
     text-decoration: none;
     color: inherit;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    box-shadow: none; /* REMOVED SHADOW */
     transition: all 0.4s ease;
     border: none;
+    display: block;
+    margin: 0;
+    padding: 0;
 }
 
 .trending-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
     z-index: 10;
 }
 
@@ -814,6 +826,8 @@ header.show {
     position: relative;
     overflow: hidden;
     background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+    margin: 0;
+    padding: 0;
 }
 
 /* Remove rotation controls completely */
@@ -824,7 +838,8 @@ header.show {
 }
 
 /* ============================================
-   ALL PRODUCTS SECTION
+   ALL PRODUCTS SECTION - NO CHANGES TO IMAGES/LAYOUT
+   ONLY BUTTON ADJUSTMENTS FOR DESKTOP
 ============================================ */
 .products-section {
     background: var(--white);
@@ -1471,9 +1486,14 @@ header.show {
         font-size: 15px !important;
     }
     
+    /* PRODUCTS DESKTOP: Keep buttons in single row */
     .product-grid {
         grid-template-columns: repeat(3, 1fr);
         gap: 20px;
+    }
+    
+    .usage-buttons {
+        flex-wrap: nowrap !important; /* FORCE SINGLE ROW ON DESKTOP */
     }
     
     .product-card-wrapper {
@@ -1502,6 +1522,7 @@ header.show {
         min-width: 140px;
     }
     
+    /* FOOTER DESKTOP: 4-column layout */
     .footer-content {
         grid-template-columns: repeat(4, 1fr);
         gap: 45px;
@@ -1532,8 +1553,8 @@ header.show {
 
 @media (min-width: 1024px) {
     .trending-two-column {
-        max-width: 1000px;
-        margin: 0 auto;
+        max-width: 100%;
+        margin: 0;
     }
     
     .trending-slide {
@@ -1546,8 +1567,8 @@ header.show {
     }
     
     .footer-content {
-        grid-template-columns: repeat(5, 1fr);
-        max-width: 1400px;
+        grid-template-columns: repeat(4, 1fr);
+        max-width: 1200px;
     }
     
     .trending-section .section-title-wrapper h2,
@@ -1559,6 +1580,11 @@ header.show {
 @media (max-width: 767px) {
     .trending-slide {
         aspect-ratio: 1/1; /* Square for mobile trending */
+    }
+    
+    /* MOBILE: Keep button wrapping as is */
+    .usage-buttons {
+        flex-wrap: wrap !important;
     }
     
     .footer-content {
@@ -1676,6 +1702,7 @@ header.show {
     
     .usage-buttons {
         gap: 6px;
+        flex-wrap: wrap !important;
     }
     
     .usage-btn {
@@ -1731,7 +1758,6 @@ header.show {
         aspect-ratio: 1/1; /* Square for small mobile */
     }
 }
-
 </style>
 </head>
 
