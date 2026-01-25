@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IRYA STONE | Information Center</title>
+    <style>
+        /* ============================================
+           CSS VARIABLES - Matching Home Page
+        ============================================ */
+        :root {
+            --primary-gold: #c9a227;
+            --gold-light: #f0d77c;
+            --gold-dark: #9c7c1f;
+            --stone-dark: #1a1a1a;
+            --stone-light: #f4f6f4;
+            --bg-light: #f7f9fc;
+            --text-dark: #222222;
+            --text-light: #666666;
+            --white: #ffffff;
+            --border-radius: 8px;
+            --border-radius-lg: 12px;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+            --shadow-lg: 0 8px 20px rgba(0,0,0,0.12);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: var(--bg-light);
+            color: var(--text-dark);
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        /* ============================================
+           HEADER STYLES (Same as Home Page)
+        ============================================ */
+        .main-header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: var(--white);
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 4px solid var(--primary-gold);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .logo-icon {
+            font-size: 32px;
+            color: var(--primary-gold);
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--white);
+            letter-spacing: 1px;
+        }
+
+        .page-title {
+            font-size: 36px;
+            font-weight: 700;
+            margin: 15px 0;
+            color: var(--primary-gold);
+            position: relative;
+            display: inline-block;
+        }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--primary-gold);
+        }
+
+        .page-subtitle {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.85);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* ============================================
+           REMOVED NAVIGATION MENU
+        ============================================ */
+        /* Navigation removed as per requirements */
+
+        /* ============================================
+           CONTENT AREA
+        ============================================ */
+        .content-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            min-height: 60vh;
+        }
+
+        .content-card {
+            background: var(--white);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 40px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-title {
+            color: var(--stone-dark);
+            font-size: 28px;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary-gold);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background: var(--primary-gold);
+        }
+
+        /* ============================================
+           CONTENT STYLES
+        ============================================ */
+        h1, h2, h3 {
+            color: var(--stone-dark);
+            line-height: 1.3;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            font-size: 24px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: var(--primary-gold);
+            padding-left: 15px;
+            border-left: 4px solid var(--primary-gold);
+        }
+
+        h3 {
+            font-size: 20px;
+            margin-top: 25px;
+            margin-bottom: 12px;
+            color: var(--stone-dark);
+        }
+
+        p {
+            margin-bottom: 20px;
+            color: var(--text-light);
+            font-size: 16px;
+            line-height: 1.7;
+        }
+
+        ul, ol {
+            margin: 20px 0;
+            padding-left: 25px;
+        }
+
+        li {
+            margin-bottom: 12px;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        strong {
+            color: var(--stone-dark);
+            font-weight: 600;
+        }
+
+        /* ============================================
+           INFO BOXES & HIGHLIGHTS
+        ============================================ */
+        .info-box {
+            background: linear-gradient(135deg, #f8f5f0 0%, #f0ebe1 100%);
+            border-left: 4px solid var(--primary-gold);
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
+
+        .info-box h3 {
+            color: var(--primary-gold);
+            margin-top: 0;
+        }
+
+        .contact-box {
+            background: var(--stone-light);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin: 25px 0;
+            border: 1px solid #e8e2d8;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .contact-item:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+        }
+
+        .contact-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-gold);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 16px;
+        }
+
+        .contact-text {
+            flex: 1;
+        }
+
+        .contact-label {
+            font-weight: 600;
+            color: var(--stone-dark);
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .contact-value {
+            color: var(--text-light);
+            font-size: 15px;
+        }
+
+        .contact-value a {
+            color: var(--primary-gold);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .contact-value a:hover {
+            text-decoration: underline;
+        }
+
+        /* ============================================
+           LEGAL SECTIONS
+        ============================================ */
+        .legal-section {
+            margin: 30px 0;
+        }
+
+        .legal-point {
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .legal-point:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .point-title {
+            font-weight: 600;
+            color: var(--stone-dark);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .point-title i {
+            color: var(--primary-gold);
+        }
+
+        /* ============================================
+           FOOTER (Same as Home Page)
+        ============================================ */
+        .footer-section {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: white;
+            padding: 50px 15px 40px;
+            margin-top: 40px;
+            position: relative;
+            border-top: 4px solid var(--primary-gold);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 35px;
+        }
+
+        .footer-column {
+            padding: 0 12px;
+        }
+
+        .footer-section h3 {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 22px;
+            color: var(--primary-gold);
+            font-family: 'Roboto Slab', serif;
+            position: relative;
+            padding-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-section h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 45px;
+            height: 3px;
+            background: var(--primary-gold);
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 14px;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 5px 0;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-gold);
+            transform: translateX(8px);
+        }
+
+        .footer-links i {
+            font-size: 14px;
+            width: 20px;
+            color: var(--primary-gold);
+            opacity: 0.9;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 35px;
+            margin-top: 50px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .footer-bottom p {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .footer-social {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .footer-social a {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 18px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .footer-social a:hover {
+            color: var(--primary-gold);
+            transform: translateY(-5px) scale(1.1);
+            background: rgba(201, 162, 39, 0.2);
+        }
+
+        .footer-contact {
+            margin-top: 20px;
+            font-size: 13px;
+            opacity: 0.8;
+            line-height: 1.8;
+        }
+
+        .footer-contact i {
+            margin: 0 5px;
+            color: var(--primary-gold);
+        }
+
+        /* ============================================
+           RESPONSIVE DESIGN
+        ============================================ */
+        @media (min-width: 768px) {
+            .page-title {
+                font-size: 28px;
+            }
+            
+            .page-subtitle {
+                font-size: 16px;
+            }
+            
+            .content-card {
+                padding: 25px;
+            }
+            
+            .section-title {
+                font-size: 24px;
+            }
+            
+            h1 {
+                font-size: 28px;
+            }
+            
+            h2 {
+                font-size: 22px;
+            }
+            
+            h3 {
+                font-size: 18px;
+            }
+            
+            /* FOOTER DESKTOP: 4-column layout */
+            .footer-content {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 45px;
+            }
+            
+            .footer-column {
+                padding: 0;
+            }
+            
+            .footer-section {
+                padding: 60px 25px 50px;
+            }
+            
+            .footer-section h3 {
+                font-size: 19px;
+            }
+            
+            .footer-links a {
+                font-size: 15px;
+            }
+            
+            .footer-social a {
+                width: 45px;
+                height: 45px;
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 30px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-header {
+                padding: 20px 15px;
+            }
+            
+            .logo-text {
+                font-size: 22px;
+            }
+            
+            .page-title {
+                font-size: 24px;
+            }
+            
+            .content-container {
+                padding: 0 15px;
+            }
+            
+            .content-card {
+                padding: 20px;
+            }
+            
+            .contact-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .contact-icon {
+                margin-bottom: 10px;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+        }
+
+        /* ============================================
+           UTILITY CLASSES
+        ============================================ */
+        .text-center {
+            text-align: center;
+        }
+
+        .text-gold {
+            color: var(--primary-gold);
+        }
+
+        .mt-20 {
+            margin-top: 20px;
+        }
+
+        .mt-30 {
+            margin-top: 30px;
+        }
+
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+
+        .mb-30 {
+            margin-bottom: 30px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+        
+        /* Back to Home Button */
+        .back-home {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 10px 25px;
+            background: var(--primary-gold);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .back-home:hover {
+            background: var(--gold-dark);
+            transform: translateY(-2px);
+        }
+    </style>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto+Slab:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="logo-container">
+            <i class="fas fa-gem logo-icon"></i>
+            <span class="logo-text">IRYA STONE</span>
+        </div>
+        <h1 class="page-title" id="pageTitle">Information Center</h1>
+        <p class="page-subtitle">Your trusted source for premium Indian sandstone information and support</p>
+    </header>
+
+    <!-- Dynamic Content Container -->
+    <main class="content-container">
+        <div id="content" class="content-card">
+            <!-- Content will be dynamically loaded here -->
+        </div>
+    </main>
+
+    <!-- Footer (Same as Home Page) -->
+    <footer class="footer-section">
+        <div class="footer-content">
+            <!-- Company Information -->
+            <div class="footer-column">
+                <h3><i class="fas fa-building"></i> Company</h3>
+                <ul class="footer-links">
+                    <li><a href="info.html?page=about"><i class="fas fa-info-circle"></i> About Us</a></li>
+                    <li><a href="info.html?page=about&section=mission"><i class="fas fa-bullseye"></i> Our Mission</a></li>
+                    <li><a href="info.html?page=about&section=vision"><i class="fas fa-eye"></i> Our Vision</a></li>
+                    <li><a href="info.html?page=about&section=whyus"><i class="fas fa-chart-line"></i> Why Choose Us</a></li>
+                </ul>
+            </div>
+            
+            <!-- Products & Services -->
+            <div class="footer-column">
+                <h3><i class="fas fa-gem"></i> Products</h3>
+                <ul class="footer-links">
+                    <li><a href="products.html"><i class="fas fa-cube"></i> Sandstone Collection</a></li>
+                    <li><a href="products.html?category=premium"><i class="fas fa-crown"></i> Premium Range</a></li>
+                    <li><a href="products.html?type=wall-cladding"><i class="fas fa-wall"></i> Wall Cladding</a></li>
+                    <li><a href="products.html?type=flooring"><i class="fas fa-th-large"></i> Flooring</a></li>
+                </ul>
+            </div>
+            
+            <!-- Customer Support -->
+            <div class="footer-column">
+                <h3><i class="fas fa-headset"></i> Support</h3>
+                <ul class="footer-links">
+                    <li><a href="info.html?page=help"><i class="fas fa-phone-alt"></i> Contact Us</a></li>
+                    <li><a href="tel:+917737740207"><i class="fas fa-mobile-alt"></i> Call: +91 7737740207</a></li>
+                    <li><a href="https://wa.me/917737740207" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a></li>
+                    <li><a href="mailto:ravijain236129@gmail.com"><i class="fas fa-envelope"></i> Email Us</a></li>
+                    <li><a href="info.html?page=help"><i class="fas fa-question-circle"></i> Help Center</a></li>
+                </ul>
+            </div>
+            
+            <!-- Legal & Policies -->
+            <div class="footer-column">
+                <h3><i class="fas fa-balance-scale"></i> Legal</h3>
+                <ul class="footer-links">
+                    <li><a href="info.html?page=privacy"><i class="fas fa-user-shield"></i> Privacy Policy</a></li>
+                    <li><a href="info.html?page=terms"><i class="fas fa-file-contract"></i> Terms & Conditions</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p><i class="fas fa-map-marker-alt"></i> Near Mining Office, Bijoliya, Bhilwara, Rajasthan - 311602</p>
+            <p><i class="fas fa-phone"></i> +91 7737740207 | <i class="fab fa-whatsapp"></i> +91 7737740207</p>
+            <p><i class="fas fa-envelope"></i> <a href="mailto:ravijain236129@gmail.com" style="color: var(--primary-gold);">ravijain236129@gmail.com</a></p>
+            
+            <div class="footer-social">
+                <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://youtube.com" target="_blank"><i class="fab fa-youtube"></i></a>
+            </div>
+            
+            <p>&copy; <script>document.write(new Date().getFullYear())</script> IRYA STONE | Premium Sandstone India. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // ============================================
+        // PAGE CONTENT DATA STORAGE
+        // ============================================
+        const pageData = {
+            about: {
+                title: "About IRYA STONE",
+                content: `
+                    <h1>About IRYA STONE</h1>
+                    
+                    <div class="info-box" id="company">
+                        <h2><i class="fas fa-building"></i> Company Overview</h2>
+                        <p><strong>IRYA STONE</strong> is a premier exporter of premium Indian sandstone, established with a vision to bring the finest natural stone from Indian quarries to global markets. With over a decade of expertise in stone mining, processing, and export, we specialize in high-quality sandstone that meets international standards.</p>
+                        <p>Our commitment to quality, sustainability, and customer satisfaction has made us a trusted partner for architects, builders, and homeowners worldwide. We source directly from quarries in Rajasthan, India's stone heartland, ensuring authenticity and competitive pricing.</p>
+                    </div>
+                    
+                    <h2 id="mission"><i class="fas fa-bullseye"></i> Our Mission</h2>
+                    <p>To revolutionize the global natural stone industry by providing premium quality sandstone products with exceptional customer service, sustainable practices, and innovative solutions that exceed client expectations.</p>
+                    
+                    <h2 id="vision"><i class="fas fa-eye"></i> Our Vision</h2>
+                    <p>To become the world's most trusted and preferred supplier of Indian sandstone, recognized for our unwavering commitment to quality, ethical sourcing, and customer-centric approach.</p>
+                    
+                    <h2 id="whyus"><i class="fas fa-award"></i> Why Choose IRYA STONE?</h2>
+                    
+                    <div class="info-box">
+                        <h3><i class="fas fa-check-circle text-gold"></i> Quality Assurance</h3>
+                        <p>Every stone is rigorously inspected for quality, consistency, and durability. We maintain strict quality control at every stage - from quarry selection to final packaging.</p>
+                        
+                        <h3><i class="fas fa-check-circle text-gold"></i> Direct Quarry Sourcing</h3>
+                        <p>We own and operate our quarries, eliminating middlemen and ensuring competitive prices without compromising on quality.</p>
+                        
+                        <h3><i class="fas fa-check-circle text-gold"></i> Sustainable Practices</h3>
+                        <p>We follow environmentally responsible mining practices and support local communities through fair employment and development initiatives.</p>
+                        
+                        <h3><i class="fas fa-check-circle text-gold"></i> Global Experience</h3>
+                        <p>With exports to over 25 countries, we understand international requirements and provide seamless logistics and documentation support.</p>
+                        
+                        <h3><i class="fas fa-check-circle text-gold"></i> Custom Solutions</h3>
+                        <p>We offer customized cutting, finishing, and packaging options to meet specific project requirements and design visions.</p>
+                    </div>
+                    
+                    <h2><i class="fas fa-chart-line"></i> Our Expertise</h2>
+                    <ul>
+                        <li><strong>Sandstone Varieties:</strong> Autumn Brown, Raj Green, Modak Yellow, Crystal White, Fossil Mint, and more</li>
+                        <li><strong>Applications:</strong> Wall Cladding, Flooring, Paving, Landscaping, Pool Coping, Architectural Features</li>
+                        <li><strong>Finishes:</strong> Natural, Honed, Polished, Bush Hammered, Sandblasted, Tumbled</li>
+                        <li><strong>Processing:</strong> Cutting, Sizing, Calibrating, Edge Finishing, Quality Grading</li>
+                    </ul>
+                    
+                    <div class="contact-box mt-30">
+                        <h3><i class="fas fa-handshake"></i> Partner With Us</h3>
+                        <p>Whether you're working on a residential project, commercial development, or architectural masterpiece, IRYA STONE provides the perfect sandstone solutions. Contact us to discuss your requirements and receive personalized consultation.</p>
+                        
+                        <div class="contact-item mt-20">
+                            <div class="contact-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="contact-text">
+                                <span class="contact-label">Call Now</span>
+                                <span class="contact-value">
+                                    <a href="tel:+917737740207">+91 7737740207</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <a href="index.html" class="back-home">
+                        <i class="fas fa-home"></i> Back to Home
+                    </a>
+                `
+            },
+            
+            help: {
+                title: "Help & Support Center",
+                content: `
+                    <h1>Help & Support Center</h1>
+                    <p>We're here to assist you with any questions or concerns regarding our sandstone products, orders, shipping, or technical specifications.</p>
+                    
+                    <div class="info-box">
+                        <h2><i class="fas fa-life-ring"></i> Customer Support</h2>
+                        <p>Our dedicated support team is available to help you with:</p>
+                        <ul>
+                            <li>Product inquiries and specifications</li>
+                            <li>Order tracking and status updates</li>
+                            <li>Technical assistance and installation guidance</li>
+                            <li>Sample requests and material selection</li>
+                            <li>Shipping and logistics information</li>
+                            <li>Custom order requirements</li>
+                            <li>After-sales support and maintenance</li>
+                        </ul>
+                    </div>
+                    
+                    <h2><i class="fas fa-address-card"></i> Contact Information</h2>
+                    
+                    <div class="contact-box">
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="contact-text">
+                                <span class="contact-label">Phone Support</span>
+                                <span class="contact-value">
+                                    <a href="tel:+917737740207">+91 7737740207</a><br>
+                                    <small>Monday to Saturday: 9:00 AM - 7:00 PM (IST)</small>
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fab fa-whatsapp"></i>
+                            </div>
+                            <div class="contact-text">
+                                <span class="contact-label">WhatsApp Business</span>
+                                <span class="contact-value">
+                                    <a href="https://wa.me/917737740207" target="_blank">+91 7737740207</a><br>
+                                    <small>Quick responses, product photos, and file sharing</small>
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="contact-text">
+                                <span class="contact-label">Email Support</span>
+                                <span class="contact-value">
+                                    <a href="mailto:ravijain236129@gmail.com">ravijain236129@gmail.com</a><br>
+                                    <small>General inquiries: info@iryastone.com</small>
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="contact-text">
+                                <span class="contact-label">Registered Office</span>
+                                <span class="contact-value">
+                                    Near Mining Office, Bijoliya<br>
+                                    Bhilwara, Rajasthan - 311602<br>
+                                    India
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h2><i class="fas fa-question-circle"></i> Frequently Asked Questions</h2>
+                    
+                    <div class="legal-section">
+                        <div class="legal-point">
+                            <div class="point-title">
+                                <i class="fas fa-shipping-fast"></i>
+                                <span>What are your shipping options and timelines?</span>
+                            </div>
+                            <p>We offer both sea and air freight options. Sea shipping takes 30-45 days depending on destination, while air freight takes 7-14 days. We handle all export documentation and provide door-to-door delivery options.</p>
+                        </div>
+                        
+                        <div class="legal-point">
+                            <div class="point-title">
+                                <i class="fas fa-box-open"></i>
+                                <span>Can I request samples before placing an order?</span>
+                            </div>
+                            <p>Yes! We provide physical samples of our sandstone varieties. Contact our sales team to request samples. Sample charges may apply but are credited against your first order.</p>
+                        </div>
+                        
+                        <div class="legal-point">
+                            <div class="point-title">
+                                <i class="fas fa-ruler-combined"></i>
+                                <span>What custom sizes and finishes do you offer?</span>
+                            </div>
+                            <p>We offer custom cutting in various sizes and thicknesses. Available finishes include natural, honed, polished, bush hammered, sandblasted, and tumbled. Our technical team can advise on the best options for your project.</p>
+                        </div>
+                        
+                        <div class="legal-point">
+                            <div class="point-title">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <span>What is your minimum order quantity (MOQ)?</span>
+                            </div>
+                            <p>Our standard MOQ is one 20-foot container for standard products. For custom orders and specific requirements, we offer flexible MOQs. Contact us for detailed pricing based on your quantity needs.</p>
+                        </div>
+                        
+                        <div class="legal-point">
+                            <div class="point-title">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>What quality guarantees do you provide?</span>
+                            </div>
+                            <p>All our sandstone undergoes rigorous quality checks. We provide material certification, quality guarantees, and after-sales support. Our stones are resistant to weathering, fading, and temperature variations.</p>
+                        </div>
+                    </div>
+                    
+                    <h2><i class="fas fa-headset"></i> Emergency Contact</h2>
+                    <div class="info-box">
+                        <p>For urgent matters outside business hours, please WhatsApp us at <strong>+91 7737740207</strong> or email <strong>ravijain236129@gmail.com</strong>. We strive to respond to all emergency inquiries within 24 hours.</p>
+                    </div>
+                    
+                    <a href="index.html" class="back-home">
+                        <i class="fas fa-home"></i> Back to Home
+                    </a>
+                `
+            },
+            
+            privacy: {
+                title: "Privacy Policy",
+                content: `
+                    <h1>Privacy Policy</h1>
+                    <p class="mb-30"><strong>Effective Date:</strong> January 1, 2024</p>
+                    
+                    <p>IRYA STONE ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website or interact with our services.</p>
+                    
+                    <div class="info-box">
+                        <h2><i class="fas fa-user-circle"></i> Information We Collect</h2>
+                        <p>We collect information that you provide directly to us, including:</p>
+                        
+                        <h3>Personal Information</h3>
+                        <ul>
+                            <li><strong>Contact Details:</strong> Name, email address, phone number, company name</li>
+                            <li><strong>Business Information:</strong> Company address, tax identification numbers</li>
+                            <li><strong>Communication Data:</strong> Messages, inquiries, and correspondence</li>
+                            <li><strong>Order Information:</strong> Shipping addresses, billing details, purchase history</li>
+                        </ul>
+                        
+                        <h3>Automatically Collected Information</h3>
+                        <ul>
+                            <li><strong>Technical Data:</strong> IP address, browser type, device information</li>
+                            <li><strong>Usage Data:</strong> Pages visited, time spent on site, navigation patterns</li>
+                            <li><strong>Location Data:</strong> Country, city (approximate location based on IP)</li>
+                        </ul>
+                    </div>
+                    
+                    <h2><i class="fas fa-bullseye"></i> Purpose of Data Collection</h2>
+                    <p>We use your information for the following purposes:</p>
+                    
+                    <div class="legal-section">
+                        <div class="legal-point">
+                            <div class="point-title">
+                                <i class="fas fa-shopping-cart"></i>
+                                <span>Order Processing and Fulfillment</span>
+                            </div>
+                            <p>To process your orders, manage payments, arrange shipping, and provide order confirmations and updates.</p>
+                        </div>
+                        
+                        <div class="legal-point">
+                            <div class="point-title">
+                                <i class="fas fa-comments"></i>
+                                <span>Customer Support and Communication</span>
+                            </div>
+                            <p>To respond to your inquiries, provide technical support, and communicate important service information.</p>
+                        </div>
+                        
+                        <div class="legal-point">
+                            <div class="point-title">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Business Improvement</span>
+                            </div>
+                            <p>To analyze website usage, improve our products and services, and develop new features.</p>
+                        </div>
+                        
+                        <div class="legal-point">
+                            <div class="point-title">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Security and Compliance</span>
+                            </div>
+                            <p>To protect against fraud, ensure website security, and comply with legal obligations.</p>
+                        </div>
+                        
+                        <div class="legal-point">
+                            <div class="point-title">
+                                <i class="fas fa-bullhorn"></i>
+                                <span>Marketing Communications</span>
+                            </div>
+                            <p>To send promotional materials, product updates, and industry news (with your consent).</p>
+                        </div>
+                    </div>
+                    
+                    <h2><i class="fas fa-cookie-bite"></i> Cookies and Tracking Technologies</h2>
+                    <div class="info-box">
+                        <h3>How We Use Cookies</h3>
+                        <p>We use cookies and similar tracking technologies to:</p>
+                        <ul>
+                            <li><strong>Essential Cookies:</strong> Enable core functionality and secure areas</li>
+                            <li><strong>Analytics Cookies:</strong> Understand how visitors use our website</li>
+                            <li><strong>Preference Cookies:</strong> Remember your settings and preferences</li>
+                            <li><strong>Marketing Cookies:</strong> Deliver relevant advertisements</li>
+                        </ul>
+                        
+                        <h3>Cookie Management</h3>
+                        <p>You can control cookies through your browser settings. However, disabling certain cookies may affect website functionality. Most browsers allow you to:</p>
+                        <ul>
+                            <li>See what cookies are stored and delete them</li>
+                            <li>Block third-party cookies</li>
+                            <li>Clear cookies when closing the browser</li>
+                            <li>Install add-ons to enhance cookie control</li>
+                        </ul>
+                    </div>
+                    
+                    <h2><i class="fas fa-user-shield"></i> Your Rights and Choices</h2>
+                    <p>Depending on your location, you may have the following rights regarding your personal data:</p>
+                    
+                    <div class="legal-section">
+                        <div class="legal-point">
+                            <div class="point-title">
+                                <i class="fas fa-eye"></i>
+                                <span>Right to Access</span>
+                            </div>
+                            <p>Request access to the personal data we hold about you.</p>
+                        </div>
+                        
+                        <div class="legal-point">
+                            <div class="point-title">
+                                <i class="fas fa-edit"></i>
+                                <span>Right to Correction</span>
+                            </div>
+                            <p>Request correction of inaccurate or incomplete data.</p>
+                        </div>
+                        
+                        <div class="legal-point">
+                            <div class="point-title">
+                                <i class="fas fa-trash-alt"></i>
+                                <span>Right to Deletion</span>
+                            </div>
+                            <p>Request deletion of your personal data under certain circumstances.</p>
+                        </div>
+                        
+                        <div class="legal-point">
+                            <div class="point-title">
+                                <i class="fas fa-ban"></i>
+                                <span>Right to Object</span>
+                            </div>
+                            <p>Object to processing of your personal data for direct marketing.</p>
+                        </div>
+                        
+                        <div class="legal-point">
+                            <div class="point-title">
+                                <i class="fas fa-download"></i>
+                                <span>Right to Portability</span>
+                            </div>
+                            <p>Request transfer of your data to another organization.</p>
+                        </div>
+                    </div>
+                    
+                    <h2><i class="fas fa-share-alt"></i> Data Sharing and Disclosure</h2>
+                    <p>We may share your information with:</p>
+                    <ul>
+                        <li><strong>Service Providers:</strong> Shipping companies, payment processors, IT service providers</li>
+                        <li><strong>Business Partners:</strong> When necessary for order fulfillment or joint offerings</li>
+                        <li><strong>Legal Authorities:</strong> When required by law or to protect our rights</li>
+                        <li><strong>Business Transfers:</strong> In connection with mergers, acquisitions, or asset sales</li>
+                    </ul>
+                    
+                    <div class="contact-box mt-30">
+                        <h2><i class="fas fa-envelope-open-text"></i> Contact for Privacy Concerns</h2>
+                        <p>If you have questions about this Privacy Policy or wish to exercise your data protection rights, please contact us:</p>
+                        <p>
+                            <strong>Email:</strong> ravijain236129@gmail.com<br>
+                            <strong>Phone:</strong> +91 7737740207<br>
+                            <strong>Address:</strong> Near Mining Office, Bijoliya, Bhilwara, Rajasthan - 311602, India
+                        </p>
+                        <p>We will respond to all legitimate requests within 30 days.</p>
+                    </div>
+                    
+                    <h2><i class="fas fa-sync-alt"></i> Policy Updates</h2>
+                    <p>We may update this Privacy Policy periodically. We will notify you of significant changes by posting the new policy on our website with an updated effective date. We encourage you to review this policy regularly.</p>
+                    
+                    <a href="index.html" class="back-home">
+                        <i class="fas fa-home"></i> Back to Home
+                    </a>
+                `
+            },
+            
+            terms: {
+                title: "Terms & Conditions",
+                content: `
+                    <h1>Terms & Conditions</h1>
+                    <p class="mb-30"><strong>Effective Date:</strong> January 1, 2024</p>
+                    
+                    <p>Welcome to IRYA STONE. These Terms & Conditions govern your use of our website and services. By accessing or using our website, you agree to be bound by these terms.</p>
+                    
+                    <div class="info-box">
+                        <h2><i class="fas fa-globe"></i> Website Usage</h2>
+                        <h3>Acceptable Use</h3>
+                        <p>You agree to use our website only for lawful purposes and in a manner that does not:</p>
+                        <ul>
+                            <li>Infringe the rights of any third party</li>
+                            <li>Violate any applicable laws or regulations</li>
+                            <li>Interfere with the website's operation or security</li>
+                            <li>Attempt to gain unauthorized access to our systems</li>
+                            <li>Transmit viruses or malicious code</li>
+                        </ul>
+                        
+                        <h3>Intellectual Property</h3>
+                        <p>All content on this website, including text, images, logos, and designs, is the property of IRYA STONE and protected by intellectual property laws. You may not reproduce, distribute, or create derivative works without our written permission.</p>
+                    </div>
+                    
+                    <h2><i class="fas fa-shopping-cart"></i> Orders and Purchases</h2>
+                    
+                    <div class="legal-section">
+                        <div class="legal-point">
+                            <div class="point-title">
+                                <i class="fas fa-file-invoice"></i>
+                                <span>Order Acceptance</span>
+                            </div>
+                            <p>All orders are subject to acceptance and availability. We reserve the right to refuse or cancel any order at our discretion. Order confirmation does not constitute acceptance of your order.</p>
+                        </div>
+                        
+                        <div class="legal-point">
+                            <div class="point-title">
+                                <i class="fas fa-tags"></i>
+                                <span>Pricing and Payment</span>
+                            </div>
+                            <p>All prices are in US Dollars unless otherwise specified. We reserve the right to change prices without notice. Payment terms will be specified in your quotation or invoice.</p>
+                        </div>
+                        
+                        <div class="legal-point">
+                            <div class="point-title">
+                                <i class="fas fa-shipping-fast"></i>
+                                <span>Shipping and Delivery</span>
+                            </div>
+                            <p>Shipping costs and delivery times vary based on destination and shipping method. We are not responsible for delays caused by customs, weather, or carrier issues. Risk of loss passes to you upon delivery to the carrier.</p>
+                        </div>
+                        
+                        <div class="legal-point">
+                            <div class="point-title">
+                                <i class="fas fa-exchange-alt"></i>
+                                <span>Cancellations and Changes</span>
+                            </div>
+                            <p>Orders can be cancelled within 24 hours of placement without penalty. After production begins, cancellation may incur charges. Changes to orders after confirmation may affect pricing and delivery schedules.</p>
+                        </div>
+                    </div>
+                    
+                    <h2><i class="fas fa-box-open"></i> Product Information</h2>
+                    <div class="info-box">
+                        <h3>Natural Stone Variations</h3>
+                        <p>Sandstone is a natural product with inherent variations in color, texture, veining, and finish. These variations are normal and not considered defects. We provide representative samples, but actual products may vary slightly.</p>
+                        
+                        <h3>Quality and Grading</h3>
+                        <p>Our sandstone is graded according to industry standards. We make every effort to ensure accurate descriptions and images, but we do not guarantee exact color matches between samples and delivered products due to monitor variations and natural stone characteristics.</p>
+                        
+                        <h3>Sizing Tolerances</h3>
+                        <p>Natural stone products may have slight dimensional variations. Standard tolerances are ±2mm in thickness and ±3mm in length/width. Custom orders will have tolerances specified in the order confirmation.</p>
+                    </div>
+                    
+                    <h2><i class="fas fa-shield-alt"></i> Liability and Disclaimers</h2>
+                    
+                    <div class="legal-section">
+                        <div class="legal-point">
+                            <div class="point-title">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <span>Limitation of Liability</span>
+                            </div>
+                            <p>IRYA STONE shall not be liable for any indirect, incidental, special, or consequential damages arising from the use of our products or website. Our maximum liability shall not exceed the purchase price of the products in question.</p>
+                        </div>
+                        
+                        <div class="legal-point">
+                            <div class="point-title">
+                                <i class="fas fa-clipboard-check"></i>
+                                <span>Proper Installation</span>
+                            </div>
+                            <p>We are not responsible for improper installation, handling, or maintenance of our products. It is the customer's responsibility to ensure proper installation by qualified professionals and to follow all recommended maintenance procedures.</p>
+                        </div>
+                        
+                        <div class="legal-point">
+                            <div class="point-title">
+                                <i class="fas fa-balance-scale"></i>
+                                <span>Warranty Disclaimer</span>
+                            </div>
+                            <p>We provide quality guarantees for our products as specified in individual product documentation. All other warranties, express or implied, including merchantability and fitness for a particular purpose, are disclaimed to the fullest extent permitted by law.</p>
+                        </div>
+                    </div>
+                    
+                    <h2><i class="fas fa-gavel"></i> Governing Law and Dispute Resolution</h2>
+                    <div class="info-box">
+                        <h3>Governing Law</h3>
+                        <p>These Terms & Conditions shall be governed by and construed in accordance with the laws of India, without regard to its conflict of law principles.</p>
+                        
+                        <h3>Dispute Resolution</h3>
+                        <p>Any disputes arising from these terms shall first be attempted to be resolved through good faith negotiations. If unresolved, disputes shall be subject to the exclusive jurisdiction of the courts in Bhilwara, Rajasthan, India.</p>
+                        
+                        <h3>International Customers</h3>
+                        <p>International customers are responsible for complying with all import regulations, duties, and taxes in their country. We are not liable for any customs delays, additional charges, or import restrictions.</p>
+                    </div>
+                    
+                    <h2><i class="fas fa-sync-alt"></i> Changes to Terms</h2>
+                    <p>We reserve the right to modify these Terms & Conditions at any time. Changes will be effective immediately upon posting to our website. Your continued use of our website or services constitutes acceptance of the modified terms.</p>
+                    
+                    <div class="contact-box mt-30">
+                        <h2><i class="fas fa-question-circle"></i> Contact Information</h2>
+                        <p>For questions about these Terms & Conditions, please contact us:</p>
+                        <p>
+                            <strong>IRYA STONE</strong><br>
+                            Near Mining Office, Bijoliya<br>
+                            Bhilwara, Rajasthan - 311602, India<br>
+                            <strong>Phone:</strong> +91 7737740207<br>
+                            <strong>Email:</strong> ravijain236129@gmail.com
+                        </p>
+                    </div>
+                    
+                    <a href="index.html" class="back-home">
+                        <i class="fas fa-home"></i> Back to Home
+                    </a>
+                `
+            }
+        };
+
+        // ============================================
+        // URL PARAMETER PARSING
+        // ============================================
+        function getPageFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const page = urlParams.get('page');
+            
+            // Default to 'about' if no valid page parameter
+            if (page && pageData[page]) {
+                return page;
+            }
+            return 'about';
+        }
+
+        function getSectionFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('section');
+        }
+
+        // ============================================
+        // CONTENT LOADING FUNCTION
+        // ============================================
+        function loadPageContent(page) {
+            const contentDiv = document.getElementById('content');
+            const pageTitle = document.getElementById('pageTitle');
+            
+            // Update page title and content
+            pageTitle.textContent = pageData[page].title;
+            contentDiv.innerHTML = pageData[page].content;
+            
+            // Check if section parameter exists and scroll to it
+            const section = getSectionFromURL();
+            if (section) {
+                setTimeout(() => {
+                    const sectionElement = document.getElementById(section);
+                    if (sectionElement) {
+                        window.scrollTo({
+                            top: sectionElement.offsetTop - 100,
+                            behavior: 'smooth'
+                        });
+                    }
+                }, 100);
+            } else {
+                // Scroll to top of content
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            
+            // Update browser history without reloading
+            const newUrl = window.location.pathname + '?page=' + page + (section ? '&section=' + section : '');
+            window.history.pushState({ page: page, section: section }, '', newUrl);
+        }
+
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load initial page based on URL parameter
+            const initialPage = getPageFromURL();
+            loadPageContent(initialPage);
+            
+            // Handle browser back/forward buttons
+            window.addEventListener('popstate', function(event) {
+                if (event.state && event.state.page) {
+                    loadPageContent(event.state.page);
+                } else {
+                    const page = getPageFromURL();
+                    loadPageContent(page);
+                }
+            });
+        });
+
+        // ============================================
+        // HOW TO USE FROM HOME PAGE
+        // ============================================
+        /*
+        Home Page (index.html) footer links should be:
+        
+        1. About Us Link:
+           <a href="info.html?page=about">About Us</a>
+        
+        2. Specific sections of About Us:
+           <a href="info.html?page=about&section=mission">Our Mission</a>
+           <a href="info.html?page=about&section=vision">Our Vision</a>
+           <a href="info.html?page=about&section=whyus">Why Choose Us</a>
+        
+        3. Support Links:
+           <a href="info.html?page=help">Contact Us</a>
+           <a href="info.html?page=help">Help Center</a>
+        
+        4. Legal Links:
+           <a href="info.html?page=privacy">Privacy Policy</a>
+           <a href="info.html?page=terms">Terms & Conditions</a>
+        
+        When user clicks any of these links from home page,
+        they will be taken to info.html with the correct content loaded.
+        */
+    </script>
+</body>
+</html>
