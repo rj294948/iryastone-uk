@@ -2533,8 +2533,17 @@ function getDefaultImage(category) {
 }
 
 function getProductUsageButtons(product) {
-   const usage = (product.usage || '').toLowerCase();
+
+    let usageText = '';
+
+    if (Array.isArray(product.usage)) {
+        usageText = product.usage.join(' ').toLowerCase();
+    } else if (typeof product.usage === 'string') {
+        usageText = product.usage.toLowerCase();
+    }
+
     const uses = [];
+
     // Always add Wall Cladding button
     uses.push({
         type: 'wall',
@@ -2543,7 +2552,7 @@ function getProductUsageButtons(product) {
         class: 'wall-cladding-btn',
         url: `products.html?stone_name=${encodeURIComponent(product.stone_name)}&type=wall-cladding`
     });
-    
+
     // Always add Flooring button
     uses.push({
         type: 'floor',
@@ -2552,9 +2561,13 @@ function getProductUsageButtons(product) {
         class: 'flooring-btn',
         url: `products.html?stone_name=${encodeURIComponent(product.stone_name)}&type=flooring`
     });
-    
+
     // Add Other button only if usage doesn't contain wall or floor
-    if (!usage.includes('wall') && !usage.includes('cladding') && !usage.includes('floor')) {
+    if (
+        !usageText.includes('wall') &&
+        !usageText.includes('cladding') &&
+        !usageText.includes('floor')
+    ) {
         uses.push({
             type: 'other',
             text: 'Other Uses',
@@ -2563,9 +2576,10 @@ function getProductUsageButtons(product) {
             url: `products.html?stone_name=${encodeURIComponent(product.stone_name)}&type=other`
         });
     }
-    
+
     return uses;
 }
+
 
 // ============================================
 // TRENDING PRODUCTS FETCHING & DISPLAY
